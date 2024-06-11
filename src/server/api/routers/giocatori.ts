@@ -77,32 +77,6 @@ export const giocatoriRouter = createTRPCRouter({
       }
     }),
 
-  list: publicProcedure
-    .input(z.string())
-    .query(async (opts) => {
-      try {
-        const giocatori = await prisma.giocatori.findMany({
-          where: {
-            nome: { 'startsWith': opts.input }
-          },
-          orderBy: { nome: 'asc' }
-        });
-
-        if (giocatori) {
-          return giocatori.map(giocatore => ({
-            idGiocatore: giocatore.idGiocatore,
-            nome: giocatore.nome,
-            nomeFantagazzetta: giocatore.nomeFantaGazzetta,
-            ruolo: giocatore.ruolo,
-            ruoloEsteso: getRuoloEsteso(giocatore.ruolo)
-          }));
-        };
-      } catch (error) {
-        Logger.error('Si è verificato un errore', error);
-        throw error;
-      }
-    }),
-
   listAll: publicProcedure
     .query(async () => {
       try {
