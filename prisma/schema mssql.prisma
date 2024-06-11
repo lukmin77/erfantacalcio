@@ -1,0 +1,273 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider          = "sqlserver"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model AlboTrofei {
+  id          Int      @id(map: "PK_AlboTrofei") @default(autoincrement())
+  stagione    String   @db.NVarChar(9)
+  nomeSquadra String   @db.NVarChar(50)
+  campionato  Boolean? @default(false, map: "DF_AlboTrofei_campionato")
+  champions   Boolean? @default(false, map: "DF_AlboTrofei_champions")
+  secondo     Boolean? @default(false, map: "DF_AlboTrofei_secondo")
+  terzo       Boolean? @default(false, map: "DF_AlboTrofei_terzo")
+  presidente  String   @db.NVarChar(50)
+}
+
+model Calendario {
+  idCalendario    Int       @id(map: "PK_Calendario") @unique(map: "IX_Calendario_idCalendario") @default(autoincrement())
+  giornata        Int       @db.TinyInt
+  idTorneo        Int
+  giornataSerieA  Int       @db.TinyInt
+  ordine          Int       @db.TinyInt
+  hasSovrapposta  Boolean   @default(false, map: "DF_Calendario_hasSovrapposta")
+  hasGiocata      Boolean   @default(false, map: "DF_Calendario_hasGiocata")
+  hasDaRecuperare Boolean   @default(false, map: "DF_Calendario_hasDaRecuperare")
+  data            DateTime? @default(now(), map: "DF_Calendario_data")
+  girone          Int?      @db.TinyInt
+  dataFine        DateTime?
+  Tornei          Tornei    @relation(fields: [idTorneo], references: [idTorneo], onUpdate: NoAction, map: "FK_Calendario_Tornei")
+  Partite         Partite[]
+  Voti            Voti[]
+}
+
+model Classifiche {
+  id               Int    @id(map: "PK_Classifiche") @default(autoincrement())
+  idSquadra        Int
+  idTorneo         Int
+  punti            Int    @db.TinyInt
+  vinteCasa        Int    @db.TinyInt
+  pareggiCasa      Int    @db.TinyInt
+  perseCasa        Int    @db.TinyInt
+  vinteTrasferta   Int    @db.TinyInt
+  pareggiTrasferta Int    @db.TinyInt
+  perseTrasferta   Int    @db.TinyInt
+  golFatti         Int    @db.TinyInt
+  golSubiti        Int    @db.TinyInt
+  differenzaReti   Int
+  giocate          Int    @db.TinyInt
+  Tornei           Tornei @relation(fields: [idTorneo], references: [idTorneo], onUpdate: NoAction, map: "FK_Classifiche_Tornei")
+  Utenti           Utenti @relation(fields: [idSquadra], references: [idUtente], onUpdate: NoAction, map: "FK_Classifiche_Utenti")
+}
+
+model Formazioni {
+  idFormazione Int      @id(map: "PK_Formazioni") @unique(map: "IX_Formazioni_idFormazione") @default(autoincrement())
+  idSquadra    Int
+  idPartita    Int
+  dataOra      DateTime @default(now(), map: "DF_Formazioni_dataOra")
+  modulo       String   @db.NVarChar(5)
+  hasBloccata  Boolean  @default(false, map: "DF_Formazioni_hasBloccata")
+  Partite      Partite  @relation(fields: [idPartita], references: [idPartita], onUpdate: NoAction, map: "FK_Formazioni_Partite")
+  Utenti       Utenti   @relation(fields: [idSquadra], references: [idUtente], onUpdate: NoAction, map: "FK_Formazioni_Utenti")
+  Voti         Voti[]
+
+  @@unique([idSquadra, idPartita], map: "UNIQUE_Formazioni_ids")
+}
+
+model Giocatori {
+  idGiocatore       Int             @id(map: "PK_Giocatori") @unique(map: "IX_Giocatori_idGiocatore") @default(autoincrement())
+  ruolo             String          @db.NVarChar(1)
+  nome              String          @unique(map: "UNIQUE_GIOCATORI_NOME") @db.NVarChar(50)
+  nomeFantaGazzetta String?         @db.NVarChar(500)
+  Trasferimenti     Trasferimenti[]
+  Voti              Voti[]
+}
+
+model Partite {
+  idPartita                         Int          @id(map: "PK_Partita") @unique(map: "IX_Partite_idPartita") @default(autoincrement())
+  idCalendario                      Int
+  idSquadraH                        Int?
+  idSquadraA                        Int?
+  puntiH                            Int?         @db.TinyInt
+  puntiA                            Int?         @db.TinyInt
+  golH                              Int?         @db.TinyInt
+  golA                              Int?         @db.TinyInt
+  hasMultaH                         Boolean      @default(false, map: "DF_Partite_hasMultaH")
+  hasMultaA                         Boolean      @default(false, map: "DF_Partite_hasMultaA")
+  punteggioH                        Decimal?     @db.Decimal(9, 2)
+  punteggioA                        Decimal?     @db.Decimal(9, 2)
+  fattoreCasalingo                  Boolean      @default(false, map: "DF_Partite_fattoreCasalingo")
+  Formazioni                        Formazioni[]
+  Calendario                        Calendario   @relation(fields: [idCalendario], references: [idCalendario], onUpdate: NoAction, map: "FK_Partite_Calendario")
+  Utenti_Partite_idSquadraHToUtenti Utenti?      @relation("Partite_idSquadraHToUtenti", fields: [idSquadraH], references: [idUtente], onDelete: NoAction, onUpdate: NoAction, map: "FK_Partite_SquadreCasa")
+  Utenti_Partite_idSquadraAToUtenti Utenti?      @relation("Partite_idSquadraAToUtenti", fields: [idSquadraA], references: [idUtente], onDelete: NoAction, onUpdate: NoAction, map: "FK_Partite_SquadreTrasferta")
+}
+
+model SquadreSerieA {
+  idSquadraSerieA Int             @id(map: "PK_SquadreSerieA") @unique(map: "IX_SquadreSerieA_idSquadraSerieA") @default(autoincrement())
+  nome            String          @db.NVarChar(50)
+  maglia          String          @db.NVarChar(50)
+  Trasferimenti   Trasferimenti[]
+}
+
+model StatsA {
+  id                Int      @id(map: "PK_StatsA") @unique(map: "IX_StatsA_id") @default(autoincrement())
+  media             Decimal? @db.Decimal(38, 6)
+  mediabonus        Decimal? @db.Decimal(38, 6)
+  golfatti          Decimal? @db.Decimal(38, 6)
+  golsubiti         Decimal? @db.Decimal(38, 1)
+  ammonizioni       Decimal? @db.Decimal(38, 6)
+  espulsioni        Decimal? @db.Decimal(38, 6)
+  assist            Decimal? @db.Decimal(38, 1)
+  giocate           Int?
+  ruolo             String   @db.NVarChar(1)
+  nome              String   @db.NVarChar(50)
+  nomefantagazzetta String?  @db.NVarChar(500)
+  idgiocatore       Int
+  maglia            String   @db.NVarChar(50)
+  squadraSerieA     String   @db.NVarChar(50)
+  squadra           String?  @db.NVarChar(50)
+  idSquadra         Int?
+}
+
+model StatsC {
+  id                Int      @id(map: "PK_StatsC") @unique(map: "IX_StatsC_id") @default(autoincrement())
+  media             Decimal? @db.Decimal(38, 6)
+  mediabonus        Decimal? @db.Decimal(38, 6)
+  golfatti          Decimal? @db.Decimal(38, 6)
+  golsubiti         Decimal? @db.Decimal(38, 1)
+  ammonizioni       Decimal? @db.Decimal(38, 6)
+  espulsioni        Decimal? @db.Decimal(38, 6)
+  assist            Decimal? @db.Decimal(38, 1)
+  giocate           Int?
+  ruolo             String   @db.NVarChar(1)
+  nome              String   @db.NVarChar(50)
+  nomefantagazzetta String?  @db.NVarChar(500)
+  idgiocatore       Int
+  maglia            String   @db.NVarChar(50)
+  squadraSerieA     String   @db.NVarChar(50)
+  squadra           String?  @db.NVarChar(50)
+  idSquadra         Int?
+}
+
+model StatsD {
+  id                Int      @id(map: "PK_StatsD") @unique(map: "IX_StatsD_id") @default(autoincrement())
+  media             Decimal? @db.Decimal(38, 6)
+  mediabonus        Decimal? @db.Decimal(38, 6)
+  golfatti          Decimal? @db.Decimal(38, 6)
+  golsubiti         Decimal? @db.Decimal(38, 1)
+  ammonizioni       Decimal? @db.Decimal(38, 6)
+  espulsioni        Decimal? @db.Decimal(38, 6)
+  assist            Decimal? @db.Decimal(38, 1)
+  giocate           Int?
+  ruolo             String   @db.NVarChar(1)
+  nome              String   @db.NVarChar(50)
+  nomefantagazzetta String?  @db.NVarChar(500)
+  idgiocatore       Int
+  maglia            String   @db.NVarChar(50)
+  squadraSerieA     String   @db.NVarChar(50)
+  squadra           String?  @db.NVarChar(50)
+  idSquadra         Int?
+}
+
+model StatsP {
+  id                Int      @id(map: "PK_StatsP") @unique(map: "IX_StatsP_id") @default(autoincrement())
+  media             Decimal? @db.Decimal(38, 6)
+  mediabonus        Decimal? @db.Decimal(38, 6)
+  golfatti          Decimal? @db.Decimal(38, 6)
+  golsubiti         Decimal? @db.Decimal(38, 1)
+  ammonizioni       Decimal? @db.Decimal(38, 6)
+  espulsioni        Decimal? @db.Decimal(38, 6)
+  assist            Decimal? @db.Decimal(38, 1)
+  giocate           Int?
+  ruolo             String   @db.NVarChar(1)
+  nome              String   @db.NVarChar(50)
+  nomefantagazzetta String?  @db.NVarChar(500)
+  idgiocatore       Int
+  maglia            String   @db.NVarChar(50)
+  squadraSerieA     String   @db.NVarChar(50)
+  squadra           String?  @db.NVarChar(50)
+  idSquadra         Int?
+}
+
+model Tornei {
+  idTorneo      Int           @id(map: "PK_Tornei") @unique(map: "IX_Tornei_idTorneo") @default(autoincrement())
+  nome          String        @db.NVarChar(50)
+  gruppoFase    String?       @db.NVarChar(50)
+  hasClassifica Boolean
+  Calendario    Calendario[]
+  Classifiche   Classifiche[]
+}
+
+model Trasferimenti {
+  idTrasferimento   Int            @id(map: "PK_Trasferimenti") @unique(map: "IX_Trasferimenti_idTrasferimento") @default(autoincrement())
+  idGiocatore       Int
+  idSquadraSerieA   Int?
+  dataAcquisto      DateTime       @default(now(), map: "DF_Trasferimenti_dataAcquisto")
+  dataCessione      DateTime?
+  idSquadra         Int?
+  costo             Int            @db.SmallInt
+  stagione          String         @db.NVarChar(9)
+  hasRitirato       Boolean        @default(false, map: "DF_Trasferimenti_hasRitirato")
+  nomeSquadraSerieA String?        @db.NVarChar(50)
+  nomeSquadra       String?        @db.NVarChar(50)
+  media             Decimal?       @db.Decimal(9, 2)
+  gol               Int?           @db.SmallInt
+  assist            Int?           @db.SmallInt
+  giocate           Int?           @db.SmallInt
+  Giocatori         Giocatori      @relation(fields: [idGiocatore], references: [idGiocatore], onUpdate: NoAction, map: "FK_Trasferimenti_Giocatori")
+  SquadreSerieA     SquadreSerieA? @relation(fields: [idSquadraSerieA], references: [idSquadraSerieA], onDelete: NoAction, onUpdate: NoAction, map: "FK_Trasferimenti_SquadreSerieA")
+  Utenti            Utenti?        @relation(fields: [idSquadra], references: [idUtente], onDelete: NoAction, onUpdate: NoAction, map: "FK_Trasferimenti_Utenti")
+}
+
+model Utenti {
+  idUtente                           Int             @id(map: "PK_Utenti") @unique(map: "IX_Utenti_idUtente") @default(autoincrement())
+  username                           String          @db.NVarChar(50)
+  pwd                                String          @db.NVarChar(50)
+  adminLevel                         Boolean         @default(false, map: "DF_Utenti_adminLevel")
+  presidente                         String          @db.NVarChar(50)
+  mail                               String          @db.NVarChar(50)
+  nomeSquadra                        String          @db.NVarChar(50)
+  foto                               String?         @db.NVarChar(100)
+  importoBase                        Decimal         @default(100, map: "DF_Utenti_importoBase") @db.Decimal(9, 2)
+  importoMulte                       Decimal         @default(0, map: "DF_Utenti_importoMulte") @db.Decimal(9, 2)
+  importoMercato                     Decimal         @default(0, map: "DF_Utenti_importoMercato") @db.Decimal(9, 2)
+  fantaMilioni                       Decimal         @default(600, map: "DF_Utenti_fantaMilioni") @db.Decimal(9, 2)
+  Campionato                         Int             @default(0, map: "DF_Utenti_Campionato") @db.SmallInt
+  Champions                          Int             @default(0, map: "DF_Utenti_Champions") @db.SmallInt
+  Secondo                            Int             @default(0, map: "DF_Utenti_Secondo") @db.SmallInt
+  Terzo                              Int             @default(0, map: "DF_Utenti_Terzo") @db.SmallInt
+  lockLevel                          Boolean         @default(false)
+  Classifiche                        Classifiche[]
+  Formazioni                         Formazioni[]
+  Partite_Partite_idSquadraHToUtenti Partite[]       @relation("Partite_idSquadraHToUtenti")
+  Partite_Partite_idSquadraAToUtenti Partite[]       @relation("Partite_idSquadraAToUtenti")
+  Trasferimenti                      Trasferimenti[]
+
+  @@unique([username, pwd], map: "IX_Utenti")
+}
+
+model Voti {
+  idVoto       Int         @id(map: "PK_Voti") @unique(map: "IX_Voti_idVoto") @default(autoincrement())
+  idGiocatore  Int
+  idCalendario Int
+  idFormazione Int?
+  voto         Decimal?    @db.Decimal(5, 2)
+  ammonizione  Decimal     @default(0, map: "DF_Voti_ammonizione") @db.Decimal(5, 1)
+  espulsione   Decimal     @default(0, map: "DF_Voti_espulsione") @db.Decimal(5, 1)
+  gol          Decimal?    @default(0, map: "DF_Voti_gol") @db.Decimal(5, 1)
+  assist       Decimal?    @default(0, map: "DF_Voti_assist") @db.Decimal(5, 1)
+  autogol      Decimal?    @default(0, map: "DF_Voti_autogol") @db.Decimal(5, 1)
+  altriBonus   Decimal?    @default(0, map: "DF_Voti_altriBonus") @db.Decimal(5, 1)
+  titolare     Boolean     @default(false, map: "DF_Voti_titolare")
+  riserva      Int?        @db.TinyInt
+  Formazioni   Formazioni? @relation(fields: [idFormazione], references: [idFormazione], onDelete: NoAction, onUpdate: NoAction, map: "FK_Formazione_Giocatori")
+  Calendario   Calendario  @relation(fields: [idCalendario], references: [idCalendario], onUpdate: NoAction, map: "FK_Voti_Calendario")
+  Giocatori    Giocatori   @relation(fields: [idGiocatore], references: [idGiocatore], onUpdate: NoAction, map: "FK_Voti_Giocatori")
+
+  @@index([voto], map: "IX_Voti_StatsGiocatori")
+  @@index([idGiocatore], map: "IX_Voti_StatsGiocatori2")
+}
+
+model FlowNewSeasosn {
+  id     Int       @id(map: "PK_FlowNewSeason") @unique(map: "IX_FlowSeason_id") @default(autoincrement())
+  idFase Int
+  active Boolean   @default(false, map: "DF_FlowSeason_active")
+  data   DateTime? @default(now(), map: "DF_FlowNewSeason_data")
+}
