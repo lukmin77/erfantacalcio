@@ -1,5 +1,5 @@
 "use client";
-import { api } from "../utils/api";
+import { api } from "~/utils/api";
 import ProvidersWrapper from "~/ProvidersWrapper";
 import { CssBaseline, Box, Toolbar, Container, Typography, Grid } from "@mui/material";
 import AppAppBar from '~/components/appbar/AppBar';

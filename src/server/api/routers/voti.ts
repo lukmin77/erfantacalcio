@@ -382,7 +382,10 @@ async function getGiocatoreByNome(nome: string) {
     try {
         const giocatore = await prisma.giocatori.findFirst({
             where: {
-                nome: nome
+                nome: {
+                  equals: nome,
+                  mode: 'insensitive'
+                }
             }
         });
 
@@ -443,9 +446,12 @@ async function findLastTrasferimento(idGiocatore: number) {
 async function findSquadraSerieA(nome: string) {
     try {
         const squadra = await prisma.squadreSerieA.findFirst({
-            where: {
-                nome: nome
-            },
+          where: {
+            nome: {
+              equals: nome,
+              mode: 'insensitive'
+            }
+        }
         });
         return squadra;
     }

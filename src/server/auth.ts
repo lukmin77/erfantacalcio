@@ -130,7 +130,7 @@ async function authenticate(input: { username: string; password: string }) {
     const hashedPassword = computeMD5Hash(input.password);
     return await prisma.utenti.findUnique({
       where: {
-        username_pwd: { username: input.username, pwd: hashedPassword}
+        username_pwd: { username: input.username.toLowerCase(), pwd: hashedPassword}
       }
     });
   } 
