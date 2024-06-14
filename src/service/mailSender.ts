@@ -21,7 +21,8 @@ export async function SendMail(to: string, subject: string, htmlMessage: string)
     html: htmlMessage,
   }).then(() => {
     Logger.info('Mail inviata con successo!!');
-  }).catch(() => {
+  }).catch((error) => {
+    console.log(error);
     Logger.error('Si è verificato un problema nell\'invio della mail!!');
   });
 

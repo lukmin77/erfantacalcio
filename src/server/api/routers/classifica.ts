@@ -8,6 +8,7 @@ import {
   createTRPCRouter,
   publicProcedure
 } from "~/server/api/trpc";
+import { SendMail } from "~/service/mailSender";
 
 
 
@@ -18,6 +19,11 @@ export const classificaRouter = createTRPCRouter({
       idTorneo: z.number(),
     }))
     .query(async (opts) => {
+
+      /* Logger.info("sending mail");
+      await SendMail('ErFantacalcio: test', 'lucianominni@gmail.com', 'Notifica automatica da erFantacalcio.com');
+      Logger.info("mail sent"); */
+
       const idTorneo = +opts.input.idTorneo;
       try {
         const fantaPunti = await getFantapunti(idTorneo);

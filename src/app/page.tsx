@@ -230,7 +230,7 @@ export default function HomePage() {
             </Grid>
           </Zoom>
         )}
-        {(frame === FrameType.defaultHome || frame === FrameType.albo || frame === FrameType.economia) && (
+        {(frame === FrameType.defaultHome || frame === FrameType.albo || frame === FrameType.economia) && !torneiList.isLoading && (
           <>
             <Zoom in={true} >
               <Grid item xs={6} sm={3} sx={!isXs ? { pr: '25px', pl: '0px', pt: '15px' } : {}}>

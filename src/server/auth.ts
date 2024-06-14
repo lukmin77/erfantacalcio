@@ -1,23 +1,21 @@
 import Logger from "~/lib/logger";
 import { type GetServerSidePropsContext } from "next";
-import { getServerSession, type DefaultSession, type NextAuthOptions, type DefaultUser } from "next-auth";
+import { getServerSession, type DefaultSession, type NextAuthOptions, type DefaultUser, type IUser } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { computeMD5Hash } from '~/utils/hashPassword';
 import { RuoloUtente } from "~/utils/enums";
 import prisma from "~/utils/db";
 
-/**
- * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
- * object and keep type safety.
- */
-interface IUser extends DefaultUser {
-  ruolo?: RuoloUtente
-  idSquadra: number;
-  squadra: string;
-  presidente: string;
-}
 
 declare module "next-auth" {
+
+  interface IUser extends DefaultUser {
+    ruolo?: RuoloUtente
+    idSquadra: number;
+    squadra: string;
+    presidente: string;
+  }
+  
   interface User extends IUser {
     idSquadra: number;
   }
