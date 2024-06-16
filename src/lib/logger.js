@@ -1,7 +1,7 @@
 // logger.js
 import winston from "winston";
 const { format, transports } = winston;
-import DailyRotateFile from "winston-daily-rotate-file";
+/* import DailyRotateFile from "winston-daily-rotate-file"; */
 const { combine, splat, timestamp, printf } = format;
 
 const levels = {
@@ -42,7 +42,7 @@ const Logger = winston.createLogger({
   ),
   transports: [
     new transports.Console(),
-    new DailyRotateFile({
+    /* new DailyRotateFile({
       filename: 'logs/application-error-%DATE%.log',
       datePattern: 'YYYY-MM-DD',
       zippedArchive: true,
@@ -56,7 +56,7 @@ const Logger = winston.createLogger({
       zippedArchive: true,
       maxSize: '5m',
       maxFiles: '7d'
-    })
+    }) */
   ],
 });
 
