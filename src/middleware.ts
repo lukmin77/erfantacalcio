@@ -25,7 +25,7 @@ export const middleware = async (req: NextRequest) => {
   const token = await getToken({
     req : req, 
     secret: process.env.JWT_SECRET,
-    secureCookie: true
+    cookieName: "next-auth.session-token"
   });
   
   //utente NON CONNESSO sta puntando a pagine riservate
