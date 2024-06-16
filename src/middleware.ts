@@ -22,7 +22,11 @@ export const middleware = async (req: NextRequest) => {
   const loginUrl = new URL("/login", req.url);
   const homeUrl = new URL("/", req.url);
 
-  const token = await getToken({req : req, secret: process.env.JWT_SECRET})
+  const token = await getToken({
+    req : req, 
+    secret: process.env.JWT_SECRET,
+    secureCookie: true
+  });
   
   //utente NON CONNESSO sta puntando a pagine riservate
   if ((!token || token === null) && (reservedPages.includes(pathname) || adminPages.includes(pathname))) {
