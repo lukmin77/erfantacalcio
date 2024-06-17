@@ -86,7 +86,7 @@ export default function FotoProfilo() {
                             // Se ci sono ancora blocchi da leggere, continua con il prossimo
                             if (offset < file.size) {
                                 readAndUploadBlock();
-                            } else if (offset === file.size) {
+                            } else if (offset === file.size && serverPathFilename) {
                                 const filePath = await updateFotoProfilo.mutateAsync({
                                     fileName: serverPathFilename
                                 });

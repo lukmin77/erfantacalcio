@@ -63,13 +63,12 @@ export const profiloRouter = createTRPCRouter({
       try {
         const { fileName, fileSize, blockDataBase64 } = opts.input;
         const filePath = path.join(process.cwd(), `public/images/fotoprofili/${fileName}`);
-
+        
         if (process.env.NEXTAUTH_URL?.startsWith("https://")) {
-          Logger.info('pre upload - production');
-          const blobdata = new Blob([blockDataBase64]);
-          const blob = await put(`fotoprofili/${fileName}`, blobdata, {
+          const blob = await put(`fotoprofili/${fileName}`, blockDataBase64, {
             access: 'public',
-            addRandomSuffix: false
+            addRandomSuffix: false,
+            multipart: true
           });
           Logger.info('file blob: ', blob);
           Logger.info(`Il file ${fileName} è stato completamente salvato.`);
@@ -88,6 +87,7 @@ export const profiloRouter = createTRPCRouter({
           if (fs.statSync(filePath).size >= fileSize) {
             Logger.info(`Il file ${fileName} è stato completamente salvato.`);
           }
+          return `/images/fotoprofili/${fileName}`;
         }
 
 
@@ -142,12 +142,9 @@ export const profiloRouter = createTRPCRouter({
           Logger.info(`Foto profilo precedente eliminata: public${fotoProfilo}`);
         } */
 
-        let filePath = '';
         //update foto
-        if (process.env.NEXTAUTH_URL?.startsWith("https://"))
-          filePath = opts.input.fileName;
-        else
-          filePath = `/images/fotoprofili/${opts.input.fileName}`;
+        const  filePath = opts.input.fileName;
+        
         await prisma.utenti.update({
           data: {
             foto: filePath
