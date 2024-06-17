@@ -55,6 +55,7 @@ export default function FotoProfilo() {
                 if (file) {
                     const blob = file.slice(offset, offset + CHUNK_SIZE);
                     const reader = new FileReader();
+                    let serverFilename: string | undefined;
 
                     reader.onload = async () => {
                         if (reader.result && typeof reader.result !== "string") {
@@ -68,7 +69,7 @@ export default function FotoProfilo() {
 
                             // Carica il blocco corrente
                             try {
-                                await uploadFileBlock.mutateAsync({
+                                serverFilename = await uploadFileBlock.mutateAsync({
                                     fileName: filename,
                                     fileSize: filesize, 
                                     blockDataBase64: blockDataBase64
@@ -87,7 +88,7 @@ export default function FotoProfilo() {
                                 readAndUploadBlock();
                             } else if (offset === file.size) {
                                 const filePath = await updateFotoProfilo.mutateAsync({
-                                    fileName: filename
+                                    fileName: serverFilename ?? ''
                                 });
                                 //aggiorno la sessione utente con la nuova immagine
                                 await update({
