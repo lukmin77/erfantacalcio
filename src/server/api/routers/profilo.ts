@@ -66,9 +66,10 @@ export const profiloRouter = createTRPCRouter({
 
         if (process.env.NEXTAUTH_URL?.startsWith("https://")) {
           Logger.info('pre upload - production');
-          const blobdata = new Blob([blockDataBase64], { type: 'plain/text' });
-          const blob = await put(fileName, blobdata, {
+          const blobdata = new Blob([blockDataBase64]);
+          const blob = await put(`fotoprofili/${fileName}`, blobdata, {
             access: 'public',
+            addRandomSuffix: false
           });
           Logger.info('file blob: ', blob);
           Logger.info(`Il file ${fileName} è stato completamente salvato.`);
