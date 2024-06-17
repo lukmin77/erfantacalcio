@@ -11,7 +11,7 @@ import {
   createTRPCRouter,
   protectedProcedure,
 } from "~/server/api/trpc";
-import { base64ToArrayBuffer } from "~/utils/stringUtils";
+import { base64ToBuffer } from "~/utils/stringUtils";
 
 
 
@@ -94,7 +94,7 @@ export const profiloRouter = createTRPCRouter({
     .mutation(async (opts) => {
       try {
         const { fileName, fileData } = opts.input;
-        const arrayBuffer = base64ToArrayBuffer(fileData);
+        const arrayBuffer = base64ToBuffer(fileData);
         Logger.info('filedata:', fileData);
         Logger.info('arraybuffer:', arrayBuffer);
         const blob = await put(`fotoprofili/${fileName}`, arrayBuffer, {
