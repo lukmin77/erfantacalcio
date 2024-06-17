@@ -42,12 +42,12 @@ export default function FotoProfilo() {
     const handleUpload = async () => {
         if (validateFile(file))
         {
-            await deleteFiles.mutateAsync();
+            //await deleteFiles.mutateAsync();
             const filename = `foto_${session?.user?.idSquadra}_${getTimestamp()}${getFileExtension(file?.name)}`
             const filesize = file?.size ?? 0;
             setUploading(true);
 
-            const CHUNK_SIZE = process.env.NEXTAUTH_URL?.startsWith("https://") ?  4.5 * 1024 * 1024 : 0.65 * 1024 * 1024; // Dimensione del blocco (0.65 MB)
+            const CHUNK_SIZE = 0.65 * 1024 * 1024; // Dimensione del blocco (0.65 MB)
             let offset = 0;
             
             // Funzione per leggere e caricare un blocco del file
@@ -55,7 +55,6 @@ export default function FotoProfilo() {
                 if (file) {
                     const blob = file.slice(offset, offset + CHUNK_SIZE);
                     const reader = new FileReader();
-                    let serverFilename: string | undefined;
 
                     reader.onload = async () => {
                         if (reader.result && typeof reader.result !== "string") {
@@ -66,10 +65,11 @@ export default function FotoProfilo() {
                             
                             const percentCompleted = Math.floor((offset * 100) / file.size);
                             setProgress(percentCompleted);
+                            let serverPathFilename: string | undefined;
 
                             // Carica il blocco corrente
                             try {
-                                serverFilename = await uploadFileBlock.mutateAsync({
+                                serverPathFilename = await uploadFileBlock.mutateAsync({
                                     fileName: filename,
                                     fileSize: filesize, 
                                     blockDataBase64: blockDataBase64
@@ -88,7 +88,7 @@ export default function FotoProfilo() {
                                 readAndUploadBlock();
                             } else if (offset === file.size) {
                                 const filePath = await updateFotoProfilo.mutateAsync({
-                                    fileName: serverFilename ?? ''
+                                    fileName: serverPathFilename
                                 });
                                 //aggiorno la sessione utente con la nuova immagine
                                 await update({
