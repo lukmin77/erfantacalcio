@@ -64,15 +64,14 @@ export const profiloRouter = createTRPCRouter({
         const { fileName, fileSize, blockDataBase64 } = opts.input;
         const filePath = path.join(process.cwd(), `public/images/fotoprofili/${fileName}`);
 
-        Logger.info('pre upload');
         if (process.env.NEXTAUTH_URL?.startsWith("https://")) {
           Logger.info('pre upload - production');
-          const blob = await put(fileName, blockDataBase64, {
+          const blobdata = new Blob([blockDataBase64], { type : 'plain/text' });
+          const blob = await put(fileName, blobdata, {
             access: 'public',
           });
           Logger.info('file blob: ', blob);
-          Logger.info('file blob pathname: ', blob.pathname);
-          Logger.info('file blob url: ', blob.url);
+          Logger.info(`Il file ${fileName} è stato completamente salvato.`);
         }
         else {
           // Verifica se il file esiste già
@@ -88,13 +87,13 @@ export const profiloRouter = createTRPCRouter({
             Logger.info(`Il file ${fileName} è stato completamente salvato.`);
           }
         }
+        
 
       } catch (error) {
         Logger.error('Si è verificato un errore', error);
         throw error;
       }
     }),
-
 
   deleteFoto: protectedProcedure
     .mutation(async (opts) => {
@@ -134,12 +133,12 @@ export const profiloRouter = createTRPCRouter({
         }); */
 
         //delete foto
-        const fotoProfilo = opts.ctx.session.user.image ?? '';
+        /* const fotoProfilo = opts.ctx.session.user.image ?? '';
         Logger.info(`Foto profilo precedente: public${fotoProfilo}`);
         if (fs.existsSync(`public${fotoProfilo}`)) {
           fs.unlinkSync(`public${fotoProfilo}`);
           Logger.info(`Foto profilo precedente eliminata: public${fotoProfilo}`);
-        }
+        } */
 
 
         //update foto

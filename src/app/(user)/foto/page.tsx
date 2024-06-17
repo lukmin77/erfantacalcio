@@ -47,7 +47,7 @@ export default function FotoProfilo() {
             const filesize = file?.size ?? 0;
             setUploading(true);
 
-            const CHUNK_SIZE = process.env.NEXTAUTH_URL?.startsWith("https://") ?  2 * 1024 * 1024 : 0.65 * 1024 * 1024; // Dimensione del blocco (0.65 MB)
+            const CHUNK_SIZE = process.env.NEXTAUTH_URL?.startsWith("https://") ?  4.5 * 1024 * 1024 : 0.65 * 1024 * 1024; // Dimensione del blocco (0.65 MB)
             let offset = 0;
             
             // Funzione per leggere e caricare un blocco del file
