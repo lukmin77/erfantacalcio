@@ -6,6 +6,7 @@ import { Configurazione } from "~/config";
 import { getRuoloEsteso, normalizeNomeGiocatore } from "~/utils/helper";
 import { formatToDecimalValue } from "~/utils/numberUtils";
 import { type VotiDistinctItem, type iVotoGiocatore } from "~/types/voti";
+import path from 'path';
 
 import prisma from "~/utils/db";
 
@@ -375,7 +376,7 @@ async function readFileVoti(filePath: string): Promise<iVotoGiocatore[]> {
 }
 
 function getPathVoti(fileName: string) {
-  return `public/voti/${fileName}`;
+  return path.join(process.cwd(), `public/voti/${fileName}`);
 }
 
 async function getGiocatoreByNome(nome: string) {

@@ -26,7 +26,6 @@ export const middleware = async (req: NextRequest) => {
     req: req,
     secret: process.env.NEXTAUTH_SECRET
   });
-  console.log('token:', token);
   
   //utente NON CONNESSO sta puntando a pagine riservate
   if ((!token || token === null) && (reservedPages.includes(pathname) || adminPages.includes(pathname))) {

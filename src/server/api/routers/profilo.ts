@@ -61,8 +61,8 @@ export const profiloRouter = createTRPCRouter({
     .mutation(async (opts) => {
       try {
         const { fileName, fileSize, blockDataBase64 } = opts.input;
-        const filePath = `public/images/fotoprofili/${fileName}`;
-
+        const filePath = path.join(process.cwd(), `public/images/fotoprofili/${fileName}`);
+        
         // Verifica se il file esiste già
         const fileExists = fs.existsSync(filePath);
 
