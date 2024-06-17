@@ -11,7 +11,7 @@ import {
   createTRPCRouter,
   protectedProcedure,
 } from "~/server/api/trpc";
-import { base64ToArrayBuffer, stringToArrayBuffer } from "~/utils/stringUtils";
+import { base64ToArrayBuffer } from "~/utils/stringUtils";
 
 
 
