@@ -23,10 +23,11 @@ export const middleware = async (req: NextRequest) => {
   const homeUrl = new URL("/", req.url);
 
   const token = await getToken({
-    req : req, 
+    req: req,
     secret: process.env.NEXTAUTH_SECRET,
-    cookieName: "next-auth.session-token"
+    raw: true
   });
+  console.log('token:', token);
   
   //utente NON CONNESSO sta puntando a pagine riservate
   if ((!token || token === null) && (reservedPages.includes(pathname) || adminPages.includes(pathname))) {
