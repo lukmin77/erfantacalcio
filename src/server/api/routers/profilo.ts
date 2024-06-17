@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { computeMD5Hash } from '~/utils/hashPassword';
 import fs from 'fs';
 import path from 'path';
+import { put } from '@vercel/blob';
 
 import prisma from "~/utils/db";
 
@@ -62,19 +63,32 @@ export const profiloRouter = createTRPCRouter({
       try {
         const { fileName, fileSize, blockDataBase64 } = opts.input;
         const filePath = path.join(process.cwd(), `public/images/fotoprofili/${fileName}`);
-        
-        // Verifica se il file esiste già
-        const fileExists = fs.existsSync(filePath);
 
-        if (!fileExists) {
-          fs.writeFileSync(filePath, Buffer.from(blockDataBase64, 'base64'), { flag: 'w' });
-        } else {
-          fs.appendFileSync(filePath, Buffer.from(blockDataBase64, 'base64'));
+        Logger.info('pre upload');
+        if (process.env.NEXTAUTH_URL?.startsWith("https://")) {
+          Logger.info('pre upload - production');
+          const blob = await put(fileName, blockDataBase64, {
+            access: 'public',
+          });
+          Logger.info('file blob: ', blob);
+          Logger.info('file blob pathname: ', blob.pathname);
+          Logger.info('file blob url: ', blob.url);
+        }
+        else {
+          // Verifica se il file esiste già
+          const fileExists = fs.existsSync(filePath);
+
+          if (!fileExists) {
+            fs.writeFileSync(filePath, Buffer.from(blockDataBase64, 'base64'), { flag: 'w' });
+          } else {
+            fs.appendFileSync(filePath, Buffer.from(blockDataBase64, 'base64'));
+          }
+
+          if (fs.statSync(filePath).size >= fileSize) {
+            Logger.info(`Il file ${fileName} è stato completamente salvato.`);
+          }
         }
 
-        if (fs.statSync(filePath).size >= fileSize) {
-          Logger.info(`Il file ${fileName} è stato completamente salvato.`);
-        }
       } catch (error) {
         Logger.error('Si è verificato un errore', error);
         throw error;
