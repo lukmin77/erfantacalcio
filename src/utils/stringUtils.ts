@@ -14,3 +14,8 @@ export function getFileExtension(fileName: string | undefined): string {
     else
         return '';
 }
+
+export function stringToArrayBuffer(str: string): ArrayBuffer {
+    const encoder = new TextEncoder();
+    return encoder.encode(str).buffer;
+}

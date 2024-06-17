@@ -11,6 +11,7 @@ import {
   createTRPCRouter,
   protectedProcedure,
 } from "~/server/api/trpc";
+import { stringToArrayBuffer } from "~/utils/stringUtils";
 
 
 
@@ -63,34 +64,47 @@ export const profiloRouter = createTRPCRouter({
       try {
         const { fileName, fileSize, blockDataBase64 } = opts.input;
         const filePath = path.join(process.cwd(), `public/images/fotoprofili/${fileName}`);
-        
-        if (process.env.NEXTAUTH_URL?.startsWith("https://")) {
-          const blob = await put(`fotoprofili/${fileName}`, blockDataBase64, {
-            access: 'public',
-            addRandomSuffix: false,
-            multipart: true
-          });
-          Logger.info('file blob: ', blob);
+
+        // Verifica se il file esiste già
+        const fileExists = fs.existsSync(filePath);
+
+        if (!fileExists) {
+          fs.writeFileSync(filePath, Buffer.from(blockDataBase64, 'base64'), { flag: 'w' });
+        } else {
+          fs.appendFileSync(filePath, Buffer.from(blockDataBase64, 'base64'));
+        }
+
+        if (fs.statSync(filePath).size >= fileSize) {
           Logger.info(`Il file ${fileName} è stato completamente salvato.`);
-          return blob.url;
         }
-        else {
-          // Verifica se il file esiste già
-          const fileExists = fs.existsSync(filePath);
-
-          if (!fileExists) {
-            fs.writeFileSync(filePath, Buffer.from(blockDataBase64, 'base64'), { flag: 'w' });
-          } else {
-            fs.appendFileSync(filePath, Buffer.from(blockDataBase64, 'base64'));
-          }
-
-          if (fs.statSync(filePath).size >= fileSize) {
-            Logger.info(`Il file ${fileName} è stato completamente salvato.`);
-          }
-          return `/images/fotoprofili/${fileName}`;
-        }
+        return `/images/fotoprofili/${fileName}`;
 
 
+      } catch (error) {
+        Logger.error('Si è verificato un errore', error);
+        throw error;
+      }
+    }),
+
+  uploadFotoVercel: protectedProcedure
+    .input(z.object({
+      fileName: z.string(),
+      fileData: z.string()
+    }))
+    .mutation(async (opts) => {
+      try {
+        const { fileName, fileData } = opts.input;
+        const arrayBuffer = stringToArrayBuffer(fileData);
+        Logger.info('filedata:', fileData);
+        Logger.info('arraybuffer:', arrayBuffer);
+        const blob = await put(`fotoprofili/${fileName}`, arrayBuffer, {
+          access: 'public',
+          addRandomSuffix: false
+        });
+        Logger.info('file blob: ', blob);
+        Logger.info(`Il file ${fileName} è stato completamente salvato.`);
+        return blob.url;
+        
       } catch (error) {
         Logger.error('Si è verificato un errore', error);
         throw error;
@@ -143,8 +157,8 @@ export const profiloRouter = createTRPCRouter({
         } */
 
         //update foto
-        const  filePath = opts.input.fileName;
-        
+        const filePath = opts.input.fileName;
+
         await prisma.utenti.update({
           data: {
             foto: filePath
