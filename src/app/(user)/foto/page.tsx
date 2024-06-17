@@ -118,7 +118,6 @@ export default function FotoProfilo() {
     const handleUploadVercel = async () => {
         if (validateFile(file)) {
             const filename = `foto_${session?.user?.idSquadra}_${getTimestamp()}${getFileExtension(file?.name)}`
-            const filesize = file?.size ?? 0;
             setUploading(true);
 
             const MAX_SIZE = 4.5 * 1024 * 1024; // Dimensione del blocco (4.5 MB)
