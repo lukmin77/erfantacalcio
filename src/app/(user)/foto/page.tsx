@@ -133,7 +133,7 @@ export default function FotoProfilo() {
                     reader.onload = async () => {
                         if (reader.result && typeof reader.result !== "string") {
                             const blockData = new Uint8Array(reader.result);
-                            const blockDataBase64 = Buffer.from(blockData).toString("base64");
+                            const fileData = Buffer.from(blockData).toString("base64");
                             const contentLength = blockData.length;
                             offset += contentLength;
 
@@ -144,7 +144,7 @@ export default function FotoProfilo() {
                             try {
                                 const serverPathfilename = await uploadFileVercel.mutateAsync({
                                     fileName: filename,
-                                    blockDataBase64: blockDataBase64
+                                    fileData: fileData
                                 });
 
                                 const filePath = await updateFotoProfilo.mutateAsync({
