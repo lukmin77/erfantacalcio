@@ -401,20 +401,20 @@ async function readFileVoti_local(filePath: string): Promise<iVotoGiocatore[]> {
 }
 
 async function readFileVoti(fileUrl: string): Promise<iVotoGiocatore[]> {
-  return new Promise(async (resolve, reject) => {
-    const voti: iVotoGiocatore[] = [];
-    const headers: string[] = [];
-    for (let i = 1; i <= Configurazione.pfColumns; i++) {
-      headers.push(`Col${i}`);
+  const voti: iVotoGiocatore[] = [];
+  const headers: string[] = [];
+  for (let i = 1; i <= Configurazione.pfColumns; i++) {
+    headers.push(`Col${i}`);
+  }
+
+  try {
+    const response = await fetch(fileUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch file: ${response.statusText}`);
     }
+    const fileContent = await response.text();
 
-    try {
-      const response = await fetch(fileUrl);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch file: ${response.statusText}`);
-      }
-      const fileContent = await response.text();
-
+    return new Promise((resolve, reject) => {
       parse(fileContent, {
         delimiter: '\t',
         columns: headers,
@@ -442,15 +442,16 @@ async function readFileVoti(fileUrl: string): Promise<iVotoGiocatore[]> {
         if (error) {
           console.error(error);
           reject(error);
+        } else {
+          console.log(voti.length);
+          resolve(voti);
         }
-        console.log(voti.length);
-        resolve(voti);
       });
-    } catch (error) {
-      console.error(error);
-      reject(error);
-    }
-  });
+    });
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to fetch file data');
+  }
 }
 
 function getPathVoti(fileName: string) {
