@@ -234,7 +234,7 @@ export default function FotoProfilo() {
                                     type="file"
                                     id="upload-input"
                                 />
-                                <Button color="info" variant="contained" onClick={Configurazione.vercel === '1' ? handleUploadVercel : handleUpload} startIcon={<CloudUpload />} disabled={uploading}>
+                                <Button color="info" variant="contained" onClick={handleUploadVercel} startIcon={<CloudUpload />} disabled={uploading}>
                                     Upload
                                 </Button>
                             </Stack>
