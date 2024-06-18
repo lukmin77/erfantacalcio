@@ -247,6 +247,7 @@ export const votiRouter = createTRPCRouter({
     .mutation(async (opts) => {
       try {
         await saveToVercel(244, 'https://6518wln9g69xjwcm.public.blob.vercel-storage.com/voti/voti_38_244.csv');
+        return 'https://6518wln9g69xjwcm.public.blob.vercel-storage.com/voti/voti_38_244.csv';
         // const { idCalendario, fileName, fileData } = opts.input;
         // const blob = await uploadFile(fileData, fileName, 'voti');
         // Logger.info('file blob: ', blob);
