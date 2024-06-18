@@ -391,6 +391,7 @@ async function readFileVotiVercel(fileUrl: string): Promise<iVotoGiocatore[]> {
   }
 
   try {
+    Logger.info(fileUrl);
     const response = await fetch(fileUrl);
     if (!response.ok) {
       throw new Error(`Failed to fetch file: ${response.statusText}`);
