@@ -279,10 +279,10 @@ export const votiRouter = createTRPCRouter({
           
           Logger.info('filename:', fileName);
           const voti = await readFileVoti(fileName);
-          Logger.info('voti: voti');
-          await Promise.all(voti.map(async (v) => {
+          Logger.info('voti:', voti);
+          /* await Promise.all(voti.map(async (v) => {
             const idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;
-            Logger.info(idGiocatore);
+            Logger.info(idGiocatore); */
             /* if (!idGiocatore) {
               idGiocatore = await createGiocatore(v.Nome, v.Ruolo);
             }
@@ -297,7 +297,7 @@ export const votiRouter = createTRPCRouter({
               await updateVoto(idVoto, v);
             else
               await createVoto(idCalendario, idGiocatore, v); */
-          }));
+          //}));
           
           /* await prisma.voti.deleteMany({
             where: {
