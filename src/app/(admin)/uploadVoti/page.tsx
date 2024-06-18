@@ -179,10 +179,12 @@ export default function UploadVoti() {
                                     fileName: filename,
                                     fileData: fileData
                                 });
+
+                                const serverPathString = typeof serverPathfilename === 'string' ? serverPathfilename : String(serverPathfilename);
                                 
                                 await saveVoti.mutateAsync({
                                     idCalendario: selectedIdCalendario ?? 0,
-                                    fileName: serverPathfilename,
+                                    fileName: serverPathString,
                                 });
 
                                 setUploading(false);
