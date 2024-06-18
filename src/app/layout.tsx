@@ -47,7 +47,7 @@ function RootLayout({ children }: { children: React.ReactNode }) {
                             </Grid>
                             <Grid item xs={6} display={'flex'} justifyContent={'flex-end'}>
                                 <Typography color="info.main" variant="subtitle2">
-                                    NextJs | React | Material UI | Prisma
+                                    NextJs | React | MUI | Prisma
                                 </Typography>
                             </Grid>
                         </Grid>

@@ -636,36 +636,36 @@ async function saveLocal(idCalendario: number, fileName: string) {
 async function saveToVercel(idCalendario: number, fileName: string) {
   Logger.info('filename:', fileName);
   await resetVoti(idCalendario);
-  const voti = await readFileVotiVercel(fileName);
-  await Promise.all(voti.map(async (v) => {
-    let idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;
-    if (!idGiocatore) {
-      idGiocatore = await createGiocatore(v.Nome, v.Ruolo);
-    }
-    if (await findLastTrasferimento(idGiocatore) === null) {
-      const squadraSerieA = await findSquadraSerieA(v.Squadra);
-      if (squadraSerieA !== null)
-        await createTrasferimento(idGiocatore, squadraSerieA.idSquadraSerieA, squadraSerieA.nome);
-    }
+  // const voti = await readFileVotiVercel(fileName);
+  // await Promise.all(voti.map(async (v) => {
+  //   let idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;
+  //   if (!idGiocatore) {
+  //     idGiocatore = await createGiocatore(v.Nome, v.Ruolo);
+  //   }
+  //   if (await findLastTrasferimento(idGiocatore) === null) {
+  //     const squadraSerieA = await findSquadraSerieA(v.Squadra);
+  //     if (squadraSerieA !== null)
+  //       await createTrasferimento(idGiocatore, squadraSerieA.idSquadraSerieA, squadraSerieA.nome);
+  //   }
 
-    const idVoto = await findIdVoto(idCalendario, idGiocatore)
-    if (idVoto)
-      await updateVoto(idVoto, v);
-    else
-      await createVoto(idCalendario, idGiocatore, v);
-  }));
+  //   const idVoto = await findIdVoto(idCalendario, idGiocatore)
+  //   if (idVoto)
+  //     await updateVoto(idVoto, v);
+  //   else
+  //     await createVoto(idCalendario, idGiocatore, v);
+  // }));
 
-  await prisma.voti.deleteMany({
-    where: {
-      titolare: false,
-      riserva: null,
-      idCalendario: idCalendario
-    }
-  });
+  // await prisma.voti.deleteMany({
+  //   where: {
+  //     titolare: false,
+  //     riserva: null,
+  //     idCalendario: idCalendario
+  //   }
+  // });
 
-  await refreshStats('P');
-  await refreshStats('D');
-  await refreshStats('C');
-  await refreshStats('A');
+  // await refreshStats('P');
+  // await refreshStats('D');
+  // await refreshStats('C');
+  // await refreshStats('A');
 }
 
