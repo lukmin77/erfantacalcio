@@ -265,18 +265,19 @@ export const votiRouter = createTRPCRouter({
     .mutation(async (opts) => {
       try {
         const { idCalendario, fileName } = opts.input;
-        const fileExists = fs.existsSync(fileName);
+        /* const fileExists = fs.existsSync(fileName);
         
         if (!fileExists) {
           Logger.error('Si è verificato un errore, il file non esiste', fileName);
           throw new Error(`Si è verificato un errore, il file ${fileName} non esiste`);
-        } else {
+        } else { */
           //processo di salvataggio voti
-          await resetVoti(idCalendario);
+          /*  */await resetVoti(idCalendario);
           const voti = await readFileVoti(fileName);
           await Promise.all(voti.map(async (v) => {
             let idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;
-            if (!idGiocatore) {
+            Logger.info(idGiocatore);
+            /* if (!idGiocatore) {
               idGiocatore = await createGiocatore(v.Nome, v.Ruolo);
             }
             if (await findLastTrasferimento(idGiocatore) === null) {
@@ -289,10 +290,10 @@ export const votiRouter = createTRPCRouter({
             if (idVoto)
               await updateVoto(idVoto, v);
             else
-              await createVoto(idCalendario, idGiocatore, v);
+              await createVoto(idCalendario, idGiocatore, v); */
           }));
           
-          await prisma.voti.deleteMany({
+          /* await prisma.voti.deleteMany({
             where: {
               titolare: false,
               riserva: null,
@@ -303,8 +304,8 @@ export const votiRouter = createTRPCRouter({
           await refreshStats('P');
           await refreshStats('D');
           await refreshStats('C');
-          await refreshStats('A');
-        }
+          await refreshStats('A'); */
+        //}
       } catch (error) {
         Logger.error('Si è verificato un errore', error);
         throw error;
