@@ -266,12 +266,12 @@ export const votiRouter = createTRPCRouter({
       try {
         if (process.env.NODE_ENV === "production") {
           const { idCalendario, fileName } = opts.input;
-          await saveLocal(idCalendario, fileName)
+          await saveToVercel(idCalendario, fileName)
           Logger.info('vercel');
         }
         else {
           const { idCalendario, fileName } = opts.input;
-          await saveToVercel(idCalendario, fileName)
+          await saveLocal(idCalendario, fileName)
           Logger.info('No vercel');
         }
       } catch (error) {

@@ -40,7 +40,7 @@ function RootLayout({ children }: { children: React.ReactNode }) {
                         })}
                     >
                         <Grid container>
-                            <Grid item xs={6} display={'flex'} justifyContent={'center'}>
+                            <Grid item xs={6} display={'flex'} justifyContent={'flex-start'}>
                                 <Typography color="info.main" variant="subtitle2">
                                     Powered by @ <a href="mailto: lucianominni@gmail.com">Luciano Minni</a>
                                 </Typography>
