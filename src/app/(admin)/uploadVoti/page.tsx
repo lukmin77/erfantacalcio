@@ -41,6 +41,7 @@ export default function UploadVoti() {
     //#region upload file
     const uploadFileBlock = api.voti.upload.useMutation();
     const uploadFileVercel = api.voti.uploadVercel.useMutation();
+    const saveVoti = api.voti.save.useMutation();
     const [infofile, setInfofile] = useState('');
     const [file, setFile] = useState<File | undefined>();
     const [uploading, setUploading] = useState(false);
