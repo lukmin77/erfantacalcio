@@ -266,7 +266,7 @@ export const votiRouter = createTRPCRouter({
       try {
         if (process.env.NODE_ENV === "production") {
           const { idCalendario, fileName } = opts.input;
-          Logger.info('PRODUCTION');
+          Logger.info('PRODUCTION:', opts.input.fileName);
           await saveToVercel(idCalendario, fileName);
         }
         else {
