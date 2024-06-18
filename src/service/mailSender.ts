@@ -16,7 +16,7 @@ export async function SendMail(to: string, subject: string, htmlMessage: string)
 
   await transporter.sendMail({
     from: env.MAIL_FROM,
-    to: process.env.NODE_ENV === "production" ? to : 'lucianominni@gmail.com',
+    to: process.env.VERCEL === "1" ? to : 'lucianominni@gmail.com',
     subject: subject,
     html: htmlMessage,
   }).then(() => {

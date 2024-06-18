@@ -3,15 +3,13 @@ import { z } from 'zod';
 import { computeMD5Hash } from '~/utils/hashPassword';
 import fs from 'fs';
 import path from 'path';
-import { put } from '@vercel/blob';
-
 import prisma from "~/utils/db";
+import { uploadFile } from '~/utils/fileUtils';
 
 import {
   createTRPCRouter,
   protectedProcedure,
 } from "~/server/api/trpc";
-import { base64ToBuffer } from "~/utils/stringUtils";
 
 
 
@@ -94,13 +92,7 @@ export const profiloRouter = createTRPCRouter({
     .mutation(async (opts) => {
       try {
         const { fileName, fileData } = opts.input;
-        const arrayBuffer = base64ToBuffer(fileData);
-        Logger.info('filedata:', fileData);
-        Logger.info('arraybuffer:', arrayBuffer);
-        const blob = await put(`fotoprofili/${fileName}`, arrayBuffer, {
-          access: 'public',
-          addRandomSuffix: false
-        });
+        const blob = await uploadFile(fileData, fileName, 'fotoprofili');
         Logger.info('file blob: ', blob);
         Logger.info(`Il file ${fileName} è stato completamente salvato.`);
         return blob.url;

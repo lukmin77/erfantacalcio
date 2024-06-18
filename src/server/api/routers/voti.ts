@@ -15,6 +15,7 @@ import {
   publicProcedure,
   adminProcedure
 } from "~/server/api/trpc";
+import { uploadFile } from "~/utils/fileUtils";
 
 
 
@@ -237,6 +238,25 @@ export const votiRouter = createTRPCRouter({
       }
     }),
 
+  uploadVercel: adminProcedure
+    .input(z.object({
+      fileName: z.string(),
+      fileData: z.string()
+    }))
+    .mutation(async (opts) => {
+      try {
+        const { fileName, fileData } = opts.input;
+        const blob = await uploadFile(fileData, fileName, 'voti');
+        Logger.info('file blob: ', blob);
+        Logger.info(`Il file ${fileName} è stato completamente salvato.`);
+        return blob.url;
+        
+      } catch (error) {
+        Logger.error('Si è verificato un errore', error);
+        throw error;
+      }
+    }),
+
   save: adminProcedure
     .input(z.object({
       idCalendario: z.number(),
@@ -245,16 +265,15 @@ export const votiRouter = createTRPCRouter({
     .mutation(async (opts) => {
       try {
         const { idCalendario, fileName } = opts.input;
-        const filePath = getPathVoti(fileName);
-        const fileExists = fs.existsSync(filePath);
+        const fileExists = fs.existsSync(fileName);
         
         if (!fileExists) {
-          Logger.error('Si è verificato un errore, il file non esiste', filePath);
-          throw new Error(`Si è verificato un errore, il file ${filePath} non esiste`);
+          Logger.error('Si è verificato un errore, il file non esiste', fileName);
+          throw new Error(`Si è verificato un errore, il file ${fileName} non esiste`);
         } else {
           //processo di salvataggio voti
           await resetVoti(idCalendario);
-          const voti = await readFileVoti(filePath);
+          const voti = await readFileVoti(fileName);
           await Promise.all(voti.map(async (v) => {
             let idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;
             if (!idGiocatore) {

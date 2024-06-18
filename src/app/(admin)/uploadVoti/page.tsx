@@ -40,6 +40,7 @@ export default function UploadVoti() {
 
     //#region upload file
     const uploadFileBlock = api.voti.upload.useMutation();
+    const uploadFileVercel = api.voti.uploadVercel.useMutation();
     const saveVoti = api.voti.save.useMutation();
     const [infofile, setInfofile] = useState('');
     const [file, setFile] = useState<File | undefined>();
@@ -117,7 +118,7 @@ export default function UploadVoti() {
                                 try {
                                     await saveVoti.mutateAsync({
                                         idCalendario: selectedIdCalendario ?? 0,
-                                        fileName: filename,
+                                        fileName: `public/voti/${filename}`,
                                     });
                                 }
                                 catch (error) {
@@ -147,13 +148,75 @@ export default function UploadVoti() {
         }
     };
 
+    const handleUploadVercel = async () => {
+        if (await validateForm(file)) {
+            const filename = `voti_${selectedGiornataSerieA}_${selectedIdCalendario}.csv`
+            setUploading(true);
+
+            const MAX_SIZE = 4.5 * 1024 * 1024; // Dimensione del blocco (4.5 MB)
+            let offset = 0;
+
+            // Funzione per leggere e caricare un blocco del file
+            const readAndUploadBlock = () => {
+                if (file) {
+                    const blob = file.slice(offset, offset + MAX_SIZE);
+                    const reader = new FileReader();
+
+                    reader.onload = async () => {
+                        if (reader.result && typeof reader.result !== "string") {
+                            const blockData = new Uint8Array(reader.result);
+                            const fileData = Buffer.from(blockData).toString("base64");
+                            const contentLength = blockData.length;
+                            offset += contentLength;
+
+                            const percentCompleted = Math.floor((offset * 100) / file.size);
+                            setProgress(percentCompleted);
+
+                            // Carica il blocco corrente
+                            try {
+                                const serverPathfilename = await uploadFileVercel.mutateAsync({
+                                    fileName: filename,
+                                    fileData: fileData
+                                });
+
+                                await saveVoti.mutateAsync({
+                                    idCalendario: selectedIdCalendario ?? 0,
+                                    fileName: serverPathfilename,
+                                });
+
+                                setUploading(false);
+                                setAlert({
+                                    severity: "success",
+                                    message: "File caricato correttamente",
+                                    title: "File inviato",
+                                });
+                            } catch (error) {
+                                setAlert({
+                                    severity: "error",
+                                    message: "Errore caricamento file",
+                                    title: "Errore",
+                                });
+                                return;
+                            }
+                        }
+                    };
+
+                    reader.readAsArrayBuffer(blob);
+                }
+            };
+
+            // Avvia il processo di caricamento del file
+            readAndUploadBlock();
+        }
+    };
+
     const validateForm = async (file: File | undefined) => {
         if (!file) {
             setAlert({ severity: "error", message: "Nessun file selezionato.", title: "Avviso" });
             return;
         }
-        if (file.size > 5 * 1024 * 1024) { // Converti 5 MB in byte
-            setAlert({ severity: "error", message: "La dimensione del file supera i 5 megabyte.", title: "Avviso" });
+        if (file.size > 4.5 * 1024 * 1024) { // Converti 5 MB in byte
+            setAlert({ severity: "error", message: "La dimensione del file supera i 4.5 megabyte.", title: "Avviso" });
             return; // File non valido
         }
 
@@ -204,7 +267,7 @@ export default function UploadVoti() {
                                             type="file"
                                             id="upload-input"
                                         />
-                                        <Button color="info" variant="contained" onClick={handleUpload} startIcon={<CloudUpload />} disabled={uploading}>
+                                        <Button color="info" variant="contained" onClick={process.env.VERCEL === "1" ? handleUploadVercel : handleUpload} startIcon={<CloudUpload />} disabled={uploading}>
                                             Upload
                                         </Button>
                                     </Stack>
