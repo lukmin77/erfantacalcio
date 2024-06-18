@@ -6,7 +6,6 @@ import { api } from "~/utils/api";
 import { getDescrizioneGiornata, getIdNextGiornata } from "~/utils/helper";
 import { type CalendarioType } from '~/types/calendario';
 import { CloudUpload } from "@mui/icons-material";
-import { Configurazione } from "~/config";
 
 export default function UploadVoti() {
     //#region select calendario
@@ -42,7 +41,6 @@ export default function UploadVoti() {
     //#region upload file
     const uploadFileBlock = api.voti.upload.useMutation();
     const uploadFileVercel = api.voti.uploadVercel.useMutation();
-    const saveVoti = api.voti.save.useMutation();
     const [infofile, setInfofile] = useState('');
     const [file, setFile] = useState<File | undefined>();
     const [uploading, setUploading] = useState(false);
@@ -176,17 +174,11 @@ export default function UploadVoti() {
                             // Carica il blocco corrente
                             try {
                                 const serverPathfilename = await uploadFileVercel.mutateAsync({
+                                    idCalendario: selectedIdCalendario ?? 0,
                                     fileName: filename,
                                     fileData: fileData
                                 });
-
-                                const serverPathString = typeof serverPathfilename === 'string' ? serverPathfilename : String(serverPathfilename);
                                 
-                                await saveVoti.mutateAsync({
-                                    idCalendario: selectedIdCalendario ?? 0,
-                                    fileName: serverPathString,
-                                });
-
                                 setUploading(false);
                                 setAlert({
                                     severity: "success",
