@@ -9,6 +9,7 @@ import { type VotiDistinctItem, type iVotoGiocatore } from "~/types/voti";
 import path from 'path';
 import { readFile, uploadFile } from "~/utils/blobVercelUtils";
 import prisma from "~/utils/db";
+import fetch from 'node-fetch';
 
 import {
   createTRPCRouter,
@@ -272,10 +273,11 @@ export const votiRouter = createTRPCRouter({
         } else { */
           //processo di salvataggio voti
           /*  */await resetVoti(idCalendario);
-          Logger.info('pre call readfile blob from vercel');
+          /* Logger.info('pre call readfile blob from vercel');
           const fileVercel = await readFile(fileName); 
-          Logger.info('fileVercel:', fileVercel);
-
+          Logger.info('fileVercel:', fileVercel); */
+          
+          Logger.info('filename:', fileName);
           const voti = await readFileVoti(fileName);
           await Promise.all(voti.map(async (v) => {
             const idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;
@@ -354,7 +356,7 @@ async function resetVoti(idCalendario: number) {
   }
 };
 
-async function readFileVoti(filePath: string): Promise<iVotoGiocatore[]> {
+async function readFileVoti_local(filePath: string): Promise<iVotoGiocatore[]> {
   return new Promise((resolve, reject) => {
     const voti: iVotoGiocatore[] = [];
     const headers: string[] = [];
@@ -395,6 +397,59 @@ async function readFileVoti(filePath: string): Promise<iVotoGiocatore[]> {
       console.log(voti.length);
       resolve(voti);
     });
+  });
+}
+
+async function readFileVoti(fileUrl: string): Promise<iVotoGiocatore[]> {
+  return new Promise(async (resolve, reject) => {
+    const voti: iVotoGiocatore[] = [];
+    const headers: string[] = [];
+    for (let i = 1; i <= Configurazione.pfColumns; i++) {
+      headers.push(`Col${i}`);
+    }
+
+    try {
+      const response = await fetch(fileUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch file: ${response.statusText}`);
+      }
+      const fileContent = await response.text();
+
+      parse(fileContent, {
+        delimiter: '\t',
+        columns: headers,
+        on_record: (line: Record<string, string>) => {
+          if (isNaN(parseFloat(line[`Col${Configurazione.pfColumnIdGiocatore}`] ?? '0'))) {
+            return;
+          } else {
+            voti.push({
+              Nome: normalizeNomeGiocatore(line[`Col${Configurazione.pfColumnNome}`] ?? ''),
+              Ruolo: normalizeNomeGiocatore(line[`Col${Configurazione.pfColumnRuolo}`] ?? ''),
+              Squadra: line[`Col${Configurazione.pfColumnSquadra}`] ?? '',
+              Voto: formatToDecimalValue(line[`Col${Configurazione.pfColumnVoto}`] ?? '0'),
+              GolSegnati: formatToDecimalValue(line[`${Configurazione.pfColumnGolFatti}`] ?? '0'),
+              GolSubiti: formatToDecimalValue(line[`${Configurazione.pfColumnGolSubiti}`] ?? '0'),
+              Assist: formatToDecimalValue(line[`${Configurazione.pfColumnAssist}`] ?? '0'),
+              Ammonizione: formatToDecimalValue(line[`${Configurazione.pfColumnAmmo}`] ?? '0'),
+              Espulsione: formatToDecimalValue(line[`${Configurazione.pfColumnEspu}`] ?? '0'),
+              Autogol: formatToDecimalValue(line[`${Configurazione.pfColumnAutogol}`] ?? '0'),
+              RigoriErrati: formatToDecimalValue(line[`${Configurazione.pfColumnRigErrato}`] ?? '0'),
+              RigoriParati: formatToDecimalValue(line[`${Configurazione.pfColumnRigParato}`] ?? '0'),
+            });
+          }
+        },
+      }, (error) => {
+        if (error) {
+          console.error(error);
+          reject(error);
+        }
+        console.log(voti.length);
+        resolve(voti);
+      });
+    } catch (error) {
+      console.error(error);
+      reject(error);
+    }
   });
 }
 
