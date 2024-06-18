@@ -275,7 +275,7 @@ export const votiRouter = createTRPCRouter({
           /*  */await resetVoti(idCalendario);
           const voti = await readFileVoti(fileName);
           await Promise.all(voti.map(async (v) => {
-            let idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;
+            const idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;
             Logger.info(idGiocatore);
             /* if (!idGiocatore) {
               idGiocatore = await createGiocatore(v.Nome, v.Ruolo);
