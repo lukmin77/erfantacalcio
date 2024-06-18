@@ -249,16 +249,8 @@ export const votiRouter = createTRPCRouter({
         const { idCalendario, fileName, fileData } = opts.input;
         const blob = await uploadFile(fileData, fileName, 'voti');
         Logger.info('file blob: ', blob);
-        Logger.info(`Il file ${fileName} è stato completamente salvato.`);
-        const filePath = blob.url;
-        if (process.env.NODE_ENV === "production") {
-          Logger.info('PRODUCTION:', filePath);
-          await saveToVercel(idCalendario, filePath);
-        }
-        else {
-          Logger.info('other env');
-          await saveLocal(idCalendario, filePath)
-        }
+        Logger.info(`Il file ${blob.url} è stato completamente salvato.`);
+        await saveToVercel(idCalendario, blob.url);
       } catch (error) {
         Logger.error('Si è verificato un errore', error);
         throw error;
