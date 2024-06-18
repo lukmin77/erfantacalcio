@@ -17,11 +17,6 @@ import {
   adminProcedure
 } from "~/server/api/trpc";
 
-export const config = {
-  maxDuration: 60,
-};
-
-
 export const votiRouter = createTRPCRouter({
 
   get: adminProcedure
