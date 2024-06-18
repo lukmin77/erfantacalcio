@@ -248,7 +248,7 @@ export const votiRouter = createTRPCRouter({
         const { fileName, fileData } = opts.input;
         const blob = await uploadFile(fileData, fileName, 'voti');
         Logger.info('file blob: ', blob);
-        Logger.info(`Il file ${blob.url} è stato completamente salvato.`);
+        Logger.info(`Il file ${fileName} è stato completamente salvato.`);
         return blob.url;
       } catch (error) {
         Logger.error('Si è verificato un errore', error);
