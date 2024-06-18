@@ -635,7 +635,6 @@ async function saveToVercel(idCalendario: number, fileName: string) {
 
   Logger.info('filename:', fileName);
   const voti = await readFileVotiVercel(fileName);
-  Logger.info('voti:', voti);
   await Promise.all(voti.map(async (v) => {
     let idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;
     if (!idGiocatore) {
