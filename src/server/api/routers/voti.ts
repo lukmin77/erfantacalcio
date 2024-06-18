@@ -264,7 +264,7 @@ export const votiRouter = createTRPCRouter({
     }))
     .mutation(async (opts) => {
       try {
-        if (process.env.VERCEL === "1") {
+        if (process.env.NODE_ENV === "production") {
           const { idCalendario, fileName } = opts.input;
           await saveLocal(idCalendario, fileName)
           Logger.info('vercel');
