@@ -250,7 +250,8 @@ export const votiRouter = createTRPCRouter({
         const blob = await uploadFile(fileData, fileName, 'voti');
         Logger.info('file blob: ', blob);
         Logger.info(`Il file ${blob.url} è stato completamente salvato.`);
-        await saveToVercel(idCalendario, blob.url);
+        return blob.url;
+        //await saveToVercel(idCalendario, blob.url);
       } catch (error) {
         Logger.error('Si è verificato un errore', error);
         throw error;
@@ -631,9 +632,8 @@ async function saveLocal(idCalendario: number, fileName: string) {
 }
 
 async function saveToVercel(idCalendario: number, fileName: string) {
-  await resetVoti(idCalendario);
-
   Logger.info('filename:', fileName);
+  await resetVoti(idCalendario);
   const voti = await readFileVotiVercel(fileName);
   await Promise.all(voti.map(async (v) => {
     let idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;

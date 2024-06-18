@@ -183,7 +183,7 @@ export default function UploadVoti() {
                                 setUploading(false);
                                 setAlert({
                                     severity: "success",
-                                    message: "File caricato correttamente",
+                                    message: `File caricato correttamente: ${serverPathfilename}`,
                                     title: "File inviato",
                                 });
                             } catch (error) {
