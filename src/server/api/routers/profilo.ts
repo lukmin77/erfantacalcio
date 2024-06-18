@@ -135,19 +135,6 @@ export const profiloRouter = createTRPCRouter({
     }))
     .mutation(async (opts) => {
       try {
-        /* const utente = await prisma.utenti.findUnique({
-          select: { foto: true },
-          where: { idUtente: opts.ctx.session.user.idSquadra }
-        }); */
-
-        //delete foto
-        /* const fotoProfilo = opts.ctx.session.user.image ?? '';
-        Logger.info(`Foto profilo precedente: public${fotoProfilo}`);
-        if (fs.existsSync(`public${fotoProfilo}`)) {
-          fs.unlinkSync(`public${fotoProfilo}`);
-          Logger.info(`Foto profilo precedente eliminata: public${fotoProfilo}`);
-        } */
-
         //update foto
         const filePath = opts.input.fileName;
 
