@@ -252,7 +252,7 @@ export const votiRouter = createTRPCRouter({
         Logger.info(`Il file ${blob.url} è stato completamente salvato.`);
         
         await resetVoti(idCalendario);
-        const voti = await readFileVotiVercel(fileName);
+        const voti = await readFileVotiVercel(blob.url);
         await Promise.all(voti.map(async (v) => {
           let idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;
           if (!idGiocatore) {
@@ -391,7 +391,7 @@ async function readFileVotiVercel(fileUrl: string): Promise<iVotoGiocatore[]> {
   }
 
   try {
-    Logger.info(fileUrl);
+    Logger.info('fileUrl:', fileUrl);
     const response = await fetch(fileUrl);
     if (!response.ok) {
       throw new Error(`Failed to fetch file: ${response.statusText}`);
