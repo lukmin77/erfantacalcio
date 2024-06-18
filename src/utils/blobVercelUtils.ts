@@ -12,4 +12,5 @@ export async function uploadFile(fileData: string, fileName: string, folder: str
 
 export async function readFile(blobUrl: string){
   const file = await head(blobUrl);
+  return file;
 }
