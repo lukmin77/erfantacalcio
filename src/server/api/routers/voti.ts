@@ -361,7 +361,7 @@ async function readFileVoti(filePath: string): Promise<iVotoGiocatore[]> {
     for (let i = 1; i <= Configurazione.pfColumns; i++) {
       headers.push(`Col${i}`);
     }
-    const fileContent = fs.readFileSync(filePath, { encoding: 'utf-8' });
+    const fileContent = fs.readFileSync('/voti/voti_38_244.csv', { encoding: 'utf-8' });
 
     parse(fileContent, {
       delimiter: '\t',
