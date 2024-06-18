@@ -279,6 +279,7 @@ export const votiRouter = createTRPCRouter({
           
           Logger.info('filename:', fileName);
           const voti = await readFileVoti(fileName);
+          Logger.info('voti: voti');
           await Promise.all(voti.map(async (v) => {
             const idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;
             Logger.info(idGiocatore);
