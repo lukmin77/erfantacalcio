@@ -1,4 +1,4 @@
-import { put, head } from '@vercel/blob';
+import { put } from '@vercel/blob';
 import { base64ToBuffer } from './stringUtils';
 
 export async function uploadFile(fileData: string, fileName: string, folder: string) {
@@ -8,9 +8,4 @@ export async function uploadFile(fileData: string, fileName: string, folder: str
     addRandomSuffix: false
   });
   return blob;
-}
-
-export async function readFile(blobUrl: string){
-  const file = await head(blobUrl);
-  return file;
 }

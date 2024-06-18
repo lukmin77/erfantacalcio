@@ -7,7 +7,7 @@ import { getRuoloEsteso, normalizeNomeGiocatore } from "~/utils/helper";
 import { formatToDecimalValue } from "~/utils/numberUtils";
 import { type VotiDistinctItem, type iVotoGiocatore } from "~/types/voti";
 import path from 'path';
-import { readFile, uploadFile } from "~/utils/blobVercelUtils";
+import { uploadFile } from "~/utils/blobVercelUtils";
 import prisma from "~/utils/db";
 import fetch from 'node-fetch';
 
@@ -34,7 +34,7 @@ export const votiRouter = createTRPCRouter({
           },
           select: {
             idVoto: true, voto: true, ammonizione: true, espulsione: true, gol: true, assist: true, autogol: true, altriBonus: true,
-            titolare: true, riserva: true, 
+            titolare: true, riserva: true,
             Giocatori: {
               select: { nome: true, ruolo: true }
             },
@@ -81,12 +81,12 @@ export const votiRouter = createTRPCRouter({
           },
           select: {
             idVoto: true, voto: true, ammonizione: true, espulsione: true, gol: true, assist: true, autogol: true, altriBonus: true,
-            titolare: true, riserva: true, 
+            titolare: true, riserva: true,
             Giocatori: {
               select: { nome: true, ruolo: true }
             },
             Calendario: {
-              select: { giornataSerieA:true, Tornei: { select: { nome: true, gruppoFase: true } } }
+              select: { giornataSerieA: true, Tornei: { select: { nome: true, gruppoFase: true } } }
             }
           },
           orderBy: {
@@ -136,12 +136,12 @@ export const votiRouter = createTRPCRouter({
           },
           select: {
             idVoto: true, voto: true, ammonizione: true, espulsione: true, gol: true, assist: true, autogol: true, altriBonus: true,
-            titolare: true, riserva: true, 
+            titolare: true, riserva: true,
             Giocatori: {
               select: { nome: true, ruolo: true }
             },
             Calendario: {
-              select: { giornataSerieA:true, Tornei: { select: { nome: true, gruppoFase: true } } }
+              select: { giornataSerieA: true, Tornei: { select: { nome: true, gruppoFase: true } } }
             }
           },
           orderBy: {
@@ -167,9 +167,9 @@ export const votiRouter = createTRPCRouter({
             }
             return acc;
           }, new Map());
-          
+
           const votiDistinct: VotiDistinctItem[] = Array.from(voti.values()) as VotiDistinctItem[];
-          
+
           return votiDistinct;
         } else
           return [];
@@ -179,7 +179,7 @@ export const votiRouter = createTRPCRouter({
         throw error;
       }
     }),
-  
+
   update: adminProcedure
     .input(z.object({
       idVoto: z.number(),
@@ -214,7 +214,7 @@ export const votiRouter = createTRPCRouter({
         throw error;
       }
     }),
-  
+
   upload: adminProcedure
     .input(z.object({
       idCalendario: z.number(),
@@ -228,7 +228,7 @@ export const votiRouter = createTRPCRouter({
         const filePath = getPathVoti(fileName);
 
         fs.writeFileSync(filePath, Buffer.from(blockDataBase64, 'base64'), { flag: 'w' });
-        
+
         if (fs.statSync(filePath).size >= fileSize) {
           Logger.info(`Il file ${fileName} è stato completamente salvato.`);
         }
@@ -250,7 +250,7 @@ export const votiRouter = createTRPCRouter({
         Logger.info('file blob: ', blob);
         Logger.info(`Il file ${fileName} è stato completamente salvato.`);
         return blob.url;
-        
+
       } catch (error) {
         Logger.error('Si è verificato un errore', error);
         throw error;
@@ -264,60 +264,21 @@ export const votiRouter = createTRPCRouter({
     }))
     .mutation(async (opts) => {
       try {
-        const { idCalendario, fileName } = opts.input;
-        /* const fileExists = fs.existsSync(fileName);
-        
-        if (!fileExists) {
-          Logger.error('Si è verificato un errore, il file non esiste', fileName);
-          throw new Error(`Si è verificato un errore, il file ${fileName} non esiste`);
-        } else { */
-          //processo di salvataggio voti
-          /*  */await resetVoti(idCalendario);
-          /* Logger.info('pre call readfile blob from vercel');
-          const fileVercel = await readFile(fileName); 
-          Logger.info('fileVercel:', fileVercel); */
-          
-          Logger.info('filename:', fileName);
-          const voti = await readFileVoti(fileName);
-          Logger.info('voti:', voti);
-          /* await Promise.all(voti.map(async (v) => {
-            const idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;
-            Logger.info(idGiocatore); */
-            /* if (!idGiocatore) {
-              idGiocatore = await createGiocatore(v.Nome, v.Ruolo);
-            }
-            if (await findLastTrasferimento(idGiocatore) === null) {
-              const squadraSerieA = await findSquadraSerieA(v.Squadra);
-              if (squadraSerieA !== null)
-                await createTrasferimento(idGiocatore, squadraSerieA.idSquadraSerieA, squadraSerieA.nome);
-            }
-
-            const idVoto = await findIdVoto(idCalendario, idGiocatore)
-            if (idVoto)
-              await updateVoto(idVoto, v);
-            else
-              await createVoto(idCalendario, idGiocatore, v); */
-          //}));
-          
-          /* await prisma.voti.deleteMany({
-            where: {
-              titolare: false,
-              riserva: null,
-              idCalendario: idCalendario
-            }
-          });
-
-          await refreshStats('P');
-          await refreshStats('D');
-          await refreshStats('C');
-          await refreshStats('A'); */
-        //}
+        if (process.env.VERCEL === "1") {
+          const { idCalendario, fileName } = opts.input;
+          await saveLocal(idCalendario, fileName)
+          Logger.info('vercel');
+        }
+        else {
+          const { idCalendario, fileName } = opts.input;
+          await saveToVercel(idCalendario, fileName)
+          Logger.info('No vercel');
+        }
       } catch (error) {
         Logger.error('Si è verificato un errore', error);
         throw error;
       }
     }),
-
 });
 
 async function refreshStats(ruolo: string) {
@@ -352,19 +313,19 @@ async function resetVoti(idCalendario: number) {
       }
     });
   } catch (error) {
-      Logger.error('Si è verificato un errore', error);
-      throw error;
+    Logger.error('Si è verificato un errore', error);
+    throw error;
   }
 };
 
-async function readFileVoti_local(filePath: string): Promise<iVotoGiocatore[]> {
+async function readFileVoti(filePath: string): Promise<iVotoGiocatore[]> {
   return new Promise((resolve, reject) => {
     const voti: iVotoGiocatore[] = [];
     const headers: string[] = [];
     for (let i = 1; i <= Configurazione.pfColumns; i++) {
       headers.push(`Col${i}`);
     }
-    const fileContent = fs.readFileSync('/voti/voti_38_244.csv', { encoding: 'utf-8' });
+    const fileContent = fs.readFileSync(filePath, { encoding: 'utf-8' });
 
     parse(fileContent, {
       delimiter: '\t',
@@ -373,7 +334,7 @@ async function readFileVoti_local(filePath: string): Promise<iVotoGiocatore[]> {
         if (isNaN(parseFloat(line[`Col${Configurazione.pfColumnIdGiocatore}`] ?? '0'))) {
           return;
         }
-        else{
+        else {
           voti.push({
             Nome: normalizeNomeGiocatore(line[`Col${Configurazione.pfColumnNome}`] ?? ''),
             Ruolo: normalizeNomeGiocatore(line[`Col${Configurazione.pfColumnRuolo}`] ?? ''),
@@ -401,7 +362,7 @@ async function readFileVoti_local(filePath: string): Promise<iVotoGiocatore[]> {
   });
 }
 
-async function readFileVoti(fileUrl: string): Promise<iVotoGiocatore[]> {
+async function readFileVotiVercel(fileUrl: string): Promise<iVotoGiocatore[]> {
   const voti: iVotoGiocatore[] = [];
   const headers: string[] = [];
   for (let i = 1; i <= Configurazione.pfColumns; i++) {
@@ -460,166 +421,250 @@ function getPathVoti(fileName: string) {
 }
 
 async function getGiocatoreByNome(nome: string) {
-    try {
-        const giocatore = await prisma.giocatori.findFirst({
-            where: {
-                nome: {
-                  equals: nome,
-                  mode: 'insensitive'
-                }
-            }
-        });
-
-        if (giocatore) {
-            return {
-                idGiocatore: giocatore.idGiocatore,
-                nome: giocatore.nome,
-                nomeFantagazzetta: giocatore.nomeFantaGazzetta,
-                ruolo: giocatore.ruolo,
-                ruoloEsteso: getRuoloEsteso(giocatore.ruolo)
-            };
+  try {
+    const giocatore = await prisma.giocatori.findFirst({
+      where: {
+        nome: {
+          equals: nome,
+          mode: 'insensitive'
         }
-        else
-            return null;
+      }
+    });
+
+    if (giocatore) {
+      return {
+        idGiocatore: giocatore.idGiocatore,
+        nome: giocatore.nome,
+        nomeFantagazzetta: giocatore.nomeFantaGazzetta,
+        ruolo: giocatore.ruolo,
+        ruoloEsteso: getRuoloEsteso(giocatore.ruolo)
+      };
     }
-    catch (error) {
-        Logger.error('Si è verificato un errore', error);
-        throw error;
-    }
+    else
+      return null;
+  }
+  catch (error) {
+    Logger.error('Si è verificato un errore', error);
+    throw error;
+  }
 }
 
-async function createGiocatore(nome: string, ruolo: string){
-    try {
-        const giocatore = await prisma.giocatori.create({
-            data: {
-                nome: normalizeNomeGiocatore(nome),
-                nomeFantaGazzetta: null,
-                ruolo: ruolo
-            }
-        });
-        return giocatore.idGiocatore;
-    }
-    catch (error) {
-        Logger.error('Si è verificato un errore', error);
-        throw error;
-    }
+async function createGiocatore(nome: string, ruolo: string) {
+  try {
+    const giocatore = await prisma.giocatori.create({
+      data: {
+        nome: normalizeNomeGiocatore(nome),
+        nomeFantaGazzetta: null,
+        ruolo: ruolo
+      }
+    });
+    return giocatore.idGiocatore;
+  }
+  catch (error) {
+    Logger.error('Si è verificato un errore', error);
+    throw error;
+  }
 }
 
 async function findLastTrasferimento(idGiocatore: number) {
-    try {
-        const trasferimento = await prisma.trasferimenti.findFirst({
-            where: {
-                idGiocatore: idGiocatore,
-                stagione: Configurazione.stagione,
-            },
-            orderBy: {
-                dataAcquisto: 'desc'
-            }
-        });
-        return trasferimento;
-    }
-    catch (error) {
-        Logger.error('Si è verificato un errore', error);
-        throw error;
-    }
+  try {
+    const trasferimento = await prisma.trasferimenti.findFirst({
+      where: {
+        idGiocatore: idGiocatore,
+        stagione: Configurazione.stagione,
+      },
+      orderBy: {
+        dataAcquisto: 'desc'
+      }
+    });
+    return trasferimento;
+  }
+  catch (error) {
+    Logger.error('Si è verificato un errore', error);
+    throw error;
+  }
 }
 
 async function findSquadraSerieA(nome: string) {
-    try {
-        const squadra = await prisma.squadreSerieA.findFirst({
-          where: {
-            nome: {
-              equals: nome,
-              mode: 'insensitive'
-            }
-        }
-        });
-        return squadra;
-    }
-    catch (error) {
-        Logger.error('Si è verificato un errore', error);
-        throw error;
-    }
-}
-
-async function createTrasferimento(idGiocatore: number, idSquadraSerieA: number, nomeSquadraSerieA: string){
   try {
-      await prisma.trasferimenti.create({
-          data: {
-              idGiocatore: idGiocatore,
-              costo: 0,
-              idSquadraSerieA: idSquadraSerieA,
-              stagione: Configurazione.stagione,
-              nomeSquadraSerieA: nomeSquadraSerieA
-          }
-      });
+    const squadra = await prisma.squadreSerieA.findFirst({
+      where: {
+        nome: {
+          equals: nome,
+          mode: 'insensitive'
+        }
+      }
+    });
+    return squadra;
   }
   catch (error) {
-      Logger.error('Si è verificato un errore', error);
-      throw error;
+    Logger.error('Si è verificato un errore', error);
+    throw error;
+  }
+}
+
+async function createTrasferimento(idGiocatore: number, idSquadraSerieA: number, nomeSquadraSerieA: string) {
+  try {
+    await prisma.trasferimenti.create({
+      data: {
+        idGiocatore: idGiocatore,
+        costo: 0,
+        idSquadraSerieA: idSquadraSerieA,
+        stagione: Configurazione.stagione,
+        nomeSquadraSerieA: nomeSquadraSerieA
+      }
+    });
+  }
+  catch (error) {
+    Logger.error('Si è verificato un errore', error);
+    throw error;
   }
 }
 
 async function findIdVoto(idCalendario: number, idGiocatore: number) {
   try {
-      const voto = await prisma.voti.findFirst({
-        select: {
-          idVoto: true
-        },
-        where: {
-          idCalendario: idCalendario,
-          idGiocatore: idGiocatore
-          },
-      });
-      return voto?.idVoto;
+    const voto = await prisma.voti.findFirst({
+      select: {
+        idVoto: true
+      },
+      where: {
+        idCalendario: idCalendario,
+        idGiocatore: idGiocatore
+      },
+    });
+    return voto?.idVoto;
   }
   catch (error) {
-      Logger.error('Si è verificato un errore', error);
-      throw error;
+    Logger.error('Si è verificato un errore', error);
+    throw error;
   }
 }
 
 async function updateVoto(idVoto: number, v: iVotoGiocatore) {
   try {
-      await prisma.voti.update({
-        where: {
-          idVoto: idVoto
-        },
-        data: {
-          voto: v.Voto,
-          ammonizione: v.Ammonizione === 1 ? Configurazione.bonusAmmonizione : 0,
-          espulsione: v.Espulsione === 1 ? Configurazione.bonusEspulsione : 0,
-          gol: v.Ruolo === 'P' ? v.GolSubiti * Configurazione.bonusGolSubito : v.GolSegnati * Configurazione.bonusGol,
-          assist: v.Assist * Configurazione.bonusAssist,
-          autogol: v.Autogol * Configurazione.bonusAutogol,
-          altriBonus: (v.RigoriParati * Configurazione.bonusRigoreParato) + (v.RigoriErrati * Configurazione.bonusRigoreSbagliato)
-        }
-      });
+    await prisma.voti.update({
+      where: {
+        idVoto: idVoto
+      },
+      data: {
+        voto: v.Voto,
+        ammonizione: v.Ammonizione === 1 ? Configurazione.bonusAmmonizione : 0,
+        espulsione: v.Espulsione === 1 ? Configurazione.bonusEspulsione : 0,
+        gol: v.Ruolo === 'P' ? v.GolSubiti * Configurazione.bonusGolSubito : v.GolSegnati * Configurazione.bonusGol,
+        assist: v.Assist * Configurazione.bonusAssist,
+        autogol: v.Autogol * Configurazione.bonusAutogol,
+        altriBonus: (v.RigoriParati * Configurazione.bonusRigoreParato) + (v.RigoriErrati * Configurazione.bonusRigoreSbagliato)
+      }
+    });
   }
   catch (error) {
-      Logger.error('Si è verificato un errore', error);
-      throw error;
+    Logger.error('Si è verificato un errore', error);
+    throw error;
   }
 }
 
 async function createVoto(idCalendario: number, idGiocatore: number, v: iVotoGiocatore) {
   try {
-      await prisma.voti.create({
-        data: {
-          idCalendario: idCalendario,
-          idGiocatore: idGiocatore,
-          voto: v.Voto,
-          ammonizione: v.Ammonizione === 1 ? Configurazione.bonusAmmonizione : 0,
-          espulsione: v.Espulsione === 1 ? Configurazione.bonusEspulsione : 0,
-          gol: v.Ruolo === 'P' ? v.GolSubiti * Configurazione.bonusGolSubito : v.GolSegnati * Configurazione.bonusGol,
-          assist: v.Assist * Configurazione.bonusAssist,
-          autogol: v.Autogol * Configurazione.bonusAutogol,
-          altriBonus: (v.RigoriParati * Configurazione.bonusRigoreParato) + (v.RigoriErrati * Configurazione.bonusRigoreSbagliato)
-        }
-      });
+    await prisma.voti.create({
+      data: {
+        idCalendario: idCalendario,
+        idGiocatore: idGiocatore,
+        voto: v.Voto,
+        ammonizione: v.Ammonizione === 1 ? Configurazione.bonusAmmonizione : 0,
+        espulsione: v.Espulsione === 1 ? Configurazione.bonusEspulsione : 0,
+        gol: v.Ruolo === 'P' ? v.GolSubiti * Configurazione.bonusGolSubito : v.GolSegnati * Configurazione.bonusGol,
+        assist: v.Assist * Configurazione.bonusAssist,
+        autogol: v.Autogol * Configurazione.bonusAutogol,
+        altriBonus: (v.RigoriParati * Configurazione.bonusRigoreParato) + (v.RigoriErrati * Configurazione.bonusRigoreSbagliato)
+      }
+    });
   }
   catch (error) {
-      Logger.error('Si è verificato un errore', error);
-      throw error;
+    Logger.error('Si è verificato un errore', error);
+    throw error;
   }
 }
+
+async function saveLocal(idCalendario: number, fileName: string) {
+  const fileExists = fs.existsSync(fileName);
+
+  if (!fileExists) {
+    Logger.error('Si è verificato un errore, il file non esiste', fileName);
+    throw new Error(`Si è verificato un errore, il file ${fileName} non esiste`);
+  } else {
+    await resetVoti(idCalendario);
+
+    Logger.info('filename:', fileName);
+    const voti = await readFileVoti(fileName);
+    Logger.info('voti:', voti);
+    await Promise.all(voti.map(async (v) => {
+      let idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;
+      if (!idGiocatore) {
+        idGiocatore = await createGiocatore(v.Nome, v.Ruolo);
+      }
+      if (await findLastTrasferimento(idGiocatore) === null) {
+        const squadraSerieA = await findSquadraSerieA(v.Squadra);
+        if (squadraSerieA !== null)
+          await createTrasferimento(idGiocatore, squadraSerieA.idSquadraSerieA, squadraSerieA.nome);
+      }
+
+      const idVoto = await findIdVoto(idCalendario, idGiocatore)
+      if (idVoto)
+        await updateVoto(idVoto, v);
+      else
+        await createVoto(idCalendario, idGiocatore, v);
+    }));
+
+    await prisma.voti.deleteMany({
+      where: {
+        titolare: false,
+        riserva: null,
+        idCalendario: idCalendario
+      }
+    });
+
+    await refreshStats('P');
+    await refreshStats('D');
+    await refreshStats('C');
+    await refreshStats('A');
+  }
+}
+
+async function saveToVercel(idCalendario: number, fileName: string) {
+  await resetVoti(idCalendario);
+
+  Logger.info('filename:', fileName);
+  const voti = await readFileVotiVercel(fileName);
+  Logger.info('voti:', voti);
+  await Promise.all(voti.map(async (v) => {
+    let idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;
+    if (!idGiocatore) {
+      idGiocatore = await createGiocatore(v.Nome, v.Ruolo);
+    }
+    if (await findLastTrasferimento(idGiocatore) === null) {
+      const squadraSerieA = await findSquadraSerieA(v.Squadra);
+      if (squadraSerieA !== null)
+        await createTrasferimento(idGiocatore, squadraSerieA.idSquadraSerieA, squadraSerieA.nome);
+    }
+
+    const idVoto = await findIdVoto(idCalendario, idGiocatore)
+    if (idVoto)
+      await updateVoto(idVoto, v);
+    else
+      await createVoto(idCalendario, idGiocatore, v);
+  }));
+
+  await prisma.voti.deleteMany({
+    where: {
+      titolare: false,
+      riserva: null,
+      idCalendario: idCalendario
+    }
+  });
+
+  await refreshStats('P');
+  await refreshStats('D');
+  await refreshStats('C');
+  await refreshStats('A');
+}
+
