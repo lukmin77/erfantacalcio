@@ -21,6 +21,7 @@ export const env = createEnv({
     ),
     // Add `.min(1) on ID and SECRET if you want to make sure they're not empty
     JWT_SECRET: z.string(),
+    NEXT_PUBLIC_VERCEL: z.string(),
     NEXT_PUBLIC_STAGIONE: z.string(),
     NEXT_PUBLIC_STAGIONEPRECEDENTE: z.string(),
     NEXT_PUBLIC_LOCALE: z.string(),

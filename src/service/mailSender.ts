@@ -1,5 +1,6 @@
 import nodemailer, { type Transporter } from 'nodemailer';
 import { env } from "process";
+import { Configurazione } from '~/config';
 import Logger from "~/lib/logger";
 
 export async function SendMail(to: string, subject: string, htmlMessage: string) {
@@ -16,7 +17,7 @@ export async function SendMail(to: string, subject: string, htmlMessage: string)
 
   await transporter.sendMail({
     from: env.MAIL_FROM,
-    to: process.env.VERCEL === "1" ? to : 'lucianominni@gmail.com',
+    to: Configurazione.vercel === '1' ? to : 'lucianominni@gmail.com',
     subject: subject,
     html: htmlMessage,
   }).then(() => {

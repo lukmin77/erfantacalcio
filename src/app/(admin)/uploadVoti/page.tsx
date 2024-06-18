@@ -6,6 +6,7 @@ import { api } from "~/utils/api";
 import { getDescrizioneGiornata, getIdNextGiornata } from "~/utils/helper";
 import { type CalendarioType } from '~/types/calendario';
 import { CloudUpload } from "@mui/icons-material";
+import { Configurazione } from "~/config";
 
 export default function UploadVoti() {
     //#region select calendario
@@ -267,7 +268,7 @@ export default function UploadVoti() {
                                             type="file"
                                             id="upload-input"
                                         />
-                                        <Button color="info" variant="contained" onClick={process.env.VERCEL === "1" ? handleUploadVercel : handleUpload} startIcon={<CloudUpload />} disabled={uploading}>
+                                        <Button color="info" variant="contained" onClick={Configurazione.vercel === '1' ? handleUploadVercel : handleUpload} startIcon={<CloudUpload />} disabled={uploading}>
                                             Upload
                                         </Button>
                                     </Stack>

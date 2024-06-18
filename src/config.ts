@@ -1,4 +1,5 @@
 export const Configurazione = {
+  vercel: process.env.NEXT_PUBLIC_VERCEL,
   stagione: process.env.NEXT_PUBLIC_STAGIONE ?? '',
   stagionePrecedente: process.env.NEXT_PUBLIC_STAGIONEPRECEDENTE ?? '',
   recordCount: parseInt(process.env.NEXT_PUBLIC_RECORDCOUNT ?? '20', 10),

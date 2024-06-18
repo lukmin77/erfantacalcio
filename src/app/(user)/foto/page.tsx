@@ -7,6 +7,7 @@ import { api } from "~/utils/api";
 import { getFileExtension } from "~/utils/stringUtils";
 import { getTimestamp } from "~/utils/dateUtils";
 import { CloudUpload } from "@mui/icons-material";
+import { Configurazione } from "~/config";
 
 export default function FotoProfilo() {
     const { data: session, update } = useSession();
@@ -233,7 +234,7 @@ export default function FotoProfilo() {
                                     type="file"
                                     id="upload-input"
                                 />
-                                <Button color="info" variant="contained" onClick={process.env.VERCEL === "1" ? handleUploadVercel : handleUpload} startIcon={<CloudUpload />} disabled={uploading}>
+                                <Button color="info" variant="contained" onClick={Configurazione.vercel === '1' ? handleUploadVercel : handleUpload} startIcon={<CloudUpload />} disabled={uploading}>
                                     Upload
                                 </Button>
                             </Stack>
