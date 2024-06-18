@@ -7,7 +7,7 @@ import { getRuoloEsteso, normalizeNomeGiocatore } from "~/utils/helper";
 import { formatToDecimalValue } from "~/utils/numberUtils";
 import { type VotiDistinctItem, type iVotoGiocatore } from "~/types/voti";
 import path from 'path';
-
+import { readFile, uploadFile } from "~/utils/blobVercelUtils";
 import prisma from "~/utils/db";
 
 import {
@@ -15,7 +15,6 @@ import {
   publicProcedure,
   adminProcedure
 } from "~/server/api/trpc";
-import { uploadFile } from "~/utils/fileUtils";
 
 
 
@@ -273,6 +272,10 @@ export const votiRouter = createTRPCRouter({
         } else { */
           //processo di salvataggio voti
           /*  */await resetVoti(idCalendario);
+          Logger.info('pre call readfile blob from vercel');
+          const fileVercel = await readFile(fileName); 
+          Logger.info('fileVercel:', fileVercel);
+
           const voti = await readFileVoti(fileName);
           await Promise.all(voti.map(async (v) => {
             const idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;

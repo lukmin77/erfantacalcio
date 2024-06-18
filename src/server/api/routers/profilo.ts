@@ -4,7 +4,7 @@ import { computeMD5Hash } from '~/utils/hashPassword';
 import fs from 'fs';
 import path from 'path';
 import prisma from "~/utils/db";
-import { uploadFile } from '~/utils/fileUtils';
+import { uploadFile } from '~/utils/blobVercelUtils';
 
 import {
   createTRPCRouter,
