@@ -6,6 +6,7 @@ import { api } from "~/utils/api";
 import { getDescrizioneGiornata, getIdNextGiornata } from "~/utils/helper";
 import { type CalendarioType } from '~/types/calendario';
 import { CloudUpload } from "@mui/icons-material";
+import { iVotoGiocatore } from "~/types/voti";
 
 export default function UploadVoti() {
     //#region select calendario
@@ -191,10 +192,8 @@ export default function UploadVoti() {
                                     fileUrl: serverPathfilename
                                 });
 
-                                await processVoti.mutateAsync({
-                                    idCalendario: selectedIdCalendario ?? 0,
-                                    voti: voti
-                                });
+                                //intervenire qui mandando blocchi da 50 record
+                                await processRecords(voti);
                                 
                                 setUploading(false);
                                 setAlert({
@@ -221,6 +220,20 @@ export default function UploadVoti() {
             readAndUploadBlock();
         }
     };
+
+    async function processRecords(voti: iVotoGiocatore[]): Promise<void> {
+        const chunkSize = 50;
+        const idCalendario = selectedIdCalendario ?? 0;
+    
+        // Itera su ciascun blocco e chiama mutateAsync
+        for (let i = 0; i < voti.length; i += chunkSize) {
+            const chunk = voti.slice(i, i + chunkSize);
+            await processVoti.mutateAsync({
+                idCalendario: idCalendario,
+                voti: chunk
+            });
+        }
+    }
 
     const validateForm = async (file: File | undefined) => {
         if (!file) {
