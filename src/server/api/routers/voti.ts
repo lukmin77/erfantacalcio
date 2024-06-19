@@ -247,10 +247,9 @@ export const votiRouter = createTRPCRouter({
         const blob = await uploadFile(fileData, fileName, 'voti');
         Logger.info('file blob: ', blob);
         Logger.info(`Il file ${blob.url} è stato completamente salvato.`);
+        return blob.url;
         
-        await resetVoti(idCalendario);
-        const voti = await readFileVotiVercel(blob.url);
-        await Promise.all(voti.map(async (v) => {
+        /* await Promise.all(voti.map(async (v) => {
           let idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;
           if (!idGiocatore) {
             idGiocatore = await createGiocatore(v.Nome, v.Ruolo);
@@ -266,8 +265,8 @@ export const votiRouter = createTRPCRouter({
             await updateVoto(idVoto, v);
           else
             await createVoto(idCalendario, idGiocatore, v);
-        }));
-        return blob.url;
+        })); */
+        
         
       } catch (error) {
         Logger.error('Si è verificato un errore', error);
