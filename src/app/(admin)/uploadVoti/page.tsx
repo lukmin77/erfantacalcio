@@ -41,6 +41,8 @@ export default function UploadVoti() {
     //#region upload file
     const uploadFileBlock = api.voti.upload.useMutation();
     const uploadFileVercel = api.voti.uploadVercel.useMutation();
+    const resetVoti = api.voti.resetVoti.useMutation();
+    const readVoti = api.voti.readVoti.useMutation();
     const saveVoti = api.voti.save.useMutation();
     const [infofile, setInfofile] = useState('');
     const [file, setFile] = useState<File | undefined>();
@@ -178,6 +180,14 @@ export default function UploadVoti() {
                                     idCalendario: selectedIdCalendario ?? 0,
                                     fileName: filename,
                                     fileData: fileData
+                                });
+
+                                await resetVoti.mutateAsync({
+                                    idCalendario: selectedIdCalendario ?? 0
+                                });
+
+                                const voti = await readVoti.mutateAsync({
+                                    fileUrl: serverPathfilename
                                 });
                                 
                                 setUploading(false);

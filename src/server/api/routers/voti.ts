@@ -275,6 +275,33 @@ export const votiRouter = createTRPCRouter({
       }
     }),
 
+  resetVoti: adminProcedure
+    .input(z.object({
+      idCalendario: z.number(),
+    }))
+    .mutation(async (opts) => {
+      try {
+        await resetVoti(opts.input.idCalendario);
+        
+      } catch (error) {
+        Logger.error('Si è verificato un errore', error);
+        throw error;
+      }
+    }),
+
+    readVoti: adminProcedure
+    .input(z.object({
+      fileUrl: z.string(),
+    }))
+    .mutation(async (opts) => {
+      try {
+        return await readFileVotiVercel(opts.input.fileUrl);
+      } catch (error) {
+        Logger.error('Si è verificato un errore', error);
+        throw error;
+      }
+    }),
+
   save: adminProcedure
     .input(z.object({
       idCalendario: z.number(),
