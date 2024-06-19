@@ -17,6 +17,22 @@ import {
   adminProcedure
 } from "~/server/api/trpc";
 
+
+const iVotoGiocatoreSchema = z.object({
+  Nome: z.string(),
+  Ammonizione: z.number(),
+  Assist: z.number(),
+  Autogol: z.number(),
+  Espulsione: z.number(),
+  GolSegnati: z.number(),
+  GolSubiti: z.number(),
+  RigoriErrati: z.number(),
+  RigoriParati: z.number(),
+  Ruolo: z.string(),
+  Squadra: z.string(),
+  Voto: z.number().nullable()
+});
+
 export const votiRouter = createTRPCRouter({
 
   get: adminProcedure
@@ -248,7 +264,7 @@ export const votiRouter = createTRPCRouter({
         Logger.info('file blob: ', blob);
         Logger.info(`Il file ${blob.url} è stato completamente salvato.`);
         return blob.url;
-        
+
         /* await Promise.all(voti.map(async (v) => {
           let idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;
           if (!idGiocatore) {
@@ -266,8 +282,8 @@ export const votiRouter = createTRPCRouter({
           else
             await createVoto(idCalendario, idGiocatore, v);
         })); */
-        
-        
+
+
       } catch (error) {
         Logger.error('Si è verificato un errore', error);
         throw error;
@@ -281,20 +297,52 @@ export const votiRouter = createTRPCRouter({
     .mutation(async (opts) => {
       try {
         await resetVoti(opts.input.idCalendario);
-        
+
       } catch (error) {
         Logger.error('Si è verificato un errore', error);
         throw error;
       }
     }),
 
-    readVoti: adminProcedure
+  readVoti: adminProcedure
     .input(z.object({
       fileUrl: z.string(),
     }))
     .mutation(async (opts) => {
       try {
         return await readFileVotiVercel(opts.input.fileUrl);
+      } catch (error) {
+        Logger.error('Si è verificato un errore', error);
+        throw error;
+      }
+    }),
+
+  processVoti: adminProcedure
+    .input(z.object({
+      idCalendario: z.number(),
+      voti: z.array(iVotoGiocatoreSchema)
+    }))
+    .mutation(async (opts) => {
+      try {
+        await Promise.all(opts.input.voti.map(async (v) => {
+          let idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;
+          if (!idGiocatore) {
+            idGiocatore = await createGiocatore(v.Nome, v.Ruolo);
+          }
+          if (await findLastTrasferimento(idGiocatore) === null) {
+            const squadraSerieA = await findSquadraSerieA(v.Squadra);
+            if (squadraSerieA !== null)
+              await createTrasferimento(idGiocatore, squadraSerieA.idSquadraSerieA, squadraSerieA.nome);
+          }
+
+          const idVoto = await findIdVoto(opts.input.idCalendario, idGiocatore)
+          if (idVoto)
+            await updateVoto(idVoto, v);
+          else
+            await createVoto(opts.input.idCalendario, idGiocatore, v);
+        }));
+        
+        
       } catch (error) {
         Logger.error('Si è verificato un errore', error);
         throw error;
@@ -324,6 +372,8 @@ export const votiRouter = createTRPCRouter({
       }
     }),
 });
+
+
 
 async function refreshStats(ruolo: string) {
   try {

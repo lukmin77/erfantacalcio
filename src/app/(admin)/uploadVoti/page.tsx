@@ -43,6 +43,7 @@ export default function UploadVoti() {
     const uploadFileVercel = api.voti.uploadVercel.useMutation();
     const resetVoti = api.voti.resetVoti.useMutation();
     const readVoti = api.voti.readVoti.useMutation();
+    const processVoti = api.voti.processVoti.useMutation();
     const saveVoti = api.voti.save.useMutation();
     const [infofile, setInfofile] = useState('');
     const [file, setFile] = useState<File | undefined>();
@@ -188,6 +189,11 @@ export default function UploadVoti() {
 
                                 const voti = await readVoti.mutateAsync({
                                     fileUrl: serverPathfilename
+                                });
+
+                                await processVoti.mutateAsync({
+                                    idCalendario: selectedIdCalendario ?? 0,
+                                    voti: voti
                                 });
                                 
                                 setUploading(false);
