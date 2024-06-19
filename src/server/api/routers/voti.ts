@@ -324,6 +324,7 @@ export const votiRouter = createTRPCRouter({
     }))
     .mutation(async (opts) => {
       try {
+        Logger.info(`Processing ${opts.input.voti.length} voti`);
         await Promise.all(opts.input.voti.map(async (v) => {
           let idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;
           if (!idGiocatore) {
@@ -341,7 +342,7 @@ export const votiRouter = createTRPCRouter({
           else
             await createVoto(opts.input.idCalendario, idGiocatore, v);
         }));
-        
+        Logger.info(`Process voti successfull completed`);
         
       } catch (error) {
         Logger.error('Si è verificato un errore', error);

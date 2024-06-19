@@ -7,7 +7,6 @@ import { api } from "~/utils/api";
 import { getFileExtension } from "~/utils/stringUtils";
 import { getTimestamp } from "~/utils/dateUtils";
 import { CloudUpload } from "@mui/icons-material";
-import { Configurazione } from "~/config";
 
 export default function FotoProfilo() {
     const { data: session, update } = useSession();
@@ -155,7 +154,7 @@ export default function FotoProfilo() {
                                     ...session,
                                     user: {
                                         ...session?.user,
-                                        image: filePath
+                                        image: serverPathfilename
                                     }
                                 });
                                 setUploading(false);
