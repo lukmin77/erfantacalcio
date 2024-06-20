@@ -50,7 +50,7 @@ function Giocatori({ onActionChange: onActionActive, idGiocatore, removeNav}: Gi
 
     const columns: Column[] = [
         { key: "idgiocatore", width: '5%', type: "number", align: "left", visible: false },
-        { key: "maglia", type: "image", align: "left", label: ' ', width: '5%', imagePath: '/images/maglie', imageTooltip: 'squadraSerieA', imageTooltipType: 'dynamic', ImageWidth: 26, imageHeight: 22 },
+        { key: "maglia", type: "image", align: "left", label: ' ', width: '5%', imageTooltip: 'squadraSerieA', imageTooltipType: 'dynamic', ImageWidth: 26, imageHeight: 22 },
         { key: "nome", type: "string", align: "left", label: "Nome", sortable: true },
         { key: "squadra", type: "string", align: "left", label: "Squadra", sortable: true },
         { key: "media", type: "number", label: "Media", sortable: true },
@@ -96,7 +96,7 @@ function Giocatori({ onActionChange: onActionActive, idGiocatore, removeNav}: Gi
             nome: stat.nome,
             nomefantagazzetta: stat.nomefantagazzetta,
             idgiocatore: stat.idgiocatore,
-            maglia: stat.maglia,
+            maglia: `/images/maglie/${stat.maglia}`,
             squadraSerieA: stat.squadraSerieA,
             squadra: stat.squadra,
             idSquadra: stat.idSquadra,
@@ -155,7 +155,7 @@ function Giocatori({ onActionChange: onActionActive, idGiocatore, removeNav}: Gi
     //#region trasferimenti
 
     const columnsTransfer: Column[] = [
-        { key: "maglia", type: "image", align: "left", label: ' ', width: '5%', imagePath: '/images/maglie', imageTooltip: 'squadraSerieA', imageTooltipType: 'dynamic', ImageWidth: 26, imageHeight: 22 },
+        { key: "maglia", type: "image", align: "left", label: ' ', width: '5%', imageTooltip: 'squadraSerieA', imageTooltipType: 'dynamic', ImageWidth: 26, imageHeight: 22 },
         { key: "stagione", type: "string", align: "left", label: "Stagione" },
         { key: "squadra", type: "string", align: "left", label: "Squadra" },
         { key: "dataAcquisto", type: "date", label: "Data acquisto", formatDate: 'dd/MM/yyyy' },
