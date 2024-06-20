@@ -165,7 +165,7 @@ export default function HomePage() {
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', '& > *': { m: 1, }, }}>
                   <ButtonGroup size="small" color='primary' aria-label="Small button group">
                     <Tooltip title="Calendario partite ultimo periodo">
-                      <Button onClick={() => handleCalendario(undefined, true, false)} endIcon={<AccessAlarm />}>Attuale</Button>
+                      <Button onClick={() => handleCalendario(undefined, true, false)} startIcon={<AccessAlarm />}></Button>
                     </Tooltip>
                     <Tooltip title="Calendario girone 1">
                       <Button onClick={() => handleCalendario(1, false, false)} startIcon={<LooksOneOutlined />}></Button>
@@ -183,7 +183,7 @@ export default function HomePage() {
                       <Button onClick={() => handleCalendario(5, false, false)} startIcon={<Looks5Outlined />} >&nbsp;</Button>
                     </Tooltip>
                     <Tooltip title="Partite da recuperare">
-                      <Button onClick={() => handleCalendario(undefined, false, true)} endIcon={<PendingActions />}>Recuperi</Button>
+                      <Button onClick={() => handleCalendario(undefined, false, true)} startIcon={<PendingActions />}></Button>
                     </Tooltip>
                   </ButtonGroup>
                 </Box>
@@ -296,6 +296,9 @@ export default function HomePage() {
                 </Card>
               </Grid>
             </Zoom>
+            <Grid item xs={12} sx={{ height: '80px' }}>
+              <></>
+            </Grid>
           </>
         )}
         {frame === FrameType.schieraFormazione && session?.user && (

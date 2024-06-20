@@ -8,7 +8,7 @@ export default function Economia() {
     const economiaList = api.squadre.list.useQuery(undefined, { refetchOnWindowFocus: false, refetchOnReconnect: false });
     
     const columns: Column[] = [
-        { key: "foto", type: "image", align:'left', label:' ', width:'1%', imagePath: '', imageTooltip: 'presidente', imageTooltipType: 'dynamic', ImageWidth: 36, imageHeight: 36},
+        { key: "foto", type: "image", align:'left', label:' ', width:'1%', imageTooltip: 'presidente', imageTooltipType: 'dynamic', ImageWidth: 36, imageHeight: 36},
         { key: "squadra", type: "string", align:'left', hiddenOnlyOnXs: true, label: 'Squadra' },
         { key: "presidente", type: "string", align:'left', label: 'Presidente'},
         { key: "importoAnnuale", type: "currency", align:'right', label: 'Quota', currency: ' €'},

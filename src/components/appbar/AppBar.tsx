@@ -58,7 +58,7 @@ function AppAppBar() {
                 boxShadow: 0,
                 bgcolor: 'transparent',
                 backgroundImage: 'none',
-                marginTop:'2px',
+                marginTop:'0px',
             }}
         >
             <Container maxWidth="lg">
@@ -69,7 +69,10 @@ function AppAppBar() {
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         flexShrink: 0,
-                        borderRadius: '8px',
+                        borderTopLeftRadius: '0px',
+                        borderTopRightRadius: '0px',
+                        borderBottomLeftRadius: '8px',
+                        borderBottomRightRadius: '8px',
                         bgcolor: theme.palette.primary.light,
                         backdropFilter: 'blur(24px)',
                         maxHeight: 40,

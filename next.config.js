@@ -26,6 +26,18 @@ const config = {
         hostname: 'content.fantacalcio.it',
         port: '',
         pathname: '/web/campioncini/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '6518wln9g69xjwcm.public.blob.vercel-storage.com',
+        port: '',
+        pathname: '/fotoprofili',
+      },
+      {
+        protocol: 'https',
+        hostname: '6518wln9g69xjwcm.public.blob.vercel-storage.com',
+        port: '',
+        pathname: '/voti'
       }
     ]
   },

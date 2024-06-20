@@ -25,7 +25,6 @@ export interface Column {
   visible?: boolean;
   hiddenOnlyOnXs?: boolean
   sortable?: boolean;
-  imagePath?: string;
   ImageWidth?: number;
   imageHeight?: number;
   imageTooltipType?: 'static' | 'dynamic';
@@ -265,7 +264,11 @@ function DataTable({
                           return (
                             <TableCell key={cellKey} {...cellProps} > 
                               <Tooltip title={(column?.imageTooltipType === 'static' ? column?.imageTooltip ?? '' : record[column?.imageTooltip ?? key]?.toString()) ?? ''} placement="top-start">
-                                <Image src={path.join(column?.imagePath ?? '', record[key]?.toString() ?? '')}
+                                {/* <Image src={record[key]?.toString() ?? ''}
+                                  width={column?.ImageWidth ?? 20}
+                                  height={column?.imageHeight ?? 20}
+                                  alt={(column?.imageTooltipType === 'static' ? column?.imageTooltip ?? '' : record[column?.imageTooltip ?? key]?.toString()) ?? ''} /> */}
+                                <img src={record[key]?.toString() ?? ''}
                                   width={column?.ImageWidth ?? 20}
                                   height={column?.imageHeight ?? 20}
                                   alt={(column?.imageTooltipType === 'static' ? column?.imageTooltip ?? '' : record[column?.imageTooltip ?? key]?.toString()) ?? ''} />

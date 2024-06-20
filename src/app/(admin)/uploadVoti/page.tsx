@@ -56,10 +56,6 @@ export default function UploadVoti() {
         title: string;
     } | null>(null);
     const handleSelezioneFile = async () => {
-        /* await saveVoti.mutateAsync({
-            idCalendario: selectedIdCalendario ?? 0,
-            fileName: 'voti_29_235.csv',
-        }); */
         document.getElementById("upload-input")?.click();
     };
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {

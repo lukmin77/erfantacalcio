@@ -72,16 +72,16 @@ function RootLayout({ children }: { children: React.ReactNode }) {
                                     component="main"
                                     sx={{
                                         //backgroundColor: (theme) => theme.palette.info.light,
-                                        flexGrow: 1,
+                                        flexGrow: "1",
                                         height: "100vh",
-                                        overflow: "auto"
+                                        overflow: "unset"
                                     }}
                                 >
-                                    <Toolbar ></Toolbar>
+                                    <Toolbar></Toolbar>
                                     <Container maxWidth="lg" sx={{ mt: '3px', mb: '3px' }}>
                                         {children}
-                                        <Footer />
                                     </Container>
+                                    <Footer />
                                 </Box>
 
                             </Box>
