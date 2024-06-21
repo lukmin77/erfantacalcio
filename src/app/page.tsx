@@ -233,7 +233,7 @@ export default function HomePage() {
         {(frame === FrameType.defaultHome || frame === FrameType.albo || frame === FrameType.economia) && !torneiList.isLoading && (
           <>
             <Zoom in={true} >
-              <Grid item xs={6} sm={3} sx={!isXs ? { pr: '25px', pl: '0px', pt: '15px' } : {}}>
+              <Grid item xs={6} sm={3} sx={!isXs ? { pr: '25px', pl: '0px', pt: '15px' } : { pr: '5px'}}>
                 <Card>
                   <CardHeader title="Statistiche giocatori" titleTypographyProps={{ variant: 'h5' }} />
                   <CardMedia
@@ -249,7 +249,7 @@ export default function HomePage() {
               </Grid>
             </Zoom>
             <Zoom in={true} >
-              <Grid item xs={6} sm={3} sx={!isXs ? { pr: '25px', pl: '0px', pt: '15px' } : {}}>
+              <Grid item xs={6} sm={3} sx={!isXs ? { pr: '25px', pl: '0px', pt: '15px' } : { pl: '5px'}}>
                 <Card>
                   <CardHeader title="Albo" titleTypographyProps={{ variant: 'h5' }} />
                   <CardMedia
@@ -265,7 +265,7 @@ export default function HomePage() {
               </Grid>
             </Zoom>
             <Zoom in={true} >
-              <Grid item xs={6} sm={3} sx={!isXs ? { pr: '25px', pl: '0px', pt: '15px' } : {}}>
+              <Grid item xs={6} sm={3} sx={!isXs ? { pr: '25px', pl: '0px', pt: '15px' } : { pr: '5px'}}>
                 <Card>
                   <CardHeader title="Economia e premi" titleTypographyProps={{ variant: 'h5' }} />
                   <CardMedia
@@ -281,7 +281,7 @@ export default function HomePage() {
               </Grid>
             </Zoom>
             <Zoom in={true} >
-              <Grid item xs={6} sm={3} sx={!isXs ? { pr: '0px', pl: '0px', pt: '15px' } : {}}>
+              <Grid item xs={6} sm={3} sx={!isXs ? { pr: '0px', pl: '0px', pt: '15px' } : { pl: '5px'}}>
                 <Card>
                   <CardHeader title="Regolamento" titleTypographyProps={{ variant: 'h5' }} />
                   <CardMedia

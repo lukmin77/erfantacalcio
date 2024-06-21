@@ -215,8 +215,11 @@ function Giocatori({ onActionChange: onActionActive, idGiocatore, removeNav}: Gi
                                         data={mapStatsToRows(giocatoriStats.data)}
                                         columns={columns}
                                         actionOptions={actionOptions}
-                                        rowsXPage={12}
+                                        rowsXPage={15}
                                     />
+                                    <br></br>
+                                    <br></br>
+                                    <br></br>
                                 </Grid>
                             </Zoom>
                         </>

@@ -63,12 +63,11 @@ function Rosa({ onActionChange: onActionActive, onActionGoToStatistica: onAction
         return (
             <Grid container spacing={0}>
                 {filteredRosa.map((giocatore, index) => (
-                    <Grid key={index} item xs={6} sm={1.5} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', mb: '10px', flexWrap: 'wrap' }}>
+                    <Grid key={index} item xs={6} sm={1.5} sx={{ display: 'flex', justifyContent: 'center', p:'10px', mb: '10px', flexWrap: 'wrap' }}>
                         <Card sx={{ marginBottom: '1px' }}>
                             <CardMedia
                                 component="img"
-                                sx={{ cursor: 'pointer' }}
-                                width={'100px'}
+                                sx={{ cursor: 'pointer', width: '120px' }}
                                 image={giocatore.urlCampioncino}
                                 alt={giocatore.nome}
                                 onClick={() => handleActionGiocatore(FrameType.giocatori, giocatore.idGiocatore)}
@@ -152,13 +151,14 @@ function Rosa({ onActionChange: onActionActive, onActionGoToStatistica: onAction
                                     indicatorColor="secondary"
                                     textColor="inherit"
                                     variant={isXs ? 'scrollable' : 'fullWidth'}
+                                    sx={isXs ? {maxWidth:'350px'}: {}}
                                     scrollButtons="auto"
                                     aria-label="Rosa giocatori">
-                                    <Tab label="Portieri" {...a11yProps(0)} />
-                                    <Tab label="Difensori" {...a11yProps(1)} />
-                                    <Tab label="Centrocampisti" {...a11yProps(2)} />
-                                    <Tab label="Attaccanti" {...a11yProps(3)} />
-                                    <Tab label="Venduti" {...a11yProps(4)} />
+                                    <Tab label={isXs ? 'Por' : 'Portieri'} {...a11yProps(0)} />
+                                    <Tab label={isXs ? 'Dif' : 'Difensori'} {...a11yProps(1)} />
+                                    <Tab label={isXs ? 'Cen' : 'Centrocampisti'} {...a11yProps(2)} />
+                                    <Tab label={isXs ? 'Att' : 'Attaccanti'} {...a11yProps(3)} />
+                                    <Tab label={isXs ? 'Ex' : 'Venduti'} {...a11yProps(4)} />
                                 </Tabs>
                             </Grid>
                             <Grid item xs={12}>

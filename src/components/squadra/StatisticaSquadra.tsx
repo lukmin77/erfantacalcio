@@ -68,43 +68,45 @@ function StatisticaSquadra({ onActionChangePartita: onActionActivePartita, onAct
     const datiAlbo = apiAlbo.data;
     const datiPartite = apiPartite.data;
 
-    const renderPartite = (torneo: string) => (<Grid container spacing={1} sx={{ overflowY: 'auto', maxHeight: '360px' }}>
-        {datiPartite?.filter(c => c.Torneo === torneo)
-            .flatMap(c => c.partite.map(partita => ({
-                ...partita,
-                isGiocata: c.isGiocata
-            }))
-            )
-            .map((partita, index) => (
-                <Grid item xs={12} key={`card_partita_${index}_${partita.idPartita}`}>
-                    <Stack direction="row" spacing={0} justifyContent="space-between">
-                        <Typography variant="body2" component="div" color="text.secondary" key={`typography_${partita.idPartita}`}>
-                            {partita.squadraHome} - {partita.squadraAway}
-                        </Typography>
-                        <Stack direction="row" spacing={0} justifyContent="flex-end" key={`stack2_${partita.idPartita}`}>
-                            <Typography variant="body2" component="div" color="text.secondary" key={`typography2_${partita.idPartita}`}>
-                                {partita.golHome} - {partita.golAway}
+    const renderPartite = (torneo: string) => (
+        <Grid container spacing={1} sx={{ overflowY: 'auto', width:'100%', maxHeight: '360px' }}>
+            {datiPartite?.filter(c => c.Torneo === torneo)
+                .flatMap(c => c.partite.map(partita => ({
+                    ...partita,
+                    isGiocata: c.isGiocata
+                }))
+                )
+                .map((partita, index) => (
+                    <Grid item xs={12} key={`card_partita_${index}_${partita.idPartita}`}>
+                        <Stack direction="row" spacing={0} justifyContent="space-between">
+                            <Typography variant="body2" component="div" color="text.secondary" key={`typography_${partita.idPartita}`}>
+                                {partita.squadraHome} - {partita.squadraAway}
                             </Typography>
-                            {partita.isGiocata && (
-                                <Tooltip title="Tabellino voti" placement="top-start">
-                                    <IconButton onClick={() => handleActionPartita(FrameType.tabellinoPartita, partita.idPartita)} sx={{ height: '24px' }}>
-                                        <Ballot color='primary' fontSize='small' />
-                                    </IconButton>
-                                </Tooltip>
-                            )}
-                            {!partita.isGiocata && (
-                                <Tooltip title="Visualizza Formazioni" placement="top-start">
-                                    <IconButton onClick={() => handleActionPartita(FrameType.formazioniPartita, partita.idPartita)} sx={{ height: '24px' }}>
-                                        <SportsSoccer color='primary' fontSize='small' />
-                                    </IconButton>
-                                </Tooltip>
-                            )}
+                            <Stack direction="row" spacing={0} justifyContent="flex-end" key={`stack2_${partita.idPartita}`}>
+                                <Typography variant="body2" component="div" color="text.secondary" key={`typography2_${partita.idPartita}`}>
+                                    {partita.golHome} - {partita.golAway}
+                                </Typography>
+                                {partita.isGiocata && (
+                                    <Tooltip title="Tabellino voti" placement="top-start">
+                                        <IconButton onClick={() => handleActionPartita(FrameType.tabellinoPartita, partita.idPartita)} sx={{ height: '24px' }}>
+                                            <Ballot color='primary' fontSize='small' />
+                                        </IconButton>
+                                    </Tooltip>
+                                )}
+                                {!partita.isGiocata && (
+                                    <Tooltip title="Visualizza Formazioni" placement="top-start">
+                                        <IconButton onClick={() => handleActionPartita(FrameType.formazioniPartita, partita.idPartita)} sx={{ height: '24px' }}>
+                                            <SportsSoccer color='primary' fontSize='small' />
+                                        </IconButton>
+                                    </Tooltip>
+                                )}
+                            </Stack>
                         </Stack>
-                    </Stack>
-                    <Divider></Divider>
-                </Grid>
-            ))}
-    </Grid>);
+                        <Divider></Divider>
+                    </Grid>
+                ))}
+        </Grid>
+    );
 
     function getStatsPartite(torneo: string, datiPartite: GiornataType[]) {
         const vinte = datiPartite.filter(c => c.Torneo === torneo).flatMap(c => c.partite.filter(c => c.idHome === idSquadra && (c.golHome ?? 0) > (c.golAway ?? 0))).length + datiPartite.flatMap(c => c.partite.filter(c => c.idAway === idSquadra && (c.golAway ?? 0) > (c.golHome ?? 0))).length;
@@ -133,10 +135,10 @@ function StatisticaSquadra({ onActionChangePartita: onActionActivePartita, onAct
             )}
             {datiSquadra && datiAlbo && datiPartite && (
                 <>
-                    <Grid item xs={9} sm={9}>
+                    <Grid item xs={8} sm={8}>
                         <Typography variant={'h4'}>{datiSquadra.squadra}</Typography>
                     </Grid>
-                    <Grid item xs={3} sm={3} sx={{ display: 'flex', justifyContent: 'flex-end', }}>
+                    <Grid item xs={4} sm={4} sx={{ display: 'flex', justifyContent: 'flex-end', }}>
                         {session?.user && (
                             <Tooltip title="Schiera formazione" placement="top-start">
                                 <IconButton onClick={() => handleActionFormazione(FrameType.schieraFormazione)}>
@@ -197,7 +199,7 @@ function StatisticaSquadra({ onActionChangePartita: onActionActivePartita, onAct
                                     onChange={handleChange}
                                     indicatorColor="secondary"
                                     textColor="inherit"
-                                    variant={'fullWidth'}
+                                    variant={'standard'}
                                     aria-label="Partite squadra">
                                     <Tab label="Campionato" />
                                     <Tab label="Champions" />
@@ -215,7 +217,7 @@ function StatisticaSquadra({ onActionChangePartita: onActionActivePartita, onAct
                                     <PieChart
                                         colors={['lightGreen', 'orange', 'red']}
                                         series={getStatsPartite('Campionato', datiPartite)}
-                                        width={400}
+                                        width={350}
                                         height={200}
                                     />
                                 </Box>
@@ -223,7 +225,7 @@ function StatisticaSquadra({ onActionChangePartita: onActionActivePartita, onAct
                                     <Typography variant="body2" display={'flex'} justifyContent={'center'}>Risultati Champions</Typography>
                                     <PieChart
                                         series={getStatsPartite('Champions', datiPartite)}
-                                        width={400}
+                                        width={350}
                                         height={200}
                                     />
                                 </Box>
