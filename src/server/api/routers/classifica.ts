@@ -8,7 +8,6 @@ import {
   createTRPCRouter,
   publicProcedure
 } from "~/server/api/trpc";
-import { SendMail } from "~/service/mailSender";
 
 
 
