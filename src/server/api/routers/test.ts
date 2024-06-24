@@ -1,5 +1,5 @@
 import Logger from "~/lib/logger";
-import { SendMail } from "~/service/mailSender";
+import { ReSendMailAsync } from "~/service/mailSender";
 
 import {
     createTRPCRouter,
@@ -16,7 +16,7 @@ export const testRouter = createTRPCRouter({
 
             try {
                 Logger.info("sending mail");
-                SendMail('ErFantacalcio: test', 'lucianominni@gmail.com', 'Notifica automatica da erFantacalcio.com');
+                ReSendMailAsync('ErFantacalcio: test', 'lucianominni@gmail.com', 'Notifica automatica da erFantacalcio.com');
                 Logger.info("mail sent");
             } catch (error) {
                 Logger.error('Si è verificato un errore', error);

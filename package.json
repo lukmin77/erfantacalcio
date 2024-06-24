@@ -44,6 +44,7 @@
     "react-dom": "18.2.0",
     "react-draggable": "^4.4.6",
     "react-material-ui-carousel": "^3.4.2",
+    "resend": "^3.3.0",
     "styled-components": "^6.1.11",
     "superjson": "^2.2.1",
     "swiper": "^11.1.0",

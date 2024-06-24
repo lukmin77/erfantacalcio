@@ -1,6 +1,8 @@
 import nodemailer, { type Transporter } from 'nodemailer';
 import { env } from "process";
 import Logger from "~/lib/logger";
+import { Resend } from 'resend';
+
 
 export async function SendMailAsync(to: string, subject: string, htmlMessage: string) {
 
@@ -52,6 +54,18 @@ export function SendMail(to: string, subject: string, htmlMessage: string) {
     console.log(error);
     Logger.error('Si è verificato un problema nell\'invio della mail!!');
   });
+
+}
+
+export async function ReSendMailAsync(to: string, subject: string, htmlMessage: string) {
+  const resend = new Resend('re_fySyGk6v_4YkUhkF8ahman2hD4BiG5cd2');
+  await resend.emails.send({
+    from: env.MAIL_FROM ?? 'notify@erfantacalcio.com',
+    to: [to],
+    subject: subject,
+    html: htmlMessage,
+  });
+  
 
 }
 
