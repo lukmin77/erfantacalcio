@@ -20,9 +20,9 @@ export const classificaRouter = createTRPCRouter({
     }))
     .query(async (opts) => {
 
-      /* Logger.info("sending mail");
+      Logger.info("sending mail");
       await SendMail('ErFantacalcio: test', 'lucianominni@gmail.com', 'Notifica automatica da erFantacalcio.com');
-      Logger.info("mail sent"); */
+      Logger.info("mail sent"); 
 
       const idTorneo = +opts.input.idTorneo;
       try {
