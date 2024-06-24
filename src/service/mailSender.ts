@@ -57,15 +57,22 @@ export function SendMail(to: string, subject: string, htmlMessage: string) {
 
 }
 
+const resend = new Resend(env.MAIL_API_KEY);
+
 export async function ReSendMailAsync(to: string, subject: string, htmlMessage: string) {
-  const resend = new Resend('re_fySyGk6v_4YkUhkF8ahman2hD4BiG5cd2');
-  await resend.emails.send({
+  
+  const { data, error } = await resend.emails.send({
     from: env.MAIL_FROM ?? 'notify@erfantacalcio.com',
     to: [to],
     subject: subject,
     html: htmlMessage,
   });
   
+  if (error) {
+    return console.error({ error });
+  }
+
+  console.log({ data });
 
 }
 
