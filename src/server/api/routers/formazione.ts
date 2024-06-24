@@ -3,7 +3,7 @@ import { getProssimaGiornata, getProssimaGiornataSerieA, getRosaDisponibile } fr
 import { moduloDefault } from "~/utils/helper";
 import { toLocaleDateTime } from "~/utils/dateUtils";
 import { type GiocatoreFormazioneType } from "~/types/squadre";
-import { SendMailAsync } from "~/service/mailSender";
+import { ReSendMailAsync } from "~/service/mailSender";
 import { z } from "zod";
 
 import {
@@ -220,7 +220,7 @@ export const formazioneRouter = createTRPCRouter({
               Saluti dal Vostro amato Presidente`;
 
             if (to)
-              await SendMailAsync(to, subject, htmlMessage);
+              await ReSendMailAsync(to, subject, htmlMessage);
             else{
               const presidenteWithoutMail = idSquadra === calendario.Utenti_Partite_idSquadraHToUtenti?.idUtente ? calendario.Utenti_Partite_idSquadraAToUtenti?.presidente : calendario.Utenti_Partite_idSquadraHToUtenti?.presidente;
               Logger.warn(`Impossibile inviare notifica, mail non configurata per il presidente: ${presidenteWithoutMail}`);

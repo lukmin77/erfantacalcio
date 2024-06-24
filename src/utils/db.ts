@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import Logger from '~/lib/logger';
 
 const prismaClientSingleton = () => {
   return new PrismaClient({
@@ -28,11 +29,11 @@ declare const globalThis: {
 } & typeof global;
 
 const prisma = globalThis.prismaGlobal ?? prismaClientSingleton()
-/* prisma.$on('query', (e) => {
-  console.log('Query: ' + e.query)
-  console.log('Params: ' + e.params)
-  console.log('Duration: ' + e.duration + 'ms')
-}); */
+prisma.$on('query', (e) => {
+  Logger.debug('Query: ' + e.query)
+  Logger.debug('Params: ' + e.params)
+  Logger.debug('Duration: ' + e.duration + 'ms')
+});
 
 export default prisma
 

@@ -14,7 +14,6 @@ import { nuovastagioneRouter } from "./routers/nuovastagione";
 import { trasferimentiRouter } from "./routers/trasferimenti";
 import { risultatiRouter } from "./routers/risultati";
 import { partitaRouter } from "./routers/partita";
-import { testRouter } from "./routers/test";
 
 /**
  * This is the primary router for your server.
@@ -36,7 +35,6 @@ export const appRouter = createTRPCRouter({
   nuovaStagione: nuovastagioneRouter,
   trasferimenti: trasferimentiRouter,
   risultati: risultatiRouter,
-  test: testRouter
 });
 
 // export type definition of API
