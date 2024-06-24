@@ -16,7 +16,7 @@ export const testRouter = createTRPCRouter({
 
             try {
                 Logger.info("sending mail");
-                ReSendMailAsync('ErFantacalcio: test', 'lucianominni@gmail.com', 'Notifica automatica da erFantacalcio.com');
+                await ReSendMailAsync('ErFantacalcio: test', 'lucianominni@gmail.com', 'Notifica automatica da erFantacalcio.com');
                 Logger.info("mail sent");
             } catch (error) {
                 Logger.error('Si è verificato un errore', error);
