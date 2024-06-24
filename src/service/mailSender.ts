@@ -63,7 +63,7 @@ export async function ReSendMailAsync(to: string, subject: string, htmlMessage: 
   
   const { data, error } = await resend.emails.send({
     from: env.MAIL_FROM ?? 'notify@erfantacalcio.com',
-    to: [to],
+    to: to,
     subject: subject,
     html: htmlMessage,
   });
