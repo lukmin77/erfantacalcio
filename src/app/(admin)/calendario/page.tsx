@@ -79,13 +79,13 @@ export default function Calendario() {
     
     const columns: Column[] = [
         { key: "idCalendario", type: "number", align: "left", visible: false },
-        { key: "nome", type: "string", align: "left", label: "Torneo", sortable: true },
-        { key: "giornataSerieA", type: "number", align: "left", label: "Serie A" },
-        { key: "girone", type: "number", align: "left", label: "Girone" },
-        { key: "gruppoFase", type: "string", align: "left", label: "Fase/Girone" },
-        { key: "data", type: "date", align: "center", label: "Data", hiddenOnlyOnXs: true },
-        { key: "dataFine", type: "date", align: "center", label: "Data fine", hiddenOnlyOnXs: true },
-        { key: "isRecupero", type: "bool", align: "center", label: "Recupero", hiddenOnlyOnXs: true },
+        { key: "nome", type: "string", align: "left", header: "Torneo", sortable: true },
+        { key: "giornataSerieA", type: "number", align: "left", header: "Serie A" },
+        { key: "girone", type: "number", align: "left", header: "Girone" },
+        { key: "gruppoFase", type: "string", align: "left", header: "Fase/Girone" },
+        { key: "data", type: "date", align: "center", header: "Data", hiddenOnlyOnXs: true },
+        { key: "dataFine", type: "date", align: "center", header: "Data fine", hiddenOnlyOnXs: true },
+        { key: "isRecupero", type: "bool", align: "center", header: "Recupero", hiddenOnlyOnXs: true },
         { key: "", type: "action", align: "center", width: "1%" }
     ];
 

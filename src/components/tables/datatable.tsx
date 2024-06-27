@@ -20,23 +20,25 @@ export interface Column {
   key: string;
   type: ColumnType;
   align?: "left" | "center" | "right";
-  label?: string;
+  header?: string;
   width?: string;
   visible?: boolean;
   hiddenOnlyOnXs?: boolean
   sortable?: boolean;
-  ImageWidth?: number;
-  imageHeight?: number;
-  imageTooltipType?: 'static' | 'dynamic';
-  imageTooltip?: string;
+  imageProps?: {
+    imageWidth?: number;
+    imageHeight?: number;
+    imageTooltipType?: 'static' | 'dynamic';
+    imageTooltip?: string;
+  };
   formatDate?: string;
   currency?: string;
 }
 
 export interface ActionOptions {
   keyFields: string[];
+  keyEvalVisibility?: string;
   component: (...params: string[]) => React.ReactNode | null;
-  visible?: boolean;
 }
 
 interface DataTableProps {
@@ -157,7 +159,7 @@ function DataTable({
                     const column = columns.find((col) => col.key.toLowerCase() === header.toLowerCase());
                     const align = column?.align ? column?.align : "right";
                     const width = column?.width ? column?.width : 0;
-                    const label = column?.label ? column?.label : header.replace(/([A-Z])/g, " $1").trim();
+                    const label = column?.header ? column?.header : header.replace(/([A-Z])/g, " $1").trim();
                     const isSortable = column?.sortable ? column?.sortable : false;
                     const isSortingColumn = sortColumn === column?.key;
                     const isSortAscending = sortDirection === "asc";
@@ -263,15 +265,15 @@ function DataTable({
                         case "image":
                           return (
                             <TableCell key={cellKey} {...cellProps} > 
-                              <Tooltip title={(column?.imageTooltipType === 'static' ? column?.imageTooltip ?? '' : record[column?.imageTooltip ?? key]?.toString()) ?? ''} placement="top-start">
+                              <Tooltip title={(column?.imageProps?.imageTooltipType === 'static' ? column?.imageProps?.imageTooltip ?? '' : record[column?.imageProps?.imageTooltip ?? key]?.toString()) ?? ''} placement="top-start">
                                 {/* <Image src={record[key]?.toString() ?? ''}
                                   width={column?.ImageWidth ?? 20}
                                   height={column?.imageHeight ?? 20}
                                   alt={(column?.imageTooltipType === 'static' ? column?.imageTooltip ?? '' : record[column?.imageTooltip ?? key]?.toString()) ?? ''} /> */}
                                 <img src={record[key]?.toString() ?? ''}
-                                  width={column?.ImageWidth ?? 20}
-                                  height={column?.imageHeight ?? 20}
-                                  alt={(column?.imageTooltipType === 'static' ? column?.imageTooltip ?? '' : record[column?.imageTooltip ?? key]?.toString()) ?? ''} />
+                                  width={column?.imageProps?.imageWidth ?? 20}
+                                  height={column?.imageProps?.imageHeight ?? 20}
+                                  alt={(column?.imageProps?.imageTooltipType === 'static' ? column?.imageProps?.imageTooltip ?? '' : record[column?.imageProps?.imageTooltip ?? key]?.toString()) ?? ''} />
                               </Tooltip>
                             </TableCell>
                           );
@@ -281,7 +283,7 @@ function DataTable({
                     })}
                   {/* Renderizzazione dei pulsanti di azione */}
                   {actionOptions?.map((option, iAction) => {
-                    const display = option.visible === undefined || option.visible === true ? '' : 'none';
+                    const display = option.keyEvalVisibility ? record[option.keyEvalVisibility] ? '' : 'none' : '';
                     const { keyFields, component } = option;
 
                     return (

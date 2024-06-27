@@ -90,10 +90,10 @@ export default function Presidenti() {
     
     const columns: Column[] = [
         { key: "id", type: "number", align: "left", visible: false },
-        { key: "presidente", type: "string", align: "left", label: "Presidente", sortable: true },
-        { key: "squadra", type: "string", align: "left", label: "Squadra", sortable: true },
-        { key: "email", type: "string", align: "left", label: "Mail", sortable: true, hiddenOnlyOnXs: true },
-        { key: "isAdmin", type: "bool", align: "center", label: "Admin", sortable: false, hiddenOnlyOnXs: true },
+        { key: "presidente", type: "string", align: "left", header: "Presidente", sortable: true },
+        { key: "squadra", type: "string", align: "left", header: "Squadra", sortable: true },
+        { key: "email", type: "string", align: "left", header: "Mail", sortable: true, hiddenOnlyOnXs: true },
+        { key: "isAdmin", type: "bool", align: "center", header: "Admin", sortable: false, hiddenOnlyOnXs: true },
         { key: "", type: "action", align: "center", width: "1%" }
     ];
 

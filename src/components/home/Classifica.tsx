@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { api } from "~/utils/api";
-import DataTable, { type Column } from "~/components/tables/datatable";
-import { Box, CircularProgress } from "@mui/material";
+import DataTable, { ActionOptions, type Column } from "~/components/tables/datatable";
+import { Box, CircularProgress, Tooltip } from "@mui/material";
 import { type ClassificaType } from '~/types/classifica';
 import { getNomeTorneo } from '~/utils/helper';
+import { QueryStats } from '@mui/icons-material';
+import { FrameType } from '~/utils/enums';
 
 interface ClassificaProps {
     nomeTorneo: string;
@@ -32,12 +34,34 @@ export default function Classifica({nomeTorneo = '', idTorneo = undefined, grupp
 
     const columns: Column[] = [
         { key: "idSquadra", type: "number", align: "left", visible: false },
-        { key: "squadra", type: "string", align: "left", label: "Squadra" },
-        { key: "punti", type: "number", align: "right", label: "Punti" },
-        { key: "golFatti", type: "number", align: "right", label: "Gol+" },
-        { key: "golSubiti", type: "number", align: "right", label: "Gol-" },
-        { key: "giocate", type: "number", align: "right", label: "Giocate", hiddenOnlyOnXs: true },
-        { key: "fantapunti", type: "number", align: "right", label: "Fantapunti" },
+        { key: "squadra", type: "string", align: "left", header: "Squadra" },
+        { key: "punti", type: "number", align: "right", header: "Punti" },
+        { key: "golFatti", type: "number", align: "right", header: "Gol+" },
+        { key: "golSubiti", type: "number", align: "right", header: "Gol-" },
+        { key: "giocate", type: "number", align: "right", header: "Giocate", hiddenOnlyOnXs: true },
+        { key: "fantapunti", type: "number", align: "right", header: "Fantapunti" },
+        { key: "", type: "action", align: "center", width: "1%" }
+    ];
+
+    const handleAction = (newFrame: FrameType, idSquadra?: number, squadra?: string) => {
+        //onActionActive(newFrame, idSquadra, squadra);
+    };
+
+    const actionViewSquadra = (idSquadra: string, squadra: string) => {
+        return (
+            <div>
+                <Tooltip title={"Modifica"} onClick={() => handleAction(FrameType.statisticheSquadra, +idSquadra, squadra)} placement="left">
+                    <QueryStats color='warning' />
+                </Tooltip>
+            </div>
+        )
+    };
+
+    const actionOptions: ActionOptions[] = [
+        {
+            keyFields: ['idSquadra', 'squadra'],
+            component: actionViewSquadra
+        }
     ];
 
     return (

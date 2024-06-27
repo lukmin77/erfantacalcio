@@ -63,7 +63,8 @@ export const trasferimentiRouter = createTRPCRouter({
           giocate: t.giocate,
           dataAcquisto: t.dataAcquisto.toISOString(),
           dataCessione: t.dataCessione?.toISOString(),
-          stagione: t.stagione
+          stagione: t.stagione,
+          isEditVisible: t.stagione === Configurazione.stagione
         }));
       } catch (error) {
         Logger.error('Si è verificato un errore', error);

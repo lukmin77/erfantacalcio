@@ -74,11 +74,12 @@ export default function Giocatori() {
     const [trasferimento, setTrasferimento] = useState<trasferimentoType>(defaultTrasferimento);
     const columns: Column[] = [
         { key: "idTrasferimento", type: "number", align: "left", visible: false },
-        { key: "ruolo", type: "string", align: "left", label: "ruolo", sortable: false },
-        { key: "squadra", type: "string", align: "left", label: "Squadra", sortable: false },
-        { key: "squadraSerieA", type: "string", align: "left", label: "Serie A", sortable: false, hiddenOnlyOnXs: true },
-        { key: "dataAcquisto", type: "date", align: "left", label: "Data", sortable: false, hiddenOnlyOnXs: true },
-        { key: "stagione", type: "string", align: "left", label: "Stagione", sortable: false, hiddenOnlyOnXs: true },
+        { key: "ruolo", type: "string", align: "left", header: "Ruolo", sortable: false },
+        { key: "squadra", type: "string", align: "left", header: "Squadra", sortable: false },
+        { key: "squadraSerieA", type: "string", align: "left", header: "Serie A", sortable: false, hiddenOnlyOnXs: true },
+        { key: "dataAcquisto", type: "date", align: "left", header: "Data", sortable: false, hiddenOnlyOnXs: true },
+        { key: "stagione", type: "string", align: "left", header: "Stagione", sortable: false, hiddenOnlyOnXs: true },
+        { key: "stagione", type: "string", align: "left", header: "Stagione", sortable: false, hiddenOnlyOnXs: true },
         { key: "", type: "action", align: "center", width: "1%" }
     ];
     const actionEdit = (idTrasferimento: string, stagione: string) => {
@@ -93,6 +94,7 @@ export default function Giocatori() {
     const actionOptions: ActionOptions[] = [
         {
             keyFields: ['idTrasferimento', 'stagione'],
+            keyEvalVisibility: 'isEditVisible',
             component: actionEdit
         }
     ];

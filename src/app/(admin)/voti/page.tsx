@@ -43,11 +43,11 @@ export default function Voti() {
     });
     const columns: Column[] = [
         { key: "idVoto", type: "number", align: "left", visible: false },
-        { key: "giornataSerieA", type: "number", align: "left", label: "Giornata serie A", sortable: true },
-        { key: "torneo", type: "string", align: "left", label: "Torneo", sortable: false },
-        { key: "voto", type: "number", align: "left", label: "Voto", sortable: false },
-        { key: "gol", type: "number", align: "left", label: "Gol", sortable: false, hiddenOnlyOnXs: true },
-        { key: "assist", type: "number", align: "left", label: "Assist", sortable: false, hiddenOnlyOnXs: true },
+        { key: "giornataSerieA", type: "number", align: "left", header: "Giornata serie A", sortable: true },
+        { key: "torneo", type: "string", align: "left", header: "Torneo", sortable: false },
+        { key: "voto", type: "number", align: "left", header: "Voto", sortable: false },
+        { key: "gol", type: "number", align: "left", header: "Gol", sortable: false, hiddenOnlyOnXs: true },
+        { key: "assist", type: "number", align: "left", header: "Assist", sortable: false, hiddenOnlyOnXs: true },
         { key: "", type: "action", align: "center", width: "1%" }
     ];
     const actionEdit = (idVoto: string) => {

@@ -6,15 +6,18 @@ import { Box, CircularProgress } from "@mui/material";
 
 export default function Economia() {
     const economiaList = api.squadre.list.useQuery(undefined, { refetchOnWindowFocus: false, refetchOnReconnect: false });
-    
+
     const columns: Column[] = [
-        { key: "foto", type: "image", align:'left', label:' ', width:'1%', imageTooltip: 'presidente', imageTooltipType: 'dynamic', ImageWidth: 36, imageHeight: 36},
-        { key: "squadra", type: "string", align:'left', hiddenOnlyOnXs: true, label: 'Squadra' },
-        { key: "presidente", type: "string", align:'left', label: 'Presidente'},
-        { key: "importoAnnuale", type: "currency", align:'right', label: 'Quota', currency: ' €'},
-        { key: "importoMulte", type: "currency", align:'right', label: 'Multe', currency: ' €'},
-        { key: "importoMercato", type: "currency", align:'right', label: 'Mercato', currency: ' €'},
-        { key: "fantamilioni", type: "number", align:'right', label: 'Fantamilioni'},
+        {
+            key: "foto", type: "image", align: 'left', header: ' ', width: '1%', imageProps:
+                { imageTooltip: 'presidente', imageTooltipType: 'dynamic', imageWidth: 36, imageHeight: 36 }
+        },
+        { key: "squadra", type: "string", align: 'left', hiddenOnlyOnXs: true, header: 'Squadra' },
+        { key: "presidente", type: "string", align: 'left', header: 'Presidente' },
+        { key: "importoAnnuale", type: "currency", align: 'right', header: 'Quota', currency: ' €' },
+        { key: "importoMulte", type: "currency", align: 'right', header: 'Multe', currency: ' €' },
+        { key: "importoMercato", type: "currency", align: 'right', header: 'Mercato', currency: ' €' },
+        { key: "fantamilioni", type: "number", align: 'right', header: 'Fantamilioni' },
     ];
 
     return (
@@ -33,6 +36,6 @@ export default function Economia() {
                 />
             )}
 
-            
+
         </>);
 }

@@ -20,7 +20,7 @@ interface GiocatoriProps {
     removeNav?: boolean
 }
 
-function Giocatori({ onActionChange: onActionActive, idGiocatore, removeNav}: GiocatoriProps) {
+function Giocatori({ onActionChange: onActionActive, idGiocatore, removeNav }: GiocatoriProps) {
     const theme = useTheme();
     const isXs = useMediaQuery(theme.breakpoints.down('md'));
     const [selectedGiocatoreId, setSelectedGiocatoreId] = useState<number>();
@@ -50,15 +50,18 @@ function Giocatori({ onActionChange: onActionActive, idGiocatore, removeNav}: Gi
 
     const columns: Column[] = [
         { key: "idgiocatore", width: '5%', type: "number", align: "left", visible: false },
-        { key: "maglia", type: "image", align: "left", label: ' ', width: '5%', imageTooltip: 'squadraSerieA', imageTooltipType: 'dynamic', ImageWidth: 26, imageHeight: 22 },
-        { key: "nome", type: "string", align: "left", label: "Nome", sortable: true },
-        { key: "squadra", type: "string", align: "left", label: "Squadra", sortable: true },
-        { key: "media", type: "number", label: "Media", sortable: true },
-        { key: "golfatti", type: "number", label: "Gol", visible: ruolo === 'P' ? false : true, sortable: true },
-        { key: "golsubiti", type: "number", label: "Gol", visible: ruolo === 'P' ? true : false, sortable: true },
-        { key: "assist", type: "number", label: "Assist", sortable: true },
-        { key: "giocate", type: "number", label: "Giocate", sortable: true, hiddenOnlyOnXs: true },
-        { key: "", width: '5%', type: "action", align: "right", label: "Statistica" }
+        {
+            key: "maglia", type: "image", align: "left", header: ' ', width: '5%', imageProps:
+                { imageTooltip: 'squadraSerieA', imageTooltipType: 'dynamic', imageWidth: 26, imageHeight: 22 }
+        },
+        { key: "nome", type: "string", align: "left", header: "Nome", sortable: true },
+        { key: "squadra", type: "string", align: "left", header: "Squadra", sortable: true },
+        { key: "media", type: "number", header: "Media", sortable: true },
+        { key: "golfatti", type: "number", header: "Gol", visible: ruolo === 'P' ? false : true, sortable: true },
+        { key: "golsubiti", type: "number", header: "Gol", visible: ruolo === 'P' ? true : false, sortable: true },
+        { key: "assist", type: "number", header: "Assist", sortable: true },
+        { key: "giocate", type: "number", header: "Giocate", sortable: true, hiddenOnlyOnXs: true },
+        { key: "", width: '5%', type: "action", align: "right", header: "Statistica" }
     ];
 
     const actionView = (idGiocatore: string) => {
@@ -123,7 +126,7 @@ function Giocatori({ onActionChange: onActionActive, idGiocatore, removeNav}: Gi
         height: 280,
         legend: { hidden: false },
         margin: { top: 5 },
-        
+
     };
     //#endregion
 
@@ -155,12 +158,15 @@ function Giocatori({ onActionChange: onActionActive, idGiocatore, removeNav}: Gi
     //#region trasferimenti
 
     const columnsTransfer: Column[] = [
-        { key: "maglia", type: "image", align: "left", label: ' ', width: '5%', imageTooltip: 'squadraSerieA', imageTooltipType: 'dynamic', ImageWidth: 26, imageHeight: 22 },
-        { key: "stagione", type: "string", align: "left", label: "Stagione" },
-        { key: "squadra", type: "string", align: "left", label: "Squadra" },
-        { key: "dataAcquisto", type: "date", label: "Data acquisto", formatDate: 'dd/MM/yyyy' },
-        { key: "dataCessione", type: "date", label: "Data cessione", formatDate: 'dd/MM/yyyy', hiddenOnlyOnXs: true },
-        { key: "costo", type: "number", label: "Costo" },
+        {
+            key: "maglia", type: "image", align: "left", header: ' ', width: '5%', imageProps:
+                { imageTooltip: 'squadraSerieA', imageTooltipType: 'dynamic', imageWidth: 26, imageHeight: 22 }
+        },
+        { key: "stagione", type: "string", align: "left", header: "Stagione" },
+        { key: "squadra", type: "string", align: "left", header: "Squadra" },
+        { key: "dataAcquisto", type: "date", header: "Data acquisto", formatDate: 'dd/MM/yyyy' },
+        { key: "dataCessione", type: "date", header: "Data cessione", formatDate: 'dd/MM/yyyy', hiddenOnlyOnXs: true },
+        { key: "costo", type: "number", header: "Costo" },
     ];
 
     //#endregion
