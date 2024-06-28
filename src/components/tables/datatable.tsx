@@ -21,7 +21,6 @@ export interface Column {
   header?: string;
   width?: string;
   visible?: boolean;
-  hiddenOnlyOnXs?: boolean
   sortable?: boolean;
   imageProps?: {
     imageWidth?: number;
@@ -165,7 +164,7 @@ function DataTable({
                       return (
                         <TableCell
                           align={align}
-                          sx={column?.hiddenOnlyOnXs === true ? { display: { xs: 'none', sm: 'table-cell' } } : column?.visible === false ? { display : 'none' } : { display : '' }}
+                          sx={ column?.visible === false ? { display : 'none' } : { display : '' }}
                           //style={{ width: width, display: display }}
                           style={{ width: width }}
                           key={`${header}${i}`}
@@ -228,7 +227,7 @@ function DataTable({
                         const cellKey = `dataCell_${iCell}_${iRow}_${Math.random()}`;
                         const cellProps = {
                           align: column?.align ? column.align : (type === 'bool' ? 'center' : 'right'),
-                          sx: column?.hiddenOnlyOnXs === true ? { display: { xs: 'none', sm: 'table-cell' } } : column?.visible === false ? { display : 'none' } : { display : '' },
+                          sx: column?.visible === false ? { display : 'none' } : { display : '' },
                           style: { display: column?.visible === false ? 'none' : '' }
                         };
 

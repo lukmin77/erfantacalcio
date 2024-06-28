@@ -83,9 +83,9 @@ export default function Calendario() {
         { key: "giornataSerieA", type: "number", align: "left", header: "Serie A" },
         { key: "girone", type: "number", align: "left", header: "Girone" },
         { key: "gruppoFase", type: "string", align: "left", header: "Fase/Girone" },
-        { key: "data", type: "date", align: "center", header: "Data", hiddenOnlyOnXs: true },
-        { key: "dataFine", type: "date", align: "center", header: "Data fine", hiddenOnlyOnXs: true },
-        { key: "isRecupero", type: "bool", align: "center", header: "Recupero", hiddenOnlyOnXs: true },
+        { key: "data", type: "date", align: "center", header: "Data" },
+        { key: "dataFine", type: "date", align: "center", header: "Data fine" },
+        { key: "isRecupero", type: "bool", align: "center", header: "Recupero" },
         { key: "", type: "action", align: "center", width: "1%" }
     ];
 

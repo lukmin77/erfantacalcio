@@ -46,8 +46,8 @@ export default function Voti() {
         { key: "giornataSerieA", type: "number", align: "left", header: "Giornata serie A", sortable: true },
         { key: "torneo", type: "string", align: "left", header: "Torneo", sortable: false },
         { key: "voto", type: "number", align: "left", header: "Voto", sortable: false },
-        { key: "gol", type: "number", align: "left", header: "Gol", sortable: false, hiddenOnlyOnXs: true },
-        { key: "assist", type: "number", align: "left", header: "Assist", sortable: false, hiddenOnlyOnXs: true },
+        { key: "gol", type: "number", align: "left", header: "Gol", sortable: false },
+        { key: "assist", type: "number", align: "left", header: "Assist", sortable: false },
         { key: "", type: "action", align: "center", width: "1%" }
     ];
     const actionEdit = (idVoto: string) => {

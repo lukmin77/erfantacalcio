@@ -38,7 +38,7 @@ export default function Classifica({nomeTorneo = '', idTorneo = undefined, grupp
         { key: "punti", type: "number", align: "right", header: "Punti" },
         { key: "golFatti", type: "number", align: "right", header: "Gol+" },
         { key: "golSubiti", type: "number", align: "right", header: "Gol-" },
-        { key: "giocate", type: "number", align: "right", header: "Giocate", hiddenOnlyOnXs: true },
+        { key: "giocate", type: "number", align: "right", header: "Giocate" },
         { key: "fantapunti", type: "number", align: "right", header: "Fantapunti" },
         { key: "", type: "action", align: "center", width: "1%" }
     ];

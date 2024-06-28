@@ -12,7 +12,7 @@ export default function Economia() {
             key: "foto", type: "image", align: 'left', header: ' ', width: '1%', imageProps:
                 { imageTooltip: 'presidente', imageTooltipType: 'dynamic', imageWidth: 36, imageHeight: 36 }
         },
-        { key: "squadra", type: "string", align: 'left', hiddenOnlyOnXs: true, header: 'Squadra' },
+        { key: "squadra", type: "string", align: 'left', header: 'Squadra' },
         { key: "presidente", type: "string", align: 'left', header: 'Presidente' },
         { key: "importoAnnuale", type: "currency", align: 'right', header: 'Quota', currency: ' €' },
         { key: "importoMulte", type: "currency", align: 'right', header: 'Multe', currency: ' €' },

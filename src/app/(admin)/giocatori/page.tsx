@@ -76,10 +76,10 @@ export default function Giocatori() {
         { key: "idTrasferimento", type: "number", align: "left", visible: false },
         { key: "ruolo", type: "string", align: "left", header: "Ruolo", sortable: false },
         { key: "squadra", type: "string", align: "left", header: "Squadra", sortable: false },
-        { key: "squadraSerieA", type: "string", align: "left", header: "Serie A", sortable: false, hiddenOnlyOnXs: true },
-        { key: "dataAcquisto", type: "date", align: "left", header: "Data", sortable: false, hiddenOnlyOnXs: true },
-        { key: "stagione", type: "string", align: "left", header: "Stagione", sortable: false, hiddenOnlyOnXs: true },
-        { key: "stagione", type: "string", align: "left", header: "Stagione", sortable: false, hiddenOnlyOnXs: true },
+        { key: "squadraSerieA", type: "string", align: "left", header: "Serie A", sortable: false },
+        { key: "dataAcquisto", type: "date", align: "left", header: "Data", sortable: false },
+        { key: "stagione", type: "string", align: "left", header: "Stagione", sortable: false },
+        { key: "stagione", type: "string", align: "left", header: "Stagione", sortable: false },
         { key: "", type: "action", align: "center", width: "1%" }
     ];
     const actionEdit = (idTrasferimento: string, stagione: string) => {

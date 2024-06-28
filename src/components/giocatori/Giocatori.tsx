@@ -60,7 +60,7 @@ function Giocatori({ onActionChange: onActionActive, idGiocatore, removeNav }: G
         { key: "golfatti", type: "number", header: "Gol", visible: ruolo === 'P' ? false : true, sortable: true },
         { key: "golsubiti", type: "number", header: "Gol", visible: ruolo === 'P' ? true : false, sortable: true },
         { key: "assist", type: "number", header: "Assist", sortable: true },
-        { key: "giocate", type: "number", header: "Giocate", sortable: true, hiddenOnlyOnXs: true },
+        { key: "giocate", type: "number", header: "Giocate", sortable: true },
         { key: "", width: '5%', type: "action", align: "right", header: "Statistica" }
     ];
 
@@ -165,7 +165,7 @@ function Giocatori({ onActionChange: onActionActive, idGiocatore, removeNav }: G
         { key: "stagione", type: "string", align: "left", header: "Stagione" },
         { key: "squadra", type: "string", align: "left", header: "Squadra" },
         { key: "dataAcquisto", type: "date", header: "Data acquisto", formatDate: 'dd/MM/yyyy' },
-        { key: "dataCessione", type: "date", header: "Data cessione", formatDate: 'dd/MM/yyyy', hiddenOnlyOnXs: true },
+        { key: "dataCessione", type: "date", header: "Data cessione", formatDate: 'dd/MM/yyyy' },
         { key: "costo", type: "number", header: "Costo" },
     ];
 
