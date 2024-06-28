@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model AlboTrofei {
@@ -27,7 +27,7 @@ model Calendario {
   hasSovrapposta  Boolean   @default(false)
   hasGiocata      Boolean   @default(false)
   hasDaRecuperare Boolean   @default(false)
-  data            DateTime? @default(now())
+  data            DateTime? @default(now()) @db.Timestamptz(3)
   girone          Int?      @db.SmallInt
   dataFine        DateTime?
   Tornei          Tornei    @relation(fields: [idTorneo], references: [idTorneo], onUpdate: NoAction, map: "FK_Calendario_Tornei")
@@ -58,7 +58,7 @@ model Formazioni {
   idFormazione Int      @id(map: "PK_Formazioni") @unique(map: "IX_Formazioni_idFormazione") @default(autoincrement())
   idSquadra    Int
   idPartita    Int
-  dataOra      DateTime @default(now())
+  dataOra      DateTime @default(now()) @db.Timestamptz(3)
   modulo       String   @db.VarChar(5)
   hasBloccata  Boolean  @default(false)
   Partite      Partite  @relation(fields: [idPartita], references: [idPartita], onUpdate: NoAction, map: "FK_Formazioni_Partite")
@@ -197,8 +197,8 @@ model Trasferimenti {
   idTrasferimento   Int            @id(map: "PK_Trasferimenti") @unique(map: "IX_Trasferimenti_idTrasferimento") @default(autoincrement())
   idGiocatore       Int
   idSquadraSerieA   Int?
-  dataAcquisto      DateTime       @default(now())
-  dataCessione      DateTime?
+  dataAcquisto      DateTime       @default(now()) @db.Timestamptz(3)
+  dataCessione      DateTime?      @db.Timestamptz(3)
   idSquadra         Int?
   costo             Int            @db.SmallInt
   stagione          String         @db.VarChar(9)
@@ -222,7 +222,7 @@ model Utenti {
   presidente                         String          @db.VarChar(50)
   mail                               String          @db.VarChar(50)
   nomeSquadra                        String          @db.VarChar(50)
-  foto                               String?         @db.VarChar(100)
+  foto                               String?         @db.VarChar(500)
   importoBase                        Decimal         @default(100) @db.Decimal(9, 2)
   importoMulte                       Decimal         @default(0) @db.Decimal(9, 2)
   importoMercato                     Decimal         @default(0) @db.Decimal(9, 2)
@@ -264,8 +264,17 @@ model Voti {
 }
 
 model FlowNewSeasosn {
-  id     Int       @id(map: "PK_FlowNewSeason") @unique(map: "IX_FlowSeason_id") @default(autoincrement())
+  id     Int       @id(map: "PK_FlowNewSeason") @default(autoincrement())
   idFase Int
   active Boolean   @default(false)
-  data   DateTime? @default(now())
+  data   DateTime? @default(now()) @db.Timestamptz(3)
+}
+
+model AlboTrofei_new {
+  id         Int    @id(map: "PK_AlboTrofei_new") @default(autoincrement())
+  stagione   String @db.VarChar(9)
+  campionato String @db.VarChar(50)
+  champions  String @db.VarChar(50)
+  secondo    String @db.VarChar(50)
+  terzo      String @db.VarChar(50)
 }

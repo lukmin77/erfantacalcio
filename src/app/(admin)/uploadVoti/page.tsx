@@ -6,7 +6,7 @@ import { api } from "~/utils/api";
 import { getDescrizioneGiornata, getIdNextGiornata } from "~/utils/helper";
 import { type CalendarioType } from '~/types/calendario';
 import { CloudUpload } from "@mui/icons-material";
-import { iVotoGiocatore } from "~/types/voti";
+import { type iVotoGiocatore } from "~/types/voti";
 
 export default function UploadVoti() {
     //#region select calendario

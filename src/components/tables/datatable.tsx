@@ -1,6 +1,6 @@
 import React from "react";
 import { useTheme } from '@mui/material/styles';
-import { Box, Paper, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, TableFooter, Typography, IconButton, Tooltip } from '@mui/material';
+import { Box, Paper, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, TableFooter, Typography, IconButton, Tooltip, TableContainer } from '@mui/material';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -9,8 +9,6 @@ import LastPageIcon from '@mui/icons-material/LastPage';
 import { Grid } from "@mui/material";
 import { type Decimal } from "@prisma/client/runtime/library";
 import { formatDateFromIso } from "~/utils/dateUtils";
-import Image from "next/image";
-import path from "path";
 
 export type ColumnType = "string" | "date" | "number" | "decimal" | "bool" | "action" | "image" | "currency";
 
@@ -139,193 +137,194 @@ function DataTable({
   };
 
   return (
-    <Grid item xs={12} sx={{ overflow: "auto", p: 0 }}>
+    <Grid item xs={12} sx={{ overflow: "auto", p: 0, maxWidth: '100%' }}>
       <Paper elevation={3}
-          sx={{ display: "grid", gridAutoColumns: "1fr", overflow: "auto", gap: 0, m: '4px' }}>
-        
-        <Table size="small" sx={{ p: 0 }}>
-          <TableHead>
-            <TableRow key="headTitle">
-              <TableCell key="cellTitle" colSpan={headers.length}>
-                <Typography variant="h4" color="primary.main">
-                  {title}
-                </Typography>
-              </TableCell>
-            </TableRow>
-            <TableRow key="headers">
-              {getPaginatedData().length > 0 ? (
-                <>
-                  {headers.map((header, i) => {
-                    const column = columns.find((col) => col.key.toLowerCase() === header.toLowerCase());
-                    const align = column?.align ? column?.align : "right";
-                    const width = column?.width ? column?.width : 0;
-                    const label = column?.header ? column?.header : header.replace(/([A-Z])/g, " $1").trim();
-                    const isSortable = column?.sortable ? column?.sortable : false;
-                    const isSortingColumn = sortColumn === column?.key;
-                    const isSortAscending = sortDirection === "asc";
-                    const columnKey = column?.key ? column?.key : '';
-                    return (
-                      <TableCell
-                        align={align}
-                        sx={column?.hiddenOnlyOnXs === true ? { display: { xs: 'none', sm: 'table-cell' } } : column?.visible === false ? { display : 'none' } : { display : '' }}
-                        //style={{ width: width, display: display }}
-                        style={{ width: width }}
-                        key={`${header}${i}`}
-                        onClick={() => {
-                          if (isSortable) {
-                            handleColumnSort(columnKey);
-                          }
-                        }}
-                      >
-                        <Typography
-                          variant="subtitle2"
-                          gutterBottom
-                          color="primary.light"
-                        >
-                          {label}
-                          {isSortable && (
-                            <span>
-                              {isSortingColumn && isSortAscending ? (
-                                <KeyboardArrowUpIcon fontSize="small" />
-                              ) : (
-                                <KeyboardArrowDownIcon fontSize="small" />
-                              )}
-                            </span>
-                          )}
-                        </Typography>
-                      </TableCell>
-                    );
-                  })}
-                </>
-              ) : (
-                //empty list
-                <TableCell align="center" key="emptyListCell">
-                  {messageWhenEmptyList}
-                </TableCell>
-              )}
-            </TableRow>
-            <TableRow key="errorLoading">
-              {errorMessage !== "" && (
-                <TableCell align="center" key="errorMessageCell" colSpan={headers.length}>
-                  <Typography variant="h5" color="error.main">
-                  {errorMessage}
+          sx={{ display: "grid", gridAutoColumns: "1fr", gap: 0, m: '4px' }}>
+        <TableContainer sx={{ width: '100%' }}>
+          <Table  size="small" sx={{ p: 0}}>
+            <TableHead>
+              <TableRow key="headTitle">
+                <TableCell key="cellTitle" colSpan={headers.length}>
+                  <Typography variant="h4" color="primary.main">
+                    {title}
                   </Typography>
                 </TableCell>
-              )}
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {getPaginatedData().map((record, iRow) => {
-              return (
-                <TableRow key={`dataRow_${iRow}`}
-                  hover={true}
-                  onClick={() => setSelectedRecord(prevSelected => (prevSelected === record ? null : record))}
-                  selected={selectedRecord === record}
-                  className={selectedRecord === record ? 'selected-row' : ''}>
-                  {columns
-                    .filter((column) => columns.map((column) => column.key.toLowerCase()).includes(column.key.toLowerCase()))
-                    .map(({ key, type }, iCell) => {
-                      const column = columns.find((column) => column.key.toLowerCase() === key.toLowerCase()); 
-                      const cellKey = `dataCell_${iCell}_${iRow}_${Math.random()}`;
-                      const cellProps = {
-                        align: column?.align ? column.align : (type === 'bool' ? 'center' : 'right'),
-                        sx: column?.hiddenOnlyOnXs === true ? { display: { xs: 'none', sm: 'table-cell' } } : column?.visible === false ? { display : 'none' } : { display : '' },
-                        style: { display: column?.visible === false ? 'none' : '' }
-                      };
-
-                      switch (type) {
-                        case "string":
-                        case "number":
-                        case "decimal":
-                          return (
-                            <TableCell key={cellKey} {...cellProps}>
-                              {record[key]?.toString()}
-                            </TableCell>
-                          );
-                        case "currency":
-                          return (
-                            <TableCell key={cellKey} {...cellProps}>
-                              {`${record[key]?.toString()} ${column?.currency}`}
-                            </TableCell>
-                          );
-                        case "bool":
-                          return (
-                            <TableCell key={cellKey} {...cellProps}>
-                              {record[key] ? "Si" : "No"}
-                            </TableCell>
-                          );
-                        case "date":
-                          const formattedDate = record[key] ? formatDateFromIso(record[key] as string, column?.formatDate ? column.formatDate : "dd/MM/yyyy HH:mm") : "";
-                          return (
-                            <TableCell key={cellKey} {...cellProps}>
-                              {formattedDate}
-                            </TableCell>
-                          );
-                        case "image":
-                          return (
-                            <TableCell key={cellKey} {...cellProps} > 
-                              <Tooltip title={(column?.imageProps?.imageTooltipType === 'static' ? column?.imageProps?.imageTooltip ?? '' : record[column?.imageProps?.imageTooltip ?? key]?.toString()) ?? ''} placement="top-start">
-                                {/* <Image src={record[key]?.toString() ?? ''}
-                                  width={column?.ImageWidth ?? 20}
-                                  height={column?.imageHeight ?? 20}
-                                  alt={(column?.imageTooltipType === 'static' ? column?.imageTooltip ?? '' : record[column?.imageTooltip ?? key]?.toString()) ?? ''} /> */}
-                                <img src={record[key]?.toString() ?? ''}
-                                  width={column?.imageProps?.imageWidth ?? 20}
-                                  height={column?.imageProps?.imageHeight ?? 20}
-                                  alt={(column?.imageProps?.imageTooltipType === 'static' ? column?.imageProps?.imageTooltip ?? '' : record[column?.imageProps?.imageTooltip ?? key]?.toString()) ?? ''} />
-                              </Tooltip>
-                            </TableCell>
-                          );
-                        default:
-                          return null;
-                      }
+              </TableRow>
+              <TableRow key="headers">
+                {getPaginatedData().length > 0 ? (
+                  <>
+                    {headers.map((header, i) => {
+                      const column = columns.find((col) => col.key.toLowerCase() === header.toLowerCase());
+                      const align = column?.align ? column?.align : "right";
+                      const width = column?.width ? column?.width : 0;
+                      const label = column?.header ? column?.header : header.replace(/([A-Z])/g, " $1").trim();
+                      const isSortable = column?.sortable ? column?.sortable : false;
+                      const isSortingColumn = sortColumn === column?.key;
+                      const isSortAscending = sortDirection === "asc";
+                      const columnKey = column?.key ? column?.key : '';
+                      return (
+                        <TableCell
+                          align={align}
+                          sx={column?.hiddenOnlyOnXs === true ? { display: { xs: 'none', sm: 'table-cell' } } : column?.visible === false ? { display : 'none' } : { display : '' }}
+                          //style={{ width: width, display: display }}
+                          style={{ width: width }}
+                          key={`${header}${i}`}
+                          onClick={() => {
+                            if (isSortable) {
+                              handleColumnSort(columnKey);
+                            }
+                          }}
+                        >
+                          <Typography
+                            variant="subtitle2"
+                            gutterBottom
+                            color="primary.light"
+                          >
+                            {label}
+                            {isSortable && (
+                              <span>
+                                {isSortingColumn && isSortAscending ? (
+                                  <KeyboardArrowUpIcon fontSize="small" />
+                                ) : (
+                                  <KeyboardArrowDownIcon fontSize="small" />
+                                )}
+                              </span>
+                            )}
+                          </Typography>
+                        </TableCell>
+                      );
                     })}
-                  {/* Renderizzazione dei pulsanti di azione */}
-                  {actionOptions?.map((option, iAction) => {
-                    const display = option.keyEvalVisibility ? record[option.keyEvalVisibility] ? '' : 'none' : '';
-                    const { keyFields, component } = option;
+                  </>
+                ) : (
+                  //empty list
+                  <TableCell align="center" key="emptyListCell">
+                    {messageWhenEmptyList}
+                  </TableCell>
+                )}
+              </TableRow>
+              <TableRow key="errorLoading">
+                {errorMessage !== "" && (
+                  <TableCell align="center" key="errorMessageCell" colSpan={headers.length}>
+                    <Typography variant="h5" color="error.main">
+                    {errorMessage}
+                    </Typography>
+                  </TableCell>
+                )}
+              </TableRow>
+            </TableHead>
 
-                    return (
-                      <TableCell style={{ display: display, cursor: 'pointer' }} align={'right'} key={`actionCell_${iAction}_${iRow}`}>
-                        <React.Fragment>{component && component(...keyFields.map(key => record[key] as string))}</React.Fragment>
-                      </TableCell>
-                    );
-                  })}
-                </TableRow>
-              );
-            })
-            }
-          </TableBody>
-          <TableFooter sx={{
-                    ".MuiTablePagination-displayedRows": { color: "green", p: '0px', minHeight:'10px' },
-                    ".MuiTablePagination-selectLabel": { color: "green", p: '0px', minHeight:'10px' },
-                    ".MuiTablePagination-toolbar": { p: '0px', minHeight:'10px' },
-                    ".MuiTablePagination-root": { p: '0px', minHeight:'10px' },
-                    ".MuiTablePagination-root:last-child": { p: '0px', minHeight:'10px' },
-                    ".MuiTablePagination-footer": { p: '0px', minHeight:'10px' },
-                    ".MuiTablePagination-menuItem": { color: "green", p: '0px', minHeight:'10px' },
-                    ".MuiTablePagination-list": { color: "green", minHeight:'10px' },
-                    p: '0px',
-                    Height:'10px'
-                  }}>
-            <TableRow key="tableFooter">
-              {(pagination || data.length > rowsPerPage) && (
-                <TablePagination
-                  color="primary"
-                  rowsPerPageOptions={rowsPerPage !== 5 && rowsPerPage !== 10 && rowsPerPage !== 25 ? [] : [5, 10, 25, { label: "All", value: -1 }]}
-                  colSpan={headers.length}
-                  count={data.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                  ActionsComponent={TablePaginationActions}
-                />
-              )}
-            </TableRow>
-          </TableFooter>
-        </Table>
+            <TableBody sx={{ overflowX: "auto", whiteSpace:'nowrap' }}>
+              {getPaginatedData().map((record, iRow) => {
+                return (
+                  <TableRow key={`dataRow_${iRow}`}
+                    hover={true}
+                    onClick={() => setSelectedRecord(prevSelected => (prevSelected === record ? null : record))}
+                    selected={selectedRecord === record}
+                    className={selectedRecord === record ? 'selected-row' : ''}>
+                    {columns
+                      .filter((column) => columns.map((column) => column.key.toLowerCase()).includes(column.key.toLowerCase()))
+                      .map(({ key, type }, iCell) => {
+                        const column = columns.find((column) => column.key.toLowerCase() === key.toLowerCase()); 
+                        const cellKey = `dataCell_${iCell}_${iRow}_${Math.random()}`;
+                        const cellProps = {
+                          align: column?.align ? column.align : (type === 'bool' ? 'center' : 'right'),
+                          sx: column?.hiddenOnlyOnXs === true ? { display: { xs: 'none', sm: 'table-cell' } } : column?.visible === false ? { display : 'none' } : { display : '' },
+                          style: { display: column?.visible === false ? 'none' : '' }
+                        };
+
+                        switch (type) {
+                          case "string":
+                          case "number":
+                          case "decimal":
+                            return (
+                              <TableCell key={cellKey} {...cellProps}>
+                                {record[key]?.toString()}
+                              </TableCell>
+                            );
+                          case "currency":
+                            return (
+                              <TableCell key={cellKey} {...cellProps}>
+                                {`${record[key]?.toString()} ${column?.currency}`}
+                              </TableCell>
+                            );
+                          case "bool":
+                            return (
+                              <TableCell key={cellKey} {...cellProps}>
+                                {record[key] ? "Si" : "No"}
+                              </TableCell>
+                            );
+                          case "date":
+                            const formattedDate = record[key] ? formatDateFromIso(record[key] as string, column?.formatDate ? column.formatDate : "dd/MM/yyyy HH:mm") : "";
+                            return (
+                              <TableCell key={cellKey} {...cellProps}>
+                                {formattedDate}
+                              </TableCell>
+                            );
+                          case "image":
+                            return (
+                              <TableCell key={cellKey} {...cellProps} > 
+                                <Tooltip title={(column?.imageProps?.imageTooltipType === 'static' ? column?.imageProps?.imageTooltip ?? '' : record[column?.imageProps?.imageTooltip ?? key]?.toString()) ?? ''} placement="top-start">
+                                  {/* <Image src={record[key]?.toString() ?? ''}
+                                    width={column?.ImageWidth ?? 20}
+                                    height={column?.imageHeight ?? 20}
+                                    alt={(column?.imageTooltipType === 'static' ? column?.imageTooltip ?? '' : record[column?.imageTooltip ?? key]?.toString()) ?? ''} /> */}
+                                  <img src={record[key]?.toString() ?? ''}
+                                    width={column?.imageProps?.imageWidth ?? 20}
+                                    height={column?.imageProps?.imageHeight ?? 20}
+                                    alt={(column?.imageProps?.imageTooltipType === 'static' ? column?.imageProps?.imageTooltip ?? '' : record[column?.imageProps?.imageTooltip ?? key]?.toString()) ?? ''} />
+                                </Tooltip>
+                              </TableCell>
+                            );
+                          default:
+                            return null;
+                        }
+                      })}
+                    {/* Renderizzazione dei pulsanti di azione */}
+                    {actionOptions?.map((option, iAction) => {
+                      const display = option.keyEvalVisibility ? record[option.keyEvalVisibility] ? '' : 'none' : '';
+                      const { keyFields, component } = option;
+
+                      return (
+                        <TableCell style={{ display: display, cursor: 'pointer' }} align={'right'} key={`actionCell_${iAction}_${iRow}`}>
+                          <React.Fragment>{component && component(...keyFields.map(key => record[key] as string))}</React.Fragment>
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })
+              }
+            </TableBody>
+            <TableFooter sx={{
+                      ".MuiTablePagination-displayedRows": { color: "green", p: '0px', minHeight:'10px' },
+                      ".MuiTablePagination-selectLabel": { color: "green", p: '0px', minHeight:'10px' },
+                      ".MuiTablePagination-toolbar": { p: '0px', minHeight:'10px' },
+                      ".MuiTablePagination-root": { p: '0px', minHeight:'10px' },
+                      ".MuiTablePagination-root:last-child": { p: '0px', minHeight:'10px' },
+                      ".MuiTablePagination-footer": { p: '0px', minHeight:'10px' },
+                      ".MuiTablePagination-menuItem": { color: "green", p: '0px', minHeight:'10px' },
+                      ".MuiTablePagination-list": { color: "green", minHeight:'10px' },
+                      p: '0px',
+                      Height:'10px'
+                    }}>
+              <TableRow key="tableFooter">
+                {(pagination || data.length > rowsPerPage) && (
+                  <TablePagination
+                    color="primary"
+                    rowsPerPageOptions={rowsPerPage !== 5 && rowsPerPage !== 10 && rowsPerPage !== 25 ? [] : [5, 10, 25, { label: "All", value: -1 }]}
+                    colSpan={headers.length}
+                    count={data.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    ActionsComponent={TablePaginationActions}
+                  />
+                )}
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </TableContainer>
       </Paper>
     </Grid>
   );

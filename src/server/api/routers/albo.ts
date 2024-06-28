@@ -13,7 +13,7 @@ export const alboRouter = createTRPCRouter({
     list : publicProcedure
     .query(async () => {
       try {
-        return (await prisma.alboTrofei.findMany({
+        return (await prisma.alboTrofei_new.findMany({
           orderBy: [
             { stagione: 'desc' },
             { campionato: 'desc'},
@@ -23,12 +23,10 @@ export const alboRouter = createTRPCRouter({
           ]
         })).map(c => ({
           stagione: c.stagione,
-          squadra: c.nomeSquadra,
-          presidente: c.presidente,
-          campionato: c.campionato ? 'X' : '',
-          champions: c.champions ? 'X' : '',
-          secondo: c.secondo ? 'X' : '',
-          terzo: c.terzo ? 'X' : ''
+          campionato: c.campionato,
+          champions: c.champions,
+          secondo: c.secondo,
+          terzo: c.terzo
         }));
       } catch (error) {
         Logger.error('Si è verificato un errore', error);

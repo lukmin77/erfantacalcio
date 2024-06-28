@@ -9,12 +9,10 @@ export default function Albo() {
     
     const columns: Column[] = [
         { key: "stagione", type: "string", align:'left'},
-        { key: "squadra", type: "string", align: 'left', hiddenOnlyOnXs: true },
-        { key: "presidente", type: "string", align:'left'},
-        { key: "campionato", type: "string", align:'center'},
-        { key: "champions", type: "string", align:'center'},
-        { key: "secondo", type: "string", align:'center'},
-        { key: "terzo", type: "string", align:'center'},
+        { key: "campionato", type: "string", align:'left'},
+        { key: "champions", type: "string", align:'left'},
+        { key: "secondo", type: "string", align:'left'},
+        { key: "terzo", type: "string", align:'left'},
     ];
 
     return (
