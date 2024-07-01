@@ -45,6 +45,7 @@ export default function UploadVoti() {
     const resetVoti = api.voti.resetVoti.useMutation();
     const readVoti = api.voti.readVoti.useMutation();
     const processVoti = api.voti.processVoti.useMutation();
+    const refreshStats = api.voti.refreshStats.useMutation();
     const saveVoti = api.voti.save.useMutation();
     const [infofile, setInfofile] = useState('');
     const [file, setFile] = useState<File | undefined>();
@@ -169,8 +170,7 @@ export default function UploadVoti() {
                             const contentLength = blockData.length;
                             offset += contentLength;
 
-                            const percentCompleted = Math.floor((offset * 100) / file.size);
-                            setProgress(percentCompleted);
+                            setProgress(0);
 
                             // Carica il blocco corrente
                             try {
@@ -179,18 +179,28 @@ export default function UploadVoti() {
                                     fileName: filename,
                                     fileData: fileData
                                 });
+                                setProgress(20);
 
                                 await resetVoti.mutateAsync({
                                     idCalendario: selectedIdCalendario ?? 0
                                 });
+                                setProgress(30);
 
                                 const voti = await readVoti.mutateAsync({
                                     fileUrl: serverPathfilename
                                 });
-
-                                //intervenire qui mandando blocchi da 50 record
+                                setProgress(35);
                                 await processRecords(voti);
-                                
+                                setProgress(80);
+                                await refreshStats.mutateAsync({ ruolo: 'P' });
+                                setProgress(85);
+                                await refreshStats.mutateAsync({ ruolo: 'D' });
+                                setProgress(90);
+                                await refreshStats.mutateAsync({ ruolo: 'C' });
+                                setProgress(95);
+                                await refreshStats.mutateAsync({ ruolo: 'A' });
+                                setProgress(100);
+
                                 setUploading(false);
                                 setAlert({
                                     severity: "success",

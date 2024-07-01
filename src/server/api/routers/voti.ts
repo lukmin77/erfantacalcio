@@ -350,6 +350,14 @@ export const votiRouter = createTRPCRouter({
       }
     }),
 
+  refreshStats: adminProcedure
+    .input(z.object({
+      ruolo: z.string()
+    }))
+    .mutation(async (opts) => {
+      await refreshStats(opts.input.ruolo);
+    }),
+
   save: adminProcedure
     .input(z.object({
       idCalendario: z.number(),
