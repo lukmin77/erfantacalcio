@@ -197,26 +197,27 @@ function ViewTabellini({ onActionChange: onActionActive, idPartita }: Formazioni
                                 </Grid>
                             </Grid>
 
-                            <Grid item xs={6} sm={3}>
-                                <Typography variant={'h6'} sx={{ m: '5px' }}>
-                                    {tabellino.fattoreCasalingo > 0 && (<>Fattore casalingo: <b>+{tabellino.fattoreCasalingo}</b></>)}
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={6} sm={3}>
-                                <Typography variant={'h6'} sx={{ m: '5px' }}>
-                                    {tabellino.bonusSenzaVoto > 0 && (<>Senza voto: <b>+{tabellino.bonusSenzaVoto}</b></>)}
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={6} sm={3}>
-                                <Typography variant={'h6'} sx={{ m: '5px' }}>
-                                    {tabellino.bonusModulo > 0 && (<>Bonus modulo: <b>+{tabellino.bonusModulo}</b></>)}
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={6} sm={3} display={'flex'} justifyContent={'flex-end'}>
+                            <Grid item xs={12} sm={3} display={'flex'}>
                                 <Typography variant={'h6'} sx={{ m: '5px' }}>
                                     Fantapunti: <b>{tabellino.fantapuntiTotale}</b>
                                 </Typography>
                             </Grid>
+                            <Grid item xs={12} sm={3}>
+                                <Typography variant={'h6'} sx={{ m: '5px' }}>
+                                    {tabellino.fattoreCasalingo > 0 && (<>Fattore casalingo: <b>+{tabellino.fattoreCasalingo}</b></>)}
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={12} sm={3}>
+                                <Typography variant={'h6'} sx={{ m: '5px' }}>
+                                    {tabellino.bonusSenzaVoto > 0 && (<>Senza voto: <b>+{tabellino.bonusSenzaVoto}</b></>)}
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={12} sm={3}>
+                                <Typography variant={'h6'} sx={{ m: '5px' }}>
+                                    {tabellino.bonusModulo > 0 && (<>Bonus modulo: <b>+{tabellino.bonusModulo}</b></>)}
+                                </Typography>
+                            </Grid>
+                            
                         </Grid>
                     </CardContent>
                 </Card>
@@ -277,6 +278,9 @@ function ViewTabellini({ onActionChange: onActionActive, idPartita }: Formazioni
                         </Grid>
                     </>
                 )}
+                <Grid item xs={12} sx={{ height: '100px' }}>
+                    <></>
+                </Grid>
             </Grid>
 
             <Modal title={'Statistica giocatore'} open={openModalCalendario} onClose={handleModalClose} width={isXs ? '98%' : '1266px'} height={isXs ? '98%' : ''} >
