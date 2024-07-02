@@ -307,7 +307,7 @@ function DataTable({
                       Height:'10px'
                     }}>
               <TableRow key="tableFooter">
-                {(pagination || data.length > rowsPerPage) && (
+                {(pagination || (data.length > rowsPerPage && rowsPerPage !== -1)) && (
                   <TablePagination
                     color="primary"
                     rowsPerPageOptions={rowsPerPage !== 5 && rowsPerPage !== 10 && rowsPerPage !== 25 ? [] : [5, 10, 25, { label: "All", value: -1 }]}
