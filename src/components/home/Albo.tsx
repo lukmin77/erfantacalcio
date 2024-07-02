@@ -25,7 +25,6 @@ export default function Albo() {
                 <DataTable
                     title={`Albo d'oro`}
                     pagination={false}
-                    rowsXPage={14}
                     data={alboList.data}
                     errorMessage={''}
                     columns={columns}

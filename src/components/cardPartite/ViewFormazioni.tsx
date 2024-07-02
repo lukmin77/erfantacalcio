@@ -227,6 +227,9 @@ function ViewFormazioni({ onActionChange: onActionActive, idPartita }: Formazion
                         </Grid>
                     </>
                 )}
+                <Grid item xs={12} sx={{ height: '100px' }}>
+                    <></>
+                </Grid>
             </Grid>
 
             <Modal title={'Statistica giocatore'} open={openModalCalendario} onClose={handleModalClose} width={isXs ? '98%' : '1266px'} height={isXs ? '98%' : ''} >
