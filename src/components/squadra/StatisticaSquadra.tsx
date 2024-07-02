@@ -115,6 +115,7 @@ function StatisticaSquadra({
           c.partite.map((partita) => ({
             ...partita,
             isGiocata: c.isGiocata,
+            giornata: c.giornata
           }))
         )
         .map((partita, index) => (
@@ -126,7 +127,7 @@ function StatisticaSquadra({
                 color="text.secondary"
                 key={`typography_${partita.idPartita}`}
               >
-                {index} - {partita.squadraHome} - {partita.squadraAway}
+                {partita.giornata} - {partita.squadraHome} - {partita.squadraAway}
               </Typography>
               <Stack
                 direction="row"

@@ -67,7 +67,7 @@ function DataTable({
   errorMessage = "",
   data = [],
   columns = [],
-  rowsXPage = 10,
+  rowsXPage = pagination ? 10 : -1,
   actionOptions = [] }: DataTableProps) {
 
   const [page, setPage] = React.useState(0);
