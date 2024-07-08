@@ -54,7 +54,7 @@ export const trasferimentiRouter = createTRPCRouter({
           nome: t.Giocatori.nome,
           ruolo: t.Giocatori.ruolo,
           squadra: t.Utenti?.nomeSquadra === undefined ? t.nomeSquadra : t.Utenti.nomeSquadra,
-          maglia:  t.SquadreSerieA?.maglia ? `/images/maglie/${t.SquadreSerieA.maglia}` : `/images/maglie/${t.nomeSquadraSerieA}.gif`,
+          maglia:  t.SquadreSerieA?.maglia ? `/images/maglie/${t.SquadreSerieA.maglia}` : `/images/maglie/${t.nomeSquadraSerieA?.toLowerCase()}.gif`,
           squadraSerieA: t.SquadreSerieA?.nome === undefined ? t.nomeSquadraSerieA : t.SquadreSerieA.nome,
           costo: t.costo,
           media: t.media ? parseFloat(t.media.toFixed(2)) : 0,
