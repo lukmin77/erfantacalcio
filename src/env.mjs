@@ -22,7 +22,7 @@ export const env = createEnv({
     // Add `.min(1) on ID and SECRET if you want to make sure they're not empty
     JWT_SECRET: z.string(),
     NEXT_PUBLIC_STAGIONE: z.string(),
-    NEXT_PUBLIC_STAGIONEPRECEDENTE: z.string(),
+  
     NEXT_PUBLIC_LOCALE: z.string(),
     NEXT_PUBLIC_FATTORE_CASALINGO: z.number(),
     NEXT_PUBLIC_BONUS_GOL: z.number(),
@@ -67,7 +67,6 @@ export const env = createEnv({
     JWT_SECRET: process.env.JWT_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     NEXT_PUBLIC_STAGIONE: process.env.NEXT_PUBLIC_STAGIONE,
-    NEXT_PUBLIC_STAGIONEPRECEDENTE: process.env.NEXT_PUBLIC_STAGIONEPRECEDENTE,
     NEXT_PUBLIC_RECORDCOUNT: process.env.NEXT_PUBLIC_RECORDCOUNT,
     NEXT_PUBLIC_PERCENTUALE_MINIMA_GIOCATE: process.env.NEXT_PUBLIC_PERCENTUALE_MINIMA_GIOCATE,
     NEXT_PUBLIC_LOCALE: process.env.NEXT_PUBLIC_LOCALE,

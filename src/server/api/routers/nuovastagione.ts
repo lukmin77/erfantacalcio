@@ -49,7 +49,7 @@ export const nuovastagioneRouter = createTRPCRouter({
           where: {
             AND: [
               { dataCessione: null },
-              { stagione: Configurazione.stagionePrecedente },
+              { stagione: Configurazione.stagione },
             ],
           },
         });
@@ -61,11 +61,11 @@ export const nuovastagioneRouter = createTRPCRouter({
         await updateFase(1);
 
         Logger.info(
-          `Chiusura trasferimenti stagione ${Configurazione.stagionePrecedente} completato`
+          `Chiusura trasferimenti stagione ${Configurazione.stagione} completato`
         );
         return {
           isError: false,
-          message: `Chiusura trasferimenti stagione ${Configurazione.stagionePrecedente} completato`,
+          message: `Chiusura trasferimenti stagione ${Configurazione.stagione} completato`,
         };
       }
     } catch (error) {
@@ -116,11 +116,11 @@ export const nuovastagioneRouter = createTRPCRouter({
         await updateFase(2);
 
         Logger.info(
-          `Azzeramento dati della scorsa stagione ${Configurazione.stagionePrecedente}`
+          `Azzeramento dati della scorsa stagione ${Configurazione.stagione}`
         );
         return {
           isError: false,
-          message: `Azzeramento dati della scorsa stagione ${Configurazione.stagionePrecedente}`,
+          message: `Azzeramento dati della scorsa stagione ${Configurazione.stagione}`,
         };
       }
     } catch (error) {
@@ -151,11 +151,11 @@ export const nuovastagioneRouter = createTRPCRouter({
         await updateFase(2);
 
         Logger.info(
-          `Azzeramento dati della scorsa stagione ${Configurazione.stagionePrecedente}`
+          `Azzeramento dati della scorsa stagione ${Configurazione.stagione}`
         );
         return {
           isError: false,
-          message: `Azzeramento dati della scorsa stagione ${Configurazione.stagionePrecedente}`,
+          message: `Azzeramento dati della scorsa stagione ${Configurazione.stagione}`,
         };
       }
     } catch (error) {

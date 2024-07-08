@@ -1,6 +1,5 @@
 export const Configurazione = {
   stagione: process.env.NEXT_PUBLIC_STAGIONE ?? '',
-  stagionePrecedente: process.env.NEXT_PUBLIC_STAGIONEPRECEDENTE ?? '',
   recordCount: parseInt(process.env.NEXT_PUBLIC_RECORDCOUNT ?? '20', 10),
   percentualeMinimaGiocate: parseInt(process.env.NEXT_PUBLIC_PERCENTUALE_MINIMA_GIOCATE ?? '30', 10),
   importoMulta: parseInt(process.env.NEXT_PUBLIC_MULTA ?? '10', 10),
