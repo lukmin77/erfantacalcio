@@ -33,12 +33,14 @@ export const nuovastagioneRouter = createTRPCRouter({
 
   chiudiStagione: adminProcedure.mutation<iMessage>(async () => {
     try {
+      const takeNum = 30;
       if ((await checkVotiUltimaGiornata()) === false) {
         Logger.warn(
           "Impossibile chiudere la stagione, calendario non completato"
         );
         return {
           isError: true,
+          isComplete: true,
           message:
             "Impossibile chiudere la stagione, calendario non completato",
         };
@@ -52,20 +54,21 @@ export const nuovastagioneRouter = createTRPCRouter({
               { stagione: Configurazione.stagione },
             ],
           },
-          take: 30
+          take: takeNum
         });
         const promises = giocatoritrasferimenti.map(async (c) => {
           await chiudiTrasferimentoGiocatore(c.idGiocatore, true);
         });
         await Promise.all(promises);
 
-        if (giocatoritrasferimenti.length !== 30){
+        if (giocatoritrasferimenti.length <= takeNum){
           await updateFase(1);
           Logger.info(
             `Chiusura trasferimenti stagione ${Configurazione.stagione} completato`
           );
           return {
             isError: false,
+            isComplete: true,
             message: `Chiusura trasferimenti stagione ${Configurazione.stagione} completato`,
           };
         }
@@ -74,7 +77,8 @@ export const nuovastagioneRouter = createTRPCRouter({
             `Chiusura trasferimenti stagione ${Configurazione.stagione} ancora incompleto`
           );
           return {
-            isError: true,
+            isError: false,
+            isComplete: false,
             message: `Chiusura trasferimenti stagione ${Configurazione.stagione} ancora incompleto`,
           };
         }
@@ -93,6 +97,7 @@ export const nuovastagioneRouter = createTRPCRouter({
         );
         return {
           isError: true,
+          isComplete: true,
           message:
             "Impossibile preparare la nuova stagione, calendario non completato",
         };
@@ -102,6 +107,7 @@ export const nuovastagioneRouter = createTRPCRouter({
         );
         return {
           isError: true,
+          isComplete: true,
           message:
             "Impossibile preparare la nuova stagione: ci sono ancora partite da giocare",
         };
@@ -127,6 +133,7 @@ export const nuovastagioneRouter = createTRPCRouter({
         );
         return {
           isError: false,
+          isComplete: true,
           message: `Azzeramento dati della scorsa stagione ${Configurazione.stagione}`,
         };
       }
@@ -144,6 +151,7 @@ export const nuovastagioneRouter = createTRPCRouter({
         );
         return {
           isError: true,
+          isComplete: true,
           message:
             "Impossibile preparare la nuova stagione, calendario non completato",
         };
@@ -162,6 +170,7 @@ export const nuovastagioneRouter = createTRPCRouter({
         );
         return {
           isError: false,
+          isComplete: true,
           message: `Azzeramento dati della scorsa stagione ${Configurazione.stagione}`,
         };
       }
@@ -266,7 +275,7 @@ export const nuovastagioneRouter = createTRPCRouter({
 
       await updateFase(3);
 
-      return { isError: false, message: "Sorteggio nuove squadre completato" };
+      return { isError: false, isComplete: true, message: "Sorteggio nuove squadre completato" };
     } catch (error) {
       Logger.error("Si è verificato un errore", error);
       throw error;
@@ -281,6 +290,7 @@ export const nuovastagioneRouter = createTRPCRouter({
         );
         return {
           isError: true,
+          isComplete: true,
           message:
             "Impossibile procedere con la nuova Stagione, classifiche già inserite",
         };
@@ -329,6 +339,7 @@ export const nuovastagioneRouter = createTRPCRouter({
         );
         return {
           isError: false,
+          isComplete: true,
           message: `Le classifiche della stagione ${Configurazione.stagione} sono state create`,
         };
       }
@@ -346,6 +357,7 @@ export const nuovastagioneRouter = createTRPCRouter({
         );
         return {
           isError: true,
+          isComplete: true,
           message:
             "Impossibile procedere con la nuova Stagione, partite già inserite",
         };
@@ -435,6 +447,7 @@ export const nuovastagioneRouter = createTRPCRouter({
         );
         return {
           isError: false,
+          isComplete: true,
           message: `Le partite della stagione ${Configurazione.stagione} sono state create`,
         };
       }

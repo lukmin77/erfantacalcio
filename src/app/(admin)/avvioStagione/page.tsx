@@ -83,6 +83,8 @@ export default function UploadVoti() {
         }
         if (message.isError)
             setErrorMessage(message.message);
+        else if (!message.isComplete)
+            setMessage(message.message);
         else {
             setMessage(message.message);
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
