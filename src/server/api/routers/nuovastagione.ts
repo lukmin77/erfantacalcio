@@ -52,21 +52,35 @@ export const nuovastagioneRouter = createTRPCRouter({
               { stagione: Configurazione.stagione },
             ],
           },
+          take: 50
         });
         const promises = giocatoritrasferimenti.map(async (c) => {
           await chiudiTrasferimentoGiocatore(c.idGiocatore, true);
         });
         await Promise.all(promises);
 
-        await updateFase(1);
+        if (giocatoritrasferimenti.length !== 30){
+          await updateFase(1);
+          Logger.info(
+            `Chiusura trasferimenti stagione ${Configurazione.stagione} completato`
+          );
+          return {
+            isError: false,
+            message: `Chiusura trasferimenti stagione ${Configurazione.stagione} completato`,
+          };
+        }
+        else{
+          Logger.info(
+            `Chiusura trasferimenti stagione ${Configurazione.stagione} ancora incompleto`
+          );
+          return {
+            isError: false,
+            message: `Chiusura trasferimenti stagione ${Configurazione.stagione} ancora incompleto`,
+          };
+        }
+          
 
-        Logger.info(
-          `Chiusura trasferimenti stagione ${Configurazione.stagione} completato`
-        );
-        return {
-          isError: false,
-          message: `Chiusura trasferimenti stagione ${Configurazione.stagione} completato`,
-        };
+        
       }
     } catch (error) {
       Logger.error("Si è verificato un errore", error);
