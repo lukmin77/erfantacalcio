@@ -106,11 +106,7 @@ export const nuovastagioneRouter = createTRPCRouter({
               data: toLocaleDateTime(new Date()),
               dataFine: toLocaleDateTime(new Date()),
             },
-          }),
-          prisma.statsP.deleteMany(),
-          prisma.statsD.deleteMany(),
-          prisma.statsC.deleteMany(),
-          prisma.statsA.deleteMany(),
+          })
         ]);
 
         await updateFase(2);
