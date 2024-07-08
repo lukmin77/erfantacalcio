@@ -9,6 +9,7 @@ export default function UploadVoti() {
     const faseNuovaStagione = api.nuovaStagione.getFaseAvvio.useQuery();
     const chiudiStagione = api.nuovaStagione.chiudiStagione.useMutation();
     const preparaStagione = api.nuovaStagione.preparaStagione.useMutation();
+    const eliminaStatistiche = api.nuovaStagione.eliminaStatistiche.useMutation();
     const preparaIdSquadre = api.nuovaStagione.preparaIdSquadre.useMutation();
     const creaPartite = api.nuovaStagione.creaPartite.useMutation();
     const creaClassifiche = api.nuovaStagione.creaClassifiche.useMutation();
@@ -22,14 +23,18 @@ export default function UploadVoti() {
     },
     {
         fase: 3,
-        label: 'Sorteggia calendario'
+        label: 'Elimina statistiche'
     },
     {
         fase: 4,
-        label: 'Crea partite'
+        label: 'Sorteggia calendario'
     },
     {
         fase: 5,
+        label: 'Crea partite'
+    },
+    {
+        fase: 6,
         label: 'Crea classifiche'
     }];
     const [activeStep, setActiveStep] = useState(0);
@@ -63,12 +68,15 @@ export default function UploadVoti() {
                 message = await preparaStagione.mutateAsync();
                 break;
             case 2:
-                message = await preparaIdSquadre.mutateAsync();
+                message = await eliminaStatistiche.mutateAsync();
                 break;
             case 3:
-                message = await creaPartite.mutateAsync();
+                message = await preparaIdSquadre.mutateAsync();
                 break;
             case 4:
+                message = await creaPartite.mutateAsync();
+                break;
+            case 5:
                 message = await creaClassifiche.mutateAsync();
                 break;
         }
