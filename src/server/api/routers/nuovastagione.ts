@@ -52,7 +52,7 @@ export const nuovastagioneRouter = createTRPCRouter({
               { stagione: Configurazione.stagione },
             ],
           },
-          take: 50
+          take: 30
         });
         const promises = giocatoritrasferimenti.map(async (c) => {
           await chiudiTrasferimentoGiocatore(c.idGiocatore, true);

@@ -4,6 +4,7 @@ import { Button, Typography, Box, Stack, Alert, Stepper, Step, StepLabel, Circul
 import { api } from "~/utils/api";
 import CheckIcon from '@mui/icons-material/CheckCircle';
 import { type iMessage } from "~/types/nuovastagione";
+import { Configurazione } from "~/config";
 
 export default function UploadVoti() {
     const faseNuovaStagione = api.nuovaStagione.getFaseAvvio.useQuery();
@@ -27,7 +28,7 @@ export default function UploadVoti() {
     },
     {
         fase: 4,
-        label: 'Sorteggia calendario'
+        label: `Sorteggia calendario: Cambia la stagione! Stagione configurata: ${Configurazione.stagione}`
     },
     {
         fase: 5,
