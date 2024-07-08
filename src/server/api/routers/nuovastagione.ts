@@ -24,7 +24,7 @@ export const nuovastagioneRouter = createTRPCRouter({
           idFase: "asc",
         },
       });
-      return fase ? fase.idFase : 5;
+      return fase ? fase.idFase : 6;
     } catch (error) {
       Logger.error("Si è verificato un errore", error);
       throw error;
