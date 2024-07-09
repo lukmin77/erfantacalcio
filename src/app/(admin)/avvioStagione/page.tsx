@@ -60,7 +60,7 @@ export default function UploadVoti() {
     const handleNext = async () => {
         setMessage('');
         setDisableButton(true);
-        let message: iMessage = { isError: false, message: '' };
+        let message: iMessage = { isError: false, isComplete: false, message: '' };
         switch (activeStep) {
             case 0:
                 message = await chiudiStagione.mutateAsync();
