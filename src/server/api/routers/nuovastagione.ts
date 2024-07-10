@@ -156,12 +156,12 @@ export const nuovastagioneRouter = createTRPCRouter({
             "Impossibile preparare la nuova stagione, calendario non completato",
         };
       } else {
-        await prisma.$transaction([
-          prisma.statsP.deleteMany(),
-          prisma.statsD.deleteMany(),
-          prisma.statsC.deleteMany(),
-          prisma.statsA.deleteMany(),
-        ]);
+        // await prisma.$transaction([
+        //   prisma.statsP.deleteMany(),
+        //   prisma.statsD.deleteMany(),
+        //   prisma.statsC.deleteMany(),
+        //   prisma.statsA.deleteMany(),
+        // ]);
 
         await updateFase(2);
 
