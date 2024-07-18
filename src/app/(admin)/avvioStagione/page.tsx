@@ -64,15 +64,12 @@ export default function AvvioStagione() {
                 message = await preparaStagione.mutateAsync();
                 break;
             case 2:
-                message = await eliminaStatistiche.mutateAsync();
-                break;
-            case 3:
                 message = await preparaIdSquadre.mutateAsync();
                 break;
-            case 4:
+            case 3:
                 message = await creaPartite.mutateAsync();
                 break;
-            case 5:
+            case 4:
                 message = await creaClassifiche.mutateAsync();
                 break;
         }
