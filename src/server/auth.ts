@@ -6,14 +6,16 @@ import { computeMD5Hash } from '~/utils/hashPassword';
 import { RuoloUtente } from "~/utils/enums";
 import prisma from "~/utils/db";
 
-interface IUser extends DefaultUser {
-  ruolo?: RuoloUtente
-  idSquadra: number;
-  squadra: string;
-  presidente: string;
-}
 
 declare module "next-auth" {
+
+  interface IUser extends DefaultUser {
+    ruolo?: RuoloUtente
+    idSquadra: number;
+    squadra: string;
+    presidente: string;
+  }
+  
   interface User extends IUser {
     idSquadra: number;
   }
