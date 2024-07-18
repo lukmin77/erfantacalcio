@@ -6,11 +6,10 @@ import CheckIcon from '@mui/icons-material/CheckCircle';
 import { type iMessage } from "~/types/nuovastagione";
 import { Configurazione } from "~/config";
 
-export default function UploadVoti() {
+export default function AvvioStagione() {
     const faseNuovaStagione = api.nuovaStagione.getFaseAvvio.useQuery();
     const chiudiStagione = api.nuovaStagione.chiudiStagione.useMutation();
     const preparaStagione = api.nuovaStagione.preparaStagione.useMutation();
-    const eliminaStatistiche = api.nuovaStagione.eliminaStatistiche.useMutation();
     const preparaIdSquadre = api.nuovaStagione.preparaIdSquadre.useMutation();
     const creaPartite = api.nuovaStagione.creaPartite.useMutation();
     const creaClassifiche = api.nuovaStagione.creaClassifiche.useMutation();
@@ -24,18 +23,14 @@ export default function UploadVoti() {
     },
     {
         fase: 3,
-        label: 'Elimina statistiche'
-    },
-    {
-        fase: 4,
         label: `Sorteggia calendario: Cambia la stagione! Stagione configurata: ${Configurazione.stagione}`
     },
     {
-        fase: 5,
+        fase: 4,
         label: 'Crea partite'
     },
     {
-        fase: 6,
+        fase: 5,
         label: 'Crea classifiche'
     }];
     const [activeStep, setActiveStep] = useState(0);

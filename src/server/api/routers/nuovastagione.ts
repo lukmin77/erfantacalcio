@@ -143,43 +143,6 @@ export const nuovastagioneRouter = createTRPCRouter({
     }
   }),
 
-  eliminaStatistiche: adminProcedure.mutation<iMessage>(async () => {
-    try {
-      if ((await checkVotiUltimaGiornata()) === false) {
-        Logger.warn(
-          "Impossibile preparare la nuova stagione, calendario non completato"
-        );
-        return {
-          isError: true,
-          isComplete: true,
-          message:
-            "Impossibile preparare la nuova stagione, calendario non completato",
-        };
-      } else {
-        // await prisma.$transaction([
-        //   prisma.statsP.deleteMany(),
-        //   prisma.statsD.deleteMany(),
-        //   prisma.statsC.deleteMany(),
-        //   prisma.statsA.deleteMany(),
-        // ]);
-
-        await updateFase(2);
-
-        Logger.info(
-          `Azzeramento dati della scorsa stagione ${Configurazione.stagione}`
-        );
-        return {
-          isError: false,
-          isComplete: true,
-          message: `Azzeramento dati della scorsa stagione ${Configurazione.stagione}`,
-        };
-      }
-    } catch (error) {
-      Logger.error("Si è verificato un errore", error);
-      throw error;
-    }
-  }),
-
   preparaIdSquadre: adminProcedure.mutation<iMessage>(async () => {
     try {
       //get utenti
