@@ -84,7 +84,7 @@ export default function Calendario() {
         { key: "girone", type: "number", align: "left", header: "Girone" },
         { key: "gruppoFase", type: "string", align: "left", header: "Fase/Girone" },
         { key: "data", type: "date", align: "center", header: "Data" },
-        { key: "giornata", type: "nunber", align: "center", header: "Giornata" },
+        { key: "giornata", type: "number", align: "center", header: "Giornata" },
         { key: "isSovrapposta", type: "bool", align: "center", header: "Sovrapposta" },
         { key: "", type: "action", align: "center", width: "1%" }
     ];
