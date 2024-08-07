@@ -259,6 +259,8 @@ export default function Calendario() {
                                 onChange={handleInputChange} />
                             
                             <FormControlLabel sx={{ ml: 2, mr: 2 }} color='error' control={<Checkbox onChange={handleInputChange} color="success" name='isRecupero' checked={calendarioInModifica.isRecupero} value={calendarioInModifica.isRecupero} />} label={<Typography color='primary'>Da recuperare</Typography>} />
+                       <FormControlLabel sx={{ ml: 2, mr: 2 }} color='error' control={<Checkbox onChange={handleInputChange} color="success" name='isSovrapposta' checked={calendarioInModifica.isSovrapposta} value={calendarioInModifica.isSovrapposta} />} label={<Typography color='primary'>Sovrapposta</Typography>} />
+                       
                         </Grid>
                         <Grid item xs={6}>
                             <Button
