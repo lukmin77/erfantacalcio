@@ -80,7 +80,7 @@ export default function Calendario() {
     const columns: Column[] = [
         { key: "idCalendario", type: "number", align: "left", visible: false },
         { key: "nome", type: "string", align: "left", header: "Torneo", sortable: true },
-        { key: "giornataSerieA", type: "number", align: "left", header: "Serie A" },
+        { key: "giornataSerieA", type: "number", align: "left", header: "Serie A" , sortable: true},
         { key: "girone", type: "number", align: "left", header: "Girone" },
         { key: "gruppoFase", type: "string", align: "left", header: "Fase/Girone" },
         { key: "data", type: "date", align: "center", header: "Data" },
