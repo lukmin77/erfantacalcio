@@ -25,13 +25,13 @@ export default function SquadreCarousel({ onActionChange: onActionActive }: Squa
                     <CircularProgress color="warning" />
                 </Box>
             ) : (
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '2px', flexWrap: 'wrap' }}>
                     <Carousel autoPlay={false} swipe={true}>
                         {squadreList.data?.map((squadra, index) => (
-                            <Card key={index} sx={{ minWidth: 120, maxWidth: 345, marginBottom: '20px' }}>
+                            <Card key={index} sx={{ minWidth: 120, maxWidth: 345, marginBottom: '2px' }}>
                                 <CardMedia
                                     component="img"
-                                    height="120"
+                                    height="200"
                                     image={squadra.foto ?? ''}
                                     alt={squadra.squadra}
                                 />
