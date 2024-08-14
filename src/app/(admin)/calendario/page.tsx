@@ -11,6 +11,11 @@ import { convertFromDatetimeMUIToIso, convertFromIsoToDatetimeMUI } from '~/util
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import CheckIcon from '@mui/icons-material/CheckCircle';
 import { CircularProgress, Tooltip, Grid, Divider, Alert, Stack, TextField, Button, Box, Select, MenuItem, type SelectChangeEvent, FormControl, InputLabel, FormControlLabel, Checkbox, Typography } from "@mui/material";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
+import dayjs from 'dayjs';
+import 'dayjs/locale/it';
 
 const CalendarioSchema = z.object({
     idCalendario: z.number(),
@@ -149,151 +154,201 @@ export default function Calendario() {
     //#endregion
 
     return (
-        <>
-            {calendarioList.isLoading ? (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                    <CircularProgress color="info" />
-                </div>
-            ) : (
-                <DataTable
-                    title="Gestione Calendario"
-                    pagination={true}
-                    data={data}
-                    errorMessage={errorMessage}
-                    columns={columns}
-                    actionOptions={actionOptions}
-                />
-            )}
+      <>
+        {calendarioList.isLoading ? (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100vh",
+            }}
+          >
+            <CircularProgress color="info" />
+          </div>
+        ) : (
+          <DataTable
+            title="Gestione Calendario"
+            pagination={true}
+            data={data}
+            errorMessage={errorMessage}
+            columns={columns}
+            actionOptions={actionOptions}
+          />
+        )}
 
-            <Modal title="Modifica dati calendario" open={openModalEdit} onClose={handleModalClose} >
-                <Divider />
-                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                    <Grid container spacing={0}>
-                        <Grid item xs={12}>
-                            {errorMessageModal && (
-                                <Stack sx={{ width: '100%' }} spacing={0}>
-                                    <Alert icon={<CheckIcon fontSize="inherit" />} severity="error">{errorMessageModal}</Alert>
-                                </Stack>
-                            )}
-                        </Grid>
-                        <Grid item xs={12}>
-                            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                                <InputLabel id="select-label-torneo">Nome torneo</InputLabel>
-                                <Select size='small'
-                                    variant='outlined'
-                                    labelId="select-label-torneo"
-                                    label='Nome torneo'
-                                    margin='dense'
-                                    required
-                                    sx={{ m: 2 }}
-                                    name="idTorneo"
-                                    onChange={handleSelectChange}
-                                    value={torneiList && torneiList.data ? calendarioInModifica.idTorneo.toString() : ''}
-                                >
-                                    {torneiList?.data?.map(item => (
-                                        <MenuItem key={`torneiSlc_${item.idTorneo}`} value={item.idTorneo}>
-                                            {item.nome} {item.gruppoFase}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                            <TextField
-                                margin="normal"
-                                size='small'
-                                variant='outlined'
-                                required
-                                type='number'
-                                sx={{ m: 2 }}
-                                label='Giornata'
-                                name="giornata"
-                                value={calendarioInModifica.giornata}
-                                onChange={handleInputChange}
-                            />
-                            <TextField
-                                margin="normal"
-                                size='small'
-                                variant='outlined'
-                                required
-                                type='number'
-                                sx={{ m: 2 }}
-                                label='Giornata serie A'
-                                name="giornataSerieA"
-                                value={calendarioInModifica.giornataSerieA}
-                                autoFocus
-                                onChange={handleInputChange}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                margin="normal"
-                                size='small'
-                                variant='outlined'
-                                required
-                                type='datetime-local'
-                                sx={{ m: 2 }}
-                                label='Data'
-                                name="data"
-                                value={convertFromIsoToDatetimeMUI(calendarioInModifica.data)}
-                                onChange={handleInputChange}
-                            />
-                            <TextField
-                                margin="normal"
-                                size='small'
-                                variant='outlined'
-                                type='datetime-local'
-                                sx={{ m: 2 }}
-                                label='Data fine'
-                                name="dataFine"
-                                value={convertFromIsoToDatetimeMUI(calendarioInModifica.dataFine)}
-                                onChange={handleInputChange}
-                            />
-                            <TextField
-                                margin="normal"
-                                size='small'
-                                variant='outlined'
-                                type='number'
-                                sx={{ m: 2 }}
-                                label='Girone'
-                                name="girone"
-                                value={calendarioInModifica.girone}
-                                onChange={handleInputChange} />
-                            
-                            <FormControlLabel sx={{ ml: 2, mr: 2 }} color='error' control={<Checkbox onChange={handleInputChange} color="success" name='isRecupero' checked={calendarioInModifica.isRecupero} value={calendarioInModifica.isRecupero} />} label={<Typography color='primary'>Da recuperare</Typography>} />
-                       <FormControlLabel sx={{ ml: 2, mr: 2 }} color='error' control={<Checkbox onChange={handleInputChange} color="success" name='isSovrapposta' checked={calendarioInModifica.isSovrapposta} value={calendarioInModifica.isSovrapposta} />} label={<Typography color='primary'>Sovrapposta</Typography>} />
-                       
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Button
-                                type="submit"
-                                fullWidth
-                                color="info"
-                                variant="contained"
-                                sx={{ mt: 3, mb: 2 }}
-                            >
-                                Aggiorna dati
-                            </Button>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Button
-                                type="button"
-                                onClick={handleModalClose}
-                                fullWidth
-                                color="warning"
-                                variant="outlined"
-                                sx={{ mt: 3, mb: 2 }}
-                            >
-                                Annulla
-                            </Button>
-                        </Grid>
-                        <Grid item xs={12}>
-                            {messageModal && (
-                                <Stack sx={{ width: '100%' }} spacing={0}>
-                                    <Alert icon={<CheckIcon fontSize="inherit" />} severity="success">{messageModal}</Alert>
-                                </Stack>
-                            )}
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Modal >
-        </>);
+        <Modal
+          title="Modifica dati calendario"
+          open={openModalEdit}
+          onClose={handleModalClose}
+        >
+          <Divider />
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 1 }}
+          >
+            <Grid container spacing={0}>
+              <Grid item xs={12}>
+                {errorMessageModal && (
+                  <Stack sx={{ width: "100%" }} spacing={0}>
+                    <Alert
+                      icon={<CheckIcon fontSize="inherit" />}
+                      severity="error"
+                    >
+                      {errorMessageModal}
+                    </Alert>
+                  </Stack>
+                )}
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                  <InputLabel id="select-label-torneo">Nome torneo</InputLabel>
+                  <Select
+                    size="small"
+                    variant="outlined"
+                    labelId="select-label-torneo"
+                    label="Nome torneo"
+                    margin="dense"
+                    required
+                    sx={{ m: 2 }}
+                    name="idTorneo"
+                    onChange={handleSelectChange}
+                    value={
+                      torneiList && torneiList.data
+                        ? calendarioInModifica.idTorneo.toString()
+                        : ""
+                    }
+                  >
+                    {torneiList?.data?.map((item) => (
+                      <MenuItem
+                        key={`torneiSlc_${item.idTorneo}`}
+                        value={item.idTorneo}
+                      >
+                        {item.nome} {item.gruppoFase}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <TextField
+                  margin="normal"
+                  size="small"
+                  variant="outlined"
+                  required
+                  type="number"
+                  sx={{ m: 2 }}
+                  label="Giornata"
+                  name="giornata"
+                  value={calendarioInModifica.giornata}
+                  onChange={handleInputChange}
+                />
+                <TextField
+                  margin="normal"
+                  size="small"
+                  variant="outlined"
+                  required
+                  type="number"
+                  sx={{ m: 2 }}
+                  label="Giornata serie A"
+                  name="giornataSerieA"
+                  value={calendarioInModifica.giornataSerieA}
+                  autoFocus
+                  onChange={handleInputChange}
+                />
+                <TextField
+                  margin="normal"
+                  size="small"
+                  variant="outlined"
+                  type="number"
+                  sx={{ m: 2 }}
+                  label="Girone"
+                  name="girone"
+                  value={calendarioInModifica.girone}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='it'>
+                  <MobileDateTimePicker
+                    value={dayjs(
+                      convertFromIsoToDatetimeMUI(calendarioInModifica.data)
+                    )}
+                    onChange={(newValue) => setCalendarioInModifica({
+                        ...calendarioInModifica,
+                        data: newValue?.toISOString()
+                      })}
+                  />
+                </LocalizationProvider>
+                
+
+                <FormControlLabel
+                  sx={{ ml: 2, mr: 2 }}
+                  color="error"
+                  control={
+                    <Checkbox
+                      onChange={handleInputChange}
+                      color="success"
+                      name="isRecupero"
+                      checked={calendarioInModifica.isRecupero}
+                      value={calendarioInModifica.isRecupero}
+                    />
+                  }
+                  label={<Typography color="primary">Da recuperare</Typography>}
+                />
+                <FormControlLabel
+                  sx={{ ml: 2, mr: 2 }}
+                  color="error"
+                  control={
+                    <Checkbox
+                      onChange={handleInputChange}
+                      color="success"
+                      name="isSovrapposta"
+                      checked={calendarioInModifica.isSovrapposta}
+                      value={calendarioInModifica.isSovrapposta}
+                    />
+                  }
+                  label={<Typography color="primary">Sovrapposta</Typography>}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <Button
+                  type="submit"
+                  fullWidth
+                  color="info"
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                >
+                  Aggiorna dati
+                </Button>
+              </Grid>
+              <Grid item xs={6}>
+                <Button
+                  type="button"
+                  onClick={handleModalClose}
+                  fullWidth
+                  color="warning"
+                  variant="outlined"
+                  sx={{ mt: 3, mb: 2 }}
+                >
+                  Annulla
+                </Button>
+              </Grid>
+              <Grid item xs={12}>
+                {messageModal && (
+                  <Stack sx={{ width: "100%" }} spacing={0}>
+                    <Alert
+                      icon={<CheckIcon fontSize="inherit" />}
+                      severity="success"
+                    >
+                      {messageModal}
+                    </Alert>
+                  </Stack>
+                )}
+              </Grid>
+            </Grid>
+          </Box>
+        </Modal>
+      </>
+    );
 }
