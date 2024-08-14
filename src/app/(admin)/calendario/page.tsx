@@ -80,12 +80,12 @@ export default function Calendario() {
     const columns: Column[] = [
         { key: "idCalendario", type: "number", align: "left", visible: false },
         { key: "nome", type: "string", align: "left", header: "Torneo", sortable: true },
-        { key: "giornataSerieA", type: "number", align: "left", header: "Serie A" },
+        { key: "giornataSerieA", type: "number", align: "left", header: "Serie A" , sortable: true},
         { key: "girone", type: "number", align: "left", header: "Girone" },
         { key: "gruppoFase", type: "string", align: "left", header: "Fase/Girone" },
         { key: "data", type: "date", align: "center", header: "Data" },
-        { key: "dataFine", type: "date", align: "center", header: "Data fine" },
-        { key: "isRecupero", type: "bool", align: "center", header: "Recupero" },
+        { key: "giornata", type: "number", align: "center", header: "Giornata" },
+        { key: "isSovrapposta", type: "bool", align: "center", header: "Sovrapposta" },
         { key: "", type: "action", align: "center", width: "1%" }
     ];
 
@@ -259,6 +259,8 @@ export default function Calendario() {
                                 onChange={handleInputChange} />
                             
                             <FormControlLabel sx={{ ml: 2, mr: 2 }} color='error' control={<Checkbox onChange={handleInputChange} color="success" name='isRecupero' checked={calendarioInModifica.isRecupero} value={calendarioInModifica.isRecupero} />} label={<Typography color='primary'>Da recuperare</Typography>} />
+                       <FormControlLabel sx={{ ml: 2, mr: 2 }} color='error' control={<Checkbox onChange={handleInputChange} color="success" name='isSovrapposta' checked={calendarioInModifica.isSovrapposta} value={calendarioInModifica.isSovrapposta} />} label={<Typography color='primary'>Sovrapposta</Typography>} />
+                       
                         </Grid>
                         <Grid item xs={6}>
                             <Button

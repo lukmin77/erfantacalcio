@@ -141,6 +141,7 @@ export const calendarioRouter = createTRPCRouter({
       data: z.string().datetime().optional().nullable(),
       dataFine: z.string().datetime().optional().nullable(),
       isRecupero: z.boolean(),
+      isSovrapposta: z.boolean(),
     }))
     .mutation(async (opts) => {
       try {
@@ -154,6 +155,7 @@ export const calendarioRouter = createTRPCRouter({
             giornataSerieA: opts.input.giornataSerieA,
             girone: opts.input.girone,
             hasDaRecuperare: opts.input.isRecupero,
+            hasSovrapposta: opts.input.isSovrapposta,
             data: opts.input.data,
             dataFine: opts.input.dataFine,
           }
