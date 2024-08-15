@@ -135,6 +135,7 @@ export default function Calendario() {
             try {
                 await updateCalendario.mutateAsync(calendarioInModifica); 
                 setMessageModal('Salvataggio completato');
+                handleModalClose();
             } catch (error) {
                 setErrorMessageModal('Si è verificato un errore nel salvataggio del calendario');
             }
