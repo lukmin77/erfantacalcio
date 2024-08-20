@@ -326,14 +326,24 @@ export const votiRouter = createTRPCRouter({
       try {
         Logger.info(`Processing ${opts.input.voti.length} voti`);
         await Promise.all(opts.input.voti.map(async (v) => {
+          Logger.info(`Processing giocatore ${v.Nome}`);
           let idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;
           if (!idGiocatore) {
             idGiocatore = await createGiocatore(v.Nome, v.Ruolo);
           }
           if (await findLastTrasferimento(idGiocatore) === null) {
+            Logger.info(`processing idgiocatore: ${idGiocatore}`)
             const squadraSerieA = await findSquadraSerieA(v.Squadra);
-            if (squadraSerieA !== null)
-              await createTrasferimento(idGiocatore, squadraSerieA.idSquadraSerieA, squadraSerieA.nome);
+            if (squadraSerieA !== null) {
+              Logger.info(
+                `find squadra: ${squadraSerieA.idSquadraSerieA} ${squadraSerieA.nome}`
+              );
+              await createTrasferimento(
+                idGiocatore,
+                squadraSerieA.idSquadraSerieA,
+                squadraSerieA.nome
+              );
+            }
           }
 
           const idVoto = await findIdVoto(opts.input.idCalendario, idGiocatore)
