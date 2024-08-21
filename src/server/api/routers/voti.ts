@@ -331,12 +331,9 @@ export const votiRouter = createTRPCRouter({
             idGiocatore = await createGiocatore(v.Nome, v.Ruolo);
           }
           if (await findLastTrasferimento(idGiocatore) === null) {
-            Logger.info(`processing idgiocatore: ${idGiocatore}, nome: ${v.Nome}`)
             const squadraSerieA = await findSquadraSerieA(v.Squadra);
             if (squadraSerieA !== null) {
-              Logger.info(
-                `find squadra: ${squadraSerieA.idSquadraSerieA} ${squadraSerieA.nome}`
-              );
+              Logger.info(`processing idgiocatore: ${idGiocatore}, nome: ${v.Nome}, squadra: ${squadraSerieA.idSquadraSerieA} ${squadraSerieA.nome}`);
               await createTrasferimento(
                 idGiocatore,
                 squadraSerieA.idSquadraSerieA,
@@ -629,7 +626,7 @@ async function createTrasferimento(idGiocatore: number, idSquadraSerieA: number,
     });
   }
   catch (error) {
-    Logger.error('Si è verificato un errore:', idGiocatore, idSquadraSerieA, nomeSquadraSerieA, error);
+    Logger.error('Si è verificato un errore in createTrasferimento:', idGiocatore, idSquadraSerieA, nomeSquadraSerieA, error);
     throw error;
   }
 }
