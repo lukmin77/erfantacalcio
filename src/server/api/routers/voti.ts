@@ -325,11 +325,12 @@ export const votiRouter = createTRPCRouter({
     .mutation(async (opts) => {
       try {
         Logger.info(`Processing ${opts.input.voti.length} voti`);
-        await Promise.all(opts.input.voti.map(async (v) => {
+        for (const v of opts.input.voti) {
           let idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore;
           if (!idGiocatore) {
             idGiocatore = await createGiocatore(v.Nome, v.Ruolo);
           }
+        
           if (await findLastTrasferimento(idGiocatore) === null) {
             const squadraSerieA = await findSquadraSerieA(v.Squadra);
             if (squadraSerieA !== null) {
@@ -341,13 +342,15 @@ export const votiRouter = createTRPCRouter({
               );
             }
           }
-
-          const idVoto = await findIdVoto(opts.input.idCalendario, idGiocatore)
-          if (idVoto)
+        
+          const idVoto = await findIdVoto(opts.input.idCalendario, idGiocatore);
+          if (idVoto) {
             await updateVoto(idVoto, v);
-          else
+          } else {
             await createVoto(opts.input.idCalendario, idGiocatore, v);
-        }));
+          }
+        }
+        
         Logger.info(`Process voti successfull completed`);
         
       } catch (error) {
