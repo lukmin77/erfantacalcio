@@ -627,6 +627,7 @@ async function createTrasferimento(idGiocatore: number, idSquadraSerieA: number,
         nomeSquadraSerieA: nomeSquadraSerieA
       }
     });
+    Logger.info('Inserito in Trasferimenti:', { idGiocatore: idGiocatore, idsquadraSerieA: idSquadraSerieA, nomeSquadraSerieA: nomeSquadraSerieA, error: error });
   }
   catch (error) {
     Logger.error('Si è verificato un errore in createTrasferimento:', { idGiocatore: idGiocatore, idsquadraSerieA: idSquadraSerieA, nomeSquadraSerieA: nomeSquadraSerieA, error: error });
