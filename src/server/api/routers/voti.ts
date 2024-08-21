@@ -594,7 +594,7 @@ async function findLastTrasferimento(idGiocatore: number) {
     return trasferimento;
   }
   catch (error) {
-    Logger.error('Si è verificato un errore', error);
+    Logger.error('Si è verificato un errore:', idGiocatore, error);
     throw error;
   }
 }
@@ -630,7 +630,7 @@ async function createTrasferimento(idGiocatore: number, idSquadraSerieA: number,
     });
   }
   catch (error) {
-    Logger.error('Si è verificato un errore', error);
+    Logger.error('Si è verificato un errore:', idGiocatore, idSquadraSerieA, nomeSquadraSerieA, error);
     throw error;
   }
 }
