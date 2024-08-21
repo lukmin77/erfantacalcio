@@ -629,7 +629,7 @@ async function createTrasferimento(idGiocatore: number, idSquadraSerieA: number,
     });
   }
   catch (error) {
-    Logger.error('Si è verificato un errore in createTrasferimento:', idGiocatore, idSquadraSerieA, nomeSquadraSerieA, error);
+    Logger.error('Si è verificato un errore in createTrasferimento:', { idGiocatore: idGiocatore, idsquadraSerieA: idSquadraSerieA, nomeSquadraSerieA: nomeSquadraSerieA, error: error });
     throw error;
   }
 }
