@@ -452,15 +452,16 @@ async function readFileVoti(filePath: string): Promise<iVotoGiocatore[]> {
             Ruolo: normalizeNomeGiocatore(line[`Col${Configurazione.pfColumnRuolo}`] ?? ''),
             Squadra: line[`Col${Configurazione.pfColumnSquadra}`] ?? '',
             Voto: formatToDecimalValue(line[`Col${Configurazione.pfColumnVoto}`] ?? '0'),
-            GolSegnati: formatToDecimalValue(line[`${Configurazione.pfColumnGolFatti}`] ?? '0'),
-            GolSubiti: formatToDecimalValue(line[`${Configurazione.pfColumnGolSubiti}`] ?? '0'),
-            Assist: formatToDecimalValue(line[`${Configurazione.pfColumnAssist}`] ?? '0'),
-            Ammonizione: formatToDecimalValue(line[`${Configurazione.pfColumnAmmo}`] ?? '0'),
-            Espulsione: formatToDecimalValue(line[`${Configurazione.pfColumnEspu}`] ?? '0'),
-            Autogol: formatToDecimalValue(line[`${Configurazione.pfColumnAutogol}`] ?? '0'),
-            RigoriErrati: formatToDecimalValue(line[`${Configurazione.pfColumnRigErrato}`] ?? '0'),
-            RigoriParati: formatToDecimalValue(line[`${Configurazione.pfColumnRigParato}`] ?? '0'),
+            GolSegnati: formatToDecimalValue(line[`Col${Configurazione.pfColumnGolFatti}`] ?? '0'),
+            GolSubiti: formatToDecimalValue(line[`Col${Configurazione.pfColumnGolSubiti}`] ?? '0'),
+            Assist: formatToDecimalValue(line[`Col${Configurazione.pfColumnAssist}`] ?? '0'),
+            Ammonizione: formatToDecimalValue(line[`Col${Configurazione.pfColumnAmmo}`] ?? '0'),
+            Espulsione: formatToDecimalValue(line[`Col${Configurazione.pfColumnEspu}`] ?? '0'),
+            Autogol: formatToDecimalValue(line[`Col${Configurazione.pfColumnAutogol}`] ?? '0'),
+            RigoriErrati: formatToDecimalValue(line[`Col${Configurazione.pfColumnRigErrato}`] ?? '0'),
+            RigoriParati: formatToDecimalValue(line[`Col${Configurazione.pfColumnRigParato}`] ?? '0'),
           });
+          Logger.info('voti:', { voti: voti });
         }
       },
     }, (error) => {
@@ -482,7 +483,7 @@ async function readFileVotiVercel(fileUrl: string): Promise<iVotoGiocatore[]> {
   }
 
   try {
-    Logger.info('fileUrl:', fileUrl);
+    Logger.info("fileUrl:", { fileUrl: fileUrl });
     const response = await fetch(fileUrl);
     if (!response.ok) {
       throw new Error(`Failed to fetch file: ${response.statusText}`);
@@ -502,15 +503,16 @@ async function readFileVotiVercel(fileUrl: string): Promise<iVotoGiocatore[]> {
               Ruolo: normalizeNomeGiocatore(line[`Col${Configurazione.pfColumnRuolo}`] ?? ''),
               Squadra: line[`Col${Configurazione.pfColumnSquadra}`] ?? '',
               Voto: formatToDecimalValue(line[`Col${Configurazione.pfColumnVoto}`] ?? '0'),
-              GolSegnati: formatToDecimalValue(line[`${Configurazione.pfColumnGolFatti}`] ?? '0'),
-              GolSubiti: formatToDecimalValue(line[`${Configurazione.pfColumnGolSubiti}`] ?? '0'),
-              Assist: formatToDecimalValue(line[`${Configurazione.pfColumnAssist}`] ?? '0'),
-              Ammonizione: formatToDecimalValue(line[`${Configurazione.pfColumnAmmo}`] ?? '0'),
-              Espulsione: formatToDecimalValue(line[`${Configurazione.pfColumnEspu}`] ?? '0'),
-              Autogol: formatToDecimalValue(line[`${Configurazione.pfColumnAutogol}`] ?? '0'),
-              RigoriErrati: formatToDecimalValue(line[`${Configurazione.pfColumnRigErrato}`] ?? '0'),
-              RigoriParati: formatToDecimalValue(line[`${Configurazione.pfColumnRigParato}`] ?? '0'),
+              GolSegnati: formatToDecimalValue(line[`Col${Configurazione.pfColumnGolFatti}`] ?? '0'),
+              GolSubiti: formatToDecimalValue(line[`Col${Configurazione.pfColumnGolSubiti}`] ?? '0'),
+              Assist: formatToDecimalValue(line[`Col${Configurazione.pfColumnAssist}`] ?? '0'),
+              Ammonizione: formatToDecimalValue(line[`Col${Configurazione.pfColumnAmmo}`] ?? '0'),
+              Espulsione: formatToDecimalValue(line[`Col${Configurazione.pfColumnEspu}`] ?? '0'),
+              Autogol: formatToDecimalValue(line[`Col${Configurazione.pfColumnAutogol}`] ?? '0'),
+              RigoriErrati: formatToDecimalValue(line[`Col${Configurazione.pfColumnRigErrato}`] ?? '0'),
+              RigoriParati: formatToDecimalValue(line[`Col${Configurazione.pfColumnRigParato}`] ?? '0'),
             });
+            Logger.info('voti:', { voti: voti });
           }
         },
       }, (error) => {
@@ -618,7 +620,8 @@ async function findSquadraSerieA(nome: string) {
 
 async function createTrasferimento(idGiocatore: number, idSquadraSerieA: number, nomeSquadraSerieA: string) {
   try {
-    await prisma.trasferimenti.create({
+    //Logger.info('Pre-inserimento in Trasferimenti:', { idGiocatore: idGiocatore, idsquadraSerieA: idSquadraSerieA, nomeSquadraSerieA: nomeSquadraSerieA });
+    const trasferimento = await prisma.trasferimenti.create({
       data: {
         idGiocatore: idGiocatore,
         costo: 0,
@@ -627,7 +630,7 @@ async function createTrasferimento(idGiocatore: number, idSquadraSerieA: number,
         nomeSquadraSerieA: nomeSquadraSerieA
       }
     });
-    Logger.info('Inserito in Trasferimenti:', { idGiocatore: idGiocatore, idsquadraSerieA: idSquadraSerieA, nomeSquadraSerieA: nomeSquadraSerieA });
+    Logger.info('Inserito in Trasferimenti:', { trasferimento });
   }
   catch (error) {
     Logger.error('Si è verificato un errore in createTrasferimento:', { idGiocatore: idGiocatore, idsquadraSerieA: idSquadraSerieA, nomeSquadraSerieA: nomeSquadraSerieA, error: error });
