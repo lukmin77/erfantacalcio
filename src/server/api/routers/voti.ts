@@ -461,7 +461,7 @@ async function readFileVoti(filePath: string): Promise<iVotoGiocatore[]> {
             RigoriErrati: formatToDecimalValue(line[`Col${Configurazione.pfColumnRigErrato}`] ?? '0'),
             RigoriParati: formatToDecimalValue(line[`Col${Configurazione.pfColumnRigParato}`] ?? '0'),
           });
-          Logger.info('voti:', { voti: voti });
+          //Logger.info('voti:', { voti: voti });
         }
       },
     }, (error) => {
@@ -512,7 +512,7 @@ async function readFileVotiVercel(fileUrl: string): Promise<iVotoGiocatore[]> {
               RigoriErrati: formatToDecimalValue(line[`Col${Configurazione.pfColumnRigErrato}`] ?? '0'),
               RigoriParati: formatToDecimalValue(line[`Col${Configurazione.pfColumnRigParato}`] ?? '0'),
             });
-            Logger.info('voti:', { voti: voti });
+            //Logger.info('voti:', { voti: voti });
           }
         },
       }, (error) => {
@@ -630,7 +630,7 @@ async function createTrasferimento(idGiocatore: number, idSquadraSerieA: number,
         nomeSquadraSerieA: nomeSquadraSerieA
       }
     });
-    Logger.info('Inserito in Trasferimenti:', { trasferimento });
+    //Logger.info('Inserito in Trasferimenti:', { trasferimento });
   }
   catch (error) {
     Logger.error('Si è verificato un errore in createTrasferimento:', { idGiocatore: idGiocatore, idsquadraSerieA: idSquadraSerieA, nomeSquadraSerieA: nomeSquadraSerieA, error: error });
