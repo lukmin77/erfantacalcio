@@ -228,7 +228,7 @@ export default function UploadVoti() {
     };
 
     async function processRecords(voti: iVotoGiocatore[]): Promise<void> {
-        const chunkSize = 20;
+        const chunkSize = 10;
         const idCalendario = selectedIdCalendario ?? 0;
     
         // Itera su ciascun blocco e chiama mutateAsync
