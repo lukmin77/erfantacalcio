@@ -189,7 +189,7 @@ export default function UploadVoti() {
                                 const voti = await readVoti.mutateAsync({
                                     fileUrl: serverPathfilename
                                 });
-                                setProgress(35);
+                                setProgress(75);
                                 await processRecords(voti);
                                 setProgress(80);
                                 await refreshStats.mutateAsync({ ruolo: 'P' });
