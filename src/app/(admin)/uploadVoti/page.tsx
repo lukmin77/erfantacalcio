@@ -189,7 +189,6 @@ export default function UploadVoti() {
                                 const voti = await readVoti.mutateAsync({
                                     fileUrl: serverPathfilename
                                 });
-                                setProgress(75);
                                 await processRecords(voti);
                                 setProgress(80);
                                 await refreshStats.mutateAsync({ ruolo: 'P' });
@@ -230,7 +229,7 @@ export default function UploadVoti() {
     async function processRecords(voti: iVotoGiocatore[]): Promise<void> {
         const chunkSize = 10;
         const idCalendario = selectedIdCalendario ?? 0;
-    
+        const progressVoti = (chunkSize * 75) / voti.length;
         // Itera su ciascun blocco e chiama mutateAsync
         for (let i = 0; i < voti.length; i += chunkSize) {
             const chunk = voti.slice(i, i + chunkSize);
@@ -238,6 +237,7 @@ export default function UploadVoti() {
                 idCalendario: idCalendario,
                 voti: chunk
             });
+            setProgress(progressVoti);
         }
     }
 
