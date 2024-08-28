@@ -229,10 +229,10 @@ export default function UploadVoti() {
     async function processRecords(voti: iVotoGiocatore[]): Promise<void> {
         const chunkSize = 10;
         const idCalendario = selectedIdCalendario ?? 0;
-        const progressVoti = (chunkSize * 75) / voti.length;
         // Itera su ciascun blocco e chiama mutateAsync
         for (let i = 0; i < voti.length; i += chunkSize) {
             const chunk = voti.slice(i, i + chunkSize);
+            const progressVoti = ((i * 75) / voti.length) + 30;
             await processVoti.mutateAsync({
                 idCalendario: idCalendario,
                 voti: chunk
