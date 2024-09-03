@@ -26,7 +26,7 @@ export default function Squadre({ onActionChange: onActionActive }: SquadreProps
             ) : (
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
                         {squadreList.data?.map((squadra, index) => (
-                            <Card key={index} sx={{ minWidth: 130, maxWidth: 345, marginBottom: '3px' }}>
+                            <Card key={index} sx={{ minWidth: 130, maxWidth: 130, marginBottom: '3px' }}>
                                 <CardMedia
                                     component="img"
                                     height="90"
