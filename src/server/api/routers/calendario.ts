@@ -424,27 +424,27 @@ export const calendarioRouter = createTRPCRouter({
     }),
 });
 
-async function getOrdineAttuale() {
-  const currentDateMinus = new Date();
-  currentDateMinus.setDate(currentDateMinus.getDate() - 10);
-  const currentDatePlus = new Date();
-  currentDatePlus.setDate(currentDateMinus.getDate() + 10);
-  const query = await prisma.calendario.findFirst({
-    select: {
-      ordine: true
-    },
-    where: {
-      AND: [
-        { data: { 'gte': currentDateMinus } },
-        { data: { 'lte': currentDatePlus } },
-        { giornata: { 'gt': 0 } },
-        { girone: { 'gt': 0 } }
-      ]
-    },
-    orderBy: {
-      ordine: 'desc'
-    }
-  });
-  return query?.ordine ?? 38;
-}
+// async function getOrdineAttuale() {
+//   const currentDateMinus = new Date();
+//   currentDateMinus.setDate(currentDateMinus.getDate() - 10);
+//   const currentDatePlus = new Date();
+//   currentDatePlus.setDate(currentDateMinus.getDate() + 10);
+//   const query = await prisma.calendario.findFirst({
+//     select: {
+//       ordine: true
+//     },
+//     where: {
+//       AND: [
+//         { data: { 'gte': currentDateMinus } },
+//         { data: { 'lte': currentDatePlus } },
+//         { giornata: { 'gt': 0 } },
+//         { girone: { 'gt': 0 } }
+//       ]
+//     },
+//     orderBy: {
+//       ordine: 'desc'
+//     }
+//   });
+//   return query?.ordine ?? 38;
+// }
 
