@@ -381,7 +381,11 @@ export const calendarioRouter = createTRPCRouter({
   listAttuale: publicProcedure
     .query(async () => {
       try {
-        const ordine = await getOrdineAttuale();
+        //const ordine = await getOrdineAttuale();
+        const currentDateMinus = new Date();
+        currentDateMinus.setDate(currentDateMinus.getDate() - 10);
+        const currentDatePlus = new Date();
+        currentDatePlus.setDate(currentDateMinus.getDate() + 10);
         const result = await prisma.calendario.findMany({
           select: {
             idCalendario: true, giornata: true, giornataSerieA: true, ordine: true, data: true, dataFine: true, hasSovrapposta: true, girone: true, hasGiocata: true, hasDaRecuperare: true,
@@ -404,8 +408,8 @@ export const calendarioRouter = createTRPCRouter({
             AND: [
               { girone: { 'gt': 0 } },
               { giornata: { 'gt': 0 } },
-              { ordine: { 'gt': ordine - 2 } },
-              { ordine: { 'lt': ordine + 3 } }
+              { data: { 'gte': currentDateMinus } },
+              { data: { 'lte': currentDatePlus } },
             ]
           },
           orderBy: [{ ordine: 'asc' }, { idTorneo: 'asc' }]
@@ -421,13 +425,18 @@ export const calendarioRouter = createTRPCRouter({
 });
 
 async function getOrdineAttuale() {
+  const currentDateMinus = new Date();
+  currentDateMinus.setDate(currentDateMinus.getDate() - 10);
+  const currentDatePlus = new Date();
+  currentDatePlus.setDate(currentDateMinus.getDate() + 10);
   const query = await prisma.calendario.findFirst({
     select: {
       ordine: true
     },
     where: {
       AND: [
-        { data: { 'lt': toLocaleDateTime(new Date()) } },
+        { data: { 'gte': currentDateMinus } },
+        { data: { 'lte': currentDatePlus } },
         { giornata: { 'gt': 0 } },
         { girone: { 'gt': 0 } }
       ]
