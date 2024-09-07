@@ -372,6 +372,7 @@ function Giocatori({ onActionChange: onActionActive, idGiocatore, removeNav }: G
                     )}
                 </>
             )}
+            <Grid item xs={12} minHeight={30}></Grid>
         </Grid>
     )
 
