@@ -497,7 +497,7 @@ export default function Giocatori() {
                                                 id="dataAcquisto"
                                                 label='Data Acquisto'
                                                 name="dataAcquisto"
-                                                value={dayjs(trasferimento.dataAcquisto).toISOString()}
+                                                value={dayjs(trasferimento.dataAcquisto)}
                                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleInputChange(event, 'trasferimento')}
                                             />
                                             <TextField
@@ -510,7 +510,7 @@ export default function Giocatori() {
                                                 id="dataCessione"
                                                 //label='Data Cessione'
                                                 name="dataCessione"
-                                                value={trasferimento.dataCessione ? dayjs(trasferimento.dataCessione).toISOString() : ''}
+                                                value={trasferimento.dataCessione ? dayjs(trasferimento.dataCessione) : ''}
                                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleInputChange(event, 'trasferimento')}
                                             />
                                         </Stack>
