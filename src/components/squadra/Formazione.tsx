@@ -6,12 +6,12 @@ import { FrameType } from '~/utils/enums';
 import React, { useEffect, useRef, useState } from "react";
 import { type GiornataType, type Moduli } from "~/types/common";
 import { convertiStringaInRuolo, moduliList, moduloDefault, ModuloPositions, ruoliList } from "~/utils/helper";
-import { convertFromIsoToDatetime, toLocaleDateTime } from "~/utils/dateUtils";
 import { type GiocatoreFormazioneType, type GiocatoreType } from "~/types/squadre";
 import Draggable from 'react-draggable';
 import Image from "next/image";
 import Giocatori from "../giocatori/Giocatori";
 import Modal from "../modal/Modal";
+import dayjs from "dayjs";
 
 interface FormazioneProps {
     onActionChange: (action: FrameType) => void;
@@ -378,8 +378,7 @@ function Formazione({ onActionChange: onActionActive, idSquadra, squadra }: Form
     }
 
     function checkDataFormazione(dataIso: string | undefined) {
-        const dataCalendario = convertFromIsoToDatetime(dataIso);
-        return dataCalendario && dataCalendario >= toLocaleDateTime(new Date());
+        return dayjs(dataIso).toDate() >= dayjs(new Date()).toDate();
     }
 
     const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {

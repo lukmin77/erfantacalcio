@@ -5,7 +5,6 @@ import DataTable, { type Column, type ActionOptions } from "~/components/tables/
 import Modal from "~/components/modal/Modal";
 import { z } from "zod";
 import { type CalendarioType } from '~/types/calendario';
-import { convertFromDatetimeMUIToIso, convertFromIsoToDatetimeMUI } from '~/utils/dateUtils';
 
 //import material ui
 import EditNoteIcon from '@mui/icons-material/EditNote';
@@ -145,7 +144,7 @@ export default function Calendario() {
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = event.currentTarget
         console.log(event.currentTarget);
-        setCalendarioInModifica(prevState => ({ ...prevState, [name]: type === 'number' ? +value : type === 'checkbox' ? checked : type === 'datetime-local' ? convertFromDatetimeMUIToIso(value) : value }));
+        setCalendarioInModifica(prevState => ({ ...prevState, [name]: type === 'number' ? +value : type === 'checkbox' ? checked : type === 'datetime-local' ? dayjs(value).toISOString() : value }));
     };
 
     const handleSelectChange = (event: SelectChangeEvent) => {
@@ -272,9 +271,7 @@ export default function Calendario() {
               <Grid item xs={12}>
                 <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='it'>
                   <MobileDateTimePicker
-                    value={dayjs(
-                      convertFromIsoToDatetimeMUI(calendarioInModifica.data)
-                    )}
+                    value={dayjs(calendarioInModifica.data)}
                     onChange={(newValue) => setCalendarioInModifica({
                         ...calendarioInModifica,
                         data: newValue?.toISOString()

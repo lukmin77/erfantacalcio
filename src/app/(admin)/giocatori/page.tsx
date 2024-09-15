@@ -8,10 +8,10 @@ import { type GiocatoreType } from "~/types/giocatori";
 import { type trasferimentoType, type trasferimentoListType } from "~/types/trasferimenti";
 import { api } from "~/utils/api";
 import { ruoliList, getRuoloEsteso } from "~/utils/helper";
-import { convertFromIsoToDatetime, convertFromIsoToDatetimeMUI, toLocaleDateTime } from "~/utils/dateUtils";
 import CheckIcon from '@mui/icons-material/CheckCircle';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import { Configurazione } from "~/config";
+import dayjs from "dayjs";
 
 export default function Giocatori() {
 
@@ -68,7 +68,7 @@ export default function Giocatori() {
         idSquadra: null,
         idSquadraSerieA: null,
         costo: 0,
-        dataAcquisto: toLocaleDateTime(new Date()),
+        dataAcquisto: dayjs(new Date()).toDate(),
         dataCessione: null
     };
     const [trasferimento, setTrasferimento] = useState<trasferimentoType>(defaultTrasferimento);
@@ -309,9 +309,9 @@ export default function Giocatori() {
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>, form: 'anagrafica' | 'trasferimento') => {
         const { name, value, type, checked } = event.currentTarget
         if (form === 'anagrafica')
-            setGiocatore(prevState => ({ ...prevState, [name]: type === 'number' ? +value : type === 'checkbox' ? checked : type === 'datetime-local' ? convertFromIsoToDatetime(value) : value }));
+            setGiocatore(prevState => ({ ...prevState, [name]: type === 'number' ? +value : type === 'checkbox' ? checked : type === 'datetime-local' ? dayjs(value).toISOString() : value }));
         if (form === 'trasferimento')
-            setTrasferimento(prevState => ({ ...prevState, [name]: type === 'number' ? +value : type === 'checkbox' ? checked : type === 'datetime-local' ? convertFromIsoToDatetime(value) : value }));
+            setTrasferimento(prevState => ({ ...prevState, [name]: type === 'number' ? +value : type === 'checkbox' ? checked : type === 'datetime-local' ? dayjs(value).toISOString() : value }));
     };
 
     const handleSelectChange = (event: SelectChangeEvent, form: 'anagrafica' | 'trasferimento') => {
@@ -497,7 +497,7 @@ export default function Giocatori() {
                                                 id="dataAcquisto"
                                                 label='Data Acquisto'
                                                 name="dataAcquisto"
-                                                value={convertFromIsoToDatetimeMUI(trasferimento.dataAcquisto.toISOString())}
+                                                value={dayjs(trasferimento.dataAcquisto).toISOString()}
                                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleInputChange(event, 'trasferimento')}
                                             />
                                             <TextField
@@ -510,7 +510,7 @@ export default function Giocatori() {
                                                 id="dataCessione"
                                                 //label='Data Cessione'
                                                 name="dataCessione"
-                                                value={convertFromIsoToDatetimeMUI(trasferimento.dataCessione?.toISOString()) ?? ''}
+                                                value={dayjs(trasferimento.dataCessione).toISOString()}
                                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleInputChange(event, 'trasferimento')}
                                             />
                                         </Stack>

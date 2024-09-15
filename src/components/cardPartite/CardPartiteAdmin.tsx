@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardContent, Typography, Stack, TextField, Divider, Button, Alert, CardActions, Checkbox, FormControlLabel, Paper } from '@mui/material';
 import { type PartitaAdminType, type GiornataAdminType} from '~/types/risultati';
 import { z } from 'zod';
-import { convertFromDatetimeMUIToIso } from '~/utils/dateUtils';
 import { api } from "~/utils/api";
 import CheckIcon from '@mui/icons-material/CheckCircle';
+import dayjs from 'dayjs';
 
 interface GiornataCardProps {
     giornata: GiornataAdminType;
@@ -41,7 +41,7 @@ function CardPartiteAdmin({ giornata }: GiornataCardProps) {
             if (partita.idPartita === idPartita) {
                 return {
                     ...partita,
-                    [name]: type === 'number' ? +value : type === 'datetime-local' ? convertFromDatetimeMUIToIso(value) : value 
+                    [name]: type === 'number' ? +value : type === 'datetime-local' ? dayjs(value).toISOString() : value 
                 };
             }
             return partita; // Altrimenti, ritorna la partita immutata

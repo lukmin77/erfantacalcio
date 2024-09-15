@@ -10,7 +10,6 @@ import {
   adminProcedure
 } from "~/server/api/trpc";
 import { type CalendarioType } from '~/types/calendario';
-import { toLocaleDateTime } from "~/utils/dateUtils";
 
 export const calendarioRouter = createTRPCRouter({
 
