@@ -32,30 +32,6 @@ export function convertFromIsoToDatetimeMUI(dataISO: string | undefined | null) 
 
 }
 
-export function convertFromIsoToDatetime(dataISO: string | undefined | null) {
-    if (dataISO) {
-        return new Date(dataISO);
-    }
-    else
-        return null;
-
-}
-
-export function convertFromDatetimeMUIToIso(materialUIDate: string | undefined): string | null {
-    if (!materialUIDate) {
-        return null;
-    }
-
-    const [datePart, timePart] = materialUIDate.split('T');
-    if (!datePart || !timePart) {
-        return null;
-    }
-
-    const [year, month, day] = datePart.split('-').map(part => parseInt(part, 10));
-    const [hours, minutes] = timePart.split(':').map(part => parseInt(part, 10));
-
-    return new Date(year ?? 1900, month ?? 1 - 1, day, hours, minutes).toISOString();
-}
 
 export function formatDateFromIso(dataISO: string | undefined | null, stringFormat: string) {
         return dataISO ? format(parseISO(dataISO), stringFormat) : '';

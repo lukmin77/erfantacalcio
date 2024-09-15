@@ -12,6 +12,7 @@ import CheckIcon from '@mui/icons-material/CheckCircle';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import { Configurazione } from "~/config";
 import dayjs from "dayjs";
+import { convertFromIsoToDatetimeMUI } from "~/utils/dateUtils";
 
 export default function Giocatori() {
 
@@ -497,7 +498,7 @@ export default function Giocatori() {
                                                 id="dataAcquisto"
                                                 label='Data Acquisto'
                                                 name="dataAcquisto"
-                                                value={dayjs(trasferimento.dataAcquisto)}
+                                                value={convertFromIsoToDatetimeMUI(dayjs(trasferimento.dataAcquisto).toISOString())}
                                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleInputChange(event, 'trasferimento')}
                                             />
                                             <TextField
@@ -510,7 +511,7 @@ export default function Giocatori() {
                                                 id="dataCessione"
                                                 //label='Data Cessione'
                                                 name="dataCessione"
-                                                value={trasferimento.dataCessione ? dayjs(trasferimento.dataCessione) : ''}
+                                                value={trasferimento.dataCessione ? convertFromIsoToDatetimeMUI(dayjs(trasferimento.dataCessione).toISOString()) : ''}
                                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleInputChange(event, 'trasferimento')}
                                             />
                                         </Stack>
