@@ -511,7 +511,7 @@ export default function Giocatori() {
                                                 id="dataCessione"
                                                 //label='Data Cessione'
                                                 name="dataCessione"
-                                                value={trasferimento.dataCessione ? convertFromIsoToDatetimeMUI(dayjs(trasferimento.dataCessione).toISOString()) : ''}
+                                                value={trasferimento.dataCessione !== null ? convertFromIsoToDatetimeMUI(dayjs(trasferimento.dataCessione).toISOString()) : null}
                                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleInputChange(event, 'trasferimento')}
                                             />
                                         </Stack>

@@ -69,7 +69,7 @@ export async function chiudiTrasferimentoGiocatore(idGiocatore: number, chiusura
                 //eseguo update del trasferimento con datacessione odierna
                 await prisma.trasferimenti.update({
                     data: {
-                        dataCessione: toLocaleDateTime(new Date()),
+                        dataCessione: new Date(),
                         nomeSquadraSerieA: oldTrasferimento.SquadreSerieA?.nome,
                         nomeSquadra: oldTrasferimento.Utenti?.nomeSquadra,
                         media: oldStatistica.mediaVoto,
@@ -89,7 +89,7 @@ export async function chiudiTrasferimentoGiocatore(idGiocatore: number, chiusura
                 //eseguo update del trasferimento con datacessione odierna
                 await prisma.trasferimenti.update({
                     data: {
-                        dataCessione: toLocaleDateTime(new Date()),
+                        dataCessione: new Date(),
                         nomeSquadraSerieA: oldTrasferimento.SquadreSerieA?.nome,
                         nomeSquadra: oldTrasferimento.Utenti?.nomeSquadra,
                         idSquadra: chiusuraStagione ? null : oldTrasferimento.Utenti?.idUtente
@@ -106,7 +106,7 @@ export async function chiudiTrasferimentoGiocatore(idGiocatore: number, chiusura
             //eseguo update del trasferimento con datacessione odierna
             await prisma.trasferimenti.updateMany({
                 data: {
-                    dataCessione: toLocaleDateTime(new Date()),
+                    dataCessione: new Date(),
                     nomeSquadra: '',
                     nomeSquadraSerieA: ''
                 },
