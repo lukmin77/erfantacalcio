@@ -310,9 +310,9 @@ export default function Giocatori() {
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>, form: 'anagrafica' | 'trasferimento') => {
         const { name, value, type, checked } = event.currentTarget
         if (form === 'anagrafica')
-            setGiocatore(prevState => ({ ...prevState, [name]: type === 'number' ? +value : type === 'checkbox' ? checked : type === 'datetime-local' ? dayjs(value).toISOString() : value }));
+            setGiocatore(prevState => ({ ...prevState, [name]: type === 'number' ? +value : type === 'checkbox' ? checked : type === 'datetime-local' ? dayjs(value).toDate() : value }));
         if (form === 'trasferimento')
-            setTrasferimento(prevState => ({ ...prevState, [name]: type === 'number' ? +value : type === 'checkbox' ? checked : type === 'datetime-local' ? dayjs(value).toISOString() : value }));
+            setTrasferimento(prevState => ({ ...prevState, [name]: type === 'number' ? +value : type === 'checkbox' ? checked : type === 'datetime-local' ? dayjs(value).toDate() : value }));
     };
 
     const handleSelectChange = (event: SelectChangeEvent, form: 'anagrafica' | 'trasferimento') => {
