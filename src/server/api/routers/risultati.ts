@@ -372,7 +372,11 @@ async function UpdateClassifica(idSquadra: number, idTorneo: number) {
           { idTorneo: idTorneo },
           { hasGiocata: true }
         ]
-      }
+      },
+      OR: [
+        { idSquadraA: idSquadra },
+        { idSquadraH: idSquadra }
+      ]
     }
   }));
 
