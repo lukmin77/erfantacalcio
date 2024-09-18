@@ -407,7 +407,7 @@ async function UpdateClassifica(idSquadra: number, idTorneo: number) {
       perseTrasferta: perseA,
       golFatti: golFattiH + golFattiA,
       golSubiti: golSubitiH + golSubitiA,
-      differenzaReti: golFattiH + golFattiA - golSubitiH + golSubitiA,
+      differenzaReti: (golFattiH + golFattiA) - (golSubitiH + golSubitiA),
       giocate: giocate
     },
     where: {
