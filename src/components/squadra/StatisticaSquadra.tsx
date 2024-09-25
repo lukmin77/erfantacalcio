@@ -184,7 +184,7 @@ function StatisticaSquadra({
   function getStatsPartite(torneo: string, datiPartite: GiornataType[]) {
     const vinte =
       datiPartite
-        .filter((c) => c.Torneo === torneo)
+        .filter((c) => c.Torneo === torneo && c.isGiocata)
         .flatMap((c) =>
           c.partite.filter(
             (c) => c.idHome === idSquadra && (c.golHome ?? 0) > (c.golAway ?? 0)
@@ -197,7 +197,7 @@ function StatisticaSquadra({
       ).length;
     const pareggi =
       datiPartite
-        .filter((c) => c.Torneo === torneo)
+        .filter((c) => c.Torneo === torneo && c.isGiocata)
         .flatMap((c) =>
           c.partite.filter(
             (c) =>
@@ -211,7 +211,7 @@ function StatisticaSquadra({
       ).length;
     const perse =
       datiPartite
-        .filter((c) => c.Torneo === torneo)
+        .filter((c) => c.Torneo === torneo && c.isGiocata)
         .flatMap((c) =>
           c.partite.filter(
             (c) => c.idHome === idSquadra && (c.golHome ?? 0) < (c.golAway ?? 0)
