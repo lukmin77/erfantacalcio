@@ -115,7 +115,7 @@ function StatisticaSquadra({
           c.partite.map((partita) => ({
             ...partita,
             isGiocata: c.isGiocata,
-            giornata: c.giornata
+            giornata: c.giornata,
           }))
         )
         .map((partita, index) => (
@@ -127,7 +127,8 @@ function StatisticaSquadra({
                 color="text.secondary"
                 key={`typography_${partita.idPartita}`}
               >
-                {partita.giornata} - {partita.squadraHome} - {partita.squadraAway}
+                {partita.giornata} - {partita.squadraHome} -{" "}
+                {partita.squadraAway}
               </Typography>
               <Stack
                 direction="row"
@@ -190,11 +191,13 @@ function StatisticaSquadra({
             (c) => c.idHome === idSquadra && (c.golHome ?? 0) > (c.golAway ?? 0)
           )
         ).length +
-      datiPartite.flatMap((c) =>
-        c.partite.filter(
-          (c) => c.idAway === idSquadra && (c.golAway ?? 0) > (c.golHome ?? 0)
-        )
-      ).length;
+      datiPartite
+        .filter((c) => c.Torneo === torneo && c.isGiocata)
+        .flatMap((c) =>
+          c.partite.filter(
+            (c) => c.idAway === idSquadra && (c.golAway ?? 0) > (c.golHome ?? 0)
+          )
+        ).length;
     const pareggi =
       datiPartite
         .filter((c) => c.Torneo === torneo && c.isGiocata)
@@ -204,11 +207,14 @@ function StatisticaSquadra({
               c.idHome === idSquadra && (c.golHome ?? 0) === (c.golAway ?? 0)
           )
         ).length +
-      datiPartite.flatMap((c) =>
-        c.partite.filter(
-          (c) => c.idAway === idSquadra && (c.golAway ?? 0) === (c.golHome ?? 0)
-        )
-      ).length;
+      datiPartite
+        .filter((c) => c.Torneo === torneo && c.isGiocata)
+        .flatMap((c) =>
+          c.partite.filter(
+            (c) =>
+              c.idAway === idSquadra && (c.golAway ?? 0) === (c.golHome ?? 0)
+          )
+        ).length;
     const perse =
       datiPartite
         .filter((c) => c.Torneo === torneo && c.isGiocata)
@@ -217,11 +223,13 @@ function StatisticaSquadra({
             (c) => c.idHome === idSquadra && (c.golHome ?? 0) < (c.golAway ?? 0)
           )
         ).length +
-      datiPartite.flatMap((c) =>
-        c.partite.filter(
-          (c) => c.idAway === idSquadra && (c.golAway ?? 0) < (c.golHome ?? 0)
-        )
-      ).length;
+      datiPartite
+        .filter((c) => c.Torneo === torneo && c.isGiocata)
+        .flatMap((c) =>
+          c.partite.filter(
+            (c) => c.idAway === idSquadra && (c.golAway ?? 0) < (c.golHome ?? 0)
+          )
+        ).length;
 
     return [
       {
