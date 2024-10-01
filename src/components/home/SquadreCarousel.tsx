@@ -42,18 +42,18 @@ export default function SquadreCarousel({ onActionChange: onActionActive }: Squa
                                     {squadra.id === session?.user?.idSquadra && (
                                         <Tooltip title="Formazione">
                                             <IconButton onClick={() => handleAction(FrameType.schieraFormazione)}>
-                                                <Ballot color='primary' fontSize='large' />
+                                                <Ballot color='primary' fontSize='medium' />
                                             </IconButton>
                                         </Tooltip>
                                     )}
                                     <Tooltip title="Rosa">
                                         <IconButton onClick={() => handleAction(FrameType.rosa, squadra.id, squadra.squadra)}>
-                                            <Diversity1 color='success' fontSize='large' />
+                                            <Diversity1 color='success' fontSize='medium' />
                                         </IconButton>
                                     </Tooltip>
                                     <Tooltip title="Info squadra/partite">
                                         <IconButton onClick={() => handleAction(FrameType.statisticheSquadra, squadra.id, squadra.squadra)}>
-                                            <QueryStats color='warning' fontSize='large' />
+                                            <QueryStats color='warning' fontSize='medium' />
                                         </IconButton>
                                     </Tooltip>
                                 </CardActions>
