@@ -85,7 +85,7 @@ function ViewTabellini({ onActionChange: onActionActive, idPartita }: Formazioni
                         </Grid>
                     )}
                         titleTypographyProps={{ variant: 'h5' }}
-                        subheader={`Modulo: ${tabellino.modulo} ${multa ?  `multa di ${Configurazione.importoMulta}` : ''}`}
+                        subheader={`Modulo: ${tabellino.modulo} ${multa ?  `multa di ${Configurazione.importoMulta} €` : ''}`}
                         avatar={<Avatar alt={squadra ?? ''}
                             src={foto ?? ''}
                             sx={{ display: { xs: 'none', sm: 'block' }, mr: '5px' }}>

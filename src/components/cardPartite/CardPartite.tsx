@@ -29,7 +29,7 @@ export default function CardPartite({ onActionChange: onActionActive, prefixTitl
                                     <span key={`span_${partita.idPartita}`}>
                                         <Stack direction="row" spacing={0} justifyContent="space-between" key={`infopartita_${partita.idPartita}`}>
                                             <Typography variant="body2" component="div" color="text.secondary" key={`typography_${partita.idPartita}`}>
-                                                {partita.squadraHome} {partita.multaHome ? <Tooltip title='Multa'><Gavel color='error' /></Tooltip> : ''} - {partita.squadraAway} {partita.multaAway ? <Tooltip title='Multa'><Gavel color='error' /></Tooltip> : ''}
+                                                {partita.squadraHome} {partita.multaHome ? <Tooltip title='Multa'><Gavel color='error' fontSize='small' /></Tooltip> : ''} - {partita.squadraAway} {partita.multaAway ? <Tooltip title='Multa'><Gavel color='error' /></Tooltip> : ''}
                                             </Typography>
                                             <Stack direction="row" spacing={0} justifyContent="flex-end" key={`stack2_${partita.idPartita}`}>
                                                 <Typography variant="body2" component="div" color="text.secondary" key={`typography2_${partita.idPartita}`}>
@@ -38,14 +38,14 @@ export default function CardPartite({ onActionChange: onActionActive, prefixTitl
                                                 {g.isGiocata && (
                                                     <Tooltip title="Tabellino voti" placement="top-start">
                                                         <IconButton onClick={() => handleAction(FrameType.tabellinoPartita, partita.idPartita)} sx={{ height: '24px' }}>
-                                                            <Ballot color='primary' fontSize='small' />
+                                                            <Ballot color='primary' fontSize='large' />
                                                         </IconButton>
                                                     </Tooltip>
                                                 )}
                                                 {!g.isGiocata && (
                                                     <Tooltip title="Visualizza Formazioni" placement="top-start">
                                                         <IconButton onClick={() => handleAction(FrameType.formazioniPartita, partita.idPartita)} sx={{ height: '24px' }}>
-                                                            <SportsSoccer color='primary' fontSize='small' />
+                                                            <SportsSoccer color='primary' fontSize='large' />
                                                         </IconButton>
                                                     </Tooltip>
                                                 )}
