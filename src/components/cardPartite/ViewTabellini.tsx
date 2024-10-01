@@ -7,6 +7,7 @@ import { getShortName } from "~/utils/helper";
 import Giocatori from "../giocatori/Giocatori";
 import { useState } from "react";
 import Modal from "../modal/Modal";
+import { Configurazione } from "~/config";
 
 interface FormazioniProps {
     onActionChange: (action: FrameType) => void;
@@ -66,7 +67,7 @@ function ViewTabellini({ onActionChange: onActionActive, idPartita }: Formazioni
         setOpenModalCalendario(false);
     };
 
-    const renderTabellino = (tabellino?: Tabellino, squadra?: string | null, foto?: string | null) => {
+    const renderTabellino = (tabellino?: Tabellino, squadra?: string | null, foto?: string | null, multa?: boolean) => {
         const handleStatGiocatore = (idGiocatore: number) => {
             setIdGiocatore(idGiocatore);
             setOpenModalCalendario(true);
@@ -84,7 +85,7 @@ function ViewTabellini({ onActionChange: onActionActive, idPartita }: Formazioni
                         </Grid>
                     )}
                         titleTypographyProps={{ variant: 'h5' }}
-                        subheader={`Modulo: ${tabellino.modulo}`}
+                        subheader={`Modulo: ${tabellino.modulo} ${multa ?  `multa di ${Configurazione.importoMulta}` : ''}`}
                         avatar={<Avatar alt={squadra ?? ''}
                             src={foto ?? ''}
                             sx={{ display: { xs: 'none', sm: 'block' }, mr: '5px' }}>
@@ -241,6 +242,7 @@ function ViewTabellini({ onActionChange: onActionActive, idPartita }: Formazioni
             return <Typography variant="body2">
                 {voto !== 0 ? voto : ''}
                 {gol > 0 ? `+${gol}` : ''}
+                {gol < 0 ? `${gol}` : ''}
                 {assist > 0 ? `+${assist}` : ''}
                 {autogol < 0 ? autogol : ''}
                 {altriBonus < 0 ? altriBonus : ''}
@@ -271,10 +273,10 @@ function ViewTabellini({ onActionChange: onActionActive, idPartita }: Formazioni
                             </Tooltip>
                         </Grid>
                         <Grid item xs={6} sx={isXs ? { pr: '1px' } : { pr: '10px' }}>
-                            {renderTabellino(tabellinoHome, infoPartita?.squadraHome, infoPartita?.fotoHome)}
+                            {renderTabellino(tabellinoHome, infoPartita?.squadraHome, infoPartita?.fotoHome, infoPartita?.multaHome)}
                         </Grid>
                         <Grid item xs={6} sx={isXs ? { pl: '1px' } : { pl: '10px' }}>
-                            {renderTabellino(tabellinoAway, infoPartita?.squadraAway, infoPartita?.fotoAway)}
+                            {renderTabellino(tabellinoAway, infoPartita?.squadraAway, infoPartita?.fotoAway, infoPartita?.multaAway)}
                         </Grid>
                     </>
                 )}
