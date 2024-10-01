@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardHeader, CardContent, Typography, Stack, Divider, Paper, Tooltip, IconButton } from '@mui/material';
 import { type GiornataType } from '~/types/common';
-import { Ballot, SportsSoccer } from '@mui/icons-material';
+import { Ballot, Gavel, SportsSoccer } from '@mui/icons-material';
 import { FrameType } from '~/utils/enums';
 import { formatDateFromIso } from '~/utils/dateUtils';
 
@@ -29,7 +29,7 @@ export default function CardPartite({ onActionChange: onActionActive, prefixTitl
                                     <span key={`span_${partita.idPartita}`}>
                                         <Stack direction="row" spacing={0} justifyContent="space-between" key={`infopartita_${partita.idPartita}`}>
                                             <Typography variant="body2" component="div" color="text.secondary" key={`typography_${partita.idPartita}`}>
-                                                {partita.squadraHome} - {partita.squadraAway}
+                                                {partita.squadraHome} {partita.multaHome ? <Tooltip title='Multa'><Gavel color='error' /></Tooltip> : ''} - {partita.squadraAway} {partita.multaAway ? <Tooltip title='Multa'><Gavel color='error' /></Tooltip> : ''}
                                             </Typography>
                                             <Stack direction="row" spacing={0} justifyContent="flex-end" key={`stack2_${partita.idPartita}`}>
                                                 <Typography variant="body2" component="div" color="text.secondary" key={`typography2_${partita.idPartita}`}>
