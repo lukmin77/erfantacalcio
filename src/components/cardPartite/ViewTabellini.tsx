@@ -268,7 +268,7 @@ function ViewTabellini({ onActionChange: onActionActive, idPartita }: Formazioni
                         <Grid item xs={3} sx={{ display: 'flex', justifyContent: 'flex-end', }}>
                             <Tooltip title="Home" placement="top-start">
                                 <IconButton onClick={() => handleAction(FrameType.defaultHome)}>
-                                    <Home color='primary' />
+                                    <Home color='primary'  fontSize='large' />
                                 </IconButton>
                             </Tooltip>
                         </Grid>

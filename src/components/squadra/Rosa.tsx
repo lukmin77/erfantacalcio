@@ -218,7 +218,7 @@ function Rosa({
             </Tooltip>
             <Tooltip title="Home" placement="top-start">
               <IconButton onClick={() => handleAction(FrameType.defaultHome)}>
-                <Home color="primary" />
+                <Home color="primary" fontSize='large' />
               </IconButton>
             </Tooltip>
           </Grid>

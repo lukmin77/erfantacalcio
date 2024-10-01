@@ -196,7 +196,7 @@ export default function HomePage() {
             <Grid item xs={12} display={'flex'} justifyContent={'flex-end'}>
               <Tooltip title="Home" placement="top-start">
                 <IconButton onClick={() => handleChangeFrame(FrameType.defaultHome)}>
-                  <Home color='primary' />
+                  <Home color='primary' fontSize='large' />
                 </IconButton>
               </Tooltip>
             </Grid>
@@ -212,7 +212,7 @@ export default function HomePage() {
             <Grid item xs={12} display={'flex'} justifyContent={'flex-end'}>
               <Tooltip title="Home" placement="top-start">
                 <IconButton onClick={() => handleChangeFrame(FrameType.defaultHome)}>
-                  <Home color='primary' />
+                  <Home color='primary' fontSize='large' />
                 </IconButton>
               </Tooltip>
             </Grid>

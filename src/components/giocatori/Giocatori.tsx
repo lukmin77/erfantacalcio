@@ -195,7 +195,7 @@ function Giocatori({ onActionChange: onActionActive, idGiocatore, removeNav }: G
                                     )}
                                     <Tooltip title="Home" placement="top-start">
                                         <IconButton onClick={() => handleAction(FrameType.defaultHome)}>
-                                            <Home color='primary' />
+                                            <Home color='primary' fontSize='large' />
                                         </IconButton>
                                     </Tooltip>
                                 </>

@@ -376,7 +376,7 @@ function Formazione({ onActionChange: onActionActive, idSquadra }: FormazionePro
                                         variant="contained" color='error' size="medium" sx={{ ml: '5px', fontSize: '11px', opacity: 0.8, }}>{saving ? 'Attendere...' : 'Salva'}</Button>
                                 </Box>
                                 <IconButton onClick={() => handleAction(FrameType.defaultHome)}>
-                                    <Home color='primary' />
+                                    <Home color='primary' fontSize='large' />
                                 </IconButton>
                             </Stack>
                         </Grid>

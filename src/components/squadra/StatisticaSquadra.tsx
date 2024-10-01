@@ -297,7 +297,7 @@ function StatisticaSquadra({
               <IconButton
                 onClick={() => handleActionPartita(FrameType.defaultHome, 0)}
               >
-                <Home color="primary" />
+                <Home color="primary" fontSize='large' />
               </IconButton>
             </Tooltip>
           </Grid>
