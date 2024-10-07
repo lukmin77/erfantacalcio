@@ -245,7 +245,7 @@ function ViewTabellini({ onActionChange: onActionActive, idPartita }: Formazioni
                 {gol < 0 ? `${gol}` : ''}
                 {assist > 0 ? `+${assist}` : ''}
                 {autogol < 0 ? autogol : ''}
-                {altriBonus < 0 ? altriBonus : ''}
+                {altriBonus !== 0 ? altriBonus : ''}
             </Typography>;
         }
     };
