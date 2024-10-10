@@ -319,20 +319,6 @@ export default function HomePage() {
             </Grid>
           </Zoom>
         )}
-        {frame === FrameType.formazioniPartita && (
-          <Zoom in={frame === FrameType.formazioniPartita} >
-            <Grid item xs={12} sm={12}>
-              <ViewFormazioni idPartita={idPartita}></ViewFormazioni>
-            </Grid>
-          </Zoom>
-        )}
-        {frame === FrameType.tabellinoPartita && (
-          <Zoom in={frame === FrameType.tabellinoPartita} >
-            <Grid item xs={12} sm={12}>
-              <ViewTabellini idPartita={idPartita} onActionChange={handleChangeFrame}></ViewTabellini>
-            </Grid>
-          </Zoom>
-        )}
         {frame === FrameType.statisticheSquadra && idSquadra && (
           <Zoom in={frame === FrameType.statisticheSquadra} >
             <Grid item xs={12} sm={12}>
