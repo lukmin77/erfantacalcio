@@ -160,8 +160,8 @@ export default function HomePage() {
             </Zoom >
             <Zoom in={frame === FrameType.defaultHome} >
               <Grid item xs={12} sm={6} sx={!isXs ? { pr: '2px', pl: '15px', pt: '15px' } : {}}>
-                <Calendario onActionChange={handleChangePartita} tipo={'risultati'} prefixTitle='Ultimi risultati:'></Calendario>
-                <Calendario onActionChange={handleChangePartita} tipo={'prossima'} prefixTitle='Prossime partite:'></Calendario>
+                <Calendario tipo={'risultati'} prefixTitle='Ultimi risultati:'></Calendario>
+                <Calendario tipo={'prossima'} prefixTitle='Prossime partite:'></Calendario>
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', '& > *': { m: 1, }, }}>
                   <ButtonGroup size="small" color='primary' aria-label="Small button group">
                     <Tooltip title="Calendario partite ultimo periodo">
@@ -322,7 +322,7 @@ export default function HomePage() {
         {frame === FrameType.formazioniPartita && (
           <Zoom in={frame === FrameType.formazioniPartita} >
             <Grid item xs={12} sm={12}>
-              <ViewFormazioni idPartita={idPartita} onActionChange={handleChangeFrame}></ViewFormazioni>
+              <ViewFormazioni idPartita={idPartita}></ViewFormazioni>
             </Grid>
           </Zoom>
         )}
@@ -360,7 +360,7 @@ export default function HomePage() {
             <Grid container spacing={0} sx={{ gap: '0px' }}>
               {giornata?.map((g, index) => (
                 <Grid item xs={12} sm={4} md={4} lg={3} key={`card_partite_${index}_${g.idCalendario}`} sx={{ ml: '0px' }}>
-                  <CardPartite onActionChange={handleChangePartita} giornata={[g]} prefixTitle={''} maxWidth={'300px'}></CardPartite>
+                  <CardPartite giornata={[g]} prefixTitle={''} maxWidth={'300px'}></CardPartite>
                 </Grid>
               ))}
             </Grid>
