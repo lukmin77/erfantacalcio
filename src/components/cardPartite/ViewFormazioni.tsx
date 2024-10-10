@@ -1,3 +1,4 @@
+'use client'
 import { Home } from "@mui/icons-material";
 import {
   Avatar,
@@ -15,29 +16,53 @@ import {
   useTheme,
 } from "@mui/material";
 import { api } from "~/utils/api";
-import { FrameType } from "~/utils/enums";
 import { formatDateFromIso } from "~/utils/dateUtils";
 import { Configurazione } from "~/config";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "../modal/Modal";
 import Giocatori from "../giocatori/Giocatori";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
-interface FormazioniProps {
-  idPartita: number | undefined;
-}
 
-function ViewFormazioni({ idPartita }: FormazioniProps) {
+function ViewFormazioni() {
+  const searchParams = useSearchParams();
+
+  // Recupera i valori della query string
+  const idPartita = searchParams?.get("idPartita");
+  const idCalendario = searchParams?.get("idCalendario");
+
+  // Stato per la partita e il calendario convertiti in numero
+  const [partita, setPartita] = useState<number | null>(null);
+  //const [calendario, setCalendario] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (idPartita) {
+      // Converte i valori in numeri
+      const parsedPartita = Number(idPartita);
+      const parsedCalendario = Number(idCalendario);
+
+      // Verifica se entrambi i valori sono numeri validi
+      if (!isNaN(parsedPartita)) {
+        setPartita(parsedPartita);
+        //setCalendario(parsedCalendario);
+      } else {
+        setPartita(null);
+        //setCalendario(null);
+      }
+    }
+  }, [idPartita, idCalendario]);
+
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("md"));
   const [idGiocatore, setIdGiocatore] = useState<number>();
   const [openModalCalendario, setOpenModalCalendario] = useState(false);
 
   const formazioniList = api.partita.getFormazioni.useQuery(
-    { idPartita: idPartita! },
+    { idPartita: partita! },
     {
-      enabled: !!idPartita,
+      enabled: !!partita,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
     }
