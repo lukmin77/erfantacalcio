@@ -7,12 +7,11 @@ import CheckIcon from '@mui/icons-material/CheckCircle';
 import { type FrameType } from '~/utils/enums';
 
 interface CalendarioProps {
-    onActionChange: (action: FrameType, idPartita: number) => void;
     prefixTitle: string;
     tipo: 'risultati' | 'prossima';
 }
 
-export default function Calendario({ onActionChange: onActionActive, prefixTitle, tipo }: CalendarioProps) {
+export default function Calendario({ prefixTitle, tipo }: CalendarioProps) {
     const calendarioList = tipo === 'prossima' 
         ? api.calendario.getProssimeGiornate.useQuery(undefined, { refetchOnWindowFocus: false, refetchOnReconnect: false })
         : api.calendario.getUltimiRisultati.useQuery(undefined, { refetchOnWindowFocus: false, refetchOnReconnect: false });
@@ -32,14 +31,10 @@ export default function Calendario({ onActionChange: onActionActive, prefixTitle
         }
     }, [calendarioList.isError]);
 
-    const handleAction = (newFrame: FrameType, idPartita: number) => {
-        onActionActive(newFrame, idPartita);
-    };
-
     return (
         <>
             {!calendarioList.isLoading && giornata && (
-                <CardPartite onActionChange={handleAction} giornata={giornata} prefixTitle={prefixTitle} maxWidth={600}></CardPartite>
+                <CardPartite giornata={giornata} prefixTitle={prefixTitle} maxWidth={600}></CardPartite>
             )}
             {errorMessage && (
                 <Stack sx={{ width: '100%' }} spacing={0}>

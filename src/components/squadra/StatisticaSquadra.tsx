@@ -22,6 +22,7 @@ import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { type GiornataType } from "~/types/common";
+import Link from "next/link";
 
 interface StatisticaSquadraProps {
   onActionChangePartita: (action: FrameType, idPartita: number) => void;
@@ -146,32 +147,26 @@ function StatisticaSquadra({
                 </Typography>
                 {partita.isGiocata && (
                   <Tooltip title="Tabellino voti" placement="top-start">
-                    <IconButton
-                      onClick={() =>
-                        handleActionPartita(
-                          FrameType.tabellinoPartita,
-                          partita.idPartita
-                        )
-                      }
-                      sx={{ height: "24px" }}
+                    <Link
+                      href={`/tabellini?idPartita=${partita.idPartita}`}
+                      passHref
                     >
-                      <Ballot color="primary" fontSize="small" />
-                    </IconButton>
+                      <IconButton sx={{ height: "24px" }}>
+                        <Ballot color="primary" fontSize="small" />
+                      </IconButton>
+                    </Link>
                   </Tooltip>
                 )}
                 {!partita.isGiocata && (
                   <Tooltip title="Visualizza Formazioni" placement="top-start">
-                    <IconButton
-                      onClick={() =>
-                        handleActionPartita(
-                          FrameType.formazioniPartita,
-                          partita.idPartita
-                        )
-                      }
-                      sx={{ height: "24px" }}
+                    <Link
+                      href={`/formazioni?idPartita=${partita.idPartita}`}
+                      passHref
                     >
-                      <SportsSoccer color="primary" fontSize="small" />
-                    </IconButton>
+                      <IconButton sx={{ height: "24px" }}>
+                        <SportsSoccer color="primary" fontSize="small" />
+                      </IconButton>
+                    </Link>
                   </Tooltip>
                 )}
               </Stack>
@@ -294,11 +289,11 @@ function StatisticaSquadra({
               </IconButton>
             </Tooltip>
             <Tooltip title="Home" placement="top-start">
-              <IconButton
-                onClick={() => handleActionPartita(FrameType.defaultHome, 0)}
-              >
-                <Home color="primary" fontSize='large' />
-              </IconButton>
+              <Link href={"/"} passHref>
+                <IconButton>
+                  <Home color="primary" fontSize="large" />
+                </IconButton>
+              </Link>
             </Tooltip>
           </Grid>
           <Grid item xs={12} sm={3}>
