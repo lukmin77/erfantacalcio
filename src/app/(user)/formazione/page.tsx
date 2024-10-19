@@ -7,8 +7,16 @@ import FormazioneXs from "~/components/squadra/FormazioneXs";
 import { useSearchParams } from 'next/navigation';
 
 export default function SchieraFormazione() {
+  return (
+    <Suspense fallback={<div>Caricamento dei parametri...</div>}>
+      <InnerSchieraFormazione />
+    </Suspense>
+  );
+}
+
+function InnerSchieraFormazione() {
   const searchParams = useSearchParams();
-  const isXsParam = searchParams?.get('isXs') ?? 'false';
+  const isXsParam = searchParams?.get('isXs') ?? 'false'; // Imposta 'false' se isXs non è presente
 
   // Converti il valore da string a booleano
   const isXsBoolean = isXsParam === 'true';
