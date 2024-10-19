@@ -2,7 +2,7 @@ import * as React from 'react';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import { AddAPhoto, Calculate, CalendarMonth, FiberNew, Group, ManageAccounts, ThumbsUpDown, UploadFile } from '@mui/icons-material';
+import { AddAPhoto, Ballot, Calculate, CalendarMonth, FiberNew, Group, ManageAccounts, ThumbsUpDown, UploadFile } from '@mui/icons-material';
 
 const listItem = (
     key: string,
@@ -35,7 +35,7 @@ export function adminListItems() {
 
 export function guestListItems() {
     return[
+        listItem('guest_profilo', `/formazione?isXs=${false}`, "Inserisci formazione", <Ballot color='primary' />),
         listItem('guest_profilo', "/foto", "Foto profilo", <AddAPhoto color='primary' />),
-        /* listItem('guest_changepwd', "/profilo", "Cambio password", <Pin color='primary' />) */
     ];
 }

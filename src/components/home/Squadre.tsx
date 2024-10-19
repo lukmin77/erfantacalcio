@@ -4,6 +4,7 @@ import { api } from "~/utils/api";
 import { Box, Card, CardActions, CardContent, CardMedia, CircularProgress, IconButton, Tooltip, Typography } from "@mui/material";
 import { Ballot, QueryStats, Diversity1 } from '@mui/icons-material';
 import { FrameType } from '~/utils/enums';
+import Link from 'next/link';
 
 interface SquadreProps {
     onActionChange: (action: FrameType, idSquadra?: number, squadra?: string) => void;
@@ -41,9 +42,9 @@ export default function Squadre({ onActionChange: onActionActive }: SquadreProps
                                 <CardActions disableSpacing sx={{ paddingTop: '2px'}}>
                                     {squadra.id === session?.user?.idSquadra && (
                                         <Tooltip title="Schiera formazione">
-                                            <IconButton onClick={() => handleAction(FrameType.schieraFormazione)}>
+                                            <Link href={{ pathname: '/formazione', query: { isXs: false } }}>
                                                 <Ballot color='primary' />
-                                            </IconButton>
+                                            </Link>
                                         </Tooltip>
                                     )}
                                     <Tooltip title="Rosa">

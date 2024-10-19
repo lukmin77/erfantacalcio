@@ -14,7 +14,8 @@ export const middleware = async (req: NextRequest) => {
   
   const reservedPages = [
     "/foto",
-    "/stat_giocatori"
+    "/stat_giocatori",
+    "/formazione",
   ];
 
   const { nextUrl } = req;

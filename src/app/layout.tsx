@@ -1,12 +1,13 @@
 "use client";
 import { api } from "~/utils/api";
 import ProvidersWrapper from "~/ProvidersWrapper";
-import { CssBaseline, Box, Toolbar, Container, Typography, Grid } from "@mui/material";
+import { CssBaseline, Box, Toolbar, Container, Typography, Grid, useTheme, useMediaQuery } from "@mui/material";
 import AppAppBar from '~/components/appbar/AppBar';
 
 
 function RootLayout({ children }: { children: React.ReactNode }) {
-
+    const theme = useTheme();
+    const isXs = useMediaQuery(theme.breakpoints.down("md"));
     const Footer = () => {
         return (
             <Box
@@ -67,7 +68,7 @@ function RootLayout({ children }: { children: React.ReactNode }) {
                         <ProvidersWrapper>
                             <Box sx={{ display: "flex" }}>
                                 <CssBaseline />
-                                <AppAppBar />
+                                <AppAppBar isXs={isXs} />
 
                                 <Box
                                     component="main"

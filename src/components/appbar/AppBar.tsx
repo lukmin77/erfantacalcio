@@ -17,8 +17,13 @@ import { RuoloUtente } from "~/utils/enums";
 import { ExitToApp, WorkHistory } from '@mui/icons-material';
 import { adminListItems, guestListItems } from '../navigation/NavItems';
 import { Configurazione } from '~/config';
+import Link from 'next/link';
 
-function AppAppBar() {
+interface AppAppBarProps {
+    isXs: boolean;
+  }
+  
+function AppAppBar({ isXs }: AppAppBarProps) {
     const { data: session } = useSession();
     
     const handleGoToHome = () => {
@@ -278,12 +283,14 @@ function AppAppBar() {
                                 </Box>
                                 {session?.user && (
                                     <>
+                                        <Link href={`/formazione?isXs=${isXs}`}>
+                                            <ListItemButton component="a">
+                                                <ListItemText primary='Inserisci formazione' />
+                                            </ListItemButton>
+                                        </Link>
                                         <ListItemButton href='/foto'>
                                             <ListItemText primary='Foto profilo' />
                                         </ListItemButton>
-                                        {/* <ListItemButton href='/'>
-                                            <ListItemText primary='Cambio password' />
-                                        </ListItemButton> */}
                                         <Divider />
                                     </>
                                 )}
