@@ -5,6 +5,7 @@ import { Box, Card, CardActions, CardMedia, CircularProgress, IconButton, Toolti
 import Carousel from 'react-material-ui-carousel'
 import { Diversity1, Ballot, QueryStats } from '@mui/icons-material';
 import { FrameType } from '~/utils/enums';
+import Link from 'next/link';
 
 interface SquadreProps {
     onActionChange: (action: FrameType, idSquadra?: number, squadra?: string) => void;
@@ -41,9 +42,9 @@ export default function SquadreCarousel({ onActionChange: onActionActive }: Squa
                                     </Typography>
                                     {squadra.id === session?.user?.idSquadra && (
                                         <Tooltip title="Formazione">
-                                            <IconButton onClick={() => handleAction(FrameType.schieraFormazione)}>
+                                            <Link href={{ pathname: '/formazione', query: { isXs: true } }}>
                                                 <Ballot color='primary' fontSize='medium' />
-                                            </IconButton>
+                                            </Link>
                                         </Tooltip>
                                     )}
                                     <Tooltip title="Rosa">

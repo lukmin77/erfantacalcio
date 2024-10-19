@@ -26,8 +26,6 @@ export default function CardPartite({
   giornata,
   maxWidth,
 }: GiornataCardProps) {
-
-
   return (
     <>
       {giornata.map((g) => (
@@ -103,9 +101,7 @@ export default function CardPartite({
                               href={`/tabellini?idPartita=${partita.idPartita}&idCalendario=${g.idCalendario}`}
                               passHref
                             >
-                              <IconButton sx={{ height: "24px" }}>
-                                <Ballot color="primary" fontSize="medium" />
-                              </IconButton>
+                              <Ballot color="primary" fontSize="medium" />
                             </Link>
                           </Tooltip>
                         )}
