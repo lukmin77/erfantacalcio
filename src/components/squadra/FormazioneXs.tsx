@@ -569,7 +569,7 @@ function FormazioneXs() {
                     variant={"body2"}
                     sx={{ lineHeight: 2.66, marginRight: "3px" }}
                   >
-                    {giornate[0]?.Title}
+                    <b>{giornate[0]?.Title}</b>
                   </Typography>
                 )}
                 <Select
@@ -579,7 +579,7 @@ function FormazioneXs() {
                   margin="dense"
                   required
                   sx={{
-                    m: "2px",
+                    m: "4px",
                     backgroundColor: "#2e865f",
                     color: "white",
                     opacity: 0.8,
@@ -604,7 +604,7 @@ function FormazioneXs() {
                     variant="contained"
                     color="error"
                     size="medium"
-                    sx={{ ml: "5px", fontSize: "11px", opacity: 0.8 }}
+                    sx={{ m:"4px", ml: "5px", fontSize: "11px", opacity: 0.8 }}
                   >
                     {saving ? "Attendere..." : "Salva"}
                   </Button>
@@ -614,6 +614,11 @@ function FormazioneXs() {
                 </Link>
               </Stack>
             </Grid>
+            {giornate.length > 1 && (
+              <Grid item xs={12} sx={{ justifyContent: 'flex-start'}}>
+                <Typography variant={"h5"} color="error">Attenzione!!! partita di campionato e di coppa!!!</Typography>
+              </Grid>
+            )}
             <Grid item sm={8} xs={12}>
               <>
                 <Accordion>

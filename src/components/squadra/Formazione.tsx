@@ -726,6 +726,11 @@ function Formazione() {
                 </Link>
               </Tooltip>
             </Grid>
+            {giornate.length > 1 && (
+              <Grid item xs={12} sx={{ justifyContent: 'flex-start'}}>
+                <Typography variant={"h5"} color="error">Attenzione!!! partita di campionato e di coppa!!!</Typography>
+              </Grid>
+            )}
             <Grid item sm={8} xs={12}>
               <>
                 <Grid container spacing={0} sx={styleRosa}>
