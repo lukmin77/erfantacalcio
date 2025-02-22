@@ -32,7 +32,6 @@ import {
   LooksTwoOutlined,
   Login,
   PendingActions,
-  Home,
 } from "@mui/icons-material";
 import { type TorneoType } from "~/types/tornei";
 import Classifica from "~/components/home/Classifica";
@@ -45,10 +44,7 @@ import CardPartite from "~/components/cardPartite/CardPartite";
 import { FrameType } from "~/utils/enums";
 import Rosa from "~/components/squadra/Rosa";
 import StatisticaSquadra from "~/components/squadra/StatisticaSquadra";
-import Albo from "~/components/home/Albo";
-import Economia from "~/components/home/Economia";
 import { signIn, useSession } from "next-auth/react";
-import Giocatori from "~/components/giocatori/Giocatori";
 import Link from "next/link";
 
 export default function HomePage() {
@@ -366,52 +362,6 @@ export default function HomePage() {
             </Zoom>
           </>
         )}
-        {frame === FrameType.albo && (
-          <>
-            <Grid item xs={12} display={"flex"} justifyContent={"flex-end"}>
-              <Tooltip title="Home" placement="top-start">
-                <IconButton
-                  onClick={() => handleChangeFrame(FrameType.defaultHome)}
-                >
-                  <Home color="primary" fontSize="large" />
-                </IconButton>
-              </Tooltip>
-            </Grid>
-            <Slide direction={"down"} in={frame === FrameType.albo}>
-              <Grid
-                item
-                xs={12}
-                sm={12}
-                sx={!isXs ? { pl: "2px", pr: "15px", pt: "15px" } : {}}
-              >
-                <Albo></Albo>
-              </Grid>
-            </Slide>
-          </>
-        )}
-        {frame === FrameType.economia && (
-          <>
-            <Grid item xs={12} display={"flex"} justifyContent={"flex-end"}>
-              <Tooltip title="Home" placement="top-start">
-                <IconButton
-                  onClick={() => handleChangeFrame(FrameType.defaultHome)}
-                >
-                  <Home color="primary" fontSize="large" />
-                </IconButton>
-              </Tooltip>
-            </Grid>
-            <Slide direction={"down"} in={frame === FrameType.economia}>
-              <Grid
-                item
-                xs={12}
-                sm={12}
-                sx={!isXs ? { pl: "2px", pr: "15px", pt: "15px" } : {}}
-              >
-                <Economia></Economia>
-              </Grid>
-            </Slide>
-          </>
-        )}
         {frame === FrameType.defaultHome && isXs && (
           <Zoom in={true}>
             <Grid item xs={12} sm={12}>
@@ -419,9 +369,7 @@ export default function HomePage() {
             </Grid>
           </Zoom>
         )}
-        {(frame === FrameType.defaultHome ||
-          frame === FrameType.albo ||
-          frame === FrameType.economia) &&
+        {(frame === FrameType.defaultHome) &&
           !torneiList.isLoading && (
             <>
               <Zoom in={true}>
@@ -477,7 +425,7 @@ export default function HomePage() {
                       height={"139px"}
                       alt={"Albo"}
                       sx={{ cursor: "pointer" }}
-                      onClick={() => handleChangeFrame(FrameType.albo)}
+                      onClick={() => window.location.href='/albo'}
                     />
                   </Card>
                 </Grid>
@@ -505,7 +453,7 @@ export default function HomePage() {
                       height={"139px"}
                       alt={"Economia e premi"}
                       sx={{ cursor: "pointer" }}
-                      onClick={() => handleChangeGiocatori(FrameType.economia)}
+                      onClick={() => window.location.href='/economia'}
                     />
                   </Card>
                 </Grid>
@@ -531,7 +479,7 @@ export default function HomePage() {
                       height={"139px"}
                       alt={"Regolamento"}
                       sx={{ cursor: "pointer" }}
-                      onClick={handleOpenPDF}
+                      onClick={() => window.location.href='/docs/Regolamento_erFantacalcio.pdf'}
                     />
                   </Card>
                 </Grid>
