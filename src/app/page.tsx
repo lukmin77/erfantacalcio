@@ -18,6 +18,7 @@ import {
   CardHeader,
   CardMedia,
   Slide,
+  CardActionArea,
 } from "@mui/material";
 import {
   AccessAlarm,
@@ -202,7 +203,7 @@ export default function HomePage() {
             </Grid>
             <Grid item xs={6} display={"flex"} justifyContent={"flex-end"}>
               <Tooltip title="Schiera formazione" placement="top-start">
-              <Link href={`/formazione?isXs=${isXs}`}>
+                <Link href={`/formazione?isXs=${isXs}`}>
                   <Ballot color="primary" />
                 </Link>
               </Tooltip>
@@ -435,19 +436,21 @@ export default function HomePage() {
                   }
                 >
                   <Card>
-                    <CardHeader
-                      title="Statistiche giocatori"
-                      titleTypographyProps={{ variant: "h5" }}
-                    />
-                    <CardMedia
-                      component="img"
-                      image={"/images/giocatori.jpg"}
-                      width={"201px"}
-                      height={"139px"}
-                      alt={"Statistiche giocatori"}
-                      sx={{ cursor: "pointer" }}
-                      onClick={() => handleChangeGiocatori(FrameType.giocatori)}
-                    />
+                    <CardActionArea>
+                      <CardHeader
+                        title="Statistiche giocatori"
+                        titleTypographyProps={{ variant: "h5" }}
+                      />
+                      <CardMedia
+                        component="img"
+                        image={"/images/giocatori.jpg"}
+                        width={"201px"}
+                        height={"139px"}
+                        alt={"Statistiche giocatori"}
+                        sx={{ cursor: "pointer" }}
+                        onClick={() => window.location.href='/statistiche_giocatori'}
+                      />
+                    </CardActionArea>
                   </Card>
                 </Grid>
               </Zoom>
@@ -559,16 +562,6 @@ export default function HomePage() {
                 onActionGoToRosa={handleChangeRosa}
                 onActionChangePartita={handleChangePartita}
                 idSquadra={idSquadra}
-              />
-            </Grid>
-          </Zoom>
-        )}
-        {frame === FrameType.giocatori && (
-          <Zoom in={frame === FrameType.giocatori}>
-            <Grid item xs={12} sm={12}>
-              <Giocatori
-                onActionChange={handleChangeFrame}
-                idGiocatore={idGiocatore}
               />
             </Grid>
           </Zoom>
