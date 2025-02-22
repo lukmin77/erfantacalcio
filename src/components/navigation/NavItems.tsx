@@ -2,7 +2,7 @@ import * as React from 'react';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import { AddAPhoto, Ballot, Calculate, CalendarMonth, FiberNew, Group, ManageAccounts, ThumbsUpDown, UploadFile } from '@mui/icons-material';
+import { AddAPhoto, Badge, Ballot, Calculate, CalendarMonth, Euro, FiberNew, Grading, Group, HistoryEdu, ManageAccounts, ThumbsUpDown, UploadFile } from '@mui/icons-material';
 
 const listItem = (
     key: string,
@@ -37,5 +37,9 @@ export function guestListItems() {
     return[
         listItem('guest_profilo', `/formazione?isXs=${false}`, "Inserisci formazione", <Ballot color='primary' />),
         listItem('guest_profilo', "/foto", "Foto profilo", <AddAPhoto color='primary' />),
+        listItem('guest_profilo', "/statistiche_giocatori", "Statistiche giocatori", <Badge color='primary' />),
+        listItem('guest_profilo', "/economia", "Economia e premi", <Euro color='primary' />),
+        listItem('guest_profilo', "/albo", "Albo d'oro", <HistoryEdu color='primary' />),
+        listItem('guest_profilo', "/docs/Regolamento_erFantacalcio.pdf", "Regolamento ufficiale", <Grading color='primary' />),
     ];
 }

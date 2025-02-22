@@ -18,6 +18,7 @@ import {
   CardHeader,
   CardMedia,
   Slide,
+  CardActionArea,
 } from "@mui/material";
 import {
   AccessAlarm,
@@ -31,7 +32,6 @@ import {
   LooksTwoOutlined,
   Login,
   PendingActions,
-  Home,
 } from "@mui/icons-material";
 import { type TorneoType } from "~/types/tornei";
 import Classifica from "~/components/home/Classifica";
@@ -44,10 +44,7 @@ import CardPartite from "~/components/cardPartite/CardPartite";
 import { FrameType } from "~/utils/enums";
 import Rosa from "~/components/squadra/Rosa";
 import StatisticaSquadra from "~/components/squadra/StatisticaSquadra";
-import Albo from "~/components/home/Albo";
-import Economia from "~/components/home/Economia";
 import { signIn, useSession } from "next-auth/react";
-import Giocatori from "~/components/giocatori/Giocatori";
 import Link from "next/link";
 
 export default function HomePage() {
@@ -202,7 +199,7 @@ export default function HomePage() {
             </Grid>
             <Grid item xs={6} display={"flex"} justifyContent={"flex-end"}>
               <Tooltip title="Schiera formazione" placement="top-start">
-              <Link href={`/formazione?isXs=${isXs}`}>
+                <Link href={`/formazione?isXs=${isXs}`}>
                   <Ballot color="primary" />
                 </Link>
               </Tooltip>
@@ -365,52 +362,6 @@ export default function HomePage() {
             </Zoom>
           </>
         )}
-        {frame === FrameType.albo && (
-          <>
-            <Grid item xs={12} display={"flex"} justifyContent={"flex-end"}>
-              <Tooltip title="Home" placement="top-start">
-                <IconButton
-                  onClick={() => handleChangeFrame(FrameType.defaultHome)}
-                >
-                  <Home color="primary" fontSize="large" />
-                </IconButton>
-              </Tooltip>
-            </Grid>
-            <Slide direction={"down"} in={frame === FrameType.albo}>
-              <Grid
-                item
-                xs={12}
-                sm={12}
-                sx={!isXs ? { pl: "2px", pr: "15px", pt: "15px" } : {}}
-              >
-                <Albo></Albo>
-              </Grid>
-            </Slide>
-          </>
-        )}
-        {frame === FrameType.economia && (
-          <>
-            <Grid item xs={12} display={"flex"} justifyContent={"flex-end"}>
-              <Tooltip title="Home" placement="top-start">
-                <IconButton
-                  onClick={() => handleChangeFrame(FrameType.defaultHome)}
-                >
-                  <Home color="primary" fontSize="large" />
-                </IconButton>
-              </Tooltip>
-            </Grid>
-            <Slide direction={"down"} in={frame === FrameType.economia}>
-              <Grid
-                item
-                xs={12}
-                sm={12}
-                sx={!isXs ? { pl: "2px", pr: "15px", pt: "15px" } : {}}
-              >
-                <Economia></Economia>
-              </Grid>
-            </Slide>
-          </>
-        )}
         {frame === FrameType.defaultHome && isXs && (
           <Zoom in={true}>
             <Grid item xs={12} sm={12}>
@@ -418,9 +369,7 @@ export default function HomePage() {
             </Grid>
           </Zoom>
         )}
-        {(frame === FrameType.defaultHome ||
-          frame === FrameType.albo ||
-          frame === FrameType.economia) &&
+        {(frame === FrameType.defaultHome) &&
           !torneiList.isLoading && (
             <>
               <Zoom in={true}>
@@ -435,19 +384,21 @@ export default function HomePage() {
                   }
                 >
                   <Card>
-                    <CardHeader
-                      title="Statistiche giocatori"
-                      titleTypographyProps={{ variant: "h5" }}
-                    />
-                    <CardMedia
-                      component="img"
-                      image={"/images/giocatori.jpg"}
-                      width={"201px"}
-                      height={"139px"}
-                      alt={"Statistiche giocatori"}
-                      sx={{ cursor: "pointer" }}
-                      onClick={() => handleChangeGiocatori(FrameType.giocatori)}
-                    />
+                    <CardActionArea>
+                      <CardHeader
+                        title="Statistiche giocatori"
+                        titleTypographyProps={{ variant: "h5" }}
+                      />
+                      <CardMedia
+                        component="img"
+                        image={"/images/giocatori.jpg"}
+                        width={"201px"}
+                        height={"139px"}
+                        alt={"Statistiche giocatori"}
+                        sx={{ cursor: "pointer" }}
+                        onClick={() => window.location.href='/statistiche_giocatori'}
+                      />
+                    </CardActionArea>
                   </Card>
                 </Grid>
               </Zoom>
@@ -474,7 +425,7 @@ export default function HomePage() {
                       height={"139px"}
                       alt={"Albo"}
                       sx={{ cursor: "pointer" }}
-                      onClick={() => handleChangeFrame(FrameType.albo)}
+                      onClick={() => window.location.href='/albo'}
                     />
                   </Card>
                 </Grid>
@@ -502,7 +453,7 @@ export default function HomePage() {
                       height={"139px"}
                       alt={"Economia e premi"}
                       sx={{ cursor: "pointer" }}
-                      onClick={() => handleChangeGiocatori(FrameType.economia)}
+                      onClick={() => window.location.href='/economia'}
                     />
                   </Card>
                 </Grid>
@@ -528,7 +479,7 @@ export default function HomePage() {
                       height={"139px"}
                       alt={"Regolamento"}
                       sx={{ cursor: "pointer" }}
-                      onClick={handleOpenPDF}
+                      onClick={() => window.location.href='/docs/Regolamento_erFantacalcio.pdf'}
                     />
                   </Card>
                 </Grid>
@@ -559,16 +510,6 @@ export default function HomePage() {
                 onActionGoToRosa={handleChangeRosa}
                 onActionChangePartita={handleChangePartita}
                 idSquadra={idSquadra}
-              />
-            </Grid>
-          </Zoom>
-        )}
-        {frame === FrameType.giocatori && (
-          <Zoom in={frame === FrameType.giocatori}>
-            <Grid item xs={12} sm={12}>
-              <Giocatori
-                onActionChange={handleChangeFrame}
-                idGiocatore={idGiocatore}
               />
             </Grid>
           </Zoom>
