@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import {
   Home,
   KeyboardDoubleArrowLeftOutlined,
@@ -24,13 +24,12 @@ import {
 import { api } from "~/utils/api";
 import Image from "next/image";
 import { getShortName } from "~/utils/helper";
-import Giocatori from "../giocatori/Giocatori";
 import { useEffect, useState } from "react";
 import Modal from "../modal/Modal";
 import { Configurazione } from "~/config";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-
+import Giocatore from "../giocatori/Giocatore";
 
 interface Tabellino {
   dataOra: Date;
@@ -90,7 +89,7 @@ function ViewTabellini() {
       }
     }
   }, [idPartita, idCalendario]);
-  
+
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("md"));
   const [idGiocatore, setIdGiocatore] = useState<number>();
@@ -122,7 +121,7 @@ function ViewTabellini() {
   ) => {
     const handleStatGiocatore = (idGiocatore: number) => {
       setIdGiocatore(idGiocatore);
-      //setOpenModalCalendario(true);
+      setOpenModalCalendario(true);
     };
 
     if (tabellino) {
@@ -555,9 +554,7 @@ function ViewTabellini() {
       >
         <Divider />
         <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
-          {/* <Giocatori
-            idGiocatore={idGiocatore}
-          ></Giocatori> */}
+          <Giocatore idGiocatore={idGiocatore!} />
         </Box>
       </Modal>
     </>

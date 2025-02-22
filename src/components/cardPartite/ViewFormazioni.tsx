@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { Home } from "@mui/icons-material";
 import {
   Avatar,
@@ -21,10 +21,9 @@ import { Configurazione } from "~/config";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Modal from "../modal/Modal";
-import Giocatori from "../giocatori/Giocatori";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-
+import Giocatore from "../giocatori/Giocatore";
 
 function ViewFormazioni() {
   const searchParams = useSearchParams();
@@ -35,21 +34,17 @@ function ViewFormazioni() {
 
   // Stato per la partita e il calendario convertiti in numero
   const [partita, setPartita] = useState<number | null>(null);
-  //const [calendario, setCalendario] = useState<number | null>(null);
 
   useEffect(() => {
     if (idPartita) {
       // Converte i valori in numeri
       const parsedPartita = Number(idPartita);
-      const parsedCalendario = Number(idCalendario);
 
       // Verifica se entrambi i valori sono numeri validi
       if (!isNaN(parsedPartita)) {
         setPartita(parsedPartita);
-        //setCalendario(parsedCalendario);
       } else {
         setPartita(null);
-        //setCalendario(null);
       }
     }
   }, [idPartita, idCalendario]);
@@ -79,7 +74,7 @@ function ViewFormazioni() {
 
   const handleStatGiocatore = (idGiocatore: number) => {
     setIdGiocatore(idGiocatore);
-    //setOpenModalCalendario(true);
+    setOpenModalCalendario(true);
   };
 
   return (
@@ -453,7 +448,7 @@ function ViewFormazioni() {
       >
         <Divider />
         <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
-          {/* <Giocatori idGiocatore={idGiocatore} ></Giocatori> */}
+          <Giocatore idGiocatore={idGiocatore!} />
         </Box>
       </Modal>
     </>

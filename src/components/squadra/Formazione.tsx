@@ -28,8 +28,6 @@ import {
   Button,
   Snackbar,
   Alert,
-  useTheme,
-  useMediaQuery,
   Divider,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
@@ -49,10 +47,10 @@ import {
 } from "~/types/squadre";
 import Draggable from "react-draggable";
 import Image from "next/image";
-import Giocatori from "../giocatori/Giocatori";
 import Modal from "../modal/Modal";
 import dayjs from "dayjs";
 import Link from "next/link";
+import Giocatore from "../giocatori/Giocatore";
 
 function Formazione() {
   const session = useSession();
@@ -727,8 +725,10 @@ function Formazione() {
               </Tooltip>
             </Grid>
             {giornate.length > 1 && (
-              <Grid item xs={12} sx={{ justifyContent: 'flex-start'}}>
-                <Typography variant={"h5"} color="error">Attenzione!!! partita di campionato e di coppa!!!</Typography>
+              <Grid item xs={12} sx={{ justifyContent: "flex-start" }}>
+                <Typography variant={"h5"} color="error">
+                  Attenzione!!! partita di campionato e di coppa!!!
+                </Typography>
               </Grid>
             )}
             <Grid item sm={8} xs={12}>
@@ -833,14 +833,7 @@ function Formazione() {
       >
         <Divider />
         <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
-          <Giocatori
-            idGiocatore={idGiocatoreStat}
-            onActionChange={() => {
-              if (false) {
-              }
-            }}
-            removeNav={true}
-          ></Giocatori>
+          <Giocatore idGiocatore={idGiocatoreStat!} />
         </Box>
       </Modal>
     </>
