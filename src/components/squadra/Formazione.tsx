@@ -384,7 +384,7 @@ function Formazione() {
 
     const handleStatGiocatore = (idGiocatore: number) => {
       setIdGiocatoreStat(idGiocatore);
-      setOpenModalCalendario(true);
+      // setOpenModalCalendario(true);
     };
 
     return (
@@ -833,14 +833,14 @@ function Formazione() {
       >
         <Divider />
         <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
-          <Giocatori
+          {/* <Giocatori
             idGiocatore={idGiocatoreStat}
             onActionChange={() => {
               if (false) {
               }
             }}
             removeNav={true}
-          ></Giocatori>
+          ></Giocatori> */}
         </Box>
       </Modal>
     </>
