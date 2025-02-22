@@ -56,7 +56,7 @@ function ViewFormazioni() {
 
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("md"));
-  const [idGiocatore, setIdGiocatore] = useState<number>();
+  const [idGiocatore, setIdGiocatore] = useState<number | undefined>();
   const [openModalCalendario, setOpenModalCalendario] = useState(false);
 
   const formazioniList = api.partita.getFormazioni.useQuery(
@@ -79,7 +79,7 @@ function ViewFormazioni() {
 
   const handleStatGiocatore = (idGiocatore: number) => {
     setIdGiocatore(idGiocatore);
-    setOpenModalCalendario(true);
+    //setOpenModalCalendario(true);
   };
 
   return (
@@ -453,14 +453,7 @@ function ViewFormazioni() {
       >
         <Divider />
         <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
-          <Giocatori
-            idGiocatore={idGiocatore}
-            onActionChange={() => {
-              if (false) {
-              }
-            }}
-            removeNav={true}
-          ></Giocatori>
+          {/* <Giocatori idGiocatore={idGiocatore} ></Giocatori> */}
         </Box>
       </Modal>
     </>

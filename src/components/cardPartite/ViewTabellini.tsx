@@ -122,7 +122,7 @@ function ViewTabellini() {
   ) => {
     const handleStatGiocatore = (idGiocatore: number) => {
       setIdGiocatore(idGiocatore);
-      setOpenModalCalendario(true);
+      //setOpenModalCalendario(true);
     };
 
     if (tabellino) {
@@ -555,14 +555,9 @@ function ViewTabellini() {
       >
         <Divider />
         <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
-          <Giocatori
+          {/* <Giocatori
             idGiocatore={idGiocatore}
-            onActionChange={() => {
-              if (false) {
-              }
-            }}
-            removeNav={true}
-          ></Giocatori>
+          ></Giocatori> */}
         </Box>
       </Modal>
     </>
