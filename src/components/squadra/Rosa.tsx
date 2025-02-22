@@ -1,3 +1,4 @@
+'use client'
 import { Home, Ballot, QueryStats } from "@mui/icons-material";
 import {
   Box,
@@ -22,14 +23,7 @@ import {
   type GiocatoreFormazioneType,
   type GiocatoreType,
 } from "~/types/squadre";
-
-interface RosaProps {
-  onActionChange: (action: FrameType) => void;
-  onActionGoToStatistica: (action: FrameType, idSquadra: number) => void;
-  onActionGoToGiocatore: (action: FrameType, idGiocatore: number) => void;
-  idSquadra: number;
-  squadra: string;
-}
+import { useSearchParams } from "react-router-dom";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -38,15 +32,15 @@ interface TabPanelProps {
   value: number;
 }
 
-function Rosa({
-  onActionChange: onActionActive,
-  onActionGoToStatistica: onActionStatistica,
-  onActionGoToGiocatore: onActionGiocatore,
-  idSquadra,
-  squadra,
-}: RosaProps) {
+type RosaProps = {
+  idSquadra: number;
+  squadra: string;
+};
+
+function Rosa({ idSquadra, squadra }: RosaProps) {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("md"));
+  
   const rosaList = api.squadre.getRosa.useQuery(
     { idSquadra: idSquadra, includeVenduti: true },
     { refetchOnWindowFocus: false, refetchOnReconnect: false }
@@ -66,18 +60,6 @@ function Rosa({
       setRosa(rosaConRuolo);
     }
   }, [rosaList.data]);
-
-  const handleAction = (newFrame: FrameType) => {
-    onActionActive(newFrame);
-  };
-
-  const handleActionStatistica = (newFrame: FrameType, idSquadra: number) => {
-    onActionStatistica(newFrame, idSquadra);
-  };
-
-  const handleActionGiocatore = (newFrame: FrameType, idGiocatore: number) => {
-    onActionGiocatore(newFrame, idGiocatore);
-  };
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);

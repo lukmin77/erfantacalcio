@@ -42,8 +42,6 @@ import Modal from "~/components/modal/Modal";
 import { type GiornataType } from "~/types/common";
 import CardPartite from "~/components/cardPartite/CardPartite";
 import { FrameType } from "~/utils/enums";
-import Rosa from "~/components/squadra/Rosa";
-import StatisticaSquadra from "~/components/squadra/StatisticaSquadra";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 
@@ -362,13 +360,6 @@ export default function HomePage() {
             </Zoom>
           </>
         )}
-        {frame === FrameType.defaultHome && isXs && (
-          <Zoom in={true}>
-            <Grid item xs={12} sm={12}>
-              <SquadreCarousel onActionChange={handleChangeRosa} />
-            </Grid>
-          </Zoom>
-        )}
         {(frame === FrameType.defaultHome) &&
           !torneiList.isLoading && (
             <>
@@ -489,31 +480,6 @@ export default function HomePage() {
               </Grid>
             </>
           )}
-        {frame === FrameType.rosa && idSquadra && squadra && (
-          <Zoom in={true}>
-            <Grid item xs={12} sm={12}>
-              <Rosa
-                onActionGoToStatistica={handleChangeStatistica}
-                onActionChange={handleChangeRosa}
-                onActionGoToGiocatore={handleChangeGiocatori}
-                idSquadra={idSquadra}
-                squadra={squadra}
-              />
-            </Grid>
-          </Zoom>
-        )}
-        {frame === FrameType.statisticheSquadra && idSquadra && (
-          <Zoom in={frame === FrameType.statisticheSquadra}>
-            <Grid item xs={12} sm={12}>
-              <StatisticaSquadra
-                onActionGoToFormazione={handleChangeFrame}
-                onActionGoToRosa={handleChangeRosa}
-                onActionChangePartita={handleChangePartita}
-                idSquadra={idSquadra}
-              />
-            </Grid>
-          </Zoom>
-        )}
       </Grid>
 
       <Modal

@@ -19,50 +19,82 @@ export default function Squadre({ onActionChange: onActionActive }: SquadreProps
     };
     
     return (
-        <>
-            {squadreList.isLoading ? (
-                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <CircularProgress color="warning" />
-                </Box>
-            ) : (
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
-                        {squadreList.data?.map((squadra, index) => (
-                            <Card key={index} sx={{ minWidth: 130, maxWidth: 130, marginBottom: '3px' }}>
-                                <CardMedia
-                                    component="img"
-                                    height="90"
-                                    image={squadra.foto ?? ''}
-                                    alt={squadra.squadra}
-                                />
-                                <CardContent sx={{ paddingBottom: '2px' }}>
-                                    <Typography gutterBottom variant="h6" component="div">
-                                        {squadra.squadra}
-                                    </Typography>
-                                </CardContent>
-                                <CardActions disableSpacing sx={{ paddingTop: '2px'}}>
-                                    {squadra.id === session?.user?.idSquadra && (
-                                        <Tooltip title="Schiera formazione">
-                                            <Link href={{ pathname: '/formazione', query: { isXs: false } }}>
-                                                <Ballot color='primary' />
-                                            </Link>
-                                        </Tooltip>
-                                    )}
-                                    <Tooltip title="Rosa">
-                                        <IconButton onClick={() => handleAction(FrameType.rosa, squadra.id, squadra.squadra)}>
-                                            <Diversity1 color='success' />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip title="Statistiche">
-                                        <IconButton onClick={() => handleAction(FrameType.statisticheSquadra, squadra.id, squadra.squadra)}>
-                                            <QueryStats color='warning' />
-                                        </IconButton>
-                                    </Tooltip>
-                                </CardActions>
-                            </Card>
-                        ))}
-                </Box>
-            )}
-
-
-        </>);
+      <>
+        {squadreList.isLoading ? (
+          <Box
+            sx={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <CircularProgress color="warning" />
+          </Box>
+        ) : (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "20px",
+              flexWrap: "wrap",
+            }}
+          >
+            {squadreList.data?.map((squadra, index) => (
+              <Card
+                key={index}
+                sx={{ minWidth: 130, maxWidth: 130, marginBottom: "3px" }}
+              >
+                <CardMedia
+                  component="img"
+                  height="90"
+                  image={squadra.foto ?? ""}
+                  alt={squadra.squadra}
+                />
+                <CardContent sx={{ paddingBottom: "2px" }}>
+                  <Typography gutterBottom variant="h6" component="div">
+                    {squadra.squadra}
+                  </Typography>
+                </CardContent>
+                <CardActions disableSpacing sx={{ paddingTop: "2px" }}>
+                  {squadra.id === session?.user?.idSquadra && (
+                    <Tooltip title="Schiera formazione">
+                      <Link
+                        href={{
+                          pathname: "/formazione",
+                          query: { isXs: false },
+                        }}
+                      >
+                        <Ballot color="primary" />
+                      </Link>
+                    </Tooltip>
+                  )}
+                  <Tooltip title="Rosa">
+                    <Link
+                      href={`/squadra?idSquadra=${squadra.id}&squadra=${squadra.squadra}`}
+                    >
+                      <Diversity1 color="primary" />
+                    </Link>
+                  </Tooltip>
+                  <Tooltip title="Statistiche">
+                    <IconButton
+                      onClick={() =>
+                        handleAction(
+                          FrameType.statisticheSquadra,
+                          squadra.id,
+                          squadra.squadra
+                        )
+                      }
+                    >
+                      <QueryStats color="warning" />
+                    </IconButton>
+                  </Tooltip>
+                </CardActions>
+              </Card>
+            ))}
+          </Box>
+        )}
+      </>
+    );
 }
