@@ -50,15 +50,14 @@ import {
   type GiocatoreType,
 } from "~/types/squadre";
 import Image from "next/image";
-import Giocatori from "../giocatori/Giocatori";
 import Modal from "../modal/Modal";
 import dayjs from "dayjs";
 import Link from "next/link";
+import Giocatore from "../giocatori/Giocatore";
 
 function FormazioneXs() {
   const session = useSession();
   const idSquadra = parseInt(session.data?.user?.id ?? "0");
-  //const squadra = session.data?.user?.squadra ?? '';
   const [idGiocatoreStat, setIdGiocatoreStat] = useState<number>();
   const [openModalCalendario, setOpenModalCalendario] = useState(false);
 
@@ -604,7 +603,7 @@ function FormazioneXs() {
                     variant="contained"
                     color="error"
                     size="medium"
-                    sx={{ m:"4px", ml: "5px", fontSize: "11px", opacity: 0.8 }}
+                    sx={{ m: "4px", ml: "5px", fontSize: "11px", opacity: 0.8 }}
                   >
                     {saving ? "Attendere..." : "Salva"}
                   </Button>
@@ -615,8 +614,10 @@ function FormazioneXs() {
               </Stack>
             </Grid>
             {giornate.length > 1 && (
-              <Grid item xs={12} sx={{ justifyContent: 'flex-start'}}>
-                <Typography variant={"h5"} color="error">Attenzione!!! partita di campionato e di coppa!!!</Typography>
+              <Grid item xs={12} sx={{ justifyContent: "flex-start" }}>
+                <Typography variant={"h5"} color="error">
+                  Attenzione!!! partita di campionato e di coppa!!!
+                </Typography>
               </Grid>
             )}
             <Grid item sm={8} xs={12}>
@@ -709,14 +710,7 @@ function FormazioneXs() {
       >
         <Divider />
         <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
-          <Giocatori
-            idGiocatore={idGiocatoreStat}
-            onActionChange={() => {
-              if (false) {
-              }
-            }}
-            removeNav={true}
-          ></Giocatori>
+          <Giocatore idGiocatore={idGiocatoreStat!} />
         </Box>
       </Modal>
     </>
