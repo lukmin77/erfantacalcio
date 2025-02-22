@@ -6,7 +6,7 @@ export default function AlboPage() {
   return (
     <Grid container justifyContent="center" spacing={0}>
       <Grid item xs={12}>
-        <Suspense fallback={<div>Caricamento...</div>}>
+        <Suspense fallback={<div>Caricamento...</div>} >
           <Albo />
         </Suspense>
       </Grid>

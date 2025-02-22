@@ -22,7 +22,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import { RuoloUtente } from "~/utils/enums";
-import { ExitToApp, WorkHistory } from "@mui/icons-material";
+import { Cottage, ExitToApp, WorkHistory } from "@mui/icons-material";
 import { adminListItems, guestListItems } from "../navigation/NavItems";
 import { Configurazione } from "~/config";
 import Link from "next/link";
@@ -150,6 +150,19 @@ function AppAppBar({ isXs }: AppAppBarProps) {
               <>
                 {session?.user?.ruolo === RuoloUtente.admin && (
                   <div>
+                    <Tooltip title="Home Page">
+                      <IconButton
+                        color="info"
+                        onClick={() => window.location.href = '/'}
+                        size="small"
+                        sx={{ ml: 2 }}
+                        aria-controls={openBo ? "account-menu" : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={openBo ? "true" : undefined}
+                      >
+                        <Cottage />
+                      </IconButton>
+                    </Tooltip>
                     <Tooltip title="Admin settings">
                       <IconButton
                         color="info"
@@ -160,7 +173,7 @@ function AppAppBar({ isXs }: AppAppBarProps) {
                         aria-haspopup="true"
                         aria-expanded={openBo ? "true" : undefined}
                       >
-                        <WorkHistory></WorkHistory>
+                        <WorkHistory />
                       </IconButton>
                     </Tooltip>
                     <Menu
