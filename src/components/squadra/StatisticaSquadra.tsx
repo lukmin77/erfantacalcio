@@ -1,4 +1,4 @@
-import { Ballot, Diversity1, Home, SportsSoccer } from "@mui/icons-material";
+import { Ballot, Diversity1, SportsSoccer } from "@mui/icons-material";
 import {
   Box,
   Card,
@@ -63,10 +63,6 @@ function StatisticaSquadra({
     { refetchOnWindowFocus: false, refetchOnReconnect: false }
   );
   const [value, setValue] = useState(0);
-
-  const handleActionPartita = (newFrame: FrameType, idPartita: number) => {
-    onActionActivePartita(newFrame, idPartita);
-  };
 
   const handleActionRosa = (
     newFrame: FrameType,

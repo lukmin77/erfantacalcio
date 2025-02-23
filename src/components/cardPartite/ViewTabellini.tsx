@@ -1,6 +1,5 @@
 "use client";
 import {
-  Home,
   KeyboardDoubleArrowLeftOutlined,
   KeyboardDoubleArrowRightOutlined,
   Style,
@@ -11,10 +10,8 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CircularProgress,
   Divider,
   Grid,
-  IconButton,
   Stack,
   Tooltip,
   Typography,
@@ -27,7 +24,6 @@ import { getShortName } from "~/utils/helper";
 import { useEffect, useState } from "react";
 import Modal from "../modal/Modal";
 import { Configurazione } from "~/config";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Giocatore from "../giocatori/Giocatore";
 
@@ -77,8 +73,7 @@ function ViewTabellini() {
     if (idPartita) {
       // Converte i valori in numeri
       const parsedPartita = Number(idPartita);
-      const parsedCalendario = Number(idCalendario);
-
+      
       // Verifica se entrambi i valori sono numeri validi
       if (!isNaN(parsedPartita)) {
         setPartita(parsedPartita);

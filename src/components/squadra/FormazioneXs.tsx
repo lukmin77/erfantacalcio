@@ -8,7 +8,6 @@ import {
   Filter4,
   Filter5,
   Filter6,
-  Home,
   HourglassTop,
   Save,
 } from "@mui/icons-material";
@@ -52,7 +51,6 @@ import {
 import Image from "next/image";
 import Modal from "../modal/Modal";
 import dayjs from "dayjs";
-import Link from "next/link";
 import Giocatore from "../giocatori/Giocatore";
 
 function FormazioneXs() {

@@ -1,15 +1,11 @@
 "use client";
-import { Home } from "@mui/icons-material";
 import {
   Avatar,
   Box,
   Card,
   CardContent,
   CardHeader,
-  CircularProgress,
-  Divider,
   Grid,
-  IconButton,
   Tooltip,
   Typography,
   useMediaQuery,
@@ -21,7 +17,6 @@ import { Configurazione } from "~/config";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Modal from "../modal/Modal";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Giocatore from "../giocatori/Giocatore";
 
