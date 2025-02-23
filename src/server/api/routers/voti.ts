@@ -601,7 +601,7 @@ async function findSquadraSerieA(nome: string) {
 async function createTrasferimento(idGiocatore: number, idSquadraSerieA: number, nomeSquadraSerieA: string) {
   try {
     //Logger.info('Pre-inserimento in Trasferimenti:', { idGiocatore: idGiocatore, idsquadraSerieA: idSquadraSerieA, nomeSquadraSerieA: nomeSquadraSerieA });
-    const trasferimento = await prisma.trasferimenti.create({
+    await prisma.trasferimenti.create({
       data: {
         idGiocatore: idGiocatore,
         costo: 0,
