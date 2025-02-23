@@ -136,27 +136,10 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
 
   return (
     <Grid container spacing={1} paddingTop={2} paddingBottom={2}>
-          <Grid item xs={11}>
+          <Grid item xs={12}>
             <Typography variant="h4">
               {giocatoreProfilo.data && `Statistiche ${giocatoreProfilo.data.nome}`}
             </Typography>
-          </Grid>
-          <Grid
-            item
-            xs={1}
-            display={"flex"}
-            justifyContent={"flex-end"}
-            alignItems={"baseline"}
-          >
-            <>
-              {idGiocatore && (
-                <Tooltip title="Ricerca giocatori" placement="top-start">
-                  <IconButton onClick={() => window.location.href='/statistiche_giocatori' }>
-                    <PersonSearch color="primary" />
-                  </IconButton>
-                </Tooltip>
-              )}
-            </>
           </Grid>
           
           {idGiocatore && giocatoreProfilo.data && (

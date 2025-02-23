@@ -13,7 +13,6 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-  IconButton,
   Card,
   CardHeader,
   CardMedia,
@@ -22,7 +21,6 @@ import {
 } from "@mui/material";
 import {
   AccessAlarm,
-  Ballot,
   CalendarMonth,
   EmojiEvents,
   Looks3Outlined,
@@ -30,26 +28,21 @@ import {
   Looks5Outlined,
   LooksOneOutlined,
   LooksTwoOutlined,
-  Login,
   PendingActions,
 } from "@mui/icons-material";
 import { type TorneoType } from "~/types/tornei";
 import Classifica from "~/components/home/Classifica";
 import Squadre from "~/components/home/Squadre";
-import SquadreCarousel from "~/components/home/SquadreCarousel";
 import Calendario from "~/components/home/Calendario";
 import Modal from "~/components/modal/Modal";
 import { type GiornataType } from "~/types/common";
 import CardPartite from "~/components/cardPartite/CardPartite";
-import { FrameType } from "~/utils/enums";
-import { signIn, useSession } from "next-auth/react";
-import Link from "next/link";
+import { useSession } from "next-auth/react";
+import SquadreXs from "~/components/home/SquadreXs";
 
 export default function HomePage() {
   const { data: session } = useSession();
-  const [frame, setFrame] = useState<FrameType>(FrameType.defaultHome);
   const torneiList = api.tornei.list.useQuery(undefined, {
-    enabled: frame === FrameType.defaultHome,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
@@ -63,11 +56,7 @@ export default function HomePage() {
     useState<boolean>(false);
   const [isCalendarioRecuperi, setIsCalendarioRecuperi] =
     useState<boolean>(false);
-  const [idSquadra, setIdSquadra] = useState<number>();
-  const [idGiocatore, setIdGiocatore] = useState<number>();
-  const [squadra, setSquadra] = useState<string>();
-  const [idPartita, setIdPartita] = useState<number>();
-
+  
   const calendarioList =
     girone && !isCalendarioAttuale && !isCalendarioRecuperi
       ? api.calendario.listByGirone.useQuery(girone, {
@@ -144,342 +133,290 @@ export default function HomePage() {
     setOpenModalCalendario(true);
   };
 
-  const handleChangeFrame = (newFrame: FrameType) => {
-    setFrame(newFrame);
-  };
-
-  const handleChangeRosa = (
-    newFrame: FrameType,
-    newIdSquadra?: number,
-    newSquadra?: string
-  ) => {
-    setIdSquadra(newIdSquadra);
-    setSquadra(newSquadra);
-    handleChangeFrame(newFrame);
-  };
-
-  const handleChangeStatistica = (
-    newFrame: FrameType,
-    newIdSquadra?: number
-  ) => {
-    setIdSquadra(newIdSquadra);
-    handleChangeFrame(newFrame);
-  };
-
-  const handleChangeGiocatori = (newFrame: FrameType, idGiocatore?: number) => {
-    setIdGiocatore(idGiocatore);
-    handleChangeFrame(newFrame);
-  };
-
-  const handleChangePartita = (newFrame: FrameType, idPartita: number) => {
-    setIdPartita(idPartita);
-    setOpenModalCalendario(false);
-    handleChangeFrame(newFrame);
-  };
-
   const handleModalClose = () => {
     setOpenModalCalendario(false);
-  };
-
-  const handleOpenPDF = () => {
-    window.open("/docs/Regolamento_erFantacalcio.pdf", "_blank");
   };
 
   return (
     <>
       <Grid container spacing={0}>
-        {frame === FrameType.defaultHome && isXs && session?.user && (
-          <>
-            <Grid item xs={6}>
-              <Typography variant="h5">
-                Bentornato {session.user.presidente}
-              </Typography>
-            </Grid>
-            <Grid item xs={6} display={"flex"} justifyContent={"flex-end"}>
-              <Tooltip title="Schiera formazione" placement="top-start">
-                <Link href={`/formazione?isXs=${isXs}`}>
-                  <Ballot color="primary" />
-                </Link>
-              </Tooltip>
-            </Grid>
-          </>
+        {isXs && session?.user && (
+          <Grid item xs={12}>
+            <Typography variant="h5">
+              Bentornato {session.user.presidente}
+            </Typography>
+          </Grid>
         )}
-        {frame === FrameType.defaultHome && isXs && !session?.user && (
-          <>
-            <Grid item xs={12} display={"flex"} justifyContent={"flex-end"}>
-              <>
-                <Tooltip title="Log out" placement="top-start">
-                  <IconButton onClick={() => void signIn("erFantacalcio")}>
-                    <Login color="primary" />
-                  </IconButton>
-                </Tooltip>
-              </>
-            </Grid>
-          </>
-        )}
-        {frame === FrameType.defaultHome && !isXs && (
-          <Slide direction={"down"} in={frame === FrameType.defaultHome}>
+        {!isXs && (
+          <Slide direction={"down"} in={true}>
             <Grid item xs={12}>
-              <Squadre onActionChange={handleChangeRosa} />
+              <Squadre />
             </Grid>
           </Slide>
         )}
-        {frame === FrameType.defaultHome && !torneiList.isLoading && (
+        {!torneiList.isLoading && (
           <>
-            <Zoom in={frame === FrameType.defaultHome}>
-              <Grid
-                item
-                xs={12}
-                sm={6}
-                sx={!isXs ? { pl: "2px", pr: "15px", pt: "15px" } : {}}
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              sx={!isXs ? { pl: "2px", pr: "15px", pt: "15px" } : {}}
+            >
+              <Classifica
+                nomeTorneo={torneo?.nome ?? ""}
+                idTorneo={torneo?.idTorneo}
+                gruppo={torneo?.gruppoFase ?? ""}
+              ></Classifica>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  "& > *": { m: 1 },
+                }}
               >
-                <Classifica
-                  nomeTorneo={torneo?.nome ?? ""}
-                  idTorneo={torneo?.idTorneo}
-                  gruppo={torneo?.gruppoFase ?? ""}
-                ></Classifica>
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    "& > *": { m: 1 },
-                  }}
+                <ButtonGroup
+                  size="small"
+                  color="primary"
+                  aria-label="Small button group"
                 >
-                  <ButtonGroup
-                    size="small"
-                    color="primary"
-                    aria-label="Small button group"
+                  <Button
+                    onClick={() => handleClassifica("Campionato", null)}
+                    startIcon={<CalendarMonth />}
+                    sx={isXs ? { fontSize: "10px" } : {}}
                   >
-                    <Button
-                      onClick={() => handleClassifica("Campionato", null)}
-                      startIcon={<CalendarMonth />}
-                      sx={isXs ? { fontSize: "10px" } : {}}
-                    >
-                      Campionato
-                    </Button>
-                    <Button
-                      onClick={() => handleClassifica("Champions", "A")}
-                      startIcon={<EmojiEvents />}
-                      sx={isXs ? { fontSize: "10px" } : {}}
-                    >
-                      {isXs ? "Girone A" : "Champions Girone A"}
-                    </Button>
-                    <Button
-                      onClick={() => handleClassifica("Champions", "B")}
-                      startIcon={<EmojiEvents />}
-                      sx={isXs ? { fontSize: "10px" } : {}}
-                    >
-                      {isXs ? "Girone B" : "Champions Girone B"}
-                    </Button>
-                  </ButtonGroup>
-                </Box>
-              </Grid>
-            </Zoom>
-            <Zoom in={frame === FrameType.defaultHome}>
-              <Grid
-                item
-                xs={12}
-                sm={6}
-                sx={!isXs ? { pr: "2px", pl: "15px", pt: "15px" } : {}}
+                    Campionato
+                  </Button>
+                  <Button
+                    onClick={() => handleClassifica("Champions", "A")}
+                    startIcon={<EmojiEvents />}
+                    sx={isXs ? { fontSize: "10px" } : {}}
+                  >
+                    {isXs ? "Girone A" : "Champions Girone A"}
+                  </Button>
+                  <Button
+                    onClick={() => handleClassifica("Champions", "B")}
+                    startIcon={<EmojiEvents />}
+                    sx={isXs ? { fontSize: "10px" } : {}}
+                  >
+                    {isXs ? "Girone B" : "Champions Girone B"}
+                  </Button>
+                </ButtonGroup>
+              </Box>
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              sx={!isXs ? { pr: "2px", pl: "15px", pt: "15px" } : {}}
+            >
+              <Calendario
+                tipo={"risultati"}
+                prefixTitle="Ultimi risultati:"
+              ></Calendario>
+              <Calendario
+                tipo={"prossima"}
+                prefixTitle="Prossime partite:"
+              ></Calendario>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  "& > *": { m: 1 },
+                }}
               >
-                <Calendario
-                  tipo={"risultati"}
-                  prefixTitle="Ultimi risultati:"
-                ></Calendario>
-                <Calendario
-                  tipo={"prossima"}
-                  prefixTitle="Prossime partite:"
-                ></Calendario>
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    "& > *": { m: 1 },
-                  }}
+                <ButtonGroup
+                  size="small"
+                  color="primary"
+                  aria-label="Small button group"
                 >
-                  <ButtonGroup
-                    size="small"
-                    color="primary"
-                    aria-label="Small button group"
-                  >
-                    <Tooltip title="Calendario partite ultimo periodo">
-                      <Button
-                        onClick={() => handleCalendario(undefined, true, false)}
-                        startIcon={<AccessAlarm />}
-                      ></Button>
-                    </Tooltip>
-                    <Tooltip title="Calendario girone 1">
-                      <Button
-                        onClick={() => handleCalendario(1, false, false)}
-                        startIcon={<LooksOneOutlined />}
-                      ></Button>
-                    </Tooltip>
-                    <Tooltip title="Calendario girone 2">
-                      <Button
-                        onClick={() => handleCalendario(2, false, false)}
-                        startIcon={<LooksTwoOutlined />}
-                      >
-                        &nbsp;
-                      </Button>
-                    </Tooltip>
-                    <Tooltip title="Calendario girone 3">
-                      <Button
-                        onClick={() => handleCalendario(3, false, false)}
-                        startIcon={<Looks3Outlined />}
-                      >
-                        &nbsp;
-                      </Button>
-                    </Tooltip>
-                    <Tooltip title="Calendario girone 4">
-                      <Button
-                        onClick={() => handleCalendario(4, false, false)}
-                        startIcon={<Looks4Outlined />}
-                      >
-                        &nbsp;
-                      </Button>
-                    </Tooltip>
-                    <Tooltip title="Calendario girone 5">
-                      <Button
-                        onClick={() => handleCalendario(5, false, false)}
-                        startIcon={<Looks5Outlined />}
-                      >
-                        &nbsp;
-                      </Button>
-                    </Tooltip>
-                    <Tooltip title="Partite da recuperare">
-                      <Button
-                        onClick={() => handleCalendario(undefined, false, true)}
-                        startIcon={<PendingActions />}
-                      ></Button>
-                    </Tooltip>
-                  </ButtonGroup>
-                </Box>
+                  <Tooltip title="Calendario partite ultimo periodo">
+                    <Button
+                      onClick={() => handleCalendario(undefined, true, false)}
+                      startIcon={<AccessAlarm />}
+                    ></Button>
+                  </Tooltip>
+                  <Tooltip title="Calendario girone 1">
+                    <Button
+                      onClick={() => handleCalendario(1, false, false)}
+                      startIcon={<LooksOneOutlined />}
+                    ></Button>
+                  </Tooltip>
+                  <Tooltip title="Calendario girone 2">
+                    <Button
+                      onClick={() => handleCalendario(2, false, false)}
+                      startIcon={<LooksTwoOutlined />}
+                    >
+                      &nbsp;
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title="Calendario girone 3">
+                    <Button
+                      onClick={() => handleCalendario(3, false, false)}
+                      startIcon={<Looks3Outlined />}
+                    >
+                      &nbsp;
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title="Calendario girone 4">
+                    <Button
+                      onClick={() => handleCalendario(4, false, false)}
+                      startIcon={<Looks4Outlined />}
+                    >
+                      &nbsp;
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title="Calendario girone 5">
+                    <Button
+                      onClick={() => handleCalendario(5, false, false)}
+                      startIcon={<Looks5Outlined />}
+                    >
+                      &nbsp;
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title="Partite da recuperare">
+                    <Button
+                      onClick={() => handleCalendario(undefined, false, true)}
+                      startIcon={<PendingActions />}
+                    ></Button>
+                  </Tooltip>
+                </ButtonGroup>
+              </Box>
+            </Grid>
+            {isXs && session?.user && (
+              <Grid item xs={12}>
+                <SquadreXs />
               </Grid>
-            </Zoom>
-          </>
-        )}
-        {(frame === FrameType.defaultHome) &&
-          !torneiList.isLoading && (
-            <>
-              <Zoom in={true}>
-                <Grid
-                  item
-                  xs={6}
-                  sm={3}
-                  sx={
-                    !isXs
-                      ? { pr: "25px", pl: "0px", pt: "15px" }
-                      : { pr: "5px" }
-                  }
-                >
-                  <Card>
-                    <CardActionArea>
+            )}
+            {!isXs && (
+              <>
+                <Zoom in={true}>
+                  <Grid
+                    item
+                    xs={6}
+                    sm={3}
+                    sx={
+                      !isXs
+                        ? { pr: "25px", pl: "0px", pt: "15px" }
+                        : { pr: "5px" }
+                    }
+                  >
+                    <Card>
+                      <CardActionArea>
+                        <CardHeader
+                          title="Statistiche giocatori"
+                          titleTypographyProps={{ variant: "h5" }}
+                        />
+                        <CardMedia
+                          component="img"
+                          image={"/images/giocatori.jpg"}
+                          width={"201px"}
+                          height={"139px"}
+                          alt={"Statistiche giocatori"}
+                          sx={{ cursor: "pointer" }}
+                          onClick={() =>
+                            (window.location.href = "/statistiche_giocatori")
+                          }
+                        />
+                      </CardActionArea>
+                    </Card>
+                  </Grid>
+                </Zoom>
+                <Zoom in={true}>
+                  <Grid
+                    item
+                    xs={6}
+                    sm={3}
+                    sx={
+                      !isXs
+                        ? { pr: "25px", pl: "0px", pt: "15px" }
+                        : { pl: "5px" }
+                    }
+                  >
+                    <Card>
                       <CardHeader
-                        title="Statistiche giocatori"
+                        title="Albo"
                         titleTypographyProps={{ variant: "h5" }}
                       />
                       <CardMedia
                         component="img"
-                        image={"/images/giocatori.jpg"}
+                        image={"/images/albo.jpg"}
                         width={"201px"}
                         height={"139px"}
-                        alt={"Statistiche giocatori"}
+                        alt={"Albo"}
                         sx={{ cursor: "pointer" }}
-                        onClick={() => window.location.href='/statistiche_giocatori'}
+                        onClick={() => (window.location.href = "/albo")}
                       />
-                    </CardActionArea>
-                  </Card>
-                </Grid>
-              </Zoom>
-              <Zoom in={true}>
-                <Grid
-                  item
-                  xs={6}
-                  sm={3}
-                  sx={
-                    !isXs
-                      ? { pr: "25px", pl: "0px", pt: "15px" }
-                      : { pl: "5px" }
-                  }
-                >
-                  <Card>
-                    <CardHeader
-                      title="Albo"
-                      titleTypographyProps={{ variant: "h5" }}
-                    />
-                    <CardMedia
-                      component="img"
-                      image={"/images/albo.jpg"}
-                      width={"201px"}
-                      height={"139px"}
-                      alt={"Albo"}
-                      sx={{ cursor: "pointer" }}
-                      onClick={() => window.location.href='/albo'}
-                    />
-                  </Card>
-                </Grid>
-              </Zoom>
-              <Zoom in={true}>
-                <Grid
-                  item
-                  xs={6}
-                  sm={3}
-                  sx={
-                    !isXs
-                      ? { pr: "25px", pl: "0px", pt: "15px" }
-                      : { pr: "5px" }
-                  }
-                >
-                  <Card>
-                    <CardHeader
-                      title="Economia e premi"
-                      titleTypographyProps={{ variant: "h5" }}
-                    />
-                    <CardMedia
-                      component="img"
-                      image={"/images/soldi.png"}
-                      width={"201px"}
-                      height={"139px"}
-                      alt={"Economia e premi"}
-                      sx={{ cursor: "pointer" }}
-                      onClick={() => window.location.href='/economia'}
-                    />
-                  </Card>
-                </Grid>
-              </Zoom>
-              <Zoom in={true}>
-                <Grid
-                  item
-                  xs={6}
-                  sm={3}
-                  sx={
-                    !isXs ? { pr: "0px", pl: "0px", pt: "15px" } : { pl: "5px" }
-                  }
-                >
-                  <Card>
-                    <CardHeader
-                      title="Regolamento"
-                      titleTypographyProps={{ variant: "h5" }}
-                    />
-                    <CardMedia
-                      component="img"
-                      image={"/images/regolamento.jpg"}
-                      width={"201px"}
-                      height={"139px"}
-                      alt={"Regolamento"}
-                      sx={{ cursor: "pointer" }}
-                      onClick={() => window.location.href='/docs/Regolamento_erFantacalcio.pdf'}
-                    />
-                  </Card>
-                </Grid>
-              </Zoom>
-              <Grid item xs={12} sx={{ height: "80px" }}>
-                <></>
-              </Grid>
-            </>
-          )}
+                    </Card>
+                  </Grid>
+                </Zoom>
+                <Zoom in={true}>
+                  <Grid
+                    item
+                    xs={6}
+                    sm={3}
+                    sx={
+                      !isXs
+                        ? { pr: "25px", pl: "0px", pt: "15px" }
+                        : { pr: "5px" }
+                    }
+                  >
+                    <Card>
+                      <CardHeader
+                        title="Economia e premi"
+                        titleTypographyProps={{ variant: "h5" }}
+                      />
+                      <CardMedia
+                        component="img"
+                        image={"/images/soldi.png"}
+                        width={"201px"}
+                        height={"139px"}
+                        alt={"Economia e premi"}
+                        sx={{ cursor: "pointer" }}
+                        onClick={() => (window.location.href = "/economia")}
+                      />
+                    </Card>
+                  </Grid>
+                </Zoom>
+                <Zoom in={true}>
+                  <Grid
+                    item
+                    xs={6}
+                    sm={3}
+                    sx={
+                      !isXs
+                        ? { pr: "0px", pl: "0px", pt: "15px" }
+                        : { pl: "5px" }
+                    }
+                  >
+                    <Card>
+                      <CardHeader
+                        title="Regolamento"
+                        titleTypographyProps={{ variant: "h5" }}
+                      />
+                      <CardMedia
+                        component="img"
+                        image={"/images/regolamento.jpg"}
+                        width={"201px"}
+                        height={"139px"}
+                        alt={"Regolamento"}
+                        sx={{ cursor: "pointer" }}
+                        onClick={() =>
+                          (window.location.href =
+                            "/docs/Regolamento_erFantacalcio.pdf")
+                        }
+                      />
+                    </Card>
+                  </Grid>
+                </Zoom>
+              </>
+            )}
+            <Grid item xs={12} sx={{ height: "80px" }}>
+              <></>
+            </Grid>
+          </>
+        )}
       </Grid>
 
       <Modal

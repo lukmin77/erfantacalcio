@@ -80,38 +80,12 @@ function ViewFormazioni() {
   return (
     <>
       <Grid container spacing={0}>
-        {formazioniList.isLoading && (
-          <Grid item xs={12}>
-            <Box
-              sx={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <CircularProgress color="warning" />
-            </Box>
-          </Grid>
-        )}
         {calendario && (
           <>
-            <Grid item xs={9}>
+            <Grid item xs={12}>
               <Typography variant={"h4"}>{calendario.Title}</Typography>
             </Grid>
-            <Grid
-              item
-              xs={3}
-              sx={{ display: "flex", justifyContent: "flex-end" }}
-            >
-              <Tooltip title="Home" placement="top-start">
-                <Link href={"/"} passHref>
-                  <IconButton>
-                    <Home color="primary" fontSize="large" />
-                  </IconButton>
-                </Link>
-              </Tooltip>
-            </Grid>
+            
             <Grid item xs={12}>
               <Typography variant={"body2"}>
                 {`Calcio d'inizio ${calendario.SubTitle} il 

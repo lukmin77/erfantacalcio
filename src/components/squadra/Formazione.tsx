@@ -666,7 +666,7 @@ function Formazione() {
         )}
         {enableRosa ? (
           <>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <Stack
                 direction={"row"}
                 justifyContent="flex-start"
@@ -713,17 +713,7 @@ function Formazione() {
                 </Box>
               </Stack>
             </Grid>
-            <Grid
-              item
-              xs={6}
-              sx={{ display: "flex", justifyContent: "flex-end" }}
-            >
-              <Tooltip title="Home" placement="top-start">
-                <Link href={"/"} passHref>
-                  <Home color="primary" fontSize="large" />
-                </Link>
-              </Tooltip>
-            </Grid>
+            
             {giornate.length > 1 && (
               <Grid item xs={12} sx={{ justifyContent: "flex-start" }}>
                 <Typography variant={"h5"} color="error">

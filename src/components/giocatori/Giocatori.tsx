@@ -191,27 +191,8 @@ function Giocatori() {
           </Box>
         ) : (
           <>
-            <Grid item xs={11}>
+            <Grid item xs={12}>
               <Typography variant="h4">Statistiche Giocatori</Typography>
-            </Grid>
-            <Grid
-              item
-              xs={1}
-              display={"flex"}
-              justifyContent={"flex-end"}
-              alignItems={"baseline"}
-            >
-              <>
-                {selectedGiocatoreId && (
-                  <Tooltip title="Ricerca giocatori" placement="top-start">
-                    <IconButton
-                      onClick={() => setSelectedGiocatoreId(undefined)}
-                    >
-                      <PersonSearch color="primary" />
-                    </IconButton>
-                  </Tooltip>
-                )}
-              </>
             </Grid>
             <Grid item xs={12} sm={6}>
               <FormControlLabel

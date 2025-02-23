@@ -608,9 +608,7 @@ function FormazioneXs() {
                     {saving ? "Attendere..." : "Salva"}
                   </Button>
                 </Box>
-                <Link href={"/"} passHref>
-                  <Home color="primary" fontSize="large" />
-                </Link>
+                
               </Stack>
             </Grid>
             {giornate.length > 1 && (

@@ -4,7 +4,6 @@ import { Alert, Stack } from "@mui/material";
 import { type GiornataType } from '~/types/common';
 import CardPartite from '../cardPartite/CardPartite';
 import CheckIcon from '@mui/icons-material/CheckCircle';
-import { type FrameType } from '~/utils/enums';
 
 interface CalendarioProps {
     prefixTitle: string;

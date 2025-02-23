@@ -288,13 +288,7 @@ function StatisticaSquadra({
                 <Diversity1 color="success" />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Home" placement="top-start">
-              <Link href={"/"} passHref>
-                <IconButton>
-                  <Home color="primary" fontSize="large" />
-                </IconButton>
-              </Link>
-            </Tooltip>
+            
           </Grid>
           <Grid item xs={12} sm={3}>
             <Card>
