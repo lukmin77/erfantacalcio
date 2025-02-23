@@ -121,7 +121,7 @@ function AppAppBar({ isXs }: AppAppBarProps) {
               sx={{
                 textShadow: "4px 4px 1px rgba(85,33,203, 0.7)",
                 mr: "30px",
-                fontSize: "22px",
+                fontSize: "18px",
                 cursor: "pointer",
                 display: { xs: "block", sm: "none" },
               }}
