@@ -259,7 +259,7 @@ export const votiRouter = createTRPCRouter({
     }))
     .mutation(async (opts) => {
       try {
-        const { idCalendario, fileName, fileData } = opts.input;
+        const { fileName, fileData } = opts.input;
         const blob = await uploadFile(fileData, fileName, 'voti');
         Logger.info('file blob: ', blob);
         Logger.info(`Il file ${blob.url} è stato completamente salvato.`);
@@ -601,7 +601,7 @@ async function findSquadraSerieA(nome: string) {
 async function createTrasferimento(idGiocatore: number, idSquadraSerieA: number, nomeSquadraSerieA: string) {
   try {
     //Logger.info('Pre-inserimento in Trasferimenti:', { idGiocatore: idGiocatore, idsquadraSerieA: idSquadraSerieA, nomeSquadraSerieA: nomeSquadraSerieA });
-    const trasferimento = await prisma.trasferimenti.create({
+    await prisma.trasferimenti.create({
       data: {
         idGiocatore: idGiocatore,
         costo: 0,

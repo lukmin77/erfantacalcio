@@ -153,7 +153,7 @@ function AppAppBar({ isXs }: AppAppBarProps) {
                     <Tooltip title="Home Page">
                       <IconButton
                         color="info"
-                        onClick={() => window.location.href = '/'}
+                        onClick={() => (window.location.href = "/")}
                         size="small"
                         sx={{ ml: 2 }}
                         aria-controls={openBo ? "account-menu" : undefined}
@@ -290,6 +290,19 @@ function AppAppBar({ isXs }: AppAppBarProps) {
             )}
           </Box>
           <Box sx={{ display: { sm: "", md: "none" } }}>
+            <Tooltip title="Home Page">
+              <IconButton
+                color="info"
+                onClick={() => (window.location.href = "/")}
+                size="small"
+                sx={{ ml: 2 }}
+                aria-controls={openBo ? "account-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={openBo ? "true" : undefined}
+              >
+                <Cottage />
+              </IconButton>
+            </Tooltip>
             <Button
               variant="text"
               color="info"
@@ -330,9 +343,9 @@ function AppAppBar({ isXs }: AppAppBarProps) {
                   </>
                 )}
                 <>
-                  <ListItemButton href="/squadre">
+                  {/* <ListItemButton href="/squadre">
                     <ListItemText primary="Le Squadre" />
-                  </ListItemButton>
+                  </ListItemButton> */}
                   <ListItemButton href="/statistiche_giocatori">
                     <ListItemText primary="Statistiche giocatori" />
                   </ListItemButton>

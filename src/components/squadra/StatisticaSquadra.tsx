@@ -1,4 +1,4 @@
-import { Ballot, Diversity1, Home, SportsSoccer } from "@mui/icons-material";
+import { Ballot, Diversity1, SportsSoccer } from "@mui/icons-material";
 import {
   Box,
   Card,
@@ -63,10 +63,6 @@ function StatisticaSquadra({
     { refetchOnWindowFocus: false, refetchOnReconnect: false }
   );
   const [value, setValue] = useState(0);
-
-  const handleActionPartita = (newFrame: FrameType, idPartita: number) => {
-    onActionActivePartita(newFrame, idPartita);
-  };
 
   const handleActionRosa = (
     newFrame: FrameType,
@@ -288,13 +284,7 @@ function StatisticaSquadra({
                 <Diversity1 color="success" />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Home" placement="top-start">
-              <Link href={"/"} passHref>
-                <IconButton>
-                  <Home color="primary" fontSize="large" />
-                </IconButton>
-              </Link>
-            </Tooltip>
+            
           </Grid>
           <Grid item xs={12} sm={3}>
             <Card>

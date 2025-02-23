@@ -8,7 +8,6 @@ import {
   Filter4,
   Filter5,
   Filter6,
-  Home,
   HourglassTop,
   Save,
 } from "@mui/icons-material";
@@ -52,7 +51,6 @@ import {
 import Image from "next/image";
 import Modal from "../modal/Modal";
 import dayjs from "dayjs";
-import Link from "next/link";
 import Giocatore from "../giocatori/Giocatore";
 
 function FormazioneXs() {
@@ -535,7 +533,7 @@ function FormazioneXs() {
         )}
         {enableRosa ? (
           <>
-            <Grid item xs={12}>
+            <Grid item xs={8}>
               <Stack direction={"row"}>
                 {giornate.length > 1 ? (
                   <Select
@@ -566,7 +564,7 @@ function FormazioneXs() {
                 ) : (
                   <Typography
                     variant={"body2"}
-                    sx={{ lineHeight: 2.66, marginRight: "3px" }}
+                    sx={{ lineHeight: 2.66 }}
                   >
                     <b>{giornate[0]?.Title}</b>
                   </Typography>
@@ -595,6 +593,9 @@ function FormazioneXs() {
                     >{`Modulo ${moduloOption}`}</MenuItem>
                   ))}
                 </Select>
+              </Stack>
+            </Grid>
+            <Grid item xs={4} justifyItems={'end'}>
                 <Box component="form" onSubmit={handleSave} noValidate>
                   <Button
                     type="submit"
@@ -603,15 +604,11 @@ function FormazioneXs() {
                     variant="contained"
                     color="error"
                     size="medium"
-                    sx={{ m: "4px", ml: "5px", fontSize: "11px", opacity: 0.8 }}
+                    sx={{ m: "4px", fontSize: "10px", opacity: 0.8 }}
                   >
                     {saving ? "Attendere..." : "Salva"}
                   </Button>
                 </Box>
-                <Link href={"/"} passHref>
-                  <Home color="primary" fontSize="large" />
-                </Link>
-              </Stack>
             </Grid>
             {giornate.length > 1 && (
               <Grid item xs={12} sx={{ justifyContent: "flex-start" }}>

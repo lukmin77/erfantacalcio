@@ -1,35 +1,26 @@
-import { Home, Ballot, QueryStats } from "@mui/icons-material";
+"use client";
 import {
   Box,
   Card,
   CardContent,
   CardMedia,
   CircularProgress,
+  Divider,
   Grid,
-  IconButton,
   Tab,
   Tabs,
-  Tooltip,
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { api } from "~/utils/api";
-import { FrameType } from "~/utils/enums";
 import { useTheme } from "@mui/material/styles";
 import {
   type GiocatoreFormazioneType,
   type GiocatoreType,
 } from "~/types/squadre";
-
-interface RosaProps {
-  onActionChange: (action: FrameType) => void;
-  onActionGoToStatistica: (action: FrameType, idSquadra: number) => void;
-  onActionGoToGiocatore: (action: FrameType, idGiocatore: number) => void;
-  idSquadra: number;
-  squadra: string;
-}
+import Modal from "../modal/Modal";
+import Giocatore from "../giocatori/Giocatore";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -38,20 +29,22 @@ interface TabPanelProps {
   value: number;
 }
 
-function Rosa({
-  onActionChange: onActionActive,
-  onActionGoToStatistica: onActionStatistica,
-  onActionGoToGiocatore: onActionGiocatore,
-  idSquadra,
-  squadra,
-}: RosaProps) {
+type RosaProps = {
+  idSquadra: number;
+  squadra: string;
+};
+
+function Rosa({ idSquadra, squadra }: RosaProps) {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("md"));
+
+  const [selectedGiocatoreId, setSelectedGiocatoreId] = useState<number>();
+  const [openModalCalendario, setOpenModalCalendario] = useState(false);
+
   const rosaList = api.squadre.getRosa.useQuery(
     { idSquadra: idSquadra, includeVenduti: true },
     { refetchOnWindowFocus: false, refetchOnReconnect: false }
   );
-  const { data: session } = useSession();
   const [rosa, setRosa] = useState<GiocatoreFormazioneType[]>([]);
   const [value, setValue] = useState(3);
 
@@ -67,16 +60,13 @@ function Rosa({
     }
   }, [rosaList.data]);
 
-  const handleAction = (newFrame: FrameType) => {
-    onActionActive(newFrame);
+  const handleGiocatoreSelected = async (idGiocatore: number | undefined) => {
+    setSelectedGiocatoreId(idGiocatore);
+    setOpenModalCalendario(true);
   };
 
-  const handleActionStatistica = (newFrame: FrameType, idSquadra: number) => {
-    onActionStatistica(newFrame, idSquadra);
-  };
-
-  const handleActionGiocatore = (newFrame: FrameType, idGiocatore: number) => {
-    onActionGiocatore(newFrame, idGiocatore);
+  const handleModalClose = () => {
+    setOpenModalCalendario(false);
   };
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -109,12 +99,7 @@ function Rosa({
                 sx={{ cursor: "pointer", width: "120px" }}
                 image={giocatore.urlCampioncino}
                 alt={giocatore.nome}
-                onClick={() =>
-                  handleActionGiocatore(
-                    FrameType.giocatori,
-                    giocatore.idGiocatore
-                  )
-                }
+                onClick={() => handleGiocatoreSelected(giocatore.idGiocatore)}
               />
               <CardContent sx={{ paddingBottom: "0px" }}>
                 <Typography
@@ -173,55 +158,23 @@ function Rosa({
   }
 
   return (
-    <Grid container spacing={0}>
-      {rosaList.isLoading ? (
-        <Box
-          sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <CircularProgress color="warning" />
-        </Box>
-      ) : (
-        <>
-          <Grid item xs={6}>
-            <Typography variant="h5">Rosa {squadra}</Typography>
-          </Grid>
-          <Grid
-            item
-            xs={6}
-            sx={{ display: "flex", justifyContent: "flex-end" }}
+    <>
+      <Grid container spacing={0}>
+        <Grid item xs={12}>
+          <Typography variant="h3">Rosa {squadra}</Typography>
+        </Grid>
+        {rosaList.isLoading ? (
+          <Box
+            sx={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
           >
-            {session?.user && (
-              <Tooltip title="Schiera formazione" placement="top-start">
-                <IconButton
-                  onClick={() => handleAction(FrameType.schieraFormazione)}
-                >
-                  <Ballot color="primary" />
-                </IconButton>
-              </Tooltip>
-            )}
-            <Tooltip title="Statistiche">
-              <IconButton
-                onClick={() =>
-                  handleActionStatistica(
-                    FrameType.statisticheSquadra,
-                    idSquadra
-                  )
-                }
-              >
-                <QueryStats color="success" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Home" placement="top-start">
-              <IconButton onClick={() => handleAction(FrameType.defaultHome)}>
-                <Home color="primary" fontSize='large' />
-              </IconButton>
-            </Tooltip>
-          </Grid>
+            <CircularProgress color="warning" />
+          </Box>
+        ) : (
           <Grid item xs={12}>
             <Grid container spacing={0}>
               <Grid item xs={12}>
@@ -264,12 +217,25 @@ function Rosa({
               </Grid>
             </Grid>
           </Grid>
-        </>
-      )}
-      <Grid item xs={12} sx={{ height: "100px" }}>
-        <></>
+        )}
+        <Grid item xs={12} sx={{ height: "100px" }}>
+          <></>
+        </Grid>
       </Grid>
-    </Grid>
+
+      <Modal
+        title={"Statistica giocatore"}
+        open={openModalCalendario}
+        onClose={handleModalClose}
+        width={isXs ? "98%" : "1266px"}
+        height={isXs ? "98%" : ""}
+      >
+        <Divider />
+        <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
+          <Giocatore idGiocatore={selectedGiocatoreId!} />
+        </Box>
+      </Modal>
+    </>
   );
 }
 

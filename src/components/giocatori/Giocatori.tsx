@@ -5,7 +5,6 @@ import {
   Divider,
   FormControlLabel,
   Grid,
-  IconButton,
   Switch,
   Tooltip,
   Typography,
@@ -26,7 +25,7 @@ import DataTable, {
 } from "~/components/tables/datatable";
 import { type Ruoli } from "~/types/common";
 import { getRuoloEsteso } from "~/utils/helper";
-import { BarChartOutlined, PersonSearch } from "@mui/icons-material";
+import { BarChartOutlined } from "@mui/icons-material";
 import Modal from "../modal/Modal";
 import Giocatore from "./Giocatore";
 
@@ -191,27 +190,8 @@ function Giocatori() {
           </Box>
         ) : (
           <>
-            <Grid item xs={11}>
+            <Grid item xs={12}>
               <Typography variant="h4">Statistiche Giocatori</Typography>
-            </Grid>
-            <Grid
-              item
-              xs={1}
-              display={"flex"}
-              justifyContent={"flex-end"}
-              alignItems={"baseline"}
-            >
-              <>
-                {selectedGiocatoreId && (
-                  <Tooltip title="Ricerca giocatori" placement="top-start">
-                    <IconButton
-                      onClick={() => setSelectedGiocatoreId(undefined)}
-                    >
-                      <PersonSearch color="primary" />
-                    </IconButton>
-                  </Tooltip>
-                )}
-              </>
             </Grid>
             <Grid item xs={12} sm={6}>
               <FormControlLabel
