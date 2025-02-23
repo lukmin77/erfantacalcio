@@ -535,7 +535,7 @@ function FormazioneXs() {
         )}
         {enableRosa ? (
           <>
-            <Grid item xs={12}>
+            <Grid item xs={8}>
               <Stack direction={"row"}>
                 {giornate.length > 1 ? (
                   <Select
@@ -566,7 +566,7 @@ function FormazioneXs() {
                 ) : (
                   <Typography
                     variant={"body2"}
-                    sx={{ lineHeight: 2.66, marginRight: "3px" }}
+                    sx={{ lineHeight: 2.66 }}
                   >
                     <b>{giornate[0]?.Title}</b>
                   </Typography>
@@ -595,6 +595,9 @@ function FormazioneXs() {
                     >{`Modulo ${moduloOption}`}</MenuItem>
                   ))}
                 </Select>
+              </Stack>
+            </Grid>
+            <Grid item xs={4} justifyItems={'end'}>
                 <Box component="form" onSubmit={handleSave} noValidate>
                   <Button
                     type="submit"
@@ -603,13 +606,11 @@ function FormazioneXs() {
                     variant="contained"
                     color="error"
                     size="medium"
-                    sx={{ m: "4px", ml: "5px", fontSize: "11px", opacity: 0.8 }}
+                    sx={{ m: "4px", fontSize: "10px", opacity: 0.8 }}
                   >
                     {saving ? "Attendere..." : "Salva"}
                   </Button>
                 </Box>
-                
-              </Stack>
             </Grid>
             {giornate.length > 1 && (
               <Grid item xs={12} sx={{ justifyContent: "flex-start" }}>

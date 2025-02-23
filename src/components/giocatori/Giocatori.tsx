@@ -5,7 +5,6 @@ import {
   Divider,
   FormControlLabel,
   Grid,
-  IconButton,
   Switch,
   Tooltip,
   Typography,
@@ -26,7 +25,7 @@ import DataTable, {
 } from "~/components/tables/datatable";
 import { type Ruoli } from "~/types/common";
 import { getRuoloEsteso } from "~/utils/helper";
-import { BarChartOutlined, PersonSearch } from "@mui/icons-material";
+import { BarChartOutlined } from "@mui/icons-material";
 import Modal from "../modal/Modal";
 import Giocatore from "./Giocatore";
 

@@ -7,7 +7,6 @@ import {
   Filter4,
   Filter5,
   Filter6,
-  Home,
   HourglassTop,
   Save,
 } from "@mui/icons-material";
@@ -49,7 +48,6 @@ import Draggable from "react-draggable";
 import Image from "next/image";
 import Modal from "../modal/Modal";
 import dayjs from "dayjs";
-import Link from "next/link";
 import Giocatore from "../giocatori/Giocatore";
 
 function Formazione() {
@@ -666,7 +664,7 @@ function Formazione() {
         )}
         {enableRosa ? (
           <>
-            <Grid item xs={12}>
+            <Grid item xs={8}>
               <Stack
                 direction={"row"}
                 justifyContent="flex-start"
@@ -698,7 +696,11 @@ function Formazione() {
                     ))}
                   </Select>
                 )}
-                <Box component="form" onSubmit={handleSave} noValidate>
+                
+              </Stack>
+            </Grid>
+            <Grid item xs={4} justifyItems={'end'}>
+              <Box component="form" onSubmit={handleSave} noValidate>
                   <Button
                     type="submit"
                     disabled={saving}
@@ -711,9 +713,8 @@ function Formazione() {
                     {saving ? "Attendere..." : "Salva"}
                   </Button>
                 </Box>
-              </Stack>
             </Grid>
-            
+            <Grid item xs={12} minHeight={5}></Grid>
             {giornate.length > 1 && (
               <Grid item xs={12} sx={{ justifyContent: "flex-start" }}>
                 <Typography variant={"h5"} color="error">
