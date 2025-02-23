@@ -51,7 +51,7 @@ export default function SquadreXs() {
                       image={squadra.foto ?? ""}
                       alt={squadra.squadra}
                       onClick={() =>
-                        (window.location.href = `/squadra?idSquadra=${squadra.id}&squadra=${squadra.squadra}`)
+                        (window.location.href = `/squadra/${squadra.id}/${squadra.squadra}`)
                       }
                     />
                     <CardContent

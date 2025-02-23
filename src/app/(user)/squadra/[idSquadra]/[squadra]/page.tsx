@@ -13,7 +13,7 @@ export default function SquadraPage({ params }: { params: { idSquadra: string; s
     <Grid container justifyContent="center" spacing={0}>
       <Grid item xs={12}>
         <Suspense fallback={<div>Caricamento...</div>}>
-          <Rosa idSquadra={idSquadra} squadra={params.squadra} />
+          <Rosa idSquadra={idSquadra} squadra={params.squadra.replace('%20', ' ')} />
         </Suspense>
       </Grid>
     </Grid>
