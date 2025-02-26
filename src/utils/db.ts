@@ -30,9 +30,9 @@ declare const globalThis: {
 
 const prisma = globalThis.prismaGlobal ?? prismaClientSingleton()
 prisma.$on('query', (e) => {
-  Logger.debug('Query: ' + e.query)
-  Logger.debug('Params: ' + e.params)
-  Logger.debug('Duration: ' + e.duration + 'ms')
+  // Logger.debug('Query: ' + e.query)
+  // Logger.debug('Params: ' + e.params)
+  // Logger.debug('Duration: ' + e.duration + 'ms')
 });
 
 export default prisma
