@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import {
   Box,
@@ -21,8 +21,6 @@ import {
 } from "@mui/material";
 import {
   AccessAlarm,
-  CalendarMonth,
-  EmojiEvents,
   Looks3Outlined,
   Looks4Outlined,
   Looks5Outlined,
@@ -30,7 +28,6 @@ import {
   LooksTwoOutlined,
   PendingActions,
 } from "@mui/icons-material";
-import { type TorneoType } from "~/types/tornei";
 import Classifica from "~/components/home/Classifica";
 import Squadre from "~/components/home/Squadre";
 import Calendario from "~/components/home/Calendario";
@@ -46,7 +43,6 @@ export default function HomePage() {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
-  const [torneo, setTorneo] = useState<TorneoType>();
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("md"));
   const [openModalCalendario, setOpenModalCalendario] = useState(false);
@@ -56,7 +52,7 @@ export default function HomePage() {
     useState<boolean>(false);
   const [isCalendarioRecuperi, setIsCalendarioRecuperi] =
     useState<boolean>(false);
-  
+
   const calendarioList =
     girone && !isCalendarioAttuale && !isCalendarioRecuperi
       ? api.calendario.listByGirone.useQuery(girone, {
@@ -89,30 +85,6 @@ export default function HomePage() {
     calendarioList.data,
     calendarioList.isSuccess,
     calendarioList.isFetching,
-  ]);
-
-  const handleClassifica = useCallback(
-    (nomeTorneo: string, fase: string | null) => {
-      if (torneiList.data) {
-        setTorneo(
-          torneiList.data.find(
-            (c) => c.nome === nomeTorneo && c.gruppoFase === fase
-          )
-        );
-      }
-    },
-    [torneiList.data]
-  );
-
-  useEffect(() => {
-    if (torneiList.data && !torneiList.isFetching && torneiList.isSuccess) {
-      handleClassifica("Campionato", null);
-    }
-  }, [
-    torneiList.data,
-    torneiList.isSuccess,
-    torneiList.isFetching,
-    handleClassifica,
   ]);
 
   const handleCalendario = (
@@ -162,47 +134,19 @@ export default function HomePage() {
               sm={6}
               sx={!isXs ? { pl: "2px", pr: "15px", pt: "15px" } : {}}
             >
-              <Classifica
-                nomeTorneo={torneo?.nome ?? ""}
-                idTorneo={torneo?.idTorneo}
-                gruppo={torneo?.gruppoFase ?? ""}
-              ></Classifica>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  "& > *": { m: 1 },
-                }}
-              >
-                <ButtonGroup
-                  size="small"
-                  color="primary"
-                  aria-label="Small button group"
-                >
-                  <Button
-                    onClick={() => handleClassifica("Campionato", null)}
-                    startIcon={<CalendarMonth />}
-                    sx={isXs ? { fontSize: "10px" } : {}}
-                  >
-                    Campionato
-                  </Button>
-                  <Button
-                    onClick={() => handleClassifica("Champions", "A")}
-                    startIcon={<EmojiEvents />}
-                    sx={isXs ? { fontSize: "10px" } : {}}
-                  >
-                    {isXs ? "Girone A" : "Champions Girone A"}
-                  </Button>
-                  <Button
-                    onClick={() => handleClassifica("Champions", "B")}
-                    startIcon={<EmojiEvents />}
-                    sx={isXs ? { fontSize: "10px" } : {}}
-                  >
-                    {isXs ? "Girone B" : "Champions Girone B"}
-                  </Button>
-                </ButtonGroup>
-              </Box>
+              {torneiList.data
+                ?.filter((t) => t.hasClassifica)
+                .map((torneo) => (
+                  <>
+                    <Classifica
+                      key={torneo?.idTorneo} // Aggiunto key per React
+                      nomeTorneo={torneo?.nome ?? ""}
+                      idTorneo={torneo?.idTorneo}
+                      gruppo={torneo?.gruppoFase ?? ""}
+                    />
+                    <br></br>
+                  </>
+                ))}
             </Grid>
             <Grid
               item
