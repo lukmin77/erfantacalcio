@@ -51,30 +51,39 @@ export default function Classifica({
       type: "string",
       align: "left",
       renderHeader: () => <strong>Squadra</strong>,
+      flex: 1,
+      minWidth: 100,
     },
     {
       field: "punti",
       type: "number",
       align: "right",
       renderHeader: () => <strong>Punti</strong>,
+      flex: 1,
+      width: 80
     },
     {
       field: "golFatti",
       type: "number",
       align: "right",
       renderHeader: () => <strong>Gol+</strong>,
+      flex: 1,
+      width: 80
     },
     {
       field: "golSubiti",
       type: "number",
       align: "right",
       renderHeader: () => <strong>Gol-</strong>,
+      flex: 1,
+      width: 80
     },
     {
       field: "giocate",
       type: "number",
       align: "right",
       renderHeader: () => <strong>Giocate</strong>,
+      flex: 1,
       width: 80
     },
     {
@@ -82,6 +91,7 @@ export default function Classifica({
       type: "number",
       align: "right",
       renderHeader: () => <strong>Fantapunti</strong>,
+      width: 80
     },
   ];
 
@@ -99,7 +109,7 @@ export default function Classifica({
             columns: {
               columnVisibilityModel: {
                 id: false,
-              },
+              }
             },
             pagination: undefined,
             filter: undefined,
