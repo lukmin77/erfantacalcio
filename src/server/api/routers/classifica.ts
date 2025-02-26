@@ -41,6 +41,7 @@ export const classificaRouter = createTRPCRouter({
         );
 
         return result.map<ClassificaType>(c => ({
+          id: c.idSquadra,
           idSquadra: c.idSquadra,
           squadra: c.Utenti.nomeSquadra,
           foto: c.Utenti.foto,
