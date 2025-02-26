@@ -13,7 +13,7 @@ export const themeOptions: ThemeOptions = {
         dark: '#e65b1c', //dark orange
       },
       secondary: {
-        light: '#757575', //gray
+        light: '#d5d2db', //gray
         main: '#757575', //gray
         dark: '#757575', //gray
       },
