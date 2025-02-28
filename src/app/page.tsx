@@ -391,7 +391,7 @@ export default function HomePage() {
                   xs={12}
                   sm={4}
                   md={4}
-                  lg={3}
+                  lg={4}
                   key={`card_partite_${index}_${g.idCalendario}`}
                   sx={{ ml: "0px" }}
                 >
@@ -399,6 +399,7 @@ export default function HomePage() {
                     giornata={[g]}
                     prefixTitle={""}
                     maxWidth={"300px"}
+                    withAvatar={false}
                   ></CardPartite>
                 </Grid>
               ))}

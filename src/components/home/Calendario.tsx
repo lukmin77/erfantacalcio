@@ -33,7 +33,7 @@ export default function Calendario({ prefixTitle, tipo }: CalendarioProps) {
     return (
         <>
             {!calendarioList.isLoading && giornata && (
-                <CardPartite giornata={giornata} prefixTitle={prefixTitle} maxWidth={600}></CardPartite>
+                <CardPartite giornata={giornata} prefixTitle={prefixTitle} maxWidth={600} withAvatar={true}></CardPartite>
             )}
             {errorMessage && (
                 <Stack sx={{ width: '100%' }} spacing={0}>

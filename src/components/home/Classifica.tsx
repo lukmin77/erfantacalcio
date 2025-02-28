@@ -120,6 +120,7 @@ export default function Classifica({
           disableColumnMenu={true}
           disableColumnSelector={true}
           disableColumnSorting={true}
+          disableColumnResize={true}
           hideFooter={true}
           hideFooterPagination={true}
           hideFooterSelectedRowCount={true}
