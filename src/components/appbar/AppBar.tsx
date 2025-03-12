@@ -118,9 +118,8 @@ function AppAppBar({ isXs }: AppAppBarProps) {
               variant="h1"
               onClick={handleGoToHome}
               sx={{
-                textShadow: "4px 4px 1px rgba(85,33,203, 0.7)",
-                mr: "30px",
-                fontSize: "18px",
+                mr: "10px",
+                fontSize: "20px",
                 cursor: "pointer",
                 display: { xs: "block", sm: "none" },
               }}
