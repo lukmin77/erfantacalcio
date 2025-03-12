@@ -9,6 +9,8 @@ import {
   Tooltip,
   Avatar,
   Grid,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { type GiornataType } from "~/types/common";
 import { Gavel } from "@mui/icons-material";
@@ -27,6 +29,9 @@ export default function CardPartite({
   maxWidth,
   withAvatar,
 }: GiornataCardProps) {
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.down("md"));
+  
   return (
     <>
       {giornata.map((g) => (
@@ -68,7 +73,7 @@ export default function CardPartite({
                       key={`grid_${partita.idPartita}`}
                     >
                       {withAvatar && (
-                        <Grid item xs={1} alignSelf={"center"}>
+                        <Grid item xs={!isXs ? 1 : 2} alignSelf={"center"}>
                           <Avatar
                             alt={partita.squadraHome ?? ""}
                             src={partita.fotoHome ?? ""}
@@ -76,7 +81,7 @@ export default function CardPartite({
                           ></Avatar>
                         </Grid>
                       )}
-                      <Grid item xs={withAvatar ? 4 : 5} alignSelf={"center"}>
+                      <Grid item xs={withAvatar ? !isXs ? 5 : 4 : 6} alignSelf={"center"}>
                         <Typography variant="h6">
                           {partita.squadraHome}
                           {partita.multaHome ?? (
@@ -89,14 +94,7 @@ export default function CardPartite({
                           {partita.golHome ?? "-"}
                         </Typography>
                       </Grid>
-                      <Grid item xs={2} alignSelf={"center"}></Grid>
-                      <Grid
-                        item
-                        xs={withAvatar ? 4 : 5}
-                        alignSelf={"center"}
-                        textAlign={"right"}
-                        paddingRight={2}
-                      >
+                      <Grid item xs={withAvatar ? !isXs ? 5 : 4 : 6} alignSelf={"center"} textAlign={"right"} paddingRight={2}>
                         <Typography variant="h6">
                           {partita.squadraAway}
                           {partita.multaAway ?? (
@@ -110,7 +108,7 @@ export default function CardPartite({
                         </Typography>
                       </Grid>
                       {withAvatar && (
-                        <Grid item xs={1} alignSelf={"center"}>
+                        <Grid item xs={!isXs ? 1 : 2} alignSelf={"center"} textAlign={"right"} alignContent={"flex-end"} alignItems={"flex-end"}>
                           <Avatar
                             alt={partita.squadraAway ?? ""}
                             src={partita.fotoAway ?? ""}

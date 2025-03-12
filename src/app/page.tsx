@@ -132,26 +132,6 @@ export default function HomePage() {
               item
               xs={12}
               sm={6}
-              sx={!isXs ? { pl: "2px", pr: "15px", pt: "15px" } : {}}
-            >
-              {torneiList.data
-                ?.filter((t) => t.hasClassifica)
-                .map((torneo) => (
-                  <>
-                    <Classifica
-                      key={torneo?.idTorneo} // Aggiunto key per React
-                      nomeTorneo={torneo?.nome ?? ""}
-                      idTorneo={torneo?.idTorneo}
-                      gruppo={torneo?.gruppoFase ?? ""}
-                    />
-                    <br></br>
-                  </>
-                ))}
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              sm={6}
               sx={!isXs ? { pr: "2px", pl: "15px", pt: "15px" } : {}}
             >
               <Calendario
@@ -227,6 +207,26 @@ export default function HomePage() {
                   </Tooltip>
                 </ButtonGroup>
               </Box>
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              sx={!isXs ? { pr: "2px", pl: "15px", pt: "15px" } : {}}
+            >
+              {torneiList.data
+                ?.filter((t) => t.hasClassifica)
+                .map((torneo) => (
+                  <>
+                    <Classifica
+                      key={torneo?.idTorneo} // Aggiunto key per React
+                      nomeTorneo={torneo?.nome ?? ""}
+                      idTorneo={torneo?.idTorneo}
+                      gruppo={torneo?.gruppoFase ?? ""}
+                    />
+                    <br></br>
+                  </>
+                ))}
             </Grid>
             {isXs && session?.user && (
               <Grid item xs={12}>
@@ -368,7 +368,7 @@ export default function HomePage() {
         open={openModalCalendario}
         onClose={handleModalClose}
         width={isXs ? "98%" : "1266px"}
-        height={isXs ? "98%" : ""}
+        height={isXs ? "98%" : "500px"}
       >
         <Divider />
         <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
@@ -398,7 +398,7 @@ export default function HomePage() {
                   <CardPartite
                     giornata={[g]}
                     prefixTitle={""}
-                    maxWidth={"300px"}
+                    maxWidth={isXs ? "100%" : "300px"}
                     withAvatar={false}
                   ></CardPartite>
                 </Grid>
