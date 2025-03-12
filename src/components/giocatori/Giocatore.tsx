@@ -133,12 +133,6 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
 
   return (
     <Grid container spacing={1} paddingTop={2} paddingBottom={2}>
-          <Grid item xs={12}>
-            <Typography variant="h4">
-              {giocatoreProfilo.data && `Statistiche ${giocatoreProfilo.data.nome}`}
-            </Typography>
-          </Grid>
-          
           {idGiocatore && giocatoreProfilo.data && (
             <>
               <Grid
@@ -148,16 +142,18 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
                 sx={{ display: { xs: "none", sm: "block" } }}
               >
                 <Grid container>
-                  <Grid item sm={4}>
+                  <Grid item sm={3}>
                     <Image
                       src={giocatoreProfilo.data.urlCampioncino}
-                      width={164}
-                      height={242}
+                      width={115}
+                      height={170}
                       alt={giocatoreProfilo.data.nome}
                     />
                   </Grid>
                   <Grid item sm={4}>
                     <Typography variant="h5">
+                      Nome: {giocatoreProfilo.data.nome}
+                      <br></br>
                       Media: {giocatoreProfilo.data.media}
                       <br></br>
                       Gol: {giocatoreProfilo.data.gol}
@@ -167,15 +163,15 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
                       Ammonizioni: {giocatoreProfilo.data.ammonizioni}
                       <br></br>
                       Espulsioni: {giocatoreProfilo.data.espulsioni}
-                      <br></br>
-                      Giocate: {giocatoreProfilo.data.giocate}
                     </Typography>
                   </Grid>
-                  <Grid item sm={4}>
+                  <Grid item sm={5}>
                     <Typography variant="h5">
                       Ruolo: {giocatoreProfilo.data.ruoloEsteso}
                       <br></br>
-                      Costo: {giocatoreProfilo.data.costo}
+                      Partite giocate: {giocatoreProfilo.data.giocate}
+                      <br></br>
+                      Costo trasferimento: {giocatoreProfilo.data.costo}
                       <br></br>
                       Squadra serie A: {giocatoreProfilo.data.squadraSerieA}
                       <br></br>
