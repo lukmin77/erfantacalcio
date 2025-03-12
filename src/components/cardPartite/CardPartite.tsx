@@ -31,7 +31,7 @@ export default function CardPartite({
 }: GiornataCardProps) {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("md"));
-  
+
   return (
     <>
       {giornata.map((g) => (
@@ -40,7 +40,16 @@ export default function CardPartite({
           key={`card_${g.idCalendario}`}
           sx={{ maxWidth: maxWidth }}
         >
-          <Card sx={{ maxWidth: maxWidth }} key={`card_${g.idCalendario}`}>
+          <Card
+            sx={{
+              maxWidth: maxWidth,
+              "& .MuiCardHeader-root": {
+                color: theme.palette.primary.main,
+                backgroundColor: theme.palette.secondary.light,
+              },
+            }}
+            key={`card_${g.idCalendario}`}
+          >
             <CardHeader
               title={`${prefixTitle} ${g?.Title}`}
               subheader={`${g.SubTitle}: ${formatDateFromIso(
@@ -49,7 +58,12 @@ export default function CardPartite({
               )}`}
               titleTypographyProps={{ variant: "h5" }}
               subheaderTypographyProps={{ variant: "h6" }}
-              sx={{ paddingLeft: "5px" }}
+              sx={{
+                paddingLeft: "5px",
+                "& .MuiCardHeader-subheader": {
+                  color: theme.palette.primary.main,
+                },
+              }}
             />
             <CardContent
               sx={{ paddingBottom: "3px", paddingTop: "3px", m: "4px" }}
@@ -81,7 +95,11 @@ export default function CardPartite({
                           ></Avatar>
                         </Grid>
                       )}
-                      <Grid item xs={withAvatar ? !isXs ? 5 : 4 : 6} alignSelf={"center"}>
+                      <Grid
+                        item
+                        xs={withAvatar ? (!isXs ? 5 : 4) : 6}
+                        alignSelf={"center"}
+                      >
                         <Typography variant="h6">
                           {partita.squadraHome}
                           {partita.multaHome ?? (
@@ -94,7 +112,13 @@ export default function CardPartite({
                           {partita.golHome ?? "-"}
                         </Typography>
                       </Grid>
-                      <Grid item xs={withAvatar ? !isXs ? 5 : 4 : 6} alignSelf={"center"} textAlign={"right"} paddingRight={2}>
+                      <Grid
+                        item
+                        xs={withAvatar ? (!isXs ? 5 : 4) : 6}
+                        alignSelf={"center"}
+                        textAlign={"right"}
+                        paddingRight={2}
+                      >
                         <Typography variant="h6">
                           {partita.squadraAway}
                           {partita.multaAway ?? (
@@ -108,7 +132,14 @@ export default function CardPartite({
                         </Typography>
                       </Grid>
                       {withAvatar && (
-                        <Grid item xs={!isXs ? 1 : 2} alignSelf={"center"} textAlign={"right"} alignContent={"flex-end"} alignItems={"flex-end"}>
+                        <Grid
+                          item
+                          xs={!isXs ? 1 : 2}
+                          alignSelf={"center"}
+                          textAlign={"right"}
+                          alignContent={"flex-end"}
+                          alignItems={"flex-end"}
+                        >
                           <Avatar
                             alt={partita.squadraAway ?? ""}
                             src={partita.fotoAway ?? ""}

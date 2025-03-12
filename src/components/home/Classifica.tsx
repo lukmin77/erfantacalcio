@@ -131,7 +131,7 @@ export default function Classifica({
           sx={{
             backgroundColor: "#fff",
             "& .MuiDataGrid-columnHeader": {
-              color: theme.palette.primary.light,
+              color: theme.palette.primary.main,
               backgroundColor: theme.palette.secondary.light,
             },
           }}

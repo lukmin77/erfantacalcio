@@ -86,7 +86,7 @@ function AppAppBar({ isXs }: AppAppBarProps) {
             borderTopRightRadius: "0px",
             borderBottomLeftRadius: "8px",
             borderBottomRightRadius: "8px",
-            bgcolor: theme.palette.primary.light,
+            bgcolor: theme.palette.primary.dark,
             backdropFilter: "blur(24px)",
             maxHeight: 40,
             border: "1px solid",
@@ -107,7 +107,6 @@ function AppAppBar({ isXs }: AppAppBarProps) {
               variant="h1"
               onClick={handleGoToHome}
               sx={{
-                textShadow: "4px 4px 1px rgba(85,33,203, 0.7)",
                 mr: "30px",
                 cursor: "pointer",
                 display: { xs: "none", sm: "block" },
