@@ -228,7 +228,7 @@ export default function HomePage() {
                   </>
                 ))}
             </Grid>
-            {isXs && session?.user && (
+            {isXs && (
               <Grid item xs={12}>
                 <SquadreXs />
               </Grid>
