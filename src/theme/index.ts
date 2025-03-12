@@ -91,16 +91,16 @@ export const themeOptions: ThemeOptions = {
         fontSize: '1.4rem',
         lineHeight: 1.33
       },
-      h4: {
+      h4: { //titolo classifica
         color: 'rgb(3, 126, 175)',
         fontWeight: 600,
-        fontSize: '1.2rem',
+        fontSize: '1.1rem',
         lineHeight: 1.4
       },
-      h5: {
+      h5: { //titolo card partite
         color: 'rgb(3, 126, 175)',
         fontWeight: 600,
-        fontSize: '1rem',
+        fontSize: '0.9rem',
         lineHeight: 1.5
       },
       h6: {
@@ -110,7 +110,7 @@ export const themeOptions: ThemeOptions = {
         lineHeight: 1.57
       },
       caption: {
-        color: 'rgb(3, 126, 175)',
+        color: '',
         fontWeight: 400,
         fontSize: '0.75rem',
         lineHeight: 1.66

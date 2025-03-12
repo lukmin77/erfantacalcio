@@ -136,11 +136,11 @@ export default function HomePage() {
             >
               <Calendario
                 tipo={"risultati"}
-                prefixTitle="Ultimi risultati:"
+                prefixTitle="Risultati:"
               ></Calendario>
               <Calendario
                 tipo={"prossima"}
-                prefixTitle="Prossime partite:"
+                prefixTitle=""
               ></Calendario>
               <Box
                 sx={{

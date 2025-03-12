@@ -97,7 +97,7 @@ export default function Classifica({
 
   return (
     <>
-      <Typography variant="h4">
+      <Typography variant="h5">
         Classifica {getNomeTorneo(nomeTorneo, gruppo)}
       </Typography>
       <Box sx={{ padding: "0", backgroundColor: "#fff" }}>
