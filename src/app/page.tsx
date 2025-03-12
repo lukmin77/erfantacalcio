@@ -367,7 +367,7 @@ export default function HomePage() {
         title={titleModalCalendario}
         open={openModalCalendario}
         onClose={handleModalClose}
-        width={isXs ? "98%" : "1266px"}
+        width={isXs ? "98%" : "70%"}
         height={isXs ? "98%" : "500px"}
       >
         <Divider />
@@ -390,7 +390,7 @@ export default function HomePage() {
                   item
                   xs={12}
                   sm={4}
-                  md={4}
+                  md={6}
                   lg={4}
                   key={`card_partite_${index}_${g.idCalendario}`}
                   sx={{ ml: "0px" }}
