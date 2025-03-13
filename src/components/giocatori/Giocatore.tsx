@@ -1,23 +1,20 @@
 "use client";
-import {
-  Grid,
-  Typography,
-  Zoom,
-} from "@mui/material";
+import { Box, Grid, Typography, useTheme, Zoom } from "@mui/material";
 import { api } from "~/utils/api";
-import DataTable, {
-  type Column,
-} from "~/components/tables/datatable";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { axisClasses } from "@mui/x-charts/ChartsAxis";
 import { LineChart } from "@mui/x-charts/LineChart";
 import Image from "next/image";
+import { DataGrid, type GridColDef } from "@mui/x-data-grid";
+import { autosizeOptions } from "~/utils/datatable";
 
 interface GiocatoreProps {
   idGiocatore: number;
 }
 
 function Giocatore({ idGiocatore }: GiocatoreProps) {
+  const theme = useTheme();
+
   const giocatoreProfilo = api.giocatori.getStatistica.useQuery(
     { idGiocatore: idGiocatore },
     {
@@ -46,7 +43,6 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
       refetchOnReconnect: false,
     }
   );
-  
 
   //#region bar graph
   const valueFormatter = (value: number | null) => `${value}`;
@@ -98,222 +94,314 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
 
   //#region trasferimenti
 
-  const columnsTransfer: Column[] = [
+  const columns: GridColDef[] = [
+    { field: "id", hideable: true },
     {
-      key: "maglia",
-      type: "image",
+      field: "stagione",
+      type: "string",
       align: "left",
-      header: " ",
-      width: "5%",
-      imageProps: {
-        imageTooltip: "squadraSerieA",
-        imageTooltipType: "dynamic",
-        imageWidth: 26,
-        imageHeight: 22,
-      },
-    },
-    { key: "stagione", type: "string", align: "left", header: "Stagione" },
-    { key: "squadra", type: "string", align: "left", header: "Squadra" },
-    {
-      key: "dataAcquisto",
-      type: "date",
-      header: "Data acquisto",
-      formatDate: "dd/MM/yyyy",
+      renderHeader: () => <strong>Stagione</strong>,
     },
     {
-      key: "dataCessione",
-      type: "date",
-      header: "Data cessione",
-      formatDate: "dd/MM/yyyy",
+      field: "squadra",
+      type: "string",
+      align: "left",
+      renderHeader: () => <strong>Squadra</strong>,
     },
-    { key: "costo", type: "number", header: "Costo" },
+    {
+      field: "squadraSerieA",
+      type: "string",
+      align: "left",
+      renderHeader: () => <strong>Squadra</strong>,
+    },
+    {
+      field: "costo",
+      type: "number",
+      align: "right",
+      renderHeader: () => <strong>Costo</strong>,
+      flex: 1,
+    },
+    {
+      field: "dataAcquisto",
+      type: "date",
+      valueFormatter: (value) =>
+        value
+          ? new Date(value).toLocaleDateString("it-IT", {
+              month: "2-digit",
+              year: "numeric",
+            })
+          : "",
+      renderHeader: () => <strong>Data acquisto</strong>,
+    },
+    {
+      field: "dataCessione",
+      type: "date",
+      valueFormatter: (value) =>
+        value
+          ? new Date(value).toLocaleDateString("it-IT", {
+              month: "2-digit",
+              year: "numeric",
+            })
+          : "",
+      renderHeader: () => <strong>Data cessione</strong>,
+    },
   ];
+
+  // const columnsTransfer: Column[] = [
+  //   {
+  //     key: "maglia",
+  //     type: "image",
+  //     align: "left",
+  //     header: " ",
+  //     width: "5%",
+  //     imageProps: {
+  //       imageTooltip: "squadraSerieA",
+  //       imageTooltipType: "dynamic",
+  //       imageWidth: 26,
+  //       imageHeight: 22,
+  //     },
+  //   },
+  //   { key: "stagione", type: "string", align: "left", header: "Stagione" },
+  //   { key: "squadra", type: "string", align: "left", header: "Squadra" },
+  //   {
+  //     key: "dataAcquisto",
+  //     type: "date",
+  //     header: "Data acquisto",
+  //     formatDate: "dd/MM/yyyy",
+  //   },
+  //   {
+  //     key: "dataCessione",
+  //     type: "date",
+  //     header: "Data cessione",
+  //     formatDate: "dd/MM/yyyy",
+  //   },
+  //   { key: "costo", type: "number", header: "Costo" },
+  // ];
 
   //#endregion
 
   return (
     <Grid container spacing={1} paddingTop={2} paddingBottom={2}>
-          {idGiocatore && giocatoreProfilo.data && (
-            <>
-              <Grid
-                item
-                xs={12}
-                sm={6}
-                sx={{ display: { xs: "none", sm: "block" } }}
-              >
-                <Grid container>
-                  <Grid item sm={3}>
-                    <Image
-                      src={giocatoreProfilo.data.urlCampioncino}
-                      width={115}
-                      height={170}
-                      alt={giocatoreProfilo.data.nome}
-                    />
-                  </Grid>
-                  <Grid item sm={4}>
-                    <Typography variant="h5">
-                      Nome: {giocatoreProfilo.data.nome}
-                      <br></br>
-                      Media: {giocatoreProfilo.data.media}
-                      <br></br>
-                      Gol: {giocatoreProfilo.data.gol}
-                      <br></br>
-                      Assist: {giocatoreProfilo.data.assist}
-                      <br></br>
-                      Ammonizioni: {giocatoreProfilo.data.ammonizioni}
-                      <br></br>
-                      Espulsioni: {giocatoreProfilo.data.espulsioni}
-                    </Typography>
-                  </Grid>
-                  <Grid item sm={5}>
-                    <Typography variant="h5">
-                      Ruolo: {giocatoreProfilo.data.ruoloEsteso}
-                      <br></br>
-                      Partite giocate: {giocatoreProfilo.data.giocate}
-                      <br></br>
-                      Costo trasferimento: {giocatoreProfilo.data.costo}
-                      <br></br>
-                      Squadra serie A: {giocatoreProfilo.data.squadraSerieA}
-                      <br></br>
-                      Squadra: {giocatoreProfilo.data.squadra}
-                    </Typography>
-                  </Grid>
-                </Grid>
+      {idGiocatore && giocatoreProfilo.data && (
+        <>
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            sx={{ display: { xs: "none", sm: "block" } }}
+          >
+            <Grid container>
+              <Grid item sm={3}>
+                <Image
+                  src={giocatoreProfilo.data.urlCampioncino}
+                  width={115}
+                  height={170}
+                  alt={giocatoreProfilo.data.nome}
+                />
               </Grid>
-              <Grid item xs={12} sx={{ display: { xs: "block", sm: "none" } }}>
-                <Grid container>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">
-                      Media: {giocatoreProfilo.data.media}
-                      <br></br>
-                      Gol: {giocatoreProfilo.data.gol}
-                      <br></br>
-                      Assist: {giocatoreProfilo.data.assist}
-                      <br></br>
-                      Ammonizioni: {giocatoreProfilo.data.ammonizioni}
-                      <br></br>
-                      Espulsioni: {giocatoreProfilo.data.espulsioni}
-                      <br></br>
-                      Giocate: {giocatoreProfilo.data.giocate}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={5}>
-                    <Typography variant="h6">
-                      Ruolo: {giocatoreProfilo.data.ruoloEsteso}
-                      <br></br>
-                      Costo: {giocatoreProfilo.data.costo}
-                      <br></br>
-                      Squadra serie A: {giocatoreProfilo.data.squadraSerieA}
-                      <br></br>
-                      Squadra: {giocatoreProfilo.data.squadra}
-                    </Typography>
-                  </Grid>
-                </Grid>
+              <Grid item sm={4}>
+                <Typography variant="h5">
+                  Nome: {giocatoreProfilo.data.nome}
+                  <br></br>
+                  Media voti: {giocatoreProfilo.data.media}
+                  <br></br>
+                  Gol: {giocatoreProfilo.data.gol}
+                  <br></br>
+                  Assist: {giocatoreProfilo.data.assist}
+                  <br></br>
+                  Ammonizioni: {giocatoreProfilo.data.ammonizioni}
+                  <br></br>
+                  Espulsioni: {giocatoreProfilo.data.espulsioni}
+                </Typography>
               </Grid>
-            </>
-          )}
-          {idGiocatore && giocatoreVoti.data && (
-            <Zoom in={true}>
-              <Grid
-                item
-                xs={12}
-                sm={6}
-                display={"flex"}
-                justifyContent={"flex-end"}
-              >
-                <LineChart
-                  yAxis={[
-                    {
-                      min: 0,
-                      max: 10,
-                      label: "Voti stagionali",
-                      colorMap: {
-                        type: "piecewise",
-                        thresholds: [6, 10],
-                        colors: ["red", "green"],
-                      },
+              <Grid item sm={5}>
+                <Typography variant="h5">
+                  Ruolo: {giocatoreProfilo.data.ruoloEsteso}
+                  <br></br>
+                  Partite giocate: {giocatoreProfilo.data.giocate}
+                  <br></br>
+                  Costo trasferimento: {giocatoreProfilo.data.costo}
+                  <br></br>
+                  Squadra serie A: {giocatoreProfilo.data.squadraSerieA}
+                  <br></br>
+                  Squadra: {giocatoreProfilo.data.squadra}
+                </Typography>
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={12} sx={{ display: { xs: "block", sm: "none" } }}>
+            <Grid container>
+              <Grid item xs={6}>
+                <Typography variant="h6">
+                  Nome: {giocatoreProfilo.data.nome}
+                  <br></br>
+                  Media voti: {giocatoreProfilo.data.media}
+                  <br></br>
+                  Gol: {giocatoreProfilo.data.gol}
+                  <br></br>
+                  Assist: {giocatoreProfilo.data.assist}
+                  <br></br>
+                  Ammonizioni: {giocatoreProfilo.data.ammonizioni}
+                  <br></br>
+                  Espulsioni: {giocatoreProfilo.data.espulsioni}
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6">
+                  Ruolo: {giocatoreProfilo.data.ruoloEsteso}
+                  <br></br>
+                  Partite giocate: {giocatoreProfilo.data.giocate}
+                  <br></br>
+                  Costo trasferimento: {giocatoreProfilo.data.costo}
+                  <br></br>
+                  Squadra serie A: {giocatoreProfilo.data.squadraSerieA}
+                  <br></br>
+                  Squadra: {giocatoreProfilo.data.squadra}
+                </Typography>
+              </Grid>
+            </Grid>
+          </Grid>
+        </>
+      )}
+      {idGiocatore && giocatoreVoti.data && (
+        <Zoom in={true}>
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            display={"flex"}
+            justifyContent={"flex-end"}
+          >
+            <LineChart
+              yAxis={[
+                {
+                  min: 0,
+                  max: 10,
+                  label: "Voti stagionali",
+                  colorMap: {
+                    type: "piecewise",
+                    thresholds: [6, 10],
+                    colors: ["red", "green"],
+                  },
+                },
+              ]}
+              xAxis={[
+                {
+                  dataKey: "giornataSerieA",
+                  valueFormatter: (value) => `Giornata ${value}`,
+                  min: 1,
+                  max: 38,
+                },
+              ]}
+              series={Object.keys(keyToLabel)
+                .filter((c) => c === "voto")
+                .map((key) => ({
+                  dataKey: key,
+                  label: keyToLabel[key],
+                  valueFormatter: (value, item) => {
+                    const dataIndex = item.dataIndex;
+                    return value === null
+                      ? ""
+                      : `${value} - Gol: ${
+                          giocatoreVoti?.data[dataIndex]?.gol ?? 0
+                        } - Assist: ${
+                          giocatoreVoti?.data[dataIndex]?.assist ?? 0
+                        } ${
+                          (giocatoreVoti?.data[dataIndex]?.ammonizione ?? 0) !==
+                          0
+                            ? " - Ammonizione"
+                            : ""
+                        } ${
+                          (giocatoreVoti?.data[dataIndex]?.espulsione ?? 0) !==
+                          0
+                            ? "- Espulsione"
+                            : ""
+                        }`;
+                  },
+                  showMark: true,
+                  ...stackStrategy,
+                }))}
+              grid={{ vertical: true, horizontal: true }}
+              dataset={giocatoreVoti.data}
+              {...customizegraphvoti}
+            />
+          </Grid>
+        </Zoom>
+      )}
+      {idGiocatore && giocatoreTrasferimenti.data && (
+        <Zoom in={true}>
+          <Grid item xs={12} sm={6}>
+            <Typography variant="h5">Trasferimenti giocatore</Typography>
+            <Box sx={{ height: 234, width: "100%" }}>
+              <DataGrid
+                columnHeaderHeight={45}
+                rowHeight={40}
+                loading={giocatoreTrasferimenti.isLoading}
+                initialState={{
+                  columns: {
+                    columnVisibilityModel: {
+                      id: false,
                     },
-                  ]}
-                  xAxis={[
-                    {
-                      dataKey: "giornataSerieA",
-                      valueFormatter: (value) => `Giornata ${value}`,
-                      min: 1,
-                      max: 38,
+                  },
+                  pagination: {
+                    paginationModel: {
+                      pageSize: 5,
                     },
-                  ]}
-                  series={Object.keys(keyToLabel)
-                    .filter((c) => c === "voto")
-                    .map((key) => ({
-                      dataKey: key,
-                      label: keyToLabel[key],
-                      valueFormatter: (value, item) => {
-                        const dataIndex = item.dataIndex;
-                        return value === null
-                          ? ""
-                          : `${value} - Gol: ${
-                              giocatoreVoti?.data[dataIndex]?.gol ?? 0
-                            } - Assist: ${
-                              giocatoreVoti?.data[dataIndex]?.assist ?? 0
-                            } ${
-                              (giocatoreVoti?.data[dataIndex]?.ammonizione ??
-                                0) !== 0
-                                ? " - Ammonizione"
-                                : ""
-                            } ${
-                              (giocatoreVoti?.data[dataIndex]?.espulsione ??
-                                0) !== 0
-                                ? "- Espulsione"
-                                : ""
-                            }`;
-                      },
-                      showMark: true,
-                      ...stackStrategy,
-                    }))}
-                  grid={{ vertical: true, horizontal: true }}
-                  dataset={giocatoreVoti.data}
-                  {...customizegraphvoti}
-                />
-              </Grid>
-            </Zoom>
-          )}
-          {idGiocatore && giocatoreTrasferimenti.data && (
-            <Zoom in={true}>
-              <Grid item xs={12} sm={6}>
-                <DataTable
-                  title={`Trasferimenti giocatore`}
-                  pagination={false}
-                  rowsXPage={5}
-                  messageWhenEmptyList="Nessun giocatore presente"
-                  data={giocatoreTrasferimenti.data}
-                  columns={columnsTransfer}
-                />
-              </Grid>
-            </Zoom>
-          )}
-          {idGiocatore && giocatoreStatsStagioni.data && (
-            <Zoom in={true}>
-              <Grid
-                item
-                xs={12}
-                sm={6}
-                display={"flex"}
-                justifyContent={"flex-end"}
-              >
-                <BarChart
-                  dataset={giocatoreStatsStagioni.data}
-                  xAxis={[{ scaleType: "band", dataKey: "stagione" }]}
-                  series={[
-                    { dataKey: "media", label: "Media", valueFormatter },
-                    { dataKey: "gol", label: "Gol", valueFormatter },
-                    { dataKey: "assist", label: "Assist", valueFormatter },
-                    { dataKey: "giocate", label: "Giocate", valueFormatter },
-                  ]}
-                  {...chartSetting}
-                  {...customizegraphstagioni}
-                />
-              </Grid>
-            </Zoom>
+                  },
+                  filter: undefined,
+                  density: "compact",
+                }}
+                checkboxSelection={false}
+                disableColumnFilter={true}
+                disableColumnMenu={true}
+                disableColumnSelector={true}
+                disableColumnSorting={true}
+                disableColumnResize={true}
+                hideFooter={false}
+                hideFooterPagination={false}
+                pageSizeOptions={[5, 10, 20]}
+                paginationMode="client"
+                pagination={true}
+                hideFooterSelectedRowCount={true}
+                columns={columns}
+                autosizeOptions={autosizeOptions}
+                rows={giocatoreTrasferimenti.data}
+                disableRowSelectionOnClick={true}
+                sx={{
+                  backgroundColor: "#fff",
+                  "& .MuiDataGrid-columnHeader": {
+                    color: theme.palette.primary.main,
+                    backgroundColor: theme.palette.secondary.light,
+                  },
+                }}
+              />
+            </Box>
+          </Grid>
+        </Zoom>
+      )}
+      {idGiocatore && giocatoreStatsStagioni.data && (
+        <Zoom in={true}>
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            display={"flex"}
+            justifyContent={"flex-end"}
+          >
+            <BarChart
+              dataset={giocatoreStatsStagioni.data}
+              xAxis={[{ scaleType: "band", dataKey: "stagione" }]}
+              series={[
+                { dataKey: "media", label: "Media", valueFormatter },
+                { dataKey: "gol", label: "Gol", valueFormatter },
+                { dataKey: "assist", label: "Assist", valueFormatter },
+                { dataKey: "giocate", label: "Giocate", valueFormatter },
+              ]}
+              {...chartSetting}
+              {...customizegraphstagioni}
+            />
+          </Grid>
+        </Zoom>
       )}
       <Grid item xs={12} minHeight={30}></Grid>
     </Grid>

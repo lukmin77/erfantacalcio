@@ -7,6 +7,7 @@ import {
   DataGrid,
   type GridColDef,
 } from "@mui/x-data-grid";
+import { autosizeOptions } from "~/utils/datatable";
 
 interface ClassificaProps {
   nomeTorneo: string;
@@ -141,8 +142,3 @@ export default function Classifica({
   );
 }
 
-const autosizeOptions = {
-  includeHeaders: true,
-  includeOutliers: true,
-  expand: true,
-};

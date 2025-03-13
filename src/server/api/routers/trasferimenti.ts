@@ -50,6 +50,7 @@ export const trasferimentiRouter = createTRPCRouter({
         });
 
         return query.map(t => ({
+          id: t.idTrasferimento,
           idTrasferimento: t.idTrasferimento,
           nome: t.Giocatori.nome,
           ruolo: t.Giocatori.ruolo,
@@ -61,8 +62,8 @@ export const trasferimentiRouter = createTRPCRouter({
           gol: t.gol,
           assist: t.assist,
           giocate: t.giocate,
-          dataAcquisto: t.dataAcquisto.toISOString(),
-          dataCessione: t.dataCessione?.toISOString(),
+          dataAcquisto: t.dataAcquisto,
+          dataCessione: t.dataCessione,
           stagione: t.stagione,
           isEditVisible: t.stagione === Configurazione.stagione
         }));
