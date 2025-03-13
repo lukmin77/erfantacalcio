@@ -110,6 +110,7 @@ function ViewTabellini() {
   
   const calendario = tabelliniList.data?.Calendario;
   const infoPartita = tabelliniList.data?.Calendario.partite[0];
+  const altrePartite = tabelliniList.data?.AltrePartite;
   const tabellinoHome = tabelliniList.data?.TabellinoHome;
   const tabellinoAway = tabelliniList.data?.TabellinoAway;
 
@@ -123,6 +124,7 @@ function ViewTabellini() {
     foto?: string | null,
     multa?: boolean
   ) => {
+    console.log('tabellino:', tabellino);
     const handleStatGiocatore = (idGiocatore: number) => {
       setIdGiocatore(idGiocatore);
       setOpenModalCalendario(true);

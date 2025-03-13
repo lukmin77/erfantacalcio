@@ -122,8 +122,33 @@ export const partitaRouter = createTRPCRouter({
                 }
               });
 
+              const altrePartite = await prisma.partite.findMany({
+                select: {
+                  idPartita: true,
+                  Utenti_Partite_idSquadraHToUtenti: {
+                    select: { nomeSquadra: true, foto: true },
+                  },
+                  Utenti_Partite_idSquadraAToUtenti: {
+                    select: { nomeSquadra: true, foto: true },
+                  },
+                },
+                where: {
+                  AND: [
+                    {
+                      idCalendario: idCalendario,
+                    },
+                    {
+                      NOT: {
+                        idPartita: idPartita
+                      }
+                    }
+                  ],
+                },
+              });
+
               return {
                 Calendario: calendario,
+                AltrePartite: altrePartite,
                 FormazioneHome: formazioni.find(c => c.idSquadra === partita?.idHome),
                 FormazioneAway: formazioni.find(c => c.idSquadra === partita?.idAway)
               }
@@ -259,9 +284,34 @@ export const partitaRouter = createTRPCRouter({
               const fantapuntiHome = getGiocatoriVotoInfluente(giocatoriInfluentiHome).reduce((acc, cur) => acc + (cur.votoBonus ?? 0), 0);
               const giocatoriInfluentiAway = await getTabellino(datiAway?.idFormazione ?? 0);
               const fantapuntiAway = getGiocatoriVotoInfluente(giocatoriInfluentiAway).reduce((acc, cur) => acc + (cur.votoBonus ?? 0), 0);
+
+              const altrePartite = await prisma.partite.findMany({
+                select: {
+                  idPartita: true,
+                  Utenti_Partite_idSquadraHToUtenti: {
+                    select: { nomeSquadra: true, foto: true }
+                  },
+                  Utenti_Partite_idSquadraAToUtenti: {
+                    select: { nomeSquadra: true, foto: true }
+                  }                 
+                },
+                where: {
+                  AND: [
+                    {
+                      idCalendario: idCalendario,
+                    },
+                    {
+                      NOT: {
+                        idPartita: idPartita
+                      }
+                    }
+                  ],
+                },
+              });
               
               return {
                 Calendario: calendario,
+                AltrePartite: altrePartite,
                 TabellinoHome: datiHome && {
                   dataOra: datiHome?.dataOra,
                   modulo:  datiHome?.modulo,
