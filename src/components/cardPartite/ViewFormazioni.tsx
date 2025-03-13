@@ -7,6 +7,8 @@ import {
   CardHeader,
   Divider,
   Grid,
+  MenuItem,
+  Select,
   Tooltip,
   Typography,
   useMediaQuery,
@@ -61,6 +63,7 @@ function ViewFormazioni() {
 
   const calendario = formazioniList.data?.Calendario;
   const infoPartita = formazioniList.data?.Calendario.partite[0];
+  const altrePartite = formazioniList.data?.AltrePartite;
   const formazioneHome = formazioniList.data?.FormazioneHome;
   const formazioneAway = formazioniList.data?.FormazioneAway;
 
@@ -81,7 +84,7 @@ function ViewFormazioni() {
             <Grid item xs={12}>
               <Typography variant={"h4"}>{calendario.Title}</Typography>
             </Grid>
-            
+
             <Grid item xs={12}>
               <Typography variant={"body2"}>
                 {`Calcio d'inizio ${calendario.SubTitle} il 
@@ -403,6 +406,32 @@ function ViewFormazioni() {
               )}
             </Grid>
           </>
+        )}
+        {partita && (
+          <Grid item xs={12} justifyItems={"flex-end"}>
+            <Typography variant={"h5"}>
+              Altre partite:
+              <Select
+                size="small"
+                variant="outlined"
+                labelId="select-label-partita"
+                margin="dense"
+                required
+                sx={{ ml: "10px" }}
+                name="giornata"
+                onChange={(e) => setPartita(e.target.value as number)}
+                defaultValue={partita}
+              >
+                {altrePartite?.map((p, index) => (
+                  <MenuItem
+                    value={p.idPartita}
+                    key={`giornata_${p.idPartita}`}
+                    selected={index === 0}
+                  >{`${p.Utenti_Partite_idSquadraHToUtenti?.nomeSquadra} - ${p.Utenti_Partite_idSquadraAToUtenti?.nomeSquadra}`}</MenuItem>
+                ))}
+              </Select>
+            </Typography>
+          </Grid>
         )}
         <Grid item xs={12} sx={{ height: "100px" }}>
           <></>

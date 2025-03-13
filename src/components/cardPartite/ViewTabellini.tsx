@@ -12,6 +12,8 @@ import {
   CardHeader,
   Divider,
   Grid,
+  MenuItem,
+  Select,
   Stack,
   Tooltip,
   Typography,
@@ -67,8 +69,7 @@ function ViewTabellini() {
 
   // Stato per la partita e il calendario convertiti in numero
   const [partita, setPartita] = useState<number | null>(null);
-  //const [calendario, setCalendario] = useState<number | null>(null);
-
+  
   useEffect(() => {
     if (idPartita) {
       // Converte i valori in numeri
@@ -90,14 +91,6 @@ function ViewTabellini() {
   const [idGiocatore, setIdGiocatore] = useState<number>();
   const [openModalCalendario, setOpenModalCalendario] = useState(false);
 
-  // const calendarioList = api.calendario.getByIdCalendario.useQuery(
-  //   { idCalendario: idCalendario! },
-  //   {
-  //     enabled: !!idCalendario,
-  //     refetchOnWindowFocus: false,
-  //     refetchOnReconnect: false,
-  //   }
-  // );
   const tabelliniList = api.partita.getTabellini.useQuery(
     { idPartita: partita! },
     {
@@ -124,7 +117,6 @@ function ViewTabellini() {
     foto?: string | null,
     multa?: boolean
   ) => {
-    console.log('tabellino:', tabellino);
     const handleStatGiocatore = (idGiocatore: number) => {
       setIdGiocatore(idGiocatore);
       setOpenModalCalendario(true);
@@ -429,10 +421,12 @@ function ViewTabellini() {
               </Grid>
               <Grid item xs={12} sm={3}>
                 <Typography variant={"h6"} sx={{ m: "5px" }}>
-                  {tabellino.fattoreCasalingo > 0 && (
+                  {tabellino.fattoreCasalingo > 0 ? (
                     <>
                       Fattore casalingo: <b>+{tabellino.fattoreCasalingo}</b>
                     </>
+                  ) : (
+                    <>&nbsp;</>
                   )}
                 </Typography>
               </Grid>
@@ -518,6 +512,32 @@ function ViewTabellini() {
                 infoPartita?.multaAway
               )}
             </Grid>
+            {partita && (
+              <Grid item xs={12} justifyItems={"flex-end"}>
+                <Typography variant={"h5"}>
+                  Altre partite:
+                  <Select
+                    size="small"
+                    variant="outlined"
+                    labelId="select-label-partita"
+                    margin="dense"
+                    required
+                    sx={{ ml: "10px" }}
+                    name="giornata"
+                    onChange={(e) => setPartita(e.target.value as number)}
+                    defaultValue={partita}
+                  >
+                    {altrePartite?.map((p, index) => (
+                      <MenuItem
+                        value={p.idPartita}
+                        key={`giornata_${p.idPartita}`}
+                        selected={index === 0}
+                      >{`${p.Utenti_Partite_idSquadraHToUtenti?.nomeSquadra} - ${p.Utenti_Partite_idSquadraAToUtenti?.nomeSquadra}`}</MenuItem>
+                    ))}
+                  </Select>
+                </Typography>
+              </Grid>
+            )}
           </>
         )}
         <Grid item xs={12} sx={{ height: "100px" }}>

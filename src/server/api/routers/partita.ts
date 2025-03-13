@@ -133,16 +133,7 @@ export const partitaRouter = createTRPCRouter({
                   },
                 },
                 where: {
-                  AND: [
-                    {
-                      idCalendario: idCalendario,
-                    },
-                    {
-                      NOT: {
-                        idPartita: idPartita
-                      }
-                    }
-                  ],
+                  idCalendario: idCalendario,
                 },
               });
 
@@ -289,23 +280,14 @@ export const partitaRouter = createTRPCRouter({
                 select: {
                   idPartita: true,
                   Utenti_Partite_idSquadraHToUtenti: {
-                    select: { nomeSquadra: true, foto: true }
+                    select: { nomeSquadra: true, foto: true },
                   },
                   Utenti_Partite_idSquadraAToUtenti: {
-                    select: { nomeSquadra: true, foto: true }
-                  }                 
+                    select: { nomeSquadra: true, foto: true },
+                  },
                 },
                 where: {
-                  AND: [
-                    {
-                      idCalendario: idCalendario,
-                    },
-                    {
-                      NOT: {
-                        idPartita: idPartita
-                      }
-                    }
-                  ],
+                  idCalendario: idCalendario,
                 },
               });
               
