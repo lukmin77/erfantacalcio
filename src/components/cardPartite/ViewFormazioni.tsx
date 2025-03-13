@@ -418,7 +418,7 @@ function ViewFormazioni() {
       >
         <Divider />
         <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
-          <Giocatore idGiocatore={idGiocatore!} />
+          {idGiocatore !== undefined && <Giocatore idGiocatore={idGiocatore} />}
         </Box>
       </Modal>
     </>

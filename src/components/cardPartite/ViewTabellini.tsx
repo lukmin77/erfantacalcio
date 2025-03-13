@@ -90,6 +90,14 @@ function ViewTabellini() {
   const [idGiocatore, setIdGiocatore] = useState<number>();
   const [openModalCalendario, setOpenModalCalendario] = useState(false);
 
+  // const calendarioList = api.calendario.getByIdCalendario.useQuery(
+  //   { idCalendario: idCalendario! },
+  //   {
+  //     enabled: !!idCalendario,
+  //     refetchOnWindowFocus: false,
+  //     refetchOnReconnect: false,
+  //   }
+  // );
   const tabelliniList = api.partita.getTabellini.useQuery(
     { idPartita: partita! },
     {
@@ -99,6 +107,7 @@ function ViewTabellini() {
     }
   );
 
+  
   const calendario = tabelliniList.data?.Calendario;
   const infoPartita = tabelliniList.data?.Calendario.partite[0];
   const tabellinoHome = tabelliniList.data?.TabellinoHome;
@@ -523,7 +532,7 @@ function ViewTabellini() {
       >
         <Divider />
         <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
-          <Giocatore idGiocatore={idGiocatore!} />
+          {idGiocatore !== undefined && <Giocatore idGiocatore={idGiocatore} />}
         </Box>
       </Modal>
     </>

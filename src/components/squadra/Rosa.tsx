@@ -232,7 +232,7 @@ function Rosa({ idSquadra, squadra }: RosaProps) {
       >
         <Divider />
         <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
-          <Giocatore idGiocatore={selectedGiocatoreId!} />
+          {selectedGiocatoreId !== undefined && <Giocatore idGiocatore={selectedGiocatoreId} />}
         </Box>
       </Modal>
     </>

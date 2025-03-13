@@ -707,7 +707,7 @@ function FormazioneXs() {
       >
         <Divider />
         <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
-          <Giocatore idGiocatore={idGiocatoreStat!} />
+          {idGiocatoreStat !== undefined && <Giocatore idGiocatore={idGiocatoreStat} />}
         </Box>
       </Modal>
     </>
