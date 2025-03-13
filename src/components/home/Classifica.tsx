@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { api } from "~/utils/api";
-import { Box, Typography, useTheme } from "@mui/material";
+import { Avatar, Box, Typography, useTheme } from "@mui/material";
 import { type ClassificaType } from "~/types/classifica";
 import { getNomeTorneo } from "~/utils/helper";
-import {
-  DataGrid,
-  type GridColDef,
-} from "@mui/x-data-grid";
+import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import { autosizeOptions } from "~/utils/datatable";
-
 interface ClassificaProps {
   nomeTorneo: string;
   idTorneo: number | undefined;
@@ -48,6 +44,20 @@ export default function Classifica({
   const columns: GridColDef[] = [
     { field: "id", hideable: true },
     {
+      field: "foto",
+      type: "string",
+      align: "left",
+      renderCell: (params) => (
+        <Avatar
+          src={params.row?.foto as string}
+          alt={params.row?.presidente as string}
+          sx={{ width: 24, height: 24 }}
+        />
+      ),
+      renderHeader: () => '',
+      width: 40,
+    },
+    {
       field: "squadra",
       type: "string",
       align: "left",
@@ -61,7 +71,7 @@ export default function Classifica({
       align: "right",
       renderHeader: () => <strong>Punti</strong>,
       flex: 1,
-      width: 80
+      width: 80,
     },
     {
       field: "golFatti",
@@ -69,7 +79,7 @@ export default function Classifica({
       align: "right",
       renderHeader: () => <strong>Gol+</strong>,
       flex: 1,
-      width: 80
+      width: 80,
     },
     {
       field: "golSubiti",
@@ -77,7 +87,7 @@ export default function Classifica({
       align: "right",
       renderHeader: () => <strong>Gol-</strong>,
       flex: 1,
-      width: 80
+      width: 80,
     },
     {
       field: "giocate",
@@ -85,14 +95,14 @@ export default function Classifica({
       align: "right",
       renderHeader: () => <strong>Giocate</strong>,
       flex: 1,
-      width: 80
+      width: 80,
     },
     {
       field: "fantapunti",
       type: "number",
       align: "right",
       renderHeader: () => <strong>Fantapunti</strong>,
-      width: 80
+      width: 80,
     },
   ];
 
@@ -110,7 +120,7 @@ export default function Classifica({
             columns: {
               columnVisibilityModel: {
                 id: false,
-              }
+              },
             },
             pagination: undefined,
             filter: undefined,
@@ -141,4 +151,3 @@ export default function Classifica({
     </>
   );
 }
-

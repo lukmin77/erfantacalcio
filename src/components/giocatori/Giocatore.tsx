@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client";
 import { Box, Grid, Typography, useTheme, Zoom } from "@mui/material";
 import { api } from "~/utils/api";
@@ -7,6 +8,7 @@ import { LineChart } from "@mui/x-charts/LineChart";
 import Image from "next/image";
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import { autosizeOptions } from "~/utils/datatable";
+import { format } from "date-fns";
 
 interface GiocatoreProps {
   idGiocatore: number;
@@ -103,9 +105,18 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
       renderHeader: () => <strong>Stagione</strong>,
     },
     {
-      field: "squadra",
+      field: "maglia",
       type: "string",
       align: "left",
+      renderCell: (params) => (
+        <Image
+          src={params.row?.maglia as string}
+          width={26}
+          height={22}
+          alt={params.row?.squadraSerieA as string}
+          title={params.row?.squadraSerieA as string}
+        />
+      ),
       renderHeader: () => <strong>Squadra</strong>,
     },
     {
@@ -124,25 +135,23 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
     {
       field: "dataAcquisto",
       type: "date",
-      valueFormatter: (value) =>
-        value
-          ? new Date(value).toLocaleDateString("it-IT", {
-              month: "2-digit",
-              year: "numeric",
-            })
-          : "",
+      valueFormatter: (value) => {
+        if (value) {
+          return format(value, 'MM/yyyy');
+        }
+        return '';
+      },
       renderHeader: () => <strong>Data acquisto</strong>,
     },
     {
       field: "dataCessione",
       type: "date",
-      valueFormatter: (value) =>
-        value
-          ? new Date(value).toLocaleDateString("it-IT", {
-              month: "2-digit",
-              year: "numeric",
-            })
-          : "",
+      valueFormatter: (value) => {
+        if (value) {
+          return format(value, 'MM/yyyy');
+        }
+        return '';
+      },
       renderHeader: () => <strong>Data cessione</strong>,
     },
   ];
