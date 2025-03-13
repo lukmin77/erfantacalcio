@@ -21,7 +21,7 @@ export type trasferimentoListType = {
     gol: number | null;
     assist: number | null;
     giocate: number | null;
-    dataAcquisto: string;
-    dataCessione: string | undefined;
+    dataAcquisto: Date;
+    dataCessione: Date | null;
     stagione: string;
 };

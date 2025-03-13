@@ -28,9 +28,9 @@ export const themeOptions: ThemeOptions = {
         dark: 'rgb(165, 27, 27)'
       },
       warning: {
-        light: 'rgb(255, 206, 116)', 
-        main: 'rgb(255, 143, 14)', 
-        dark: 'rgb(214, 96, 0)', 
+        light: 'rgb(253, 252, 173)', 
+        main: 'rgb(252, 206, 0)',
+        dark: 'rgb(241, 137, 2)',
       },
       text:{
         primary: 'rgb(29, 80, 82)',

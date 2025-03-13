@@ -263,7 +263,7 @@ function ViewTabellini() {
                         </Grid>
                         <Grid item xs={1.5} sm={2}>
                           {g.ammonizione !== 0 ? (
-                            <Style color="info" />
+                            <Style color="warning" />
                           ) : g.espulsione !== 0 ? (
                             <Style color="error" />
                           ) : (
@@ -398,7 +398,7 @@ function ViewTabellini() {
                         </Grid>
                         <Grid item xs={1.5} sm={1}>
                           {g.ammonizione !== 0 ? (
-                            <Style color="info" />
+                            <Style color="warning" />
                           ) : g.espulsione !== 0 ? (
                             <Style color="error" />
                           ) : (
