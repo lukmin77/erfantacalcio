@@ -138,10 +138,7 @@ export default function HomePage() {
                 tipo={"risultati"}
                 prefixTitle="Risultati:"
               ></Calendario>
-              <Calendario
-                tipo={"prossima"}
-                prefixTitle=""
-              ></Calendario>
+              <Calendario tipo={"prossima"} prefixTitle=""></Calendario>
               <Box
                 sx={{
                   display: "flex",
@@ -217,15 +214,12 @@ export default function HomePage() {
               {torneiList.data
                 ?.filter((t) => t.hasClassifica)
                 .map((torneo) => (
-                  <>
-                    <Classifica
-                      key={torneo?.idTorneo} // Aggiunto key per React
-                      nomeTorneo={torneo?.nome ?? ""}
-                      idTorneo={torneo?.idTorneo}
-                      gruppo={torneo?.gruppoFase ?? ""}
-                    />
-                    <br></br>
-                  </>
+                  <Classifica
+                    key={torneo?.idTorneo}
+                    nomeTorneo={torneo?.nome ?? ""}
+                    idTorneo={torneo?.idTorneo}
+                    gruppo={torneo?.gruppoFase ?? ""}
+                  />
                 ))}
             </Grid>
             {isXs && (

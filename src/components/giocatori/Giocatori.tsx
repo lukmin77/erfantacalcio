@@ -107,9 +107,7 @@ function Giocatori() {
       align: "right",
       renderHeader: () => <strong>Gol+</strong>,
       renderCell: (params) => (
-        <Typography color="success">
-          {params.row?.ruolo !== "P" ? params.row?.golfatti : ""}
-        </Typography>
+        params.row?.ruolo !== "P" ? params.row?.golfatti : ""
       ),
     },
     {
@@ -118,9 +116,7 @@ function Giocatori() {
       align: "right",
       renderHeader: () => <strong>Gol-</strong>,
       renderCell: (params) => (
-        <Typography color="success">
-          {params.row?.ruolo === "P" ? params.row?.golsubiti : ""}
-        </Typography>
+        params.row?.ruolo === "P" ? params.row?.golsubiti : ""
       ),
     },
     {
@@ -239,7 +235,7 @@ function Giocatori() {
                       },
                     },
                     filter: undefined,
-                    density: "compact",
+                    density: "comfortable",
                   }}
                   checkboxSelection={false}
                   disableColumnFilter={true}

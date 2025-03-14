@@ -117,7 +117,7 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
           title={params.row?.squadraSerieA as string}
         />
       ),
-      renderHeader: () => <strong>Squadra</strong>,
+      renderHeader: () => '',
     },
     {
       field: "squadra",

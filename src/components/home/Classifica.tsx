@@ -156,6 +156,7 @@ export default function Classifica({
           }}
         />
       </Box>
+      <br></br>
     </>
   );
 }
