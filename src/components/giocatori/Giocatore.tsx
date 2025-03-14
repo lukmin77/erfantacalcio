@@ -120,7 +120,7 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
       renderHeader: () => <strong>Squadra</strong>,
     },
     {
-      field: "squadraSerieA",
+      field: "squadra",
       type: "string",
       align: "left",
       renderHeader: () => <strong>Squadra</strong>,
@@ -130,16 +130,15 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
       type: "number",
       align: "right",
       renderHeader: () => <strong>Costo</strong>,
-      flex: 1,
     },
     {
       field: "dataAcquisto",
       type: "date",
       valueFormatter: (value) => {
         if (value) {
-          return format(value, 'MM/yyyy');
+          return format(value, "MM/yyyy");
         }
-        return '';
+        return "";
       },
       renderHeader: () => <strong>Data acquisto</strong>,
     },
@@ -148,9 +147,9 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
       type: "date",
       valueFormatter: (value) => {
         if (value) {
-          return format(value, 'MM/yyyy');
+          return format(value, "MM/yyyy");
         }
-        return '';
+        return "";
       },
       renderHeader: () => <strong>Data cessione</strong>,
     },
@@ -338,55 +337,53 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
         </Zoom>
       )}
       {idGiocatore && giocatoreTrasferimenti.data && (
-        <Zoom in={true}>
-          <Grid item xs={12} sm={6}>
-            <Typography variant="h5">Trasferimenti giocatore</Typography>
-            <Box sx={{ height: 234, width: "100%" }}>
-              <DataGrid
-                columnHeaderHeight={45}
-                rowHeight={40}
-                loading={giocatoreTrasferimenti.isLoading}
-                initialState={{
-                  columns: {
-                    columnVisibilityModel: {
-                      id: false,
-                    },
+        <Grid item xs={12} sm={6}>
+          <Typography variant="h5">Trasferimenti giocatore</Typography>
+          <Box sx={{ height: 234, width: "100%" }}>
+            <DataGrid
+              columnHeaderHeight={45}
+              rowHeight={40}
+              loading={giocatoreTrasferimenti.isLoading}
+              initialState={{
+                columns: {
+                  columnVisibilityModel: {
+                    id: false,
                   },
-                  pagination: {
-                    paginationModel: {
-                      pageSize: 5,
-                    },
+                },
+                pagination: {
+                  paginationModel: {
+                    pageSize: 5,
                   },
-                  filter: undefined,
-                  density: "compact",
-                }}
-                checkboxSelection={false}
-                disableColumnFilter={true}
-                disableColumnMenu={true}
-                disableColumnSelector={true}
-                disableColumnSorting={true}
-                disableColumnResize={true}
-                hideFooter={false}
-                hideFooterPagination={false}
-                pageSizeOptions={[5, 10, 20]}
-                paginationMode="client"
-                pagination={true}
-                hideFooterSelectedRowCount={true}
-                columns={columns}
-                autosizeOptions={autosizeOptions}
-                rows={giocatoreTrasferimenti.data}
-                disableRowSelectionOnClick={true}
-                sx={{
-                  backgroundColor: "#fff",
-                  "& .MuiDataGrid-columnHeader": {
-                    color: theme.palette.primary.main,
-                    backgroundColor: theme.palette.secondary.light,
-                  },
-                }}
-              />
-            </Box>
-          </Grid>
-        </Zoom>
+                },
+                filter: undefined,
+                density: "compact",
+              }}
+              checkboxSelection={false}
+              disableColumnFilter={true}
+              disableColumnMenu={true}
+              disableColumnSelector={true}
+              disableColumnSorting={true}
+              disableColumnResize={true}
+              hideFooter={false}
+              hideFooterPagination={false}
+              pageSizeOptions={[5, 10, 20]}
+              paginationMode="client"
+              pagination={true}
+              hideFooterSelectedRowCount={true}
+              columns={columns}
+              autosizeOptions={autosizeOptions}
+              rows={giocatoreTrasferimenti.data}
+              disableRowSelectionOnClick={true}
+              sx={{
+                backgroundColor: "#fff",
+                "& .MuiDataGrid-columnHeader": {
+                  color: theme.palette.primary.main,
+                  backgroundColor: theme.palette.secondary.light,
+                },
+              }}
+            />
+          </Box>
+        </Grid>
       )}
       {idGiocatore && giocatoreStatsStagioni.data && (
         <Zoom in={true}>

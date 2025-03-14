@@ -10,7 +10,6 @@ import {
   Grid,
   Switch,
   Typography,
-  Zoom,
   useMediaQuery,
 } from "@mui/material";
 import { useEffect, useState } from "react";
@@ -25,7 +24,11 @@ import { getRuoloEsteso } from "~/utils/helper";
 import { BarChartOutlined } from "@mui/icons-material";
 import Modal from "../modal/Modal";
 import Giocatore from "./Giocatore";
-import { DataGrid, GridActionsCellItem, type GridColDef } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridActionsCellItem,
+  type GridColDef,
+} from "@mui/x-data-grid";
 import { autosizeOptions } from "~/utils/datatable";
 
 function Giocatori() {
@@ -105,7 +108,7 @@ function Giocatori() {
       renderHeader: () => <strong>Gol+</strong>,
       renderCell: (params) => (
         <Typography color="success">
-          {params.row?.ruolo !== "P" ? params.row?.golfatti : ''}
+          {params.row?.ruolo !== "P" ? params.row?.golfatti : ""}
         </Typography>
       ),
     },
@@ -116,7 +119,7 @@ function Giocatori() {
       renderHeader: () => <strong>Gol-</strong>,
       renderCell: (params) => (
         <Typography color="success">
-          {params.row?.ruolo === "P" ? params.row?.golsubiti : ''}
+          {params.row?.ruolo === "P" ? params.row?.golsubiti : ""}
         </Typography>
       ),
     },
@@ -133,18 +136,18 @@ function Giocatori() {
       renderHeader: () => <strong>Giocate</strong>,
     },
     {
-      field: 'actions',
-      type: 'actions',
+      field: "actions",
+      type: "actions",
       getActions: (params) => [
         <GridActionsCellItem
-            key={params.id}
-            icon={<BarChartOutlined color="success" />}
-            label="Vedi giocatore"
-            onClick={() => handleGiocatoreSelected(params.id as number)}
-          />,
+          key={params.id}
+          icon={<BarChartOutlined color="success" />}
+          label="Vedi giocatore"
+          onClick={() => handleGiocatoreSelected(params.id as number)}
+        />,
       ],
       flex: 1,
-    }
+    },
   ];
 
   return (
@@ -214,13 +217,15 @@ function Giocatori() {
                 items={giocatori ?? []}
               />
             </Grid>
-            <Zoom in={true}>
-              <Grid item xs={12}>
-                <Typography variant="h5">
-                  Top {getRuoloEsteso(ruolo, true)}
-                </Typography>
+            <Grid item xs={12} sx={{ minHeight: 500 }}>
+              <Typography variant="h5">
+                Top {getRuoloEsteso(ruolo, true)}
+              </Typography>
+              <Box sx={{ width: "100%" }}>
                 <DataGrid
-                  getRowId={(row) => row.idgiocatore} 
+                  getRowId={(row) => row.idgiocatore}
+                  columnHeaderHeight={45}
+                  rowHeight={40}
                   loading={giocatoriStats.isLoading}
                   initialState={{
                     columns: {
@@ -260,11 +265,8 @@ function Giocatori() {
                     },
                   }}
                 />
-                <br></br>
-                <br></br>
-                <br></br>
-              </Grid>
-            </Zoom>
+              </Box>
+            </Grid>
           </>
         )}
         <Grid item xs={12} minHeight={30}></Grid>
