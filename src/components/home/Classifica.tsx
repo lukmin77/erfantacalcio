@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React, { useEffect, useState } from "react";
 import { api } from "~/utils/api";
-import { Avatar, Box, Typography, useTheme } from "@mui/material";
+import { Avatar, Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { type ClassificaType } from "~/types/classifica";
 import { getNomeTorneo } from "~/utils/helper";
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
@@ -18,6 +18,8 @@ export default function Classifica({
   gruppo = null,
 }: ClassificaProps) {
   const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.down("md"));
+  
   const classificaList = api.classifica.list.useQuery(
     { idTorneo: idTorneo! },
     {
@@ -44,20 +46,6 @@ export default function Classifica({
 
   const columns: GridColDef[] = [
     { field: "id", hideable: true },
-    {
-      field: "foto",
-      type: "string",
-      align: "left",
-      renderCell: (params) => (
-        <Avatar
-          src={params.row?.foto as string}
-          alt={params.row?.presidente as string}
-          sx={{ width: 24, height: 24 }}
-        />
-      ),
-      renderHeader: () => '',
-      width: 40,
-    },
     {
       field: "squadra",
       type: "string",
@@ -106,6 +94,25 @@ export default function Classifica({
       width: 80,
     },
   ];
+  
+  // Inserisce la colonna "foto" in posizione [1] solo se !isXs
+  if (!isXs) {
+    columns.splice(1, 0, {
+      field: "foto",
+      type: "string",
+      align: "left",
+      renderCell: (params) => (
+        <Avatar
+          src={params.row?.foto as string}
+          alt={params.row?.presidente as string}
+          sx={{ width: 24, height: 24 }}
+        />
+      ),
+      renderHeader: () => "",
+      width: 40,
+    });
+  }
+  
 
   return (
     <>
