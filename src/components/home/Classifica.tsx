@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React, { useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import { Avatar, Box, Typography, useTheme } from "@mui/material";
