@@ -192,7 +192,11 @@ export const giocatoriRouter = createTRPCRouter({
             });
             break;
         }
-        return stat;
+        return stat ? stat.map(player => ({
+          ...player,
+          maglia: `/images/maglie/${player.maglia}`
+        })) : [];
+        
 
       } catch (error) {
         Logger.error('Si è verificato un errore', error);

@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client";
 import {
   Box,
@@ -6,7 +9,6 @@ import {
   FormControlLabel,
   Grid,
   Switch,
-  Tooltip,
   Typography,
   Zoom,
   useMediaQuery,
@@ -14,24 +16,22 @@ import {
 import { useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import { useTheme } from "@mui/material/styles";
-import { type iGiocatoreStats } from "~/types/giocatori";
 import AutocompleteTextbox, {
   type iElements,
 } from "~/components/autocomplete/AutocompleteGiocatore";
-import DataTable, {
-  type ActionOptions,
-  type Column,
-  type Rows,
-} from "~/components/tables/datatable";
+import Image from "next/image";
 import { type Ruoli } from "~/types/common";
 import { getRuoloEsteso } from "~/utils/helper";
 import { BarChartOutlined } from "@mui/icons-material";
 import Modal from "../modal/Modal";
 import Giocatore from "./Giocatore";
+import { DataGrid, GridActionsCellItem, type GridColDef } from "@mui/x-data-grid";
+import { autosizeOptions } from "~/utils/datatable";
 
 function Giocatori() {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("md"));
+
   const [selectedGiocatoreId, setSelectedGiocatoreId] = useState<number>();
   const [openModalCalendario, setOpenModalCalendario] = useState(false);
   const giocatoriList = api.giocatori.listAll.useQuery(undefined, {
@@ -60,119 +60,92 @@ function Giocatori() {
     setOpenModalCalendario(false);
   };
 
-  // const handleStatGiocatore = (idGiocatore: number) => {
-  //   setIdGiocatore(idGiocatore);
-  //   setOpenModalCalendario(true);
-  // };
-
-  const columns: Column[] = [
+  const columns: GridColDef[] = [
+    { field: "id", hideable: true },
     {
-      key: "idgiocatore",
-      width: "5%",
-      type: "number",
-      align: "left",
-      visible: false,
-    },
-    {
-      key: "maglia",
-      type: "image",
-      align: "left",
-      header: " ",
-      width: "5%",
-      imageProps: {
-        imageTooltip: "squadraSerieA",
-        imageTooltipType: "dynamic",
-        imageWidth: 26,
-        imageHeight: 22,
-      },
-    },
-    {
-      key: "nome",
+      field: "maglia",
       type: "string",
       align: "left",
-      header: "Nome",
-      sortable: true,
+      renderCell: (params) => (
+        <Image
+          src={params.row?.maglia as string}
+          width={30}
+          height={26}
+          alt={params.row?.squadraSerieA as string}
+          title={params.row?.squadraSerieA as string}
+        />
+      ),
+      renderHeader: () => "",
+      width: 30,
     },
     {
-      key: "squadra",
+      field: "nome",
       type: "string",
       align: "left",
-      header: "Squadra",
-      sortable: true,
+      renderHeader: () => <strong>Nome</strong>,
+      width: 200,
     },
-    { key: "media", type: "number", header: "Media", sortable: true },
     {
-      key: "golfatti",
+      field: "squadra",
+      type: "string",
+      align: "left",
+      renderHeader: () => <strong>Squadra</strong>,
+      width: 200,
+    },
+    {
+      field: "media",
       type: "number",
-      header: "Gol",
-      visible: ruolo === "P" ? false : true,
-      sortable: true,
-    },
-    {
-      key: "golsubiti",
-      type: "number",
-      header: "Gol",
-      visible: ruolo === "P" ? true : false,
-      sortable: true,
-    },
-    { key: "assist", type: "number", header: "Assist", sortable: true },
-    { key: "giocate", type: "number", header: "Giocate", sortable: true },
-    {
-      key: "",
-      width: "5%",
-      type: "action",
       align: "right",
-      header: "Statistica",
+      renderHeader: () => <strong>Media</strong>,
     },
-  ];
-
-  const actionView = (idGiocatore: string) => {
-    return (
-      <div>
-        <Tooltip
-          title={"Vedi statistica"}
-          onClick={() => handleGiocatoreSelected(parseInt(idGiocatore))}
-          placement="left"
-        >
-          <BarChartOutlined color="success" />
-        </Tooltip>
-      </div>
-    );
-  };
-
-  const actionOptions: ActionOptions[] = [
     {
-      keyFields: ["idgiocatore"],
-      component: actionView,
+      field: "golfatti",
+      type: "number",
+      align: "right",
+      renderHeader: () => <strong>Gol+</strong>,
+      renderCell: (params) => (
+        <Typography color="success">
+          {params.row?.ruolo !== "P" ? params.row?.golfatti : ''}
+        </Typography>
+      ),
     },
-  ];
-
-  const mapStatsToRows = (
-    stats: iGiocatoreStats[] | undefined
-  ): Rows[] | undefined => {
-    if (!stats) {
-      return undefined;
+    {
+      field: "golsubiti",
+      type: "number",
+      align: "right",
+      renderHeader: () => <strong>Gol-</strong>,
+      renderCell: (params) => (
+        <Typography color="success">
+          {params.row?.ruolo === "P" ? params.row?.golsubiti : ''}
+        </Typography>
+      ),
+    },
+    {
+      field: "assist",
+      type: "number",
+      align: "right",
+      renderHeader: () => <strong>Assist</strong>,
+    },
+    {
+      field: "giocate",
+      type: "number",
+      align: "right",
+      renderHeader: () => <strong>Giocate</strong>,
+    },
+    {
+      field: 'actions',
+      type: 'actions',
+      getActions: (params) => [
+        <GridActionsCellItem
+            key={params.id}
+            icon={<BarChartOutlined color="success" />}
+            label="Vedi giocatore"
+            onClick={() => handleGiocatoreSelected(params.id as number)}
+          />,
+      ],
+      flex: 1,
     }
-
-    return stats.map((stat) => ({
-      media: stat.media,
-      mediabonus: stat.mediabonus,
-      golfatti: stat.golfatti,
-      golsubiti: stat.golsubiti,
-      assist: stat.assist,
-      ammonizioni: stat.ammonizioni,
-      espulsioni: stat.espulsioni,
-      giocate: stat.giocate,
-      ruolo: stat.ruolo,
-      nome: stat.nome,
-      nomefantagazzetta: stat.nomefantagazzetta,
-      idgiocatore: stat.idgiocatore,
-      maglia: `/images/maglie/${stat.maglia}`,
-      squadraSerieA: stat.squadraSerieA,
-      squadra: stat.squadra,
-      idSquadra: stat.idSquadra,
-    }));
-  };
+  ];
 
   return (
     <>
@@ -197,7 +170,7 @@ function Giocatori() {
               <FormControlLabel
                 control={
                   <Switch
-                    color="info"
+                    color="warning"
                     onChange={() => setRuolo("P")}
                     checked={ruolo === "P"}
                   />
@@ -217,7 +190,7 @@ function Giocatori() {
               <FormControlLabel
                 control={
                   <Switch
-                    color="success"
+                    color="warning"
                     onChange={() => setRuolo("C")}
                     checked={ruolo === "C"}
                   />
@@ -227,7 +200,7 @@ function Giocatori() {
               <FormControlLabel
                 control={
                   <Switch
-                    color="error"
+                    color="warning"
                     onChange={() => setRuolo("A")}
                     checked={ruolo === "A"}
                   />
@@ -243,14 +216,49 @@ function Giocatori() {
             </Grid>
             <Zoom in={true}>
               <Grid item xs={12}>
-                <DataTable
-                  title={`Top ${getRuoloEsteso(ruolo, true)}`}
-                  pagination={false}
-                  messageWhenEmptyList="Nessun giocatore presente"
-                  data={mapStatsToRows(giocatoriStats.data)}
+                <Typography variant="h5">
+                  Top {getRuoloEsteso(ruolo, true)}
+                </Typography>
+                <DataGrid
+                  getRowId={(row) => row.idgiocatore} 
+                  loading={giocatoriStats.isLoading}
+                  initialState={{
+                    columns: {
+                      columnVisibilityModel: {
+                        id: false,
+                      },
+                    },
+                    pagination: {
+                      paginationModel: {
+                        pageSize: 15,
+                      },
+                    },
+                    filter: undefined,
+                    density: "compact",
+                  }}
+                  checkboxSelection={false}
+                  disableColumnFilter={true}
+                  disableColumnMenu={true}
+                  disableColumnSelector={true}
+                  disableColumnSorting={false}
+                  disableColumnResize={true}
+                  hideFooter={false}
+                  hideFooterPagination={false}
+                  pageSizeOptions={[5, 10, 20]}
+                  paginationMode="client"
+                  pagination={true}
+                  hideFooterSelectedRowCount={true}
                   columns={columns}
-                  actionOptions={actionOptions}
-                  rowsXPage={15}
+                  autosizeOptions={autosizeOptions}
+                  rows={giocatoriStats.data}
+                  disableRowSelectionOnClick={true}
+                  sx={{
+                    backgroundColor: "#fff",
+                    "& .MuiDataGrid-columnHeader": {
+                      color: theme.palette.primary.main,
+                      backgroundColor: theme.palette.secondary.light,
+                    },
+                  }}
                 />
                 <br></br>
                 <br></br>
@@ -271,7 +279,9 @@ function Giocatori() {
       >
         <Divider />
         <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
-        {selectedGiocatoreId !== undefined && <Giocatore idGiocatore={selectedGiocatoreId} />}
+          {selectedGiocatoreId !== undefined && (
+            <Giocatore idGiocatore={selectedGiocatoreId} />
+          )}
         </Box>
       </Modal>
     </>

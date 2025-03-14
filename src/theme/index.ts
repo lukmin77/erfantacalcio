@@ -32,6 +32,9 @@ export const themeOptions: ThemeOptions = {
         main: 'rgb(252, 206, 0)',
         dark: 'rgb(241, 137, 2)',
       },
+      action: {
+        hover: 'rgb(194, 255, 212)',
+      },
       text:{
         primary: 'rgb(29, 80, 82)',
         secondary: 'rgb(29, 80, 82)',

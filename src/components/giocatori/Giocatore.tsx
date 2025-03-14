@@ -111,8 +111,8 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
       renderCell: (params) => (
         <Image
           src={params.row?.maglia as string}
-          width={26}
-          height={22}
+          width={30}
+          height={26}
           alt={params.row?.squadraSerieA as string}
           title={params.row?.squadraSerieA as string}
         />
