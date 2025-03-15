@@ -85,14 +85,14 @@ function Giocatori() {
       type: "string",
       align: "left",
       renderHeader: () => <strong>Nome</strong>,
-      width: isXs ? 120 : 250,
+      flex: isXs ? 0 : 1,
     },
     {
       field: "squadra",
       type: "string",
       align: "left",
       renderHeader: () => <strong>Squadra</strong>,
-      width: isXs ? 120 : 250,
+      flex: isXs ? 0 : 1,
     },
     {
       field: "media",
@@ -106,9 +106,8 @@ function Giocatori() {
       type: "number",
       align: "right",
       renderHeader: () => <strong>Gol+</strong>,
-      renderCell: (params) => (
-        params.row?.ruolo !== "P" ? params.row?.golfatti : ""
-      ),
+      renderCell: (params) =>
+        params.row?.ruolo !== "P" ? params.row?.golfatti : "",
       width: isXs ? 90 : 100,
     },
     {
@@ -116,9 +115,8 @@ function Giocatori() {
       type: "number",
       align: "right",
       renderHeader: () => <strong>Gol-</strong>,
-      renderCell: (params) => (
-        params.row?.ruolo === "P" ? params.row?.golsubiti : ""
-      ),
+      renderCell: (params) =>
+        params.row?.ruolo === "P" ? params.row?.golsubiti : "",
       width: isXs ? 90 : 100,
     },
     {
@@ -146,7 +144,7 @@ function Giocatori() {
           onClick={() => handleGiocatoreSelected(params.id as number)}
         />,
       ],
-      flex:1
+      width: isXs ? 90 : 100,
     },
   ];
 
@@ -154,140 +152,125 @@ function Giocatori() {
 
   const skeletonRows = Array.from({ length: pageSize }, (_, index) => ({
     id: `skeleton-${index}`,
-  }))
+  }));
 
   return (
     <>
       <Grid container spacing={1} paddingTop={2} paddingBottom={2}>
-        {/* {giocatoriList.isLoading || giocatoriStats.isLoading ? (
-          <Box
-            sx={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <CircularProgress color="warning" />
+        <Grid item xs={12}>
+          <Typography variant="h4">Statistiche Giocatori</Typography>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <FormControlLabel
+            control={
+              <Switch
+                color="warning"
+                onChange={() => setRuolo("P")}
+                checked={ruolo === "P"}
+              />
+            }
+            label={isXs ? "P" : getRuoloEsteso("P", true)}
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                color="warning"
+                onChange={() => setRuolo("D")}
+                checked={ruolo === "D"}
+              />
+            }
+            label={isXs ? "D" : getRuoloEsteso("D", true)}
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                color="warning"
+                onChange={() => setRuolo("C")}
+                checked={ruolo === "C"}
+              />
+            }
+            label={isXs ? "C" : getRuoloEsteso("C", true)}
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                color="warning"
+                onChange={() => setRuolo("A")}
+                checked={ruolo === "A"}
+              />
+            }
+            label={isXs ? "A" : getRuoloEsteso("A", true)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <AutocompleteTextbox
+            onItemSelected={handleGiocatoreSelected}
+            items={giocatori ?? []}
+          />
+        </Grid>
+        <Grid item xs={12} sx={{ minHeight: 500 }}>
+          <Typography variant="h5">
+            Top {getRuoloEsteso(ruolo, true)}
+          </Typography>
+          <Box sx={{ width: "100%", overflowX: "auto", contain: "inline-size" }}>
+            <DataGrid
+              columnHeaderHeight={45}
+              rowHeight={40}
+              loading={giocatoriStats.isLoading}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: pageSize,
+                  },
+                },
+                filter: undefined,
+                density: "comfortable",
+              }}
+              slotProps={{
+                loadingOverlay: {
+                  variant: "skeleton",
+                },
+              }}
+              columnVisibilityModel={{
+                id: false,
+                golfatti: ruolo !== "P",
+                golsubiti: ruolo === "P",
+              }}
+              checkboxSelection={false}
+              disableColumnFilter={true}
+              disableColumnMenu={true}
+              disableColumnSelector={true}
+              disableColumnSorting={false}
+              disableColumnResize={true}
+              hideFooter={false}
+              hideFooterPagination={false}
+              pageSizeOptions={[5, 10, 20]}
+              paginationMode="client"
+              pagination={true}
+              hideFooterSelectedRowCount={true}
+              columns={columns}
+              rows={
+                giocatoriStats.isLoading ? skeletonRows : giocatoriStats.data
+              }
+              disableRowSelectionOnClick={true}
+              sx={{
+                backgroundColor: "#fff",
+                "& .MuiDataGrid-columnHeader": {
+                  color: theme.palette.primary.main,
+                  backgroundColor: theme.palette.secondary.light,
+                },
+                overflowX: "auto",
+                "& .MuiDataGrid-virtualScroller": {
+                  overflowX: "auto",
+                },
+                minWidth: "100%",
+                "& .MuiDataGrid-viewport": {
+                  overflowX: "auto !important",
+                },
+              }}
+            />
           </Box>
-        ) : (
-          <> */}
-            <Grid item xs={12}>
-              <Typography variant="h4">Statistiche Giocatori</Typography>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="warning"
-                    onChange={() => setRuolo("P")}
-                    checked={ruolo === "P"}
-                  />
-                }
-                label={isXs ? "P" : getRuoloEsteso("P", true)}
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="warning"
-                    onChange={() => setRuolo("D")}
-                    checked={ruolo === "D"}
-                  />
-                }
-                label={isXs ? "D" : getRuoloEsteso("D", true)}
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="warning"
-                    onChange={() => setRuolo("C")}
-                    checked={ruolo === "C"}
-                  />
-                }
-                label={isXs ? "C" : getRuoloEsteso("C", true)}
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="warning"
-                    onChange={() => setRuolo("A")}
-                    checked={ruolo === "A"}
-                  />
-                }
-                label={isXs ? "A" : getRuoloEsteso("A", true)}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <AutocompleteTextbox
-                onItemSelected={handleGiocatoreSelected}
-                items={giocatori ?? []}
-              />
-            </Grid>
-            <Grid item xs={12} sx={{ minHeight: 500 }}>
-              <Typography variant="h5">
-                Top {getRuoloEsteso(ruolo, true)}
-              </Typography>
-              <Box sx={{ width: "100%", overflowX: "auto", contain: "inline-size" }}>
-                <DataGrid
-                  //getRowId={(row) => row.idgiocatore}
-                  columnHeaderHeight={45}
-                  rowHeight={40}
-                  loading={giocatoriStats.isLoading}
-                  initialState={{
-                    pagination: {
-                      paginationModel: {
-                        pageSize: pageSize,
-                      },
-                    },
-                    filter: undefined,
-                    density: "comfortable",
-                  }}
-                  slotProps={{
-                    loadingOverlay: {
-                      variant: "skeleton",
-                    },
-                  }}
-                  columnVisibilityModel={{ id: false, golfatti: ruolo !== "P", golsubiti: ruolo === "P" }}
-                  checkboxSelection={false}
-                  disableColumnFilter={true}
-                  disableColumnMenu={true}
-                  disableColumnSelector={true}
-                  disableColumnSorting={false}
-                  disableColumnResize={true}
-                  hideFooter={false}
-                  hideFooterPagination={false}
-                  pageSizeOptions={[5, 10, 20]}
-                  paginationMode="client"
-                  pagination={true}
-                  hideFooterSelectedRowCount={true}
-                  columns={columns}
-                  //autosizeOptions={autosizeOptions}
-                  rows={
-                    giocatoriStats.isLoading
-                      ? skeletonRows
-                      : giocatoriStats.data
-                  }
-                  disableRowSelectionOnClick={true}
-                  sx={{
-                    backgroundColor: "#fff",
-                    "& .MuiDataGrid-columnHeader": {
-                      color: theme.palette.primary.main,
-                      backgroundColor: theme.palette.secondary.light,
-                    },
-                    overflowX: "auto",
-                    "& .MuiDataGrid-virtualScroller": {
-                      overflowX: "auto",
-                    },
-                    minWidth: "100%", 
-                    "& .MuiDataGrid-viewport": {
-                      overflowX: "auto !important",
-                    },
-                  }}
-                />
-              </Box>
-            </Grid>
-          {/* </>
-        )} */}
+        </Grid>
         <Grid item xs={12} minHeight={30}></Grid>
       </Grid>
 

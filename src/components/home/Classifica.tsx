@@ -112,6 +112,12 @@ export default function Classifica({
       width: 40,
     });
   }
+
+  const pageSize = gruppo ? 8 : 4;
+
+  const skeletonRows = Array.from({ length: pageSize }, (_, index) => ({
+    id: `skeleton-${index}`,
+  }));
   
 
   return (
@@ -134,6 +140,11 @@ export default function Classifica({
             filter: undefined,
             density: "compact",
           }}
+          slotProps={{
+            loadingOverlay: {
+              variant: "skeleton"
+            },
+          }}
           checkboxSelection={false}
           disableColumnFilter={true}
           disableColumnMenu={true}
@@ -144,7 +155,7 @@ export default function Classifica({
           hideFooterPagination={true}
           hideFooterSelectedRowCount={true}
           columns={columns}
-          rows={rows}
+          rows={classificaList.isLoading ? skeletonRows : rows}
           disableRowSelectionOnClick={true}
           autosizeOptions={autosizeOptions}
           sx={{

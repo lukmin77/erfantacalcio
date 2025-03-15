@@ -29,3 +29,7 @@ export function formatToDecimalValue(valoreString: string): number {
         .trim();
     return parseFloat(valoreFormatted);
 }
+
+export const formatCurrency = (value: number) => new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(value ?? 0);
+  
+  

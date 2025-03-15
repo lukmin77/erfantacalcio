@@ -182,7 +182,6 @@ export const calendarioRouter = createTRPCRouter({
     .query(async () => {
       try {
         const giornataSerieA = await getProssimaGiornataSerieA(true, 'desc');
-        Logger.info('giornataseriea:', giornataSerieA);
         const result = await prisma.calendario.findMany({
           select: {
             idCalendario: true, giornata: true, giornataSerieA: true, ordine: true, data: true, dataFine: true, hasSovrapposta: true, girone: true, hasGiocata: true, hasDaRecuperare: true,
