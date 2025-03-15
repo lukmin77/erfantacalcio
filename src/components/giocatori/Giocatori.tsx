@@ -29,7 +29,6 @@ import {
   GridActionsCellItem,
   type GridColDef,
 } from "@mui/x-data-grid";
-import { autosizeOptions } from "~/utils/datatable";
 
 function Giocatori() {
   const theme = useTheme();
@@ -86,20 +85,21 @@ function Giocatori() {
       type: "string",
       align: "left",
       renderHeader: () => <strong>Nome</strong>,
-      width: 200,
+      width: isXs ? 120 : 250,
     },
     {
       field: "squadra",
       type: "string",
       align: "left",
       renderHeader: () => <strong>Squadra</strong>,
-      width: 200,
+      width: isXs ? 120 : 250,
     },
     {
       field: "media",
       type: "number",
       align: "right",
       renderHeader: () => <strong>Media</strong>,
+      width: isXs ? 90 : 100,
     },
     {
       field: "golfatti",
@@ -109,6 +109,7 @@ function Giocatori() {
       renderCell: (params) => (
         params.row?.ruolo !== "P" ? params.row?.golfatti : ""
       ),
+      width: isXs ? 90 : 100,
     },
     {
       field: "golsubiti",
@@ -118,18 +119,21 @@ function Giocatori() {
       renderCell: (params) => (
         params.row?.ruolo === "P" ? params.row?.golsubiti : ""
       ),
+      width: isXs ? 90 : 100,
     },
     {
       field: "assist",
       type: "number",
       align: "right",
       renderHeader: () => <strong>Assist</strong>,
+      width: isXs ? 90 : 100,
     },
     {
       field: "giocate",
       type: "number",
       align: "right",
       renderHeader: () => <strong>Giocate</strong>,
+      width: 100,
     },
     {
       field: "actions",
@@ -142,14 +146,20 @@ function Giocatori() {
           onClick={() => handleGiocatoreSelected(params.id as number)}
         />,
       ],
-      flex: 1,
+      flex:1
     },
   ];
+
+  const pageSize = isXs ? 10 : 15;
+
+  const skeletonRows = Array.from({ length: pageSize }, (_, index) => ({
+    id: `skeleton-${index}`,
+  }))
 
   return (
     <>
       <Grid container spacing={1} paddingTop={2} paddingBottom={2}>
-        {giocatoriList.isLoading || giocatoriStats.isLoading ? (
+        {/* {giocatoriList.isLoading || giocatoriStats.isLoading ? (
           <Box
             sx={{
               width: "100%",
@@ -161,7 +171,7 @@ function Giocatori() {
             <CircularProgress color="warning" />
           </Box>
         ) : (
-          <>
+          <> */}
             <Grid item xs={12}>
               <Typography variant="h4">Statistiche Giocatori</Typography>
             </Grid>
@@ -217,26 +227,27 @@ function Giocatori() {
               <Typography variant="h5">
                 Top {getRuoloEsteso(ruolo, true)}
               </Typography>
-              <Box sx={{ width: "100%" }}>
+              <Box sx={{ width: "100%", overflowX: "auto", contain: "inline-size" }}>
                 <DataGrid
-                  getRowId={(row) => row.idgiocatore}
+                  //getRowId={(row) => row.idgiocatore}
                   columnHeaderHeight={45}
                   rowHeight={40}
                   loading={giocatoriStats.isLoading}
                   initialState={{
-                    columns: {
-                      columnVisibilityModel: {
-                        id: false,
-                      },
-                    },
                     pagination: {
                       paginationModel: {
-                        pageSize: 15,
+                        pageSize: pageSize,
                       },
                     },
                     filter: undefined,
                     density: "comfortable",
                   }}
+                  slotProps={{
+                    loadingOverlay: {
+                      variant: "skeleton",
+                    },
+                  }}
+                  columnVisibilityModel={{ id: false, golfatti: ruolo !== "P", golsubiti: ruolo === "P" }}
                   checkboxSelection={false}
                   disableColumnFilter={true}
                   disableColumnMenu={true}
@@ -250,8 +261,12 @@ function Giocatori() {
                   pagination={true}
                   hideFooterSelectedRowCount={true}
                   columns={columns}
-                  autosizeOptions={autosizeOptions}
-                  rows={giocatoriStats.data}
+                  //autosizeOptions={autosizeOptions}
+                  rows={
+                    giocatoriStats.isLoading
+                      ? skeletonRows
+                      : giocatoriStats.data
+                  }
                   disableRowSelectionOnClick={true}
                   sx={{
                     backgroundColor: "#fff",
@@ -259,12 +274,20 @@ function Giocatori() {
                       color: theme.palette.primary.main,
                       backgroundColor: theme.palette.secondary.light,
                     },
+                    overflowX: "auto",
+                    "& .MuiDataGrid-virtualScroller": {
+                      overflowX: "auto",
+                    },
+                    minWidth: "100%", 
+                    "& .MuiDataGrid-viewport": {
+                      overflowX: "auto !important",
+                    },
                   }}
                 />
               </Box>
             </Grid>
-          </>
-        )}
+          {/* </>
+        )} */}
         <Grid item xs={12} minHeight={30}></Grid>
       </Grid>
 

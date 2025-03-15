@@ -194,6 +194,7 @@ export const giocatoriRouter = createTRPCRouter({
         }
         return stat ? stat.map(player => ({
           ...player,
+          id: player.idgiocatore,
           maglia: `/images/maglie/${player.maglia}`
         })) : [];
         
