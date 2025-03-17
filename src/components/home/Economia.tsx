@@ -14,7 +14,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { autosizeOptions } from "~/utils/datatable";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import { formatCurrency } from "~/utils/numberUtils";
 
 export default function Economia() {
@@ -45,75 +45,77 @@ export default function Economia() {
   );
 
   const columns: GridColDef[] = [
-      { field: "id", hideable: true },
-      {
-        field: "squadra",
-        type: "string",
-        align: "left",
-        renderHeader: () => <strong>Squadra</strong>,
-        flex: isXs ? 0 : 1,
-      },
-      {
-        field: "presidente",
-        type: "string",
-        align: "left",
-        renderHeader: () => <strong>Presidente</strong>,
-        flex: isXs ? 0 : 1,
-        
-      },
-      {
-        field: "importoAnnuale",
-        type: "number",
-        align: "right",
-        renderHeader: () => <strong>Quota</strong>,
-        width: 130,
-        valueGetter: (value) => value,
-        valueFormatter: (value?: number) => value != null ? formatCurrency(value) : '',
-      },
-      {
-        field: "importoMulte",
-        type: "number",
-        align: "right",
-        renderHeader: () => <strong>Multe</strong>,
-        width: 130,
-        valueGetter: (value) => value,
-        valueFormatter: (value?: number) => value != null ? formatCurrency(value) : '',
-      },
-      {
-        field: "importoMercato",
-        type: "number",
-        align: "right",
-        renderHeader: () => <strong>Mercato</strong>,
-        width: 130,
-        valueGetter: (value) => value,
-        valueFormatter: (value?: number) => value != null ? formatCurrency(value) : '',
-      },
-      {
-        field: "fantamilioni",
-        type: "number",
-        align: "right",
-        renderHeader: () => <strong>Fantamilioni</strong>,
-        width: 130,
-      }
-    ];
-    
-    // Inserisce la colonna "foto" in posizione [1] solo se !isXs
-    if (!isXs) {
-      columns.splice(1, 0, {
-        field: "foto",
-        type: "string",
-        align: "left",
-        renderCell: (params) => (
-          <Avatar
-            src={params.row?.foto as string}
-            alt={params.row?.presidente as string}
-            sx={{ width: 24, height: 24 }}
-          />
-        ),
-        renderHeader: () => "",
-        width: 40,
-      });
-    }
+    { field: "id", hideable: true },
+    {
+      field: "squadra",
+      type: "string",
+      align: "left",
+      renderHeader: () => <strong>Squadra</strong>,
+      flex: isXs ? 0 : 1,
+    },
+    {
+      field: "presidente",
+      type: "string",
+      align: "left",
+      renderHeader: () => <strong>Presidente</strong>,
+      flex: isXs ? 0 : 1,
+    },
+    {
+      field: "importoAnnuale",
+      type: "number",
+      align: "right",
+      renderHeader: () => <strong>Quota</strong>,
+      width: 130,
+      valueGetter: (value) => value,
+      valueFormatter: (value?: number) =>
+        value != null ? formatCurrency(value) : "",
+    },
+    {
+      field: "importoMulte",
+      type: "number",
+      align: "right",
+      renderHeader: () => <strong>Multe</strong>,
+      width: 130,
+      valueGetter: (value) => value,
+      valueFormatter: (value?: number) =>
+        value != null ? formatCurrency(value) : "",
+    },
+    {
+      field: "importoMercato",
+      type: "number",
+      align: "right",
+      renderHeader: () => <strong>Mercato</strong>,
+      width: 130,
+      valueGetter: (value) => value,
+      valueFormatter: (value?: number) =>
+        value != null ? formatCurrency(value) : "",
+    },
+    {
+      field: "fantamilioni",
+      type: "number",
+      align: "right",
+      renderHeader: () => <strong>Fantamilioni</strong>,
+      width: 130,
+    },
+  ];
+
+  // Inserisce la colonna "foto" in posizione [1] solo se !isXs
+  if (!isXs) {
+    columns.splice(1, 0, {
+      field: "foto",
+      type: "string",
+      align: "left",
+      renderCell: (params) => (
+        <Avatar
+          src={params.row?.foto as string}
+          alt={params.row?.presidente as string}
+          sx={{ width: 24, height: 24 }}
+        />
+      ),
+      renderHeader: () => "",
+      width: 40,
+    });
+  }
 
   const pageSize = 8;
 
@@ -131,9 +133,13 @@ export default function Economia() {
           />
           <CardContent>
             <Typography variant="body2" sx={{ color: "text.secondary" }}>
-              Importo annuale iscrizioni: {formatCurrency(importoAnnuale)} <br></br>
+              Importo annuale iscrizioni: {formatCurrency(importoAnnuale)}{" "}
+              <br></br>
               Importo multe: {formatCurrency(importoMulte)} <br></br>
-              Importo mercato di riparazione: {formatCurrency(importoMercato)} <br></br>
+              Importo mercato di riparazione: {formatCurrency(
+                importoMercato
+              )}{" "}
+              <br></br>
               Detrazione sito: {formatCurrency(detrazioneSito)} <br></br>
             </Typography>
           </CardContent>
@@ -148,25 +154,37 @@ export default function Economia() {
           <CardContent>
             <Typography variant="body2" sx={{ color: "text.secondary" }}>
               1° Classificato:{" "}
-              {formatCurrency(calcolaPercentuale(
-                importoAnnuale + importoMercato + importoMulte,
-                55
-              ))} <br></br>
+              {formatCurrency(
+                calcolaPercentuale(
+                  importoAnnuale + importoMercato + importoMulte,
+                  55
+                )
+              )}{" "}
+              <br></br>
               2° Classificato:{" "}
-              {formatCurrency(calcolaPercentuale(
-                importoAnnuale + importoMercato + importoMulte,
-                20
-              ))} <br></br>
+              {formatCurrency(
+                calcolaPercentuale(
+                  importoAnnuale + importoMercato + importoMulte,
+                  20
+                )
+              )}{" "}
+              <br></br>
               3° Classificato:{" "}
-              {formatCurrency(calcolaPercentuale(
-                importoAnnuale + importoMercato + importoMulte,
-                10
-              ))} <br></br>
+              {formatCurrency(
+                calcolaPercentuale(
+                  importoAnnuale + importoMercato + importoMulte,
+                  10
+                )
+              )}{" "}
+              <br></br>
               Vincitore Champions:{" "}
-              {formatCurrency(calcolaPercentuale(
-                importoAnnuale + importoMercato + importoMulte,
-                15
-              ))} <br></br>
+              {formatCurrency(
+                calcolaPercentuale(
+                  importoAnnuale + importoMercato + importoMulte,
+                  15
+                )
+              )}{" "}
+              <br></br>
             </Typography>
           </CardContent>
         </Card>
