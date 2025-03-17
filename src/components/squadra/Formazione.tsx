@@ -44,7 +44,6 @@ import {
   type GiocatoreFormazioneType,
   type GiocatoreType,
 } from "~/types/squadre";
-import Draggable from "react-draggable";
 import Image from "next/image";
 import Modal from "../modal/Modal";
 import dayjs from "dayjs";
@@ -91,8 +90,6 @@ function Formazione() {
   const [rosa, setRosa] = useState<GiocatoreFormazioneType[]>([]);
   const [campo, setCampo] = useState<GiocatoreFormazioneType[]>([]);
   const [panca, setPanca] = useState<GiocatoreFormazioneType[]>([]);
-  const [draggedItem, setDraggedItem] =
-    useState<GiocatoreFormazioneType | null>(null);
   const [idPartita, setIdPartita] = useState<number>();
   const [modulo, setModulo] = useState<Moduli>(moduloDefault);
   const [openAlert, setOpenAlert] = useState(false);
@@ -214,94 +211,6 @@ function Formazione() {
     }
   };
 
-  const handleDragStart = async (player: GiocatoreFormazioneType) => {
-    if (
-      rosa.findIndex((c) => c.idGiocatore === player.idGiocatore) > -1 &&
-      checkModulo(player.ruolo)
-    ) {
-      //va da rosa a campo
-      setStyleCampo((prevStyle) => ({
-        ...prevStyle,
-        borderWidth: "3px",
-        borderStyle: "dashed",
-      }));
-    }
-    if (
-      rosa.findIndex((c) => c.idGiocatore === player.idGiocatore) > -1 &&
-      !checkModulo(player.ruolo)
-    ) {
-      //va da rosa a panca
-      setStylePanca((prevStyle) => ({
-        ...prevStyle,
-        borderWidth: "3px",
-        borderStyle: "dashed",
-      }));
-    }
-    if (campo.findIndex((c) => c.idGiocatore === player.idGiocatore) > -1) {
-      //va da campo a rosa
-      setStyleRosa((prevStyle) => ({
-        ...prevStyle,
-        borderWidth: "3px",
-        borderStyle: "dashed",
-      }));
-    }
-    if (panca.findIndex((c) => c.idGiocatore === player.idGiocatore) > -1) {
-      //va da panca a rosa
-      setStyleRosa((prevStyle) => ({
-        ...prevStyle,
-        borderWidth: "3px",
-        borderStyle: "dashed",
-      }));
-    }
-
-    setDraggedItem(player);
-  };
-
-  const handleDrop = async () => {
-    resetBorderArea();
-
-    if (draggedItem) {
-      draggedItem.riserva = null;
-      draggedItem.titolare = false;
-      if (
-        rosa.findIndex((c) => c.idGiocatore === draggedItem.idGiocatore) > -1 &&
-        checkModulo(draggedItem.ruolo)
-      ) {
-        //va da rosa a campo
-        draggedItem.titolare = true;
-        await updateLists(draggedItem, campo, setCampo, rosa, setRosa, false);
-      }
-      if (
-        rosa.findIndex((c) => c.idGiocatore === draggedItem.idGiocatore) > -1 &&
-        !checkModulo(draggedItem.ruolo)
-      ) {
-        //va da rosa a panca
-        draggedItem.riserva = 100;
-        await updateLists(draggedItem, panca, setPanca, rosa, setRosa, true);
-      }
-      if (
-        campo.findIndex((c) => c.idGiocatore === draggedItem.idGiocatore) > -1
-      ) {
-        //va da campo a rosa
-        await updateLists(draggedItem, rosa, setRosa, campo, setCampo, true);
-      }
-      if (
-        panca.findIndex((c) => c.idGiocatore === draggedItem.idGiocatore) > -1
-      ) {
-        //va da panca a rosa
-        await updateLists(
-          draggedItem,
-          rosa,
-          setRosa,
-          panca,
-          setPanca,
-          false,
-          true
-        );
-      }
-    }
-  };
-
   const sortPlayersByRoleDescThenCostoDesc = (
     players: GiocatoreFormazioneType[]
   ) => {
@@ -384,47 +293,34 @@ function Formazione() {
     };
 
     return (
-      <Grid
-        item
-        sm={columns}
-        xs={12}
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={handleDrop}
-      >
+      <Grid item sm={columns} xs={12}>
         <Box>
           <Typography variant="h5">{title}</Typography>
           <List sx={{ bgcolor: "background.paper" }}>
             {filteredRosa.map((player) => (
               <Grid container spacing={0} key={player.idGiocatore}>
                 <Grid item xs={11}>
-                  <Draggable key={player.idGiocatore} nodeRef={nodeRef}>
-                    <div
-                      onDragStart={() => handleDragStart(player)}
-                      onClick={() => handleClickPlayer(player)}
-                      draggable
-                      ref={nodeRef}
+                  <div onClick={() => handleClickPlayer(player)} ref={nodeRef}>
+                    <ListItem
+                      sx={{
+                        cursor: "pointer",
+                        zIndex: 2,
+                        paddingTop: "0px",
+                        paddingBottom: "0px",
+                      }}
                     >
-                      <ListItem
-                        sx={{
-                          cursor: "pointer",
-                          zIndex: 2,
-                          paddingTop: "0px",
-                          paddingBottom: "0px",
-                        }}
-                      >
-                        <Image
-                          src={player.urlCampioncinoSmall}
-                          width={42}
-                          height={42}
-                          alt={player.nome}
-                        />
-                        <ListItemText
-                          primary={player.nome}
-                          secondary={`${player.nomeSquadraSerieA}`}
-                        ></ListItemText>
-                      </ListItem>
-                    </div>
-                  </Draggable>
+                      <Image
+                        src={player.urlCampioncinoSmall}
+                        width={42}
+                        height={42}
+                        alt={player.nome}
+                      />
+                      <ListItemText
+                        primary={player.nome}
+                        secondary={`${player.nomeSquadraSerieA}`}
+                      ></ListItemText>
+                    </ListItem>
+                  </div>
                 </Grid>
                 <Grid item xs={1} display={"flex"} justifyContent={"flex-end"}>
                   <Tooltip title={"Statistiche giocatore"}>
@@ -448,63 +344,54 @@ function Formazione() {
       roles.includes(player.ruolo)
     );
     return (
-      <Grid
-        item
-        sm={columns}
-        xs={12}
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={handleDrop}
-      >
+      <Grid item sm={columns} xs={12}>
         <Box>
           <List sx={{ bgcolor: "background.paper" }}>
             {filteredPanca.map((player) => (
-              <Draggable key={player.idGiocatore} nodeRef={nodeRef}>
-                <div
-                  onDragStart={() => handleDragStart(player)}
-                  onClick={() => handleClickPlayer(player)}
-                  draggable
-                  ref={nodeRef}
+              <div
+                onClick={() => handleClickPlayer(player)}
+                ref={nodeRef}
+                key={player.idGiocatore}
+              >
+                <ListItem
+                  sx={{
+                    cursor: "pointer",
+                    zIndex: 2,
+                    paddingTop: "0px",
+                    paddingBottom: "0px",
+                  }}
                 >
-                  <ListItem
-                    sx={{
-                      cursor: "pointer",
-                      zIndex: 2,
-                      paddingTop: "0px",
-                      paddingBottom: "0px",
-                    }}
-                  >
-                    <Image
-                      src={player.urlCampioncinoSmall}
-                      width={42}
-                      height={42}
-                      alt={player.nome}
-                    />
-                    <ListItemText
-                      primary={player.nome}
-                      secondary={`${
-                        player.ruoloEsteso
-                      } (${player.nomeSquadraSerieA
-                        ?.toUpperCase()
-                        .substring(0, 3)})`}
-                    ></ListItemText>
-                    {player.riserva === 1 ? (
-                      <Filter1 color="success"></Filter1>
-                    ) : player.riserva === 2 ? (
-                      <Filter2 color="warning"></Filter2>
-                    ) : player.riserva === 3 ? (
-                      <Filter3 color="error"></Filter3>
-                    ) : player.riserva === 4 ? (
-                      <Filter4 color="secondary"></Filter4>
-                    ) : player.riserva === 5 ? (
-                      <Filter5 color="info"></Filter5>
-                    ) : player.riserva === 6 ? (
-                      <Filter6 color="primary"></Filter6>
-                    ) : (
-                      <></>
-                    )}
-                  </ListItem>
-                </div>
-              </Draggable>
+                  <Image
+                    src={player.urlCampioncinoSmall}
+                    width={42}
+                    height={42}
+                    alt={player.nome}
+                  />
+                  <ListItemText
+                    primary={player.nome}
+                    secondary={`${
+                      player.ruoloEsteso
+                    } (${player.nomeSquadraSerieA
+                      ?.toUpperCase()
+                      .substring(0, 3)})`}
+                  ></ListItemText>
+                  {player.riserva === 1 ? (
+                    <Filter1 color="success"></Filter1>
+                  ) : player.riserva === 2 ? (
+                    <Filter2 color="warning"></Filter2>
+                  ) : player.riserva === 3 ? (
+                    <Filter3 color="error"></Filter3>
+                  ) : player.riserva === 4 ? (
+                    <Filter4 color="secondary"></Filter4>
+                  ) : player.riserva === 5 ? (
+                    <Filter5 color="info"></Filter5>
+                  ) : player.riserva === 6 ? (
+                    <Filter6 color="primary"></Filter6>
+                  ) : (
+                    <></>
+                  )}
+                </ListItem>
+              </div>
             ))}
           </List>
         </Box>
@@ -519,46 +406,43 @@ function Formazione() {
         {filtered.map((player, index) => {
           const style = getPlayerStylePosition(player.ruolo, index);
           return (
-            <Draggable key={player.idGiocatore} nodeRef={nodeRef}>
-              <div
-                onDragStart={() => handleDragStart(player)}
-                onClick={() => handleClickPlayer(player)}
-                draggable
-                ref={nodeRef}
-                style={{
-                  cursor: "pointer",
-                  zIndex: 2,
-                  minWidth: "120px",
-                  position: "absolute",
-                  ...style,
-                }}
+            <div
+              onClick={() => handleClickPlayer(player)}
+              ref={nodeRef}
+              key={player.idGiocatore}
+              style={{
+                cursor: "pointer",
+                zIndex: 2,
+                minWidth: "120px",
+                position: "absolute",
+                ...style,
+              }}
+            >
+              <Stack
+                direction={"column"}
+                justifyContent="space-between"
+                alignItems="center"
               >
-                <Stack
-                  direction={"column"}
-                  justifyContent="space-between"
-                  alignItems="center"
+                <Image
+                  src={player.urlCampioncinoSmall}
+                  key={player.idGiocatore}
+                  width={48}
+                  height={48}
+                  alt={player.nome}
+                />
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "white",
+                    backgroundColor: "#2e865f",
+                    opacity: 0.8,
+                    padding: "2px",
+                  }}
                 >
-                  <Image
-                    src={player.urlCampioncinoSmall}
-                    key={player.idGiocatore}
-                    width={48}
-                    height={48}
-                    alt={player.nome}
-                  />
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: "white",
-                      backgroundColor: "#2e865f",
-                      opacity: 0.8,
-                      padding: "2px",
-                    }}
-                  >
-                    {player.nome}
-                  </Typography>
-                </Stack>
-              </div>
-            </Draggable>
+                  {player.nome}
+                </Typography>
+              </Stack>
+            </div>
           );
         })}
       </>
@@ -621,7 +505,7 @@ function Formazione() {
     if (rosa.length > 0 || campo.length !== 11) {
       setAlertMessage("Completa la formazione");
       setAlertSeverity("error");
-    } else if (!idPartita && idPartita!==0) {
+    } else if (!idPartita && idPartita !== 0) {
       setAlertMessage("Nessuna partita in programma, impossibile procedere");
       setAlertSeverity("error");
     } else {
@@ -637,19 +521,22 @@ function Formazione() {
           })),
         });
         setSaving(false);
-      }
-      else {
-        await Promise.all(giornate.map(async (g) => {
-          await saveFormazione.mutateAsync({
-            idPartita: g.partite.filter(c => c.idHome === idSquadra || c.idAway === idSquadra).map((p) => p.idPartita)[0]!,
-            modulo: modulo,
-            giocatori: [...campo, ...panca].map((giocatore) => ({
-              idGiocatore: giocatore.idGiocatore,
-              titolare: giocatore.titolare,
-              riserva: giocatore.riserva,
-            })),
-          });
-        }));
+      } else {
+        await Promise.all(
+          giornate.map(async (g) => {
+            await saveFormazione.mutateAsync({
+              idPartita: g.partite
+                .filter((c) => c.idHome === idSquadra || c.idAway === idSquadra)
+                .map((p) => p.idPartita)[0]!,
+              modulo: modulo,
+              giocatori: [...campo, ...panca].map((giocatore) => ({
+                idGiocatore: giocatore.idGiocatore,
+                titolare: giocatore.titolare,
+                riserva: giocatore.riserva,
+              })),
+            });
+          })
+        );
         setSaving(false);
       }
     }
@@ -700,7 +587,11 @@ function Formazione() {
                     required
                     sx={{ ml: "10px" }}
                     name="giornata"
-                    onChange={(e) => e.target.value !== 0 ? setIdTorneo(e.target.value as number) : setIdPartita(0)}
+                    onChange={(e) =>
+                      e.target.value !== 0
+                        ? setIdTorneo(e.target.value as number)
+                        : setIdPartita(0)
+                    }
                     defaultValue={giornate[0]?.idTorneo}
                   >
                     <MenuItem value={0} key={`giornata_0`}>
@@ -715,23 +606,22 @@ function Formazione() {
                     ))}
                   </Select>
                 )}
-                
               </Stack>
             </Grid>
-            <Grid item xs={4} justifyItems={'end'}>
+            <Grid item xs={4} justifyItems={"end"}>
               <Box component="form" onSubmit={handleSave} noValidate>
-                  <Button
-                    type="submit"
-                    disabled={saving}
-                    endIcon={!saving ? <Save /> : <HourglassTop />}
-                    variant="contained"
-                    color="error"
-                    size="medium"
-                    sx={{ ml: "5px" }}
-                  >
-                    {saving ? "Attendere..." : "Salva"}
-                  </Button>
-                </Box>
+                <Button
+                  type="submit"
+                  disabled={saving}
+                  endIcon={!saving ? <Save /> : <HourglassTop />}
+                  variant="contained"
+                  color="error"
+                  size="medium"
+                  sx={{ ml: "5px" }}
+                >
+                  {saving ? "Attendere..." : "Salva"}
+                </Button>
+              </Box>
             </Grid>
             <Grid item xs={12} minHeight={5}></Grid>
             {giornate.length > 1 && (
@@ -767,11 +657,7 @@ function Formazione() {
               xs={12}
               sx={{ display: "flex", justifyContent: "flex-end" }}
             >
-              <Box
-                sx={styleCampo}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={handleDrop}
-              >
+              <Box sx={styleCampo}>
                 <Grid item xs={12}>
                   <Select
                     size="small"
@@ -843,7 +729,9 @@ function Formazione() {
       >
         <Divider />
         <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
-          {idGiocatoreStat !== undefined && <Giocatore idGiocatore={idGiocatoreStat} />}
+          {idGiocatoreStat !== undefined && (
+            <Giocatore idGiocatore={idGiocatoreStat} />
+          )}
         </Box>
       </Modal>
     </>
