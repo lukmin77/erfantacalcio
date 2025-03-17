@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { api } from "~/utils/api";
-import { Box, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { autosizeOptions } from "~/utils/datatable";
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 
@@ -60,6 +60,7 @@ export default function Albo() {
 
   return (
     <Box sx={{ width: "100%", overflowX: "auto", contain: "inline-size" }}>
+      <Typography variant="h5">Albo d'oro</Typography>
       <DataGrid
         columnHeaderHeight={45}
         rowHeight={40}

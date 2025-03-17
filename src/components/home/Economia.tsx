@@ -190,6 +190,9 @@ export default function Economia() {
         </Card>
       </Grid>
       <Grid item xs={12} xl={12} sm={12} lg={12}>
+        <br></br>
+      </Grid>
+      <Grid item xs={12} xl={12} sm={12} lg={12}>
         <Typography variant="h5">Economia squadre</Typography>
         <Box sx={{ width: "100%", overflowX: "auto", contain: "inline-size" }}>
           <DataGrid
