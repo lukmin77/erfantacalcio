@@ -5,13 +5,17 @@ export default function CardHeader() {
     MuiCardHeader: {
       styleOverrides: {
         root: {
-          padding: '1px',
-          backgroundColor: '#faf6e5',
-          '&:last-child': {
-            paddingBottom: 0
-          }
-        }
-      }
-    }
+          padding: "1px",
+          backgroundColor: 'rgb(253, 252, 173)',
+          color: 'rgb(43, 139, 143)',
+          "&:last-child": {
+            paddingBottom: 0,
+          },
+          "& .MuiCardHeader-subheader": {
+            color: 'rgb(43, 139, 143)',
+          },
+        },
+      },
+    },
   };
 }

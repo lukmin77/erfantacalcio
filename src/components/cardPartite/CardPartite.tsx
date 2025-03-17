@@ -41,13 +41,7 @@ export default function CardPartite({
           sx={{ maxWidth: maxWidth }}
         >
           <Card
-            sx={{
-              maxWidth: maxWidth,
-              "& .MuiCardHeader-root": {
-                color: theme.palette.primary.main,
-                backgroundColor: theme.palette.secondary.light,
-              },
-            }}
+            sx={{ maxWidth: maxWidth }}
             key={`card_${g.idCalendario}`}
           >
             <CardHeader
@@ -58,12 +52,6 @@ export default function CardPartite({
               )}`}
               titleTypographyProps={{ variant: "h5" }}
               subheaderTypographyProps={{ variant: "h6" }}
-              sx={{
-                paddingLeft: "5px",
-                "& .MuiCardHeader-subheader": {
-                  color: theme.palette.primary.main,
-                },
-              }}
             />
             <CardContent
               sx={{ paddingBottom: "3px", paddingTop: "3px", m: "4px" }}
