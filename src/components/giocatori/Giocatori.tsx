@@ -85,6 +85,7 @@ function Giocatori() {
       align: "left",
       renderHeader: () => <strong>Nome</strong>,
       flex: isXs ? 0 : 1,
+      sortable: true,
     },
     {
       field: "squadra",
@@ -92,6 +93,7 @@ function Giocatori() {
       align: "left",
       renderHeader: () => <strong>Squadra</strong>,
       flex: isXs ? 0 : 1,
+      sortable: true,
     },
     {
       field: "media",
@@ -99,6 +101,7 @@ function Giocatori() {
       align: "right",
       renderHeader: () => <strong>Media</strong>,
       width: isXs ? 90 : 100,
+      sortable: true,
     },
     {
       field: "golfatti",
@@ -108,6 +111,7 @@ function Giocatori() {
       renderCell: (params) =>
         params.row?.ruolo !== "P" ? params.row?.golfatti : "",
       width: isXs ? 90 : 100,
+      sortable: true,
     },
     {
       field: "golsubiti",
@@ -117,6 +121,7 @@ function Giocatori() {
       renderCell: (params) =>
         params.row?.ruolo === "P" ? params.row?.golsubiti : "",
       width: isXs ? 90 : 100,
+      sortable: true,
     },
     {
       field: "assist",
@@ -124,6 +129,7 @@ function Giocatori() {
       align: "right",
       renderHeader: () => <strong>Assist</strong>,
       width: isXs ? 90 : 100,
+      sortable: true,
     },
     {
       field: "giocate",
@@ -131,6 +137,7 @@ function Giocatori() {
       align: "right",
       renderHeader: () => <strong>Giocate</strong>,
       width: 100,
+      sortable: true,
     },
     {
       field: "actions",
