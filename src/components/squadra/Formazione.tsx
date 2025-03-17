@@ -621,21 +621,37 @@ function Formazione() {
     if (rosa.length > 0 || campo.length !== 11) {
       setAlertMessage("Completa la formazione");
       setAlertSeverity("error");
-    } else if (!idPartita) {
+    } else if (!idPartita && idPartita!==0) {
       setAlertMessage("Nessuna partita in programma, impossibile procedere");
       setAlertSeverity("error");
     } else {
       setSaving(true);
-      await saveFormazione.mutateAsync({
-        idPartita: idPartita,
-        modulo: modulo,
-        giocatori: [...campo, ...panca].map((giocatore) => ({
-          idGiocatore: giocatore.idGiocatore,
-          titolare: giocatore.titolare,
-          riserva: giocatore.riserva,
-        })),
-      });
-      setSaving(false);
+      if (idPartita !== 0) {
+        await saveFormazione.mutateAsync({
+          idPartita: idPartita,
+          modulo: modulo,
+          giocatori: [...campo, ...panca].map((giocatore) => ({
+            idGiocatore: giocatore.idGiocatore,
+            titolare: giocatore.titolare,
+            riserva: giocatore.riserva,
+          })),
+        });
+        setSaving(false);
+      }
+      else {
+        await Promise.all(giornate.map(async (g) => {
+          await saveFormazione.mutateAsync({
+            idPartita: g.partite.filter(c => c.idHome === idSquadra || c.idAway === idSquadra).map((p) => p.idPartita)[0]!,
+            modulo: modulo,
+            giocatori: [...campo, ...panca].map((giocatore) => ({
+              idGiocatore: giocatore.idGiocatore,
+              titolare: giocatore.titolare,
+              riserva: giocatore.riserva,
+            })),
+          });
+        }));
+        setSaving(false);
+      }
     }
     setOpenAlert(true);
   };
@@ -684,9 +700,12 @@ function Formazione() {
                     required
                     sx={{ ml: "10px" }}
                     name="giornata"
-                    onChange={(e) => setIdTorneo(e.target.value as number)}
+                    onChange={(e) => e.target.value !== 0 ? setIdTorneo(e.target.value as number) : setIdPartita(0)}
                     defaultValue={giornate[0]?.idTorneo}
                   >
+                    <MenuItem value={0} key={`giornata_0`}>
+                      Salva entrambe le formazioni
+                    </MenuItem>
                     {giornate.map((g, index) => (
                       <MenuItem
                         value={g.idTorneo}

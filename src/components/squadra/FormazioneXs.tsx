@@ -490,21 +490,37 @@ function FormazioneXs() {
     if (rosa.length > 0 || campo.length !== 11) {
       setAlertMessage("Completa la formazione");
       setAlertSeverity("error");
-    } else if (!idPartita) {
+    } else if (!idPartita && idPartita!==0) {
       setAlertMessage("Nessuna partita in programma, impossibile procedere");
       setAlertSeverity("error");
     } else {
       setSaving(true);
-      await saveFormazione.mutateAsync({
-        idPartita: idPartita,
-        modulo: modulo,
-        giocatori: [...campo, ...panca].map((giocatore) => ({
-          idGiocatore: giocatore.idGiocatore,
-          titolare: giocatore.titolare,
-          riserva: giocatore.riserva,
-        })),
-      });
-      setSaving(false);
+      if (idPartita !== 0) {
+        await saveFormazione.mutateAsync({
+          idPartita: idPartita,
+          modulo: modulo,
+          giocatori: [...campo, ...panca].map((giocatore) => ({
+            idGiocatore: giocatore.idGiocatore,
+            titolare: giocatore.titolare,
+            riserva: giocatore.riserva,
+          })),
+        });
+        setSaving(false);
+      }
+      else {
+        await Promise.all(giornate.map(async (g) => {
+          await saveFormazione.mutateAsync({
+            idPartita: g.partite.filter(c => c.idHome === idSquadra || c.idAway === idSquadra).map((p) => p.idPartita)[0]!,
+            modulo: modulo,
+            giocatori: [...campo, ...panca].map((giocatore) => ({
+              idGiocatore: giocatore.idGiocatore,
+              titolare: giocatore.titolare,
+              riserva: giocatore.riserva,
+            })),
+          });
+        }));
+        setSaving(false);
+      }
     }
     setOpenAlert(true);
   };
@@ -515,7 +531,7 @@ function FormazioneXs() {
 
   return (
     <>
-      <Grid container spacing={0}>
+      <Grid container spacing={1}>
         {((rosaList.isLoading && enableRosa) ||
           calendarioProssima.isLoading) && (
           <Grid item xs={12}>
@@ -533,26 +549,44 @@ function FormazioneXs() {
         )}
         {enableRosa ? (
           <>
+            <Grid item xs={12}>
+              Modulo: <Select
+                  size="small"
+                  variant="outlined"
+                  labelId="select-label-modulo"
+                  margin="dense"
+                  required
+                  name="modulo"
+                  onChange={handleSetModulo}
+                  value={modulo}
+                >
+                  {moduliList.map((moduloOption) => (
+                    <MenuItem
+                      value={moduloOption}
+                      key={`modulo_${moduloOption}`}
+                    >{moduloOption}</MenuItem>
+                  ))}
+                </Select>
+            </Grid>
             <Grid item xs={8}>
-              <Stack direction={"row"}>
-                {giornate.length > 1 ? (
+            {giornate.length > 1 ? (
                   <Select
                     size="small"
                     variant="outlined"
                     labelId="select-label-giornata"
                     margin="dense"
                     required
-                    sx={{
-                      m: "2px",
-                      backgroundColor: "#2e865f",
-                      color: "white",
-                      opacity: 0.8,
-                      fontSize: "11px",
-                    }}
                     name="giornata"
-                    onChange={(e) => setIdTorneo(e.target.value as number)}
+                    onChange={(e) =>
+                      e.target.value !== 0
+                        ? setIdTorneo(e.target.value as number)
+                        : setIdPartita(0)
+                    }
                     defaultValue={giornate[0]?.idTorneo}
                   >
+                    <MenuItem value={0} key={`giornata_0`}>
+                      Salva entrambe le formazioni
+                    </MenuItem>
                     {giornate.map((g, index) => (
                       <MenuItem
                         value={g.idTorneo}
@@ -562,61 +596,26 @@ function FormazioneXs() {
                     ))}
                   </Select>
                 ) : (
-                  <Typography
-                    variant={"body2"}
-                    sx={{ lineHeight: 2.66 }}
-                  >
+                  <Typography variant={"body2"} sx={{ lineHeight: 2.66 }}>
                     <b>{giornate[0]?.Title}</b>
                   </Typography>
                 )}
-                <Select
-                  size="small"
-                  variant="outlined"
-                  labelId="select-label-modulo"
-                  margin="dense"
-                  required
-                  sx={{
-                    m: "4px",
-                    backgroundColor: "#2e865f",
-                    color: "white",
-                    opacity: 0.8,
-                    fontSize: "11px",
-                  }}
-                  name="modulo"
-                  onChange={handleSetModulo}
-                  value={modulo}
+            </Grid>
+            <Grid item xs={4} justifyItems={"end"}>
+              <Box component="form" onSubmit={handleSave} noValidate>
+                <Button
+                  type="submit"
+                  disabled={saving}
+                  endIcon={!saving ? <Save /> : <HourglassTop />}
+                  variant="contained"
+                  color="error"
+                  size="medium"
+                  sx={{fontSize: "10px" }}
                 >
-                  {moduliList.map((moduloOption) => (
-                    <MenuItem
-                      value={moduloOption}
-                      key={`modulo_${moduloOption}`}
-                    >{`Modulo ${moduloOption}`}</MenuItem>
-                  ))}
-                </Select>
-              </Stack>
+                  {saving ? "Attendere..." : "Salva"}
+                </Button>
+              </Box>
             </Grid>
-            <Grid item xs={4} justifyItems={'end'}>
-                <Box component="form" onSubmit={handleSave} noValidate>
-                  <Button
-                    type="submit"
-                    disabled={saving}
-                    endIcon={!saving ? <Save /> : <HourglassTop />}
-                    variant="contained"
-                    color="error"
-                    size="medium"
-                    sx={{ m: "4px", fontSize: "10px", opacity: 0.8 }}
-                  >
-                    {saving ? "Attendere..." : "Salva"}
-                  </Button>
-                </Box>
-            </Grid>
-            {giornate.length > 1 && (
-              <Grid item xs={12} sx={{ justifyContent: "flex-start" }}>
-                <Typography variant={"h5"} color="error">
-                  Attenzione!!! partita di campionato e di coppa!!!
-                </Typography>
-              </Grid>
-            )}
             <Grid item sm={8} xs={12}>
               <>
                 <Accordion>
@@ -707,7 +706,9 @@ function FormazioneXs() {
       >
         <Divider />
         <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
-          {idGiocatoreStat !== undefined && <Giocatore idGiocatore={idGiocatoreStat} />}
+          {idGiocatoreStat !== undefined && (
+            <Giocatore idGiocatore={idGiocatoreStat} />
+          )}
         </Box>
       </Modal>
     </>
