@@ -98,7 +98,7 @@ function Formazione() {
   const [alertSeverity, setAlertSeverity] = useState<"success" | "error">(
     "success"
   );
-  const [styleCampo, setStyleCampo] = useState({
+  const styleCampo = {
     borderStyle: "none",
     borderWidth: "0px",
     borderColor: "#E4221F",
@@ -109,17 +109,17 @@ function Formazione() {
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover", //100%
     backgroundImage: "url('images/campo.jpg')",
-  });
-  const [styleRosa, setStyleRosa] = useState({
+  };
+  const styleRosa = {
     borderStyle: "none",
     borderWidth: "0px",
     borderColor: "#E4221F",
-  });
-  const [stylePanca, setStylePanca] = useState({
+  };
+  const stylePanca = {
     borderStyle: "none",
     borderWidth: "0px",
     borderColor: "#E4221F",
-  });
+  };
 
   useEffect(() => {
     if (calendarioProssima.data) {
@@ -625,30 +625,17 @@ function Formazione() {
                 </Typography>
               </Grid>
             )}
-            <Grid item sm={8} xs={12}>
+            <Grid item sm={4}>
               <>
-                <Grid container spacing={0} sx={styleRosa}>
-                  {renderRosa(["P"], 3, "Portieri")}
-                  {renderRosa(["D"], 3, "Difensori")}
-                  {renderRosa(["C"], 3, "Centrocampisti")}
-                  {renderRosa(["A"], 3, "Attaccanti")}
-                </Grid>
-                <Grid container spacing={0}>
-                  <Grid item xs={12}>
-                    <Typography variant="h5">In panchina</Typography>
-                  </Grid>
-                </Grid>
-                <Grid container spacing={0} sx={stylePanca}>
-                  {renderPanca(["P", "D"], 4)}
-                  {renderPanca(["C"], 4)}
-                  {renderPanca(["A"], 4)}
+                <Grid container spacing={0} sx={styleRosa} padding={1}>
+                  {renderRosa(["P"], 6, "Portieri")}
+                  {renderRosa(["D"], 6, "Difensori")}
                 </Grid>
               </>
             </Grid>
             <Grid
               item
               sm={4}
-              xs={12}
               sx={{ display: "flex", justifyContent: "flex-end" }}
             >
               <Box sx={styleCampo}>
@@ -699,6 +686,26 @@ function Formazione() {
                 </Alert>
               </Snackbar>
             </Grid>
+            <Grid item sm={4}>
+              <>
+                <Grid container spacing={0} sx={styleRosa} padding={1}>
+                  {renderRosa(["C"], 6, "Centrocampisti")}
+                  {renderRosa(["A"], 6, "Attaccanti")}
+                </Grid>
+              </>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h5">In panchina</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Grid container spacing={0} sx={stylePanca}>
+                {renderPanca(["P"], 3)}
+                {renderPanca(["D"], 3)}
+                {renderPanca(["C"], 3)}
+                {renderPanca(["A"], 3)}
+              </Grid>
+            </Grid>
+            <Grid item xs={12} minHeight={60}></Grid>
           </>
         ) : (
           <Grid
