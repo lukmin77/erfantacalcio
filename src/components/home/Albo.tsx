@@ -3,7 +3,7 @@ import React from "react";
 import { api } from "~/utils/api";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import { autosizeOptions } from "~/utils/datatable";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 
 export default function Albo() {
   const theme = useTheme();
