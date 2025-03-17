@@ -454,12 +454,6 @@ function Formazione() {
     setModulo(event.target.value as Moduli);
   };
 
-  function resetBorderArea() {
-    setStyleRosa((prevStyle) => ({ ...prevStyle, borderWidth: "0px" }));
-    setStyleCampo((prevStyle) => ({ ...prevStyle, borderWidth: "0px" }));
-    setStylePanca((prevStyle) => ({ ...prevStyle, borderWidth: "0px" }));
-  }
-
   function getPlayerStylePosition(ruolo: string, index: number) {
     return ModuloPositions[modulo][convertiStringaInRuolo(ruolo) ?? "P"][index];
   }
