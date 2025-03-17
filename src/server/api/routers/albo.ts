@@ -22,6 +22,7 @@ export const alboRouter = createTRPCRouter({
             { terzo: 'desc'},
           ]
         })).map(c => ({
+          id: c.id,
           stagione: c.stagione,
           campionato: c.campionato,
           champions: c.champions,
