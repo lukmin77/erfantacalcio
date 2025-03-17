@@ -60,7 +60,7 @@ export default function Albo() {
 
   return (
     <Box sx={{ width: "100%", overflowX: "auto", contain: "inline-size" }}>
-      <Typography variant="h5">Albo d'oro</Typography>
+      <Typography variant="h5">Albo d&apos;oro</Typography>
       <DataGrid
         columnHeaderHeight={45}
         rowHeight={40}
