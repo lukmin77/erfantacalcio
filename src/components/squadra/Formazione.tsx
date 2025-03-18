@@ -8,6 +8,7 @@ import {
   Filter5,
   Filter6,
   HourglassTop,
+  ResetTv,
   Save,
 } from "@mui/icons-material";
 import {
@@ -561,17 +562,19 @@ function Formazione() {
         )}
         {enableRosa ? (
           <>
-            <Grid item xs={8}>
+            <Grid item xs={6}>
+              <Typography variant={"h3"}>
+                Formazione {squadra}{" "}
+                {giornate.length === 1 && ` - ${giornate[0]?.Title}`}
+              </Typography>
+            </Grid>
+            <Grid item xs={6} justifyItems={"end"}>
               <Stack
                 direction={"row"}
-                justifyContent="flex-start"
+                justifyContent="flex-end"
                 alignItems={"center"}
                 sx={{ pb: "5px" }}
               >
-                <Typography variant={"h3"}>
-                  Formazione {squadra}{" "}
-                  {giornate.length === 1 && ` - ${giornate[0]?.Title}`}
-                </Typography>
                 {giornate.length > 1 && (
                   <Select
                     size="small"
@@ -600,31 +603,42 @@ function Formazione() {
                     ))}
                   </Select>
                 )}
-              </Stack>
-            </Grid>
-            <Grid item xs={4} justifyItems={"end"}>
-              <Box component="form" onSubmit={handleSave} noValidate>
                 <Button
-                  type="submit"
-                  disabled={saving}
-                  endIcon={!saving ? <Save /> : <HourglassTop />}
+                  type="button"
+                  endIcon={<ResetTv />}
                   variant="contained"
-                  color="error"
+                  onClick={() => {
+                    setModulo(moduloDefault);
+                    setCampo([]);
+                    setPanca([]);
+                    setRosa(
+                      sortPlayersByRoleDescThenCostoDesc(
+                        rosa.concat(campo, panca)
+                      )
+                    );
+                  }}
+                  color="info"
                   size="medium"
                   sx={{ ml: "5px" }}
                 >
-                  {saving ? "Attendere..." : "Salva"}
+                  Reset
                 </Button>
-              </Box>
+                <Box component="form" onSubmit={handleSave} noValidate>
+                  <Button
+                    type="submit"
+                    disabled={saving}
+                    endIcon={!saving ? <Save /> : <HourglassTop />}
+                    variant="contained"
+                    color="success"
+                    size="medium"
+                    sx={{ ml: "5px" }}
+                  >
+                    {saving ? "Attendere..." : "Salva"}
+                  </Button>
+                </Box>
+              </Stack>
             </Grid>
             <Grid item xs={12} minHeight={5}></Grid>
-            {giornate.length > 1 && (
-              <Grid item xs={12} sx={{ justifyContent: "flex-start" }}>
-                <Typography variant={"h5"} color="error">
-                  Attenzione!!! partita di campionato e di coppa!!!
-                </Typography>
-              </Grid>
-            )}
             <Grid item sm={4}>
               <>
                 <Grid container spacing={0} sx={styleRosa} padding={1}>

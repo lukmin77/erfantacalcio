@@ -689,6 +689,7 @@ function FormazioneXs() {
                 </Alert>
               </Snackbar>
             </Grid>
+            <Grid item xs={12} minHeight={100}></Grid>
           </>
         ) : (
           <Typography variant="h3" color="error">
