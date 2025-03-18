@@ -329,11 +329,9 @@ function AppAppBar({ isXs }: AppAppBarProps) {
                 ></Box>
                 {session?.user && (
                   <>
-                    <Link href={`/formazione?isXs=${isXs}`}>
-                      <ListItemButton>
-                        <ListItemText primary="Inserisci formazione" />
-                      </ListItemButton>
-                    </Link>
+                    <ListItemButton href={`/formazione?isXs=${isXs}`}>
+                      <ListItemText primary="Inserisci formazione" />
+                    </ListItemButton>
                     <ListItemButton href="/foto">
                       <ListItemText primary="Foto profilo" />
                     </ListItemButton>
