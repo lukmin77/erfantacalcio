@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   ButtonGroup,
-  CircularProgress,
   Divider,
   Grid,
   Tooltip,
@@ -366,39 +365,26 @@ export default function HomePage() {
       >
         <Divider />
         <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
-          {calendarioList.isLoading ? (
-            <Box
-              sx={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <CircularProgress color="warning" />
-            </Box>
-          ) : (
-            <Grid container spacing={0} sx={{ gap: "0px" }}>
-              {giornata?.map((g, index) => (
-                <Grid
-                  item
-                  xs={12}
-                  sm={4}
-                  md={6}
-                  lg={4}
-                  key={`card_partite_${index}_${g.idCalendario}`}
-                  sx={{ ml: "0px" }}
-                >
-                  <CardPartite
-                    giornata={[g]}
-                    prefixTitle={""}
-                    maxWidth={isXs ? "100%" : "300px"}
-                    withAvatar={false}
-                  ></CardPartite>
-                </Grid>
-              ))}
-            </Grid>
-          )}
+          <Grid container spacing={0} sx={{ gap: "0px" }}>
+            {giornata?.map((g, index) => (
+              <Grid
+                item
+                xs={12}
+                sm={4}
+                md={6}
+                lg={4}
+                key={`card_partite_${index}_${g.idCalendario}`}
+                sx={{ ml: "0px" }}
+              >
+                <CardPartite
+                  giornata={[g]}
+                  prefixTitle={""}
+                  maxWidth={isXs ? "100%" : "300px"}
+                  withAvatar={false}
+                ></CardPartite>
+              </Grid>
+            ))}
+          </Grid>
         </Box>
       </Modal>
     </>
