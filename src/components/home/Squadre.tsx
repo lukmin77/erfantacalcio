@@ -6,7 +6,7 @@ import {
   CardActionArea,
   CardContent,
   CardMedia,
-  CircularProgress,
+  Skeleton,
   Typography,
 } from "@mui/material";
 
@@ -17,29 +17,17 @@ export default function Squadre() {
   });
 
   return (
-    <>
-      {squadreList.isLoading ? (
-        <Box
-          sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <CircularProgress color="warning" />
-        </Box>
-      ) : (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "20px",
-            flexWrap: "wrap",
-          }}
-        >
-          {squadreList.data?.map((squadra, index) => (
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: "20px",
+        flexWrap: "wrap",
+      }}
+    >
+      {!squadreList.isLoading
+        ? squadreList.data?.map((squadra, index) => (
             <Card
               key={index}
               sx={{ minWidth: 130, maxWidth: 130, marginBottom: "3px" }}
@@ -55,15 +43,18 @@ export default function Squadre() {
                   }
                 />
                 <CardContent sx={{ paddingBottom: "2px", paddingLeft: "6px" }}>
-                  <Typography variant="h5">
-                    {squadra.squadra}
-                  </Typography>
+                  <Typography variant="h5">{squadra.squadra}</Typography>
                 </CardContent>
               </CardActionArea>
             </Card>
+          ))
+        : Array.from({ length: 8 }, (_, index) => (
+            <Box key={index} sx={{ minWidth: 130, maxWidth: 130 }}>
+              <Skeleton width="100%" height={130} animation="pulse">
+                <Typography>.</Typography>
+              </Skeleton>
+            </Box>
           ))}
-        </Box>
-      )}
-    </>
+    </Box>
   );
 }
