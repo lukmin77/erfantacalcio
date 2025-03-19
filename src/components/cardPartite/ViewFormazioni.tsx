@@ -103,16 +103,15 @@ function ViewFormazioni() {
                     titleTypographyProps={{ variant: "h4" }}
                     subheader={
                       formazioneHome
-                        ? `Rilasciata il 
-                                        ${formatDateFromIso(
+                        ? `${formatDateFromIso(
                                           formazioneHome?.dataOra.toISOString(),
-                                          "dd/MM/yyyy"
+                                          "dd/MM"
                                         )} alle
                                         ${formatDateFromIso(
                                           formazioneHome?.dataOra.toISOString(),
                                           "HH:mm"
                                         )}`
-                        : `Formazione non rilasciata, prevista multa di ${Configurazione.importoMulta} €`
+                        : `Formazione non rilasciata, multa di ${Configurazione.importoMulta} €`
                     }
                     avatar={
                       <Avatar
@@ -258,10 +257,9 @@ function ViewFormazioni() {
                     titleTypographyProps={{ variant: "h4" }}
                     subheader={
                       formazioneAway
-                        ? `Rilasciata il 
-                                        ${formatDateFromIso(
+                        ? `${formatDateFromIso(
                                           formazioneAway?.dataOra.toISOString(),
-                                          "dd/MM/yyyy"
+                                          "dd/MM"
                                         )} alle
                                         ${formatDateFromIso(
                                           formazioneAway?.dataOra.toISOString(),

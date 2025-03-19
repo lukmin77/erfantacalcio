@@ -191,7 +191,6 @@ function ViewTabellini() {
                             display: {
                               xs: "block",
                               sm: "none",
-                              backgroundColor: getColorByRuolo(g.ruolo),
                             },
                           }}
                         >
@@ -227,9 +226,6 @@ function ViewTabellini() {
                             >
                               {getShortName(g.nome)}
                             </Typography>
-                            {g.isSostituito && (
-                              <KeyboardDoubleArrowRightOutlined color="error" />
-                            )}
                           </Stack>
                         </Grid>
                         <Grid
@@ -240,14 +236,16 @@ function ViewTabellini() {
                           <Stack direction="row" spacing={1}>
                             <Typography
                               variant="body2"
-                              sx={{ cursor: "pointer" }}
+                              sx={{
+                                cursor: "pointer",
+                                borderBottomColor: getColorByRuolo(g.ruolo),
+                                borderBottomWidth: 1,
+                                borderBottomStyle: "dotted",
+                              }}
                               onClick={() => handleStatGiocatore(g.idGiocatore)}
                             >
                               {getShortName(g.nome, 11)}
                             </Typography>
-                            {g.isSostituito && (
-                              <KeyboardDoubleArrowRightOutlined color="error" />
-                            )}
                           </Stack>
                         </Grid>
                         <Grid
@@ -271,6 +269,9 @@ function ViewTabellini() {
                             <Style color="error" />
                           ) : (
                             ""
+                          )}
+                          {g.isSostituito && (
+                            <KeyboardDoubleArrowRightOutlined color="error" />
                           )}
                         </Grid>
                       </Grid>
@@ -312,7 +313,6 @@ function ViewTabellini() {
                             display: {
                               xs: "block",
                               sm: "none",
-                              backgroundColor: getColorByRuolo(g.ruolo),
                             },
                           }}
                         >
@@ -363,7 +363,12 @@ function ViewTabellini() {
                           <Stack direction="row" spacing={1}>
                             <Typography
                               variant="body2"
-                              sx={{ cursor: "pointer" }}
+                              sx={{
+                                cursor: "pointer",
+                                borderBottomColor: getColorByRuolo(g.ruolo),
+                                borderBottomWidth: 1,
+                                borderBottomStyle: "dotted",
+                              }}
                               onClick={() => handleStatGiocatore(g.idGiocatore)}
                             >
                               {getShortName(g.nome, 11)}
@@ -457,13 +462,13 @@ function ViewTabellini() {
     function getColorByRuolo(ruolo: string) {
       switch (ruolo) {
         case "P":
-          return "#eff6ff";
+          return theme.palette.secondary.dark;
         case "D":
-          return "#ecfdf5";
+          return theme.palette.info.dark;
         case "C":
-          return "#fefce8";
+          return theme.palette.action.hover;
         case "A":
-          return "#fef2f2";
+          return theme.palette.error.dark;
       }
     }
 
