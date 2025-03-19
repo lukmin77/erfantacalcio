@@ -126,7 +126,7 @@ export default function Presidenti() {
         return [
           <GridActionsCellItem
             key={1}
-            icon={<Edit />}
+            icon={<Edit color="action" />}
             label="Edit"
             className="textPrimary"
             onClick={() => handleEdit(parseInt(id.toString(), 10))}
@@ -369,7 +369,7 @@ export default function Presidenti() {
                 label={<Typography color="primary">Amministratore</Typography>}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={5}>
               <Button
                 type="submit"
                 fullWidth
@@ -380,7 +380,8 @@ export default function Presidenti() {
                 Aggiorna dati
               </Button>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={2}></Grid>
+            <Grid item xs={5}>
               <Button
                 type="button"
                 onClick={handleModalClose}
@@ -389,7 +390,7 @@ export default function Presidenti() {
                 variant="outlined"
                 sx={{ mt: 3, mb: 2 }}
               >
-                Annulla
+                Chiudi
               </Button>
             </Grid>
             <Grid item xs={12}>

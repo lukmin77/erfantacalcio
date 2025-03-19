@@ -33,6 +33,7 @@ export const themeOptions: ThemeOptions = {
         dark: 'rgb(241, 137, 2)',
       },
       action: {
+        active: 'rgb(241, 137, 2)',
         hover: 'rgb(194, 255, 212)',
       },
       text:{
