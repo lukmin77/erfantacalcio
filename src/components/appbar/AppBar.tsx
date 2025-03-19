@@ -271,7 +271,7 @@ function AppAppBar({ isXs }: AppAppBarProps) {
                     transformOrigin={{ horizontal: "right", vertical: "top" }}
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
-                    {guestListItems()}
+                    {guestListItems(false, true)}
 
                     <ListItemButton
                       sx={{ p: 1 }}
@@ -315,7 +315,7 @@ function AppAppBar({ isXs }: AppAppBarProps) {
                 sx={{
                   minWidth: "60dvw",
                   p: 1,
-                  backgroundColor: "info.light",
+                  //backgroundColor: "info.light",
                   flexGrow: 1,
                 }}
               >
@@ -327,69 +327,9 @@ function AppAppBar({ isXs }: AppAppBarProps) {
                     flexGrow: 1,
                   }}
                 ></Box>
-                {session?.user && (
-                  <>
-                    <ListItemButton href={`/formazione?isXs=${isXs}`}>
-                      <ListItemText primary="Inserisci formazione" />
-                    </ListItemButton>
-                    <ListItemButton href="/foto">
-                      <ListItemText primary="Foto profilo" />
-                    </ListItemButton>
-                    <Divider />
-                  </>
-                )}
-                <>
-                  {/* <ListItemButton href="/squadre">
-                    <ListItemText primary="Le Squadre" />
-                  </ListItemButton> */}
-                  <ListItemButton href="/statistiche_giocatori">
-                    <ListItemText primary="Statistiche giocatori" />
-                  </ListItemButton>
-                  <ListItemButton href="/economia">
-                    <ListItemText primary="Economia e premi" />
-                  </ListItemButton>
-                  <ListItemButton href="/albo">
-                    <ListItemText primary="Albo d'oro" />
-                  </ListItemButton>
-                  <ListItemButton
-                    href="/docs/Regolamento_erFantacalcio.pdf"
-                    target="_blank"
-                  >
-                    <ListItemText primary="Regolamento ufficiale" />
-                  </ListItemButton>
-                  <Divider />
-                </>
-                {session?.user?.ruolo === RuoloUtente.admin && (
-                  <>
-                    <Typography fontSize="h4">
-                      <b>
-                        <br></br>Admin Area
-                      </b>
-                    </Typography>
-                    <ListItemButton href="/uploadVoti">
-                      <ListItemText primary="Carica voti" />
-                    </ListItemButton>
-                    <ListItemButton href="/risultati">
-                      <ListItemText primary="Risultati" />
-                    </ListItemButton>
-                    <ListItemButton href="/calendario">
-                      <ListItemText primary="Calendario" />
-                    </ListItemButton>
-                    <ListItemButton href="/presidenti">
-                      <ListItemText primary="Presidenti" />
-                    </ListItemButton>
-                    <ListItemButton href="/giocatori">
-                      <ListItemText primary="Giocatori" />
-                    </ListItemButton>
-                    <ListItemButton href="/voti">
-                      <ListItemText primary="Voti" />
-                    </ListItemButton>
-                    <ListItemButton href="/avvioStagione">
-                      <ListItemText primary="Nuova stagione" />
-                    </ListItemButton>
-                    <Divider />
-                  </>
-                )}
+                {guestListItems(true, session?.user !== undefined)}
+                <Divider />
+                {session?.user?.ruolo === RuoloUtente.admin && adminListItems()}
                 {!session ? (
                   <MenuItem>
                     <Button
