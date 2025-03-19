@@ -490,7 +490,7 @@ function FormazioneXs() {
     if (rosa.length > 0 || campo.length !== 11) {
       setAlertMessage("Completa la formazione");
       setAlertSeverity("error");
-    } else if (!idPartita && idPartita!==0) {
+    } else if (!idPartita && idPartita !== 0) {
       setAlertMessage("Nessuna partita in programma, impossibile procedere");
       setAlertSeverity("error");
     } else {
@@ -506,19 +506,22 @@ function FormazioneXs() {
           })),
         });
         setSaving(false);
-      }
-      else {
-        await Promise.all(giornate.map(async (g) => {
-          await saveFormazione.mutateAsync({
-            idPartita: g.partite.filter(c => c.idHome === idSquadra || c.idAway === idSquadra).map((p) => p.idPartita)[0]!,
-            modulo: modulo,
-            giocatori: [...campo, ...panca].map((giocatore) => ({
-              idGiocatore: giocatore.idGiocatore,
-              titolare: giocatore.titolare,
-              riserva: giocatore.riserva,
-            })),
-          });
-        }));
+      } else {
+        await Promise.all(
+          giornate.map(async (g) => {
+            await saveFormazione.mutateAsync({
+              idPartita: g.partite
+                .filter((c) => c.idHome === idSquadra || c.idAway === idSquadra)
+                .map((p) => p.idPartita)[0]!,
+              modulo: modulo,
+              giocatori: [...campo, ...panca].map((giocatore) => ({
+                idGiocatore: giocatore.idGiocatore,
+                titolare: giocatore.titolare,
+                riserva: giocatore.riserva,
+              })),
+            });
+          })
+        );
         setSaving(false);
       }
     }
@@ -549,57 +552,38 @@ function FormazioneXs() {
         )}
         {enableRosa ? (
           <>
-            <Grid item xs={12}>
-              Modulo: <Select
+            <Grid item xs={8}>
+              {giornate.length > 1 ? (
+                <Select
                   size="small"
                   variant="outlined"
-                  labelId="select-label-modulo"
+                  labelId="select-label-giornata"
                   margin="dense"
                   required
-                  name="modulo"
-                  onChange={handleSetModulo}
-                  value={modulo}
+                  name="giornata"
+                  onChange={(e) =>
+                    e.target.value !== 0
+                      ? setIdTorneo(e.target.value as number)
+                      : setIdPartita(0)
+                  }
+                  defaultValue={giornate[0]?.idTorneo}
                 >
-                  {moduliList.map((moduloOption) => (
+                  <MenuItem value={0} key={`giornata_0`}>
+                    Salva entrambe le formazioni
+                  </MenuItem>
+                  {giornate.map((g, index) => (
                     <MenuItem
-                      value={moduloOption}
-                      key={`modulo_${moduloOption}`}
-                    >{moduloOption}</MenuItem>
+                      value={g.idTorneo}
+                      key={`giornata_${g.idTorneo}`}
+                      selected={index === 0}
+                    >{`${g.Title}`}</MenuItem>
                   ))}
                 </Select>
-            </Grid>
-            <Grid item xs={8}>
-            {giornate.length > 1 ? (
-                  <Select
-                    size="small"
-                    variant="outlined"
-                    labelId="select-label-giornata"
-                    margin="dense"
-                    required
-                    name="giornata"
-                    onChange={(e) =>
-                      e.target.value !== 0
-                        ? setIdTorneo(e.target.value as number)
-                        : setIdPartita(0)
-                    }
-                    defaultValue={giornate[0]?.idTorneo}
-                  >
-                    <MenuItem value={0} key={`giornata_0`}>
-                      Salva entrambe le formazioni
-                    </MenuItem>
-                    {giornate.map((g, index) => (
-                      <MenuItem
-                        value={g.idTorneo}
-                        key={`giornata_${g.idTorneo}`}
-                        selected={index === 0}
-                      >{`${g.Title}`}</MenuItem>
-                    ))}
-                  </Select>
-                ) : (
-                  <Typography variant={"body2"} sx={{ lineHeight: 2.66 }}>
-                    <b>{giornate[0]?.Title}</b>
-                  </Typography>
-                )}
+              ) : (
+                <Typography variant="h5" sx={{ lineHeight: 2 }}>
+                  <b>{giornate[0]?.Title}</b>
+                </Typography>
+              )}
             </Grid>
             <Grid item xs={4} justifyItems={"end"}>
               <Box component="form" onSubmit={handleSave} noValidate>
@@ -610,46 +594,67 @@ function FormazioneXs() {
                   variant="contained"
                   color="error"
                   size="medium"
-                  sx={{fontSize: "10px" }}
+                  sx={{ fontSize: "10px" }}
                 >
                   {saving ? "Attendere..." : "Salva"}
                 </Button>
               </Box>
             </Grid>
             <Grid item sm={8} xs={12}>
-              <>
-                <Accordion>
-                  <AccordionSummary expandIcon={<ExpandMore />}>
-                    <Typography variant="h5">Rosa ({rosa.length})</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Grid container spacing={0}>
-                      {renderRosa(["P", "D"], "Portieri/Difensori")}
-                      {renderRosa(["C"], "Centrocampisti")}
-                      {renderRosa(["A"], "Attaccanti")}
-                    </Grid>
-                  </AccordionDetails>
-                </Accordion>
-                <Accordion>
-                  <AccordionSummary expandIcon={<ExpandMore />}>
-                    <Typography variant="h5">
-                      In panchina ({panca.length})
-                    </Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Grid container spacing={0}>
-                      {renderPanca(["P", "D", "C", "A"])}
-                    </Grid>
-                  </AccordionDetails>
-                </Accordion>
-              </>
-            </Grid>
-            <Grid item sm={4} xs={12}>
-              <Accordion defaultExpanded={true}>
+              <Accordion>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                  <Typography variant="h5">Rosa ({rosa.length})</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Grid container spacing={0}>
+                    {renderRosa(["P", "D"], "Portieri/Difensori")}
+                    {renderRosa(["C"], "Centrocampisti")}
+                    {renderRosa(["A"], "Attaccanti")}
+                  </Grid>
+                </AccordionDetails>
+              </Accordion>
+              <Accordion>
                 <AccordionSummary expandIcon={<ExpandMore />}>
                   <Typography variant="h5">
-                    In campo ({campo.length})
+                    In panchina ({panca.length})
                   </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Grid container spacing={0}>
+                    {renderPanca(["P", "D", "C", "A"])}
+                  </Grid>
+                </AccordionDetails>
+              </Accordion>
+              <Accordion defaultExpanded={true}>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                  <Stack
+                    direction={"row"}
+                    justifyContent="right"
+                    alignItems="center"
+                  >
+                    <Typography variant="h5" mr={2}>
+                      In campo ({campo.length})
+                    </Typography>
+                    <Select
+                      size="small"
+                      variant="outlined"
+                      labelId="select-label-modulo"
+                      margin="dense"
+                      required
+                      name="modulo"
+                      onChange={handleSetModulo}
+                      value={modulo}
+                    >
+                      {moduliList.map((moduloOption) => (
+                        <MenuItem
+                          value={moduloOption}
+                          key={`modulo_${moduloOption}`}
+                        >
+                          {moduloOption}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </Stack>
                 </AccordionSummary>
                 <AccordionDetails>
                   <Box
@@ -692,7 +697,7 @@ function FormazioneXs() {
             <Grid item xs={12} minHeight={100}></Grid>
           </>
         ) : (
-          <Typography variant="h3" color="error">
+          <Typography variant="h4" color="error">
             {message}
           </Typography>
         )}
