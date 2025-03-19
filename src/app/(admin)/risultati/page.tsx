@@ -62,7 +62,7 @@ export default function Risultati() {
                                                 value={selectedIdCalendario?.toLocaleString() ?? ''}
                                                 onChange={handleChangeCalendario}>
                                                 {calendario.map((item) => (
-                                                    <MenuItem key={item.idCalendario} value={item.idCalendario} sx={{ color: 'black' }}>
+                                                    <MenuItem key={item.id} value={item.id} sx={{ color: 'black' }}>
                                                         {getDescrizioneGiornata(item.giornataSerieA, item.nome, item.giornata, item.gruppoFase)}
                                                     </MenuItem>
                                                 ))}

@@ -94,8 +94,6 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
 
   //#endregion
 
-  //#region trasferimenti
-
   const columns: GridColDef[] = [
     { field: "id", hideable: true },
     {
@@ -155,38 +153,6 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
     },
   ];
 
-  // const columnsTransfer: Column[] = [
-  //   {
-  //     key: "maglia",
-  //     type: "image",
-  //     align: "left",
-  //     header: " ",
-  //     width: "5%",
-  //     imageProps: {
-  //       imageTooltip: "squadraSerieA",
-  //       imageTooltipType: "dynamic",
-  //       imageWidth: 26,
-  //       imageHeight: 22,
-  //     },
-  //   },
-  //   { key: "stagione", type: "string", align: "left", header: "Stagione" },
-  //   { key: "squadra", type: "string", align: "left", header: "Squadra" },
-  //   {
-  //     key: "dataAcquisto",
-  //     type: "date",
-  //     header: "Data acquisto",
-  //     formatDate: "dd/MM/yyyy",
-  //   },
-  //   {
-  //     key: "dataCessione",
-  //     type: "date",
-  //     header: "Data cessione",
-  //     formatDate: "dd/MM/yyyy",
-  //   },
-  //   { key: "costo", type: "number", header: "Costo" },
-  // ];
-
-  //#endregion
 
   return (
     <Grid container spacing={1} paddingTop={2} paddingBottom={2}>

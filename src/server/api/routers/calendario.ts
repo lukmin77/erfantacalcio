@@ -67,7 +67,7 @@ export const calendarioRouter = createTRPCRouter({
 
         const indexSelected = result.findIndex(item => !item.hasGiocata); // && item.Tornei.idTorneo === 1);
         const mappedResult = result.map<CalendarioType>((c, index) => ({
-          idCalendario: c.idCalendario,
+          id: c.idCalendario,
           idTorneo: c.Tornei.idTorneo,
           nome: c.Tornei.nome,
           gruppoFase: c.Tornei.gruppoFase,
@@ -109,7 +109,7 @@ export const calendarioRouter = createTRPCRouter({
 
         if (result) {
           return {
-            idCalendario: result.idCalendario,
+            id: result.idCalendario,
             idTorneo: result.Tornei.idTorneo,
             nome: result.Tornei.nome,
             gruppoFase: result.Tornei.gruppoFase,
@@ -132,7 +132,7 @@ export const calendarioRouter = createTRPCRouter({
 
   update: adminProcedure
     .input(z.object({
-      idCalendario: z.number(),
+      id: z.number(),
       idTorneo: z.number(),
       giornata: z.number(),
       giornataSerieA: z.number(),
@@ -146,7 +146,7 @@ export const calendarioRouter = createTRPCRouter({
       try {
         const calendario = await prisma.calendario.update({
           where: {
-            idCalendario: opts.input.idCalendario
+            idCalendario: opts.input.id
           },
           data: {
             idTorneo: opts.input.idTorneo,

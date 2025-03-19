@@ -17,7 +17,7 @@ export default function UploadVoti() {
 
     const getGiornataSerieA = useCallback(
         (idCalendario: number | undefined) => {
-            return calendarioList.data?.find(item => item.idCalendario === idCalendario)?.giornataSerieA ?? 0;
+            return calendarioList.data?.find(item => item.id === idCalendario)?.giornataSerieA ?? 0;
         },
         [calendarioList.data]
     );
@@ -203,7 +203,7 @@ export default function UploadVoti() {
                                                 value={selectedIdCalendario?.toString() ?? ''}
                                                 onChange={handleChangeCalendario}>
                                                 {calendario.map((item) => (
-                                                    <MenuItem key={item.idCalendario} value={item.idCalendario.toString()} sx={{ color: 'black' }}>
+                                                    <MenuItem key={item.id} value={item.id.toString()} sx={{ color: 'black' }}>
                                                         {getDescrizioneGiornata(item.giornataSerieA, item.nome, item.giornata, item.gruppoFase)}
                                                     </MenuItem>
                                                 ))}

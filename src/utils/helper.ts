@@ -68,7 +68,7 @@ export function normalizeNomeGiocatore(nome: string): string {
 }
 
 export function getIdNextGiornata(calendarioList: CalendarioType[]) {
-  return calendarioList?.find(item => item.isSelected)?.idCalendario ?? undefined;
+  return calendarioList?.find(item => item.isSelected)?.id ?? undefined;
 }
 
 export const moduliList: Moduli[] = ['3-4-3', '4-3-3', '4-4-2', '3-5-2', '5-3-2', '5-4-1', '4-5-1'];
