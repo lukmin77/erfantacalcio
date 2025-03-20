@@ -587,7 +587,7 @@ function FormazioneXs() {
             <Grid item sm={8} xs={12}>
               <Accordion>
                 <AccordionSummary expandIcon={<ExpandMore />}>
-                  <Typography variant="h5">Rosa ({rosa.length})</Typography>
+                  <Typography variant="h5">Rosa ({rosa.length}) / Panchina ({panca.length})</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                   <Grid container spacing={0}>
