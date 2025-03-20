@@ -1,13 +1,13 @@
 "use client";
 import {
-  AutoGraph,
-  Filter1,
-  Filter2,
-  Filter3,
-  Filter4,
-  Filter5,
-  Filter6,
+  Analytics,
   HourglassTop,
+  Looks3Outlined,
+  Looks4Outlined,
+  Looks5Outlined,
+  Looks6Outlined,
+  LooksOneOutlined,
+  LooksTwoOutlined,
   ResetTv,
   Save,
 } from "@mui/icons-material";
@@ -36,6 +36,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { type GiornataType, type Moduli } from "~/types/common";
 import {
   convertiStringaInRuolo,
+  getShortName,
   moduliList,
   moduloDefault,
   ModuloPositions,
@@ -112,11 +113,6 @@ function Formazione() {
     backgroundImage: "url('images/campo.jpg')",
   };
   const styleRosa = {
-    borderStyle: "none",
-    borderWidth: "0px",
-    borderColor: "#E4221F",
-  };
-  const stylePanca = {
     borderStyle: "none",
     borderWidth: "0px",
     borderColor: "#E4221F",
@@ -287,6 +283,9 @@ function Formazione() {
 
   const renderRosa = (roles: string[], columns: number, title: string) => {
     const filteredRosa = rosa.filter((player) => roles.includes(player.ruolo));
+    const filteredPanca = panca.filter((player) =>
+      roles.includes(player.ruolo)
+    );
 
     const handleStatGiocatore = (idGiocatore: number) => {
       setIdGiocatoreStat(idGiocatore);
@@ -300,7 +299,7 @@ function Formazione() {
           <List sx={{ bgcolor: "background.paper" }}>
             {filteredRosa.map((player) => (
               <Grid container spacing={0} key={player.idGiocatore}>
-                <Grid item xs={11}>
+                <Grid item xs={10}>
                   <div onClick={() => handleClickPlayer(player)} ref={nodeRef}>
                     <ListItem
                       sx={{
@@ -317,18 +316,52 @@ function Formazione() {
                         alt={player.nome}
                       />
                       <ListItemText
-                        primary={player.nome}
+                        primary={getShortName(player.nome)}
                         secondary={`${player.nomeSquadraSerieA}`}
                       ></ListItemText>
                     </ListItem>
                   </div>
                 </Grid>
-                <Grid item xs={1} display={"flex"} justifyContent={"flex-end"}>
+                <Grid item xs={2} display={"flex"} justifyContent={"flex-end"}>
                   <Tooltip title={"Statistiche giocatore"}>
                     <IconButton
                       onClick={() => handleStatGiocatore(player.idGiocatore)}
                     >
-                      <AutoGraph color="success" />
+                      <Analytics color="info" />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+              </Grid>
+            ))}
+            {filteredPanca.map((player) => (
+              <Grid container spacing={0} key={player.idGiocatore}>
+                <Grid item xs={10}>
+                  <div onClick={() => handleClickPlayer(player)} ref={nodeRef}>
+                    <ListItem
+                      sx={{
+                        cursor: "pointer",
+                        zIndex: 2,
+                        paddingTop: "0px",
+                        paddingBottom: "0px",
+                      }}
+                    >
+                      <Image
+                        src={player.urlCampioncinoSmall}
+                        width={42}
+                        height={42}
+                        alt={player.nome}
+                      />
+                      <ListItemText
+                        primary={getShortName(player.nome)}
+                        secondary={`${player.nomeSquadraSerieA}`}
+                      ></ListItemText>
+                    </ListItem>
+                  </div>
+                </Grid>
+                <Grid item xs={2} display={"flex"} justifyContent={"flex-end"}>
+                  <Tooltip title={`Riserva ${player.riserva}`}>
+                    <IconButton>
+                      {filterIcons[(player.riserva ?? 0) - 1]}
                     </IconButton>
                   </Tooltip>
                 </Grid>
@@ -340,65 +373,14 @@ function Formazione() {
     );
   };
 
-  const renderPanca = (roles: string[], columns: number) => {
-    const filteredPanca = panca.filter((player) =>
-      roles.includes(player.ruolo)
-    );
-    return (
-      <Grid item sm={columns} xs={12}>
-        <Box>
-          <List sx={{ bgcolor: "background.paper" }}>
-            {filteredPanca.map((player) => (
-              <div
-                onClick={() => handleClickPlayer(player)}
-                ref={nodeRef}
-                key={player.idGiocatore}
-              >
-                <ListItem
-                  sx={{
-                    cursor: "pointer",
-                    zIndex: 2,
-                    paddingTop: "0px",
-                    paddingBottom: "0px",
-                  }}
-                >
-                  <Image
-                    src={player.urlCampioncinoSmall}
-                    width={42}
-                    height={42}
-                    alt={player.nome}
-                  />
-                  <ListItemText
-                    primary={player.nome}
-                    secondary={`${
-                      player.ruoloEsteso
-                    } (${player.nomeSquadraSerieA
-                      ?.toUpperCase()
-                      .substring(0, 3)})`}
-                  ></ListItemText>
-                  {player.riserva === 1 ? (
-                    <Filter1 color="success"></Filter1>
-                  ) : player.riserva === 2 ? (
-                    <Filter2 color="warning"></Filter2>
-                  ) : player.riserva === 3 ? (
-                    <Filter3 color="error"></Filter3>
-                  ) : player.riserva === 4 ? (
-                    <Filter4 color="secondary"></Filter4>
-                  ) : player.riserva === 5 ? (
-                    <Filter5 color="info"></Filter5>
-                  ) : player.riserva === 6 ? (
-                    <Filter6 color="primary"></Filter6>
-                  ) : (
-                    <></>
-                  )}
-                </ListItem>
-              </div>
-            ))}
-          </List>
-        </Box>
-      </Grid>
-    );
-  };
+  const filterIcons = [
+    <LooksOneOutlined key={0} color="error" />,
+    <LooksTwoOutlined key={1} color="error" />,
+    <Looks3Outlined key={2} color="error" />,
+    <Looks4Outlined key={3} color="error" />,
+    <Looks5Outlined key={4} color="error" />,
+    <Looks6Outlined key={5} color="error" />,
+  ];
 
   const renderCampo = (roles: string[]) => {
     const filtered = campo.filter((player) => roles.includes(player.ruolo));
@@ -708,18 +690,6 @@ function Formazione() {
                 </Grid>
               </>
             </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h5">In panchina</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Grid container spacing={0} sx={stylePanca}>
-                {renderPanca(["P"], 3)}
-                {renderPanca(["D"], 3)}
-                {renderPanca(["C"], 3)}
-                {renderPanca(["A"], 3)}
-              </Grid>
-            </Grid>
-            <Grid item xs={12} minHeight={60}></Grid>
           </>
         ) : (
           <Grid
