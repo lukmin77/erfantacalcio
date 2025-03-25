@@ -167,6 +167,8 @@ function Formazione() {
     formazioneList.data,
   ]);
 
+  const allowedFormations: number[] = [1343, 1352, 1451, 1442, 1433, 1541, 1532];
+  
   const handleClickPlayer = async (playerClicked: GiocatoreFormazioneType) => {
     playerClicked.riserva = null;
     playerClicked.titolare = false;
@@ -452,10 +454,7 @@ function Formazione() {
     setModulo(event.target.value as Moduli);
   };
 
-  const allowedFormations: number[] = [1343, 1352, 1451, 1442, 1433, 1541, 1532];
-
   
-
   function getPlayerStylePosition(ruolo: string, index: number) {
     return ModuloPositions[modulo][convertiStringaInRuolo(ruolo) ?? "P"][index];
   }
