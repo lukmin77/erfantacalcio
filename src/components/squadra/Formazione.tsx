@@ -192,26 +192,43 @@ function Formazione() {
     }
   };
   
-  
   function canAddPlayer(ruoloGiocatore: string): boolean {
     const newState = calcolaCodiceFormazione(ruoloGiocatore);
     const newStateStr = newState.toString().padStart(4, "0");
   
-    return allowedFormations.some((formation) => {
+    const isValid = allowedFormations.some((formation) => {
       const formationStr = formation.toString().padStart(4, "0");
   
       for (let i = 0; i < 4; i++) {
-        const currentRoleCount = parseInt(newStateStr.charAt(i)); 
-        const maxRoleCount = parseInt(formationStr.charAt(i));  
+        const currentRoleCount = parseInt(newStateStr.charAt(i), 10);
+        const maxRoleCount = parseInt(formationStr.charAt(i), 10);
   
         if (currentRoleCount > maxRoleCount) {
-          return false; 
+          return false;
         }
       }
-  
       return true;
     });
+  
+    if (isValid) {
+      const moduloFormatted = formatModulo(newStateStr);
+      console.log("Nuovo stato modulo:", moduloFormatted);
+  
+      setModulo(moduloFormatted as Moduli);
+    }
+  
+    return isValid;
   }
+
+  function formatModulo(moduloStr: string): string {
+    return moduloStr
+      .substring(1)
+      .split("")
+      .map((num) => parseInt(num, 10)) // Rimuove gli 0 iniziali
+      .join("-");
+  }
+  
+  
   
 
   function calcolaCodiceFormazione(ruoloGiocatore?: string): number {
@@ -456,21 +473,22 @@ function Formazione() {
 
   
   function getPlayerStylePosition(ruolo: string, index: number) {
-    return ModuloPositions[modulo][convertiStringaInRuolo(ruolo) ?? "P"][index];
+    const moduloCompatibile = findModuloCompatibile(modulo);
+    return ModuloPositions[moduloCompatibile][
+      convertiStringaInRuolo(ruolo) ?? "P"
+    ][index];
   }
 
-  // function checkModulo(ruolo: string) {
-  //   const moduloSplitted = modulo.split("-");
-  //   const maxRuolo =
-  //     ruolo === "P"
-  //       ? 1
-  //       : ruolo === "D"
-  //       ? parseInt(moduloSplitted[0] ?? "3")
-  //       : ruolo === "C"
-  //       ? parseInt(moduloSplitted[1] ?? "4")
-  //       : parseInt(moduloSplitted[2] ?? "3");
-  //   return campo.filter((c) => c.ruolo === ruolo).length < maxRuolo;
-  // }
+  function findModuloCompatibile(modulo: string): Moduli {
+    const [D, C, A] = modulo.split("-").map(Number);
+
+    return (
+      moduliList.find((m) => {
+        const [modD, modC, modA] = m.split("-").map(Number);
+        return D! <= modD! && C! <= modC! && A! <= modA!;
+      }) ?? "3-4-3"
+    );
+  }
 
   function correctFormazione(modulo: Moduli) {
     const moduloSplitted = modulo.split("-");
