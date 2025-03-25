@@ -59,7 +59,22 @@ function FormazioneXs() {
   const idSquadra = parseInt(session.data?.user?.id ?? "0");
   const [idGiocatoreStat, setIdGiocatoreStat] = useState<number>();
   const [openModalCalendario, setOpenModalCalendario] = useState(false);
-
+  const [enableRosa, setEnableRosa] = useState(false);
+  const [message, setMessage] = useState("");
+  const [giornate, setGiornate] = useState<GiornataType[]>([]);
+  const [idTorneo, setIdTorneo] = useState<number>();
+  const [rosa, setRosa] = useState<GiocatoreFormazioneType[]>([]);
+  const [campo, setCampo] = useState<GiocatoreFormazioneType[]>([]);
+  const [panca, setPanca] = useState<GiocatoreFormazioneType[]>([]);
+  const [idPartita, setIdPartita] = useState<number>();
+  const [modulo, setModulo] = useState<Moduli>(moduloDefault);
+  const [openAlert, setOpenAlert] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState<"success" | "error">(
+    "success"
+  );
+  
   const calendarioProssima = api.formazione.getGiornateDaGiocare.useQuery(
     undefined,
     { refetchOnWindowFocus: false, refetchOnReconnect: false }
@@ -70,10 +85,6 @@ function FormazioneXs() {
       setAlertSeverity("success");
     },
   });
-  const [enableRosa, setEnableRosa] = useState(false);
-  const [message, setMessage] = useState("");
-  const [giornate, setGiornate] = useState<GiornataType[]>([]);
-  const [idTorneo, setIdTorneo] = useState<number>();
   const formazioneList = api.formazione.get.useQuery(
     { idTorneo: idTorneo! },
     {
@@ -90,18 +101,7 @@ function FormazioneXs() {
       refetchOnReconnect: false,
     }
   );
-  const [rosa, setRosa] = useState<GiocatoreFormazioneType[]>([]);
-  const [campo, setCampo] = useState<GiocatoreFormazioneType[]>([]);
-  const [panca, setPanca] = useState<GiocatoreFormazioneType[]>([]);
-  const [idPartita, setIdPartita] = useState<number>();
-  const [modulo, setModulo] = useState<Moduli>(moduloDefault);
-  const [openAlert, setOpenAlert] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
-  const [alertSeverity, setAlertSeverity] = useState<"success" | "error">(
-    "success"
-  );
-
+  
   useEffect(() => {
     if (calendarioProssima.data) {
       if (

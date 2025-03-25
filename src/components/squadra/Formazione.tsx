@@ -21,7 +21,6 @@ import {
   ListItemText,
   MenuItem,
   Select,
-  type SelectChangeEvent,
   Tooltip,
   Typography,
   Stack,
@@ -35,12 +34,8 @@ import { api } from "~/utils/api";
 import React, { useEffect, useRef, useState } from "react";
 import { type GiornataType, type Moduli } from "~/types/common";
 import {
-  convertiStringaInRuolo,
   getShortName,
-  moduliList,
   moduloDefault,
-  ModuloPositions,
-  ruoliList,
 } from "~/utils/helper";
 import {
   type GiocatoreFormazioneType,
@@ -48,8 +43,16 @@ import {
 } from "~/types/squadre";
 import Image from "next/image";
 import Modal from "../modal/Modal";
-import dayjs from "dayjs";
 import Giocatore from "../giocatori/Giocatore";
+import {
+  allowedFormations,
+  calcolaCodiceFormazione,
+  checkDataFormazione,
+  formatModulo,
+  getPlayerStylePosition,
+  sortPlayersByRoleDescThenCostoDesc,
+  sortPlayersByRoleDescThenRiserva,
+} from "./utils";
 
 function Formazione() {
   const session = useSession();
@@ -57,38 +60,10 @@ function Formazione() {
   const squadra = session.data?.user?.squadra ?? "";
   const [idGiocatoreStat, setIdGiocatoreStat] = useState<number>();
   const [openModalCalendario, setOpenModalCalendario] = useState(false);
-
-  const calendarioProssima = api.formazione.getGiornateDaGiocare.useQuery(
-    undefined,
-    { refetchOnWindowFocus: false, refetchOnReconnect: false }
-  );
-  const saveFormazione = api.formazione.create.useMutation({
-    onSuccess: async () => {
-      setAlertMessage("Salvataggio completato");
-      setAlertSeverity("success");
-    },
-  });
   const [enableRosa, setEnableRosa] = useState(false);
   const [message, setMessage] = useState("");
   const [giornate, setGiornate] = useState<GiornataType[]>([]);
   const [idTorneo, setIdTorneo] = useState<number>();
-  const formazioneList = api.formazione.get.useQuery(
-    { idTorneo: idTorneo! },
-    {
-      enabled: !!idTorneo,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-    }
-  );
-  const rosaList = api.squadre.getRosa.useQuery(
-    { idSquadra: idSquadra, includeVenduti: false },
-    {
-      enabled: enableRosa,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-    }
-  );
-  const nodeRef = useRef(null);
   const [rosa, setRosa] = useState<GiocatoreFormazioneType[]>([]);
   const [campo, setCampo] = useState<GiocatoreFormazioneType[]>([]);
   const [panca, setPanca] = useState<GiocatoreFormazioneType[]>([]);
@@ -117,7 +92,34 @@ function Formazione() {
     borderWidth: "0px",
     borderColor: "#E4221F",
   };
-
+  
+  const calendarioProssima = api.formazione.getGiornateDaGiocare.useQuery(
+    undefined,
+    { refetchOnWindowFocus: false, refetchOnReconnect: false }
+  );
+  const saveFormazione = api.formazione.create.useMutation({
+    onSuccess: async () => {
+      setAlertMessage("Salvataggio completato");
+      setAlertSeverity("success");
+    },
+  });
+  const formazioneList = api.formazione.get.useQuery(
+    { idTorneo: idTorneo! },
+    {
+      enabled: !!idTorneo,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    }
+  );
+  const rosaList = api.squadre.getRosa.useQuery(
+    { idSquadra: idSquadra, includeVenduti: false },
+    {
+      enabled: enableRosa,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    }
+  );
+  
   useEffect(() => {
     if (calendarioProssima.data) {
       if (
@@ -167,15 +169,16 @@ function Formazione() {
     formazioneList.data,
   ]);
 
-  const allowedFormations: number[] = [1343, 1352, 1451, 1442, 1433, 1541, 1532];
-  
   const handleClickPlayer = async (playerClicked: GiocatoreFormazioneType) => {
     playerClicked.riserva = null;
     playerClicked.titolare = false;
-  
+
     const canAdd = canAddPlayer(playerClicked.ruolo);
-  
-    if (rosa.some((c) => c.idGiocatore === playerClicked.idGiocatore) && canAdd) {
+
+    if (
+      rosa.some((c) => c.idGiocatore === playerClicked.idGiocatore) &&
+      canAdd
+    ) {
       // Va da rosa a campo
       playerClicked.titolare = true;
       await updateLists(playerClicked, campo, setCampo, rosa, setRosa, false);
@@ -188,105 +191,43 @@ function Formazione() {
       await updateLists(playerClicked, rosa, setRosa, campo, setCampo, true);
     } else if (panca.some((c) => c.idGiocatore === playerClicked.idGiocatore)) {
       // Va da panca a rosa
-      await updateLists(playerClicked, rosa, setRosa, panca, setPanca, false, true);
+      await updateLists(
+        playerClicked,
+        rosa,
+        setRosa,
+        panca,
+        setPanca,
+        false,
+        true
+      );
     }
   };
-  
+
   function canAddPlayer(ruoloGiocatore: string): boolean {
-    const newState = calcolaCodiceFormazione(ruoloGiocatore);
+    const newState = calcolaCodiceFormazione(campo, ruoloGiocatore);
     const newStateStr = newState.toString().padStart(4, "0");
-  
+
     const isValid = allowedFormations.some((formation) => {
       const formationStr = formation.toString().padStart(4, "0");
-  
+
       for (let i = 0; i < 4; i++) {
         const currentRoleCount = parseInt(newStateStr.charAt(i), 10);
         const maxRoleCount = parseInt(formationStr.charAt(i), 10);
-  
+
         if (currentRoleCount > maxRoleCount) {
           return false;
         }
       }
       return true;
     });
-  
+
     if (isValid) {
       const moduloFormatted = formatModulo(newStateStr);
-      console.log("Nuovo stato modulo:", moduloFormatted);
-  
       setModulo(moduloFormatted as Moduli);
     }
-  
+
     return isValid;
   }
-
-  function formatModulo(moduloStr: string): string {
-    return moduloStr
-      .substring(1)
-      .split("")
-      .map((num) => parseInt(num, 10)) // Rimuove gli 0 iniziali
-      .join("-");
-  }
-  
-  
-  
-
-  function calcolaCodiceFormazione(ruoloGiocatore?: string): number {
-    const ruoli = ["P", "D", "C", "A"];
-    const conteggio = ruoli.map((ruolo) => {
-      const count = campo.filter((giocatore) => giocatore.ruolo === ruolo).length;
-      return count + (ruolo === ruoloGiocatore ? 1 : 0);
-    });
-  
-    return Number(conteggio.join(""));
-  }
-  
-
-  const sortPlayersByRoleDescThenCostoDesc = (
-    players: GiocatoreFormazioneType[]
-  ) => {
-    return players.sort((a, b) => {
-      if (b.ruolo !== a.ruolo) {
-        return b.ruolo.localeCompare(a.ruolo);
-      } else if (b.costo !== a.costo) {
-        return b.costo - a.costo;
-      } else {
-        return a.nome.localeCompare(b.nome);
-      }
-    });
-  };
-
-  const sortPlayersByRoleDescThenRiserva = (
-    players: GiocatoreFormazioneType[]
-  ) => {
-    const playersSorted: GiocatoreFormazioneType[] = [];
-    const ruoliUnici = [...new Set(players.map((player) => player.ruolo))];
-
-    ruoliUnici.forEach((ruolo) => {
-      const playersForRuolo = players.filter(
-        (player) => player.ruolo === ruolo
-      );
-      const playersSortedForRuolo = playersForRuolo.sort((a, b) => {
-        if (a.riserva === null && b.riserva === null) {
-          return 0;
-        } else if (a.riserva === null) {
-          return -1;
-        } else if (b.riserva === null) {
-          return 1;
-        }
-        return a.riserva - b.riserva;
-      });
-
-      playersSortedForRuolo.forEach((player, index) => {
-        if (player.riserva !== null) {
-          player.riserva = index + 1;
-        }
-        playersSorted.push(player);
-      });
-    });
-
-    return playersSorted;
-  };
 
   const updateLists = async (
     playerSelected: GiocatoreFormazioneType,
@@ -334,7 +275,7 @@ function Formazione() {
             {filteredRosa.map((player) => (
               <Grid container spacing={0} key={player.idGiocatore}>
                 <Grid item xs={10}>
-                  <div onClick={() => handleClickPlayer(player)} ref={nodeRef}>
+                  <div onClick={() => handleClickPlayer(player)} >
                     <ListItem
                       sx={{
                         cursor: "pointer",
@@ -370,7 +311,7 @@ function Formazione() {
             {filteredPanca.map((player) => (
               <Grid container spacing={0} key={player.idGiocatore}>
                 <Grid item xs={10}>
-                  <div onClick={() => handleClickPlayer(player)} ref={nodeRef}>
+                  <div onClick={() => handleClickPlayer(player)} >
                     <ListItem
                       sx={{
                         cursor: "pointer",
@@ -421,11 +362,10 @@ function Formazione() {
     return (
       <>
         {filtered.map((player, index) => {
-          const style = getPlayerStylePosition(player.ruolo, index);
+          const style = getPlayerStylePosition(player.ruolo, index, modulo);
           return (
             <div
               onClick={() => handleClickPlayer(player)}
-              ref={nodeRef}
               key={player.idGiocatore}
               style={{
                 cursor: "pointer",
@@ -465,53 +405,6 @@ function Formazione() {
       </>
     );
   };
-
-  const handleSetModulo = (event: SelectChangeEvent) => {
-    correctFormazione(event.target.value as Moduli);
-    setModulo(event.target.value as Moduli);
-  };
-
-  
-  function getPlayerStylePosition(ruolo: string, index: number) {
-    const moduloCompatibile = findModuloCompatibile(modulo);
-    return ModuloPositions[moduloCompatibile][
-      convertiStringaInRuolo(ruolo) ?? "P"
-    ][index];
-  }
-
-  function findModuloCompatibile(modulo: string): Moduli {
-    const [D, C, A] = modulo.split("-").map(Number);
-
-    return (
-      moduliList.find((m) => {
-        const [modD, modC, modA] = m.split("-").map(Number);
-        return D! <= modD! && C! <= modC! && A! <= modA!;
-      }) ?? "3-4-3"
-    );
-  }
-
-  function correctFormazione(modulo: Moduli) {
-    const moduloSplitted = modulo.split("-");
-    moduloSplitted.map((c, index) => {
-      const numRuolo = parseInt(c ?? "0");
-      const giocatori = campo
-        .filter((g) => g.ruolo === ruoliList[index + 1])
-        .slice(numRuolo);
-      giocatori.forEach((playerToRemove) => {
-        rosa.push(playerToRemove);
-        const playerIndex = campo.findIndex(
-          (g) => g.idGiocatore === playerToRemove.idGiocatore
-        );
-        if (playerIndex !== -1) {
-          campo.splice(playerIndex, 1);
-        }
-      });
-    });
-  }
-
-  function checkDataFormazione(dataIso: string | undefined) {
-    return dayjs(dataIso).toDate() >= dayjs(new Date()).toDate();
-  }
 
   const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -671,31 +564,6 @@ function Formazione() {
               sx={{ display: "flex", justifyContent: "flex-end" }}
             >
               <Box sx={styleCampo}>
-                <Grid item xs={12}>
-                  <Select
-                    size="small"
-                    variant="outlined"
-                    labelId="select-label-modulo"
-                    margin="dense"
-                    required
-                    sx={{
-                      m: "2px",
-                      backgroundColor: "#2e865f",
-                      color: "white",
-                      opacity: 0.8,
-                    }}
-                    name="modulo"
-                    onChange={handleSetModulo}
-                    value={modulo}
-                  >
-                    {moduliList.map((moduloOption) => (
-                      <MenuItem
-                        value={moduloOption}
-                        key={`modulo_${moduloOption}`}
-                      >{`Modulo ${moduloOption}`}</MenuItem>
-                    ))}
-                  </Select>
-                </Grid>
                 {renderCampo(["P"])}
                 {renderCampo(["D"])}
                 {renderCampo(["C"])}
