@@ -170,43 +170,58 @@ function Formazione() {
   const handleClickPlayer = async (playerClicked: GiocatoreFormazioneType) => {
     playerClicked.riserva = null;
     playerClicked.titolare = false;
-    if (
-      rosa.findIndex((c) => c.idGiocatore === playerClicked.idGiocatore) > -1 &&
-      checkModulo(playerClicked.ruolo)
-    ) {
-      //va da rosa a campo
+  
+    const canAdd = canAddPlayer(playerClicked.ruolo);
+  
+    if (rosa.some((c) => c.idGiocatore === playerClicked.idGiocatore) && canAdd) {
+      // Va da rosa a campo
       playerClicked.titolare = true;
       await updateLists(playerClicked, campo, setCampo, rosa, setRosa, false);
-    }
-    if (
-      rosa.findIndex((c) => c.idGiocatore === playerClicked.idGiocatore) > -1 &&
-      !checkModulo(playerClicked.ruolo)
-    ) {
-      //va da rosa a panca
+    } else if (rosa.some((c) => c.idGiocatore === playerClicked.idGiocatore)) {
+      // Va da rosa a panca
       playerClicked.riserva = 100;
       await updateLists(playerClicked, panca, setPanca, rosa, setRosa, true);
-    }
-    if (
-      campo.findIndex((c) => c.idGiocatore === playerClicked.idGiocatore) > -1
-    ) {
-      //va da campo a rosa
+    } else if (campo.some((c) => c.idGiocatore === playerClicked.idGiocatore)) {
+      // Va da campo a rosa
       await updateLists(playerClicked, rosa, setRosa, campo, setCampo, true);
-    }
-    if (
-      panca.findIndex((c) => c.idGiocatore === playerClicked.idGiocatore) > -1
-    ) {
-      //va da panca a rosa
-      await updateLists(
-        playerClicked,
-        rosa,
-        setRosa,
-        panca,
-        setPanca,
-        false,
-        true
-      );
+    } else if (panca.some((c) => c.idGiocatore === playerClicked.idGiocatore)) {
+      // Va da panca a rosa
+      await updateLists(playerClicked, rosa, setRosa, panca, setPanca, false, true);
     }
   };
+  
+  
+  function canAddPlayer(ruoloGiocatore: string): boolean {
+    const newState = calcolaCodiceFormazione(ruoloGiocatore);
+    const newStateStr = newState.toString().padStart(4, "0");
+  
+    return allowedFormations.some((formation) => {
+      const formationStr = formation.toString().padStart(4, "0");
+  
+      for (let i = 0; i < 4; i++) {
+        const currentRoleCount = parseInt(newStateStr.charAt(i)); 
+        const maxRoleCount = parseInt(formationStr.charAt(i));  
+  
+        if (currentRoleCount > maxRoleCount) {
+          return false; 
+        }
+      }
+  
+      return true;
+    });
+  }
+  
+
+  function calcolaCodiceFormazione(ruoloGiocatore?: string): number {
+    const ruoli = ["P", "D", "C", "A"];
+    const conteggio = ruoli.map((ruolo) => {
+      const count = campo.filter((giocatore) => giocatore.ruolo === ruolo).length;
+      return count + (ruolo === ruoloGiocatore ? 1 : 0);
+    });
+  
+    return Number(conteggio.join(""));
+  }
+  
 
   const sortPlayersByRoleDescThenCostoDesc = (
     players: GiocatoreFormazioneType[]
@@ -437,22 +452,26 @@ function Formazione() {
     setModulo(event.target.value as Moduli);
   };
 
+  const allowedFormations: number[] = [1343, 1352, 1451, 1442, 1433, 1541, 1532];
+
+  
+
   function getPlayerStylePosition(ruolo: string, index: number) {
     return ModuloPositions[modulo][convertiStringaInRuolo(ruolo) ?? "P"][index];
   }
 
-  function checkModulo(ruolo: string) {
-    const moduloSplitted = modulo.split("-");
-    const maxRuolo =
-      ruolo === "P"
-        ? 1
-        : ruolo === "D"
-        ? parseInt(moduloSplitted[0] ?? "3")
-        : ruolo === "C"
-        ? parseInt(moduloSplitted[1] ?? "4")
-        : parseInt(moduloSplitted[2] ?? "3");
-    return campo.filter((c) => c.ruolo === ruolo).length < maxRuolo;
-  }
+  // function checkModulo(ruolo: string) {
+  //   const moduloSplitted = modulo.split("-");
+  //   const maxRuolo =
+  //     ruolo === "P"
+  //       ? 1
+  //       : ruolo === "D"
+  //       ? parseInt(moduloSplitted[0] ?? "3")
+  //       : ruolo === "C"
+  //       ? parseInt(moduloSplitted[1] ?? "4")
+  //       : parseInt(moduloSplitted[2] ?? "3");
+  //   return campo.filter((c) => c.ruolo === ruolo).length < maxRuolo;
+  // }
 
   function correctFormazione(modulo: Moduli) {
     const moduloSplitted = modulo.split("-");
