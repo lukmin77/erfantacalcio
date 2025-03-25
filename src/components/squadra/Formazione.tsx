@@ -31,12 +31,9 @@ import {
 } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { api } from "~/utils/api";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { type GiornataType, type Moduli } from "~/types/common";
-import {
-  getShortName,
-  moduloDefault,
-} from "~/utils/helper";
+import { getShortName, moduloDefault } from "~/utils/helper";
 import {
   type GiocatoreFormazioneType,
   type GiocatoreType,
@@ -92,7 +89,7 @@ function Formazione() {
     borderWidth: "0px",
     borderColor: "#E4221F",
   };
-  
+
   const calendarioProssima = api.formazione.getGiornateDaGiocare.useQuery(
     undefined,
     { refetchOnWindowFocus: false, refetchOnReconnect: false }
@@ -119,7 +116,7 @@ function Formazione() {
       refetchOnReconnect: false,
     }
   );
-  
+
   useEffect(() => {
     if (calendarioProssima.data) {
       if (
@@ -275,7 +272,7 @@ function Formazione() {
             {filteredRosa.map((player) => (
               <Grid container spacing={0} key={player.idGiocatore}>
                 <Grid item xs={10}>
-                  <div onClick={() => handleClickPlayer(player)} >
+                  <div onClick={() => handleClickPlayer(player)}>
                     <ListItem
                       sx={{
                         cursor: "pointer",
@@ -311,7 +308,7 @@ function Formazione() {
             {filteredPanca.map((player) => (
               <Grid container spacing={0} key={player.idGiocatore}>
                 <Grid item xs={10}>
-                  <div onClick={() => handleClickPlayer(player)} >
+                  <div onClick={() => handleClickPlayer(player)}>
                     <ListItem
                       sx={{
                         cursor: "pointer",

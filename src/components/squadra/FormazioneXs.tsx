@@ -20,7 +20,6 @@ import {
   ListItemText,
   MenuItem,
   Select,
-  type SelectChangeEvent,
   Typography,
   Stack,
   Button,
@@ -38,12 +37,8 @@ import { api } from "~/utils/api";
 import React, { useEffect, useState } from "react";
 import { type GiornataType, type Moduli } from "~/types/common";
 import {
-  convertiStringaInRuolo,
   getShortName,
-  moduliList,
   moduloDefault,
-  ModuloPositions,
-  ruoliList,
 } from "~/utils/helper";
 import {
   type GiocatoreFormazioneType,
@@ -51,8 +46,8 @@ import {
 } from "~/types/squadre";
 import Image from "next/image";
 import Modal from "../modal/Modal";
-import dayjs from "dayjs";
 import Giocatore from "../giocatori/Giocatore";
+import { checkDataFormazione, sortPlayersByRoleDescThenCostoDesc, sortPlayersByRoleDescThenRiserva, calcolaCodiceFormazione, allowedFormations, formatModulo, getPlayerStylePosition } from "./utils";
 
 function FormazioneXs() {
   const session = useSession();
@@ -74,7 +69,7 @@ function FormazioneXs() {
   const [alertSeverity, setAlertSeverity] = useState<"success" | "error">(
     "success"
   );
-  
+
   const calendarioProssima = api.formazione.getGiornateDaGiocare.useQuery(
     undefined,
     { refetchOnWindowFocus: false, refetchOnReconnect: false }
@@ -152,91 +147,64 @@ function FormazioneXs() {
   ]);
 
   const handleClickPlayer = async (playerClicked: GiocatoreFormazioneType) => {
-    playerClicked.riserva = null;
-    playerClicked.titolare = false;
-    if (
-      rosa.findIndex((c) => c.idGiocatore === playerClicked.idGiocatore) > -1 &&
-      checkModulo(playerClicked.ruolo)
-    ) {
-      //va da rosa a campo
-      playerClicked.titolare = true;
-      await updateLists(playerClicked, campo, setCampo, rosa, setRosa, false);
-    }
-    if (
-      rosa.findIndex((c) => c.idGiocatore === playerClicked.idGiocatore) > -1 &&
-      !checkModulo(playerClicked.ruolo)
-    ) {
-      //va da rosa a panca
-      playerClicked.riserva = 100;
-      await updateLists(playerClicked, panca, setPanca, rosa, setRosa, true);
-    }
-    if (
-      campo.findIndex((c) => c.idGiocatore === playerClicked.idGiocatore) > -1
-    ) {
-      //va da campo a rosa
-      await updateLists(playerClicked, rosa, setRosa, campo, setCampo, true);
-    }
-    if (
-      panca.findIndex((c) => c.idGiocatore === playerClicked.idGiocatore) > -1
-    ) {
-      //va da panca a rosa
-      await updateLists(
-        playerClicked,
-        rosa,
-        setRosa,
-        panca,
-        setPanca,
-        false,
-        true
-      );
-    }
-  };
-
-  const sortPlayersByRoleDescThenCostoDesc = (
-    players: GiocatoreFormazioneType[]
-  ) => {
-    return players.sort((a, b) => {
-      if (b.ruolo !== a.ruolo) {
-        return b.ruolo.localeCompare(a.ruolo);
-      } else if (b.costo !== a.costo) {
-        return b.costo - a.costo;
-      } else {
-        return a.nome.localeCompare(b.nome);
+      playerClicked.riserva = null;
+      playerClicked.titolare = false;
+  
+      const canAdd = canAddPlayer(playerClicked.ruolo);
+  
+      if (
+        rosa.some((c) => c.idGiocatore === playerClicked.idGiocatore) &&
+        canAdd
+      ) {
+        // Va da rosa a campo
+        playerClicked.titolare = true;
+        await updateLists(playerClicked, campo, setCampo, rosa, setRosa, false);
+      } else if (rosa.some((c) => c.idGiocatore === playerClicked.idGiocatore)) {
+        // Va da rosa a panca
+        playerClicked.riserva = 100;
+        await updateLists(playerClicked, panca, setPanca, rosa, setRosa, true);
+      } else if (campo.some((c) => c.idGiocatore === playerClicked.idGiocatore)) {
+        // Va da campo a rosa
+        await updateLists(playerClicked, rosa, setRosa, campo, setCampo, true);
+      } else if (panca.some((c) => c.idGiocatore === playerClicked.idGiocatore)) {
+        // Va da panca a rosa
+        await updateLists(
+          playerClicked,
+          rosa,
+          setRosa,
+          panca,
+          setPanca,
+          false,
+          true
+        );
       }
-    });
-  };
-
-  const sortPlayersByRoleDescThenRiserva = (
-    players: GiocatoreFormazioneType[]
-  ) => {
-    const playersSorted: GiocatoreFormazioneType[] = [];
-    const ruoliUnici = [...new Set(players.map((player) => player.ruolo))];
-
-    ruoliUnici.forEach((ruolo) => {
-      const playersForRuolo = players.filter(
-        (player) => player.ruolo === ruolo
-      );
-      const playersSortedForRuolo = playersForRuolo.sort((a, b) => {
-        if (a.riserva === null && b.riserva === null) {
-          return 0;
-        } else if (a.riserva === null) {
-          return -1;
-        } else if (b.riserva === null) {
-          return 1;
+    };
+  
+    function canAddPlayer(ruoloGiocatore: string): boolean {
+      const newState = calcolaCodiceFormazione(campo, ruoloGiocatore);
+      const newStateStr = newState.toString().padStart(4, "0");
+  
+      const isValid = allowedFormations.some((formation) => {
+        const formationStr = formation.toString().padStart(4, "0");
+  
+        for (let i = 0; i < 4; i++) {
+          const currentRoleCount = parseInt(newStateStr.charAt(i), 10);
+          const maxRoleCount = parseInt(formationStr.charAt(i), 10);
+  
+          if (currentRoleCount > maxRoleCount) {
+            return false;
+          }
         }
-        return a.riserva - b.riserva;
+        return true;
       });
-
-      playersSortedForRuolo.forEach((player, index) => {
-        if (player.riserva !== null) {
-          player.riserva = index + 1;
-        }
-        playersSorted.push(player);
-      });
-    });
-
-    return playersSorted;
-  };
+  
+      if (isValid) {
+        const moduloFormatted = formatModulo(newStateStr);
+        setModulo(moduloFormatted as Moduli);
+      }
+  
+      return isValid;
+    }
 
   const updateLists = async (
     playerSelected: GiocatoreFormazioneType,
@@ -380,7 +348,7 @@ function FormazioneXs() {
     return (
       <>
         {filtered.map((player, index) => {
-          const style = getPlayerStylePosition(player.ruolo, index);
+          const style = getPlayerStylePosition(player.ruolo, index, modulo);
           return (
             <div
               key={player.idGiocatore}
@@ -424,50 +392,6 @@ function FormazioneXs() {
     );
   };
 
-  const handleSetModulo = (event: SelectChangeEvent) => {
-    correctFormazione(event.target.value as Moduli);
-    setModulo(event.target.value as Moduli);
-  };
-
-  function getPlayerStylePosition(ruolo: string, index: number) {
-    return ModuloPositions[modulo][convertiStringaInRuolo(ruolo) ?? "P"][index];
-  }
-
-  function checkModulo(ruolo: string) {
-    const moduloSplitted = modulo.split("-");
-    const maxRuolo =
-      ruolo === "P"
-        ? 1
-        : ruolo === "D"
-        ? parseInt(moduloSplitted[0] ?? "3")
-        : ruolo === "C"
-        ? parseInt(moduloSplitted[1] ?? "4")
-        : parseInt(moduloSplitted[2] ?? "3");
-    return campo.filter((c) => c.ruolo === ruolo).length < maxRuolo;
-  }
-
-  function correctFormazione(modulo: Moduli) {
-    const moduloSplitted = modulo.split("-");
-    moduloSplitted.map((c, index) => {
-      const numRuolo = parseInt(c ?? "0");
-      const giocatori = campo
-        .filter((g) => g.ruolo === ruoliList[index + 1])
-        .slice(numRuolo);
-      giocatori.forEach((playerToRemove) => {
-        rosa.push(playerToRemove);
-        const playerIndex = campo.findIndex(
-          (g) => g.idGiocatore === playerToRemove.idGiocatore
-        );
-        if (playerIndex !== -1) {
-          campo.splice(playerIndex, 1);
-        }
-      });
-    });
-  }
-
-  function checkDataFormazione(dataIso: string | undefined) {
-    return dayjs(dataIso).toDate() >= dayjs(new Date()).toDate();
-  }
 
   const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -608,25 +532,6 @@ function FormazioneXs() {
                     <Typography variant="h5" mr={2}>
                       In campo ({campo.length})
                     </Typography>
-                    <Select
-                      size="small"
-                      variant="outlined"
-                      labelId="select-label-modulo"
-                      margin="dense"
-                      required
-                      name="modulo"
-                      onChange={handleSetModulo}
-                      value={modulo}
-                    >
-                      {moduliList.map((moduloOption) => (
-                        <MenuItem
-                          value={moduloOption}
-                          key={`modulo_${moduloOption}`}
-                        >
-                          {moduloOption}
-                        </MenuItem>
-                      ))}
-                    </Select>
                   </Stack>
                 </AccordionSummary>
                 <AccordionDetails>
