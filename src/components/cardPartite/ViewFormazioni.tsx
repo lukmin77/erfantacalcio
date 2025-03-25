@@ -127,7 +127,7 @@ function ViewFormazioni() {
                         <Grid container spacing={0}>
                           <Grid item xs={12} sm={7}>
                             <Typography variant={"h6"} sx={{ m: "3px" }}>
-                              <b>Titolari. Modulo: {formazioneHome.modulo}</b>
+                              <b>Modulo: {formazioneHome.modulo}</b>
                             </Typography>
                           </Grid>
                           <Grid
@@ -281,7 +281,7 @@ function ViewFormazioni() {
                         <Grid container spacing={0}>
                           <Grid item xs={12} sm={7}>
                             <Typography variant={"h6"} sx={{ m: "3px" }}>
-                              <b>Titolari. Modulo: {formazioneAway.modulo}</b>
+                              <b>Modulo: {formazioneAway.modulo}</b>
                             </Typography>
                           </Grid>
                           <Grid
