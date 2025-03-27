@@ -3,6 +3,7 @@ import {
   Analytics,
   ExpandMore,
   HourglassTop,
+  ResetTv,
   Looks3Outlined,
   Looks4Outlined,
   Looks5Outlined,
@@ -37,10 +38,7 @@ import { useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import React, { useEffect, useState } from "react";
 import { type GiornataType, type Moduli } from "~/types/common";
-import {
-  getShortName,
-  moduloDefault,
-} from "~/utils/helper";
+import { getShortName, moduloDefault } from "~/utils/helper";
 import {
   type GiocatoreFormazioneType,
   type GiocatoreType,
@@ -48,7 +46,15 @@ import {
 import Image from "next/image";
 import Modal from "../modal/Modal";
 import Giocatore from "../giocatori/Giocatore";
-import { checkDataFormazione, sortPlayersByRoleDescThenCostoDesc, sortPlayersByRoleDescThenRiserva, calcolaCodiceFormazione, allowedFormations, formatModulo, getPlayerStylePosition } from "./utils";
+import {
+  checkDataFormazione,
+  sortPlayersByRoleDescThenCostoDesc,
+  sortPlayersByRoleDescThenRiserva,
+  calcolaCodiceFormazione,
+  allowedFormations,
+  formatModulo,
+  getPlayerStylePosition,
+} from "./utils";
 
 function FormazioneXs() {
   const session = useSession();
@@ -97,7 +103,7 @@ function FormazioneXs() {
       refetchOnReconnect: false,
     }
   );
-  
+
   useEffect(() => {
     if (calendarioProssima.data) {
       if (
@@ -148,64 +154,64 @@ function FormazioneXs() {
   ]);
 
   const handleClickPlayer = async (playerClicked: GiocatoreFormazioneType) => {
-      playerClicked.riserva = null;
-      playerClicked.titolare = false;
-  
-      const canAdd = canAddPlayer(playerClicked.ruolo);
-  
-      if (
-        rosa.some((c) => c.idGiocatore === playerClicked.idGiocatore) &&
-        canAdd
-      ) {
-        // Va da rosa a campo
-        playerClicked.titolare = true;
-        await updateLists(playerClicked, campo, setCampo, rosa, setRosa, false);
-      } else if (rosa.some((c) => c.idGiocatore === playerClicked.idGiocatore)) {
-        // Va da rosa a panca
-        playerClicked.riserva = 100;
-        await updateLists(playerClicked, panca, setPanca, rosa, setRosa, true);
-      } else if (campo.some((c) => c.idGiocatore === playerClicked.idGiocatore)) {
-        // Va da campo a rosa
-        await updateLists(playerClicked, rosa, setRosa, campo, setCampo, true);
-      } else if (panca.some((c) => c.idGiocatore === playerClicked.idGiocatore)) {
-        // Va da panca a rosa
-        await updateLists(
-          playerClicked,
-          rosa,
-          setRosa,
-          panca,
-          setPanca,
-          false,
-          true
-        );
-      }
-    };
-  
-    function canAddPlayer(ruoloGiocatore: string): boolean {
-      const newState = calcolaCodiceFormazione(campo, ruoloGiocatore);
-      const newStateStr = newState.toString().padStart(4, "0");
-  
-      const isValid = allowedFormations.some((formation) => {
-        const formationStr = formation.toString().padStart(4, "0");
-  
-        for (let i = 0; i < 4; i++) {
-          const currentRoleCount = parseInt(newStateStr.charAt(i), 10);
-          const maxRoleCount = parseInt(formationStr.charAt(i), 10);
-  
-          if (currentRoleCount > maxRoleCount) {
-            return false;
-          }
-        }
-        return true;
-      });
-  
-      if (isValid) {
-        const moduloFormatted = formatModulo(newStateStr);
-        setModulo(moduloFormatted as Moduli);
-      }
-  
-      return isValid;
+    playerClicked.riserva = null;
+    playerClicked.titolare = false;
+
+    const canAdd = canAddPlayer(playerClicked.ruolo);
+
+    if (
+      rosa.some((c) => c.idGiocatore === playerClicked.idGiocatore) &&
+      canAdd
+    ) {
+      // Va da rosa a campo
+      playerClicked.titolare = true;
+      await updateLists(playerClicked, campo, setCampo, rosa, setRosa, false);
+    } else if (rosa.some((c) => c.idGiocatore === playerClicked.idGiocatore)) {
+      // Va da rosa a panca
+      playerClicked.riserva = 100;
+      await updateLists(playerClicked, panca, setPanca, rosa, setRosa, true);
+    } else if (campo.some((c) => c.idGiocatore === playerClicked.idGiocatore)) {
+      // Va da campo a rosa
+      await updateLists(playerClicked, rosa, setRosa, campo, setCampo, true);
+    } else if (panca.some((c) => c.idGiocatore === playerClicked.idGiocatore)) {
+      // Va da panca a rosa
+      await updateLists(
+        playerClicked,
+        rosa,
+        setRosa,
+        panca,
+        setPanca,
+        false,
+        true
+      );
     }
+  };
+
+  function canAddPlayer(ruoloGiocatore: string): boolean {
+    const newState = calcolaCodiceFormazione(campo, ruoloGiocatore);
+    const newStateStr = newState.toString().padStart(4, "0");
+
+    const isValid = allowedFormations.some((formation) => {
+      const formationStr = formation.toString().padStart(4, "0");
+
+      for (let i = 0; i < 4; i++) {
+        const currentRoleCount = parseInt(newStateStr.charAt(i), 10);
+        const maxRoleCount = parseInt(formationStr.charAt(i), 10);
+
+        if (currentRoleCount > maxRoleCount) {
+          return false;
+        }
+      }
+      return true;
+    });
+
+    if (isValid) {
+      const moduloFormatted = formatModulo(newStateStr);
+      setModulo(moduloFormatted as Moduli);
+    }
+
+    return isValid;
+  }
 
   const updateLists = async (
     playerSelected: GiocatoreFormazioneType,
@@ -280,9 +286,17 @@ function FormazioneXs() {
                   </div>
                 </Grid>
                 <Grid item xs={3} display={"flex"} justifyContent={"flex-end"}>
-                  <Slide direction="right" in={true} style={{ transitionDelay: '300ms' }} mountOnEnter unmountOnExit>
+                  <Slide
+                    direction="right"
+                    in={true}
+                    style={{ transitionDelay: "300ms" }}
+                    mountOnEnter
+                    unmountOnExit
+                  >
                     <Tooltip title={"Statistiche giocatore"}>
-                      <IconButton onClick={() => handleStatGiocatore(player.idGiocatore)} >
+                      <IconButton
+                        onClick={() => handleStatGiocatore(player.idGiocatore)}
+                      >
                         <Analytics color="info" />
                       </IconButton>
                     </Tooltip>
@@ -321,7 +335,13 @@ function FormazioneXs() {
                   </div>
                 </Grid>
                 <Grid item xs={3} display={"flex"} justifyContent={"flex-end"}>
-                  <Slide direction="right" in={true} style={{ transitionDelay: '300ms' }} mountOnEnter unmountOnExit>
+                  <Slide
+                    direction="right"
+                    in={true}
+                    style={{ transitionDelay: "300ms" }}
+                    mountOnEnter
+                    unmountOnExit
+                  >
                     <Tooltip title={`Riserva ${player.riserva}`}>
                       <IconButton>
                         {filterIcons[(player.riserva ?? 0) - 1]}
@@ -394,7 +414,6 @@ function FormazioneXs() {
       </>
     );
   };
-
 
   const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -514,7 +533,9 @@ function FormazioneXs() {
             <Grid item sm={8} xs={12}>
               <Accordion>
                 <AccordionSummary expandIcon={<ExpandMore />}>
-                  <Typography variant="h5">Rosa ({rosa.length}) / Panchina ({panca.length})</Typography>
+                  <Typography variant="h5">
+                    Rosa ({rosa.length}) / Panchina ({panca.length})
+                  </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                   <Grid container spacing={0}>
@@ -560,7 +581,7 @@ function FormazioneXs() {
               </Accordion>
               <Snackbar
                 anchorOrigin={{ vertical: "top", horizontal: "center" }}
-                sx={{ height: "60%" }}
+                sx={{ height: "30%" }}
                 open={openAlert}
                 autoHideDuration={3000}
                 onClose={() => setOpenAlert(false)}
@@ -575,7 +596,28 @@ function FormazioneXs() {
                 </Alert>
               </Snackbar>
             </Grid>
-            <Grid item xs={12} minHeight={100}></Grid>
+            <Grid item xs={12} minHeight={100} justifyItems={"end"}>
+              <Button
+                type="button"
+                endIcon={<ResetTv />}
+                variant="contained"
+                onClick={() => {
+                  setModulo(moduloDefault);
+                  setCampo([]);
+                  setPanca([]);
+                  setRosa(
+                    sortPlayersByRoleDescThenCostoDesc(
+                      rosa.concat(campo, panca)
+                    )
+                  );
+                }}
+                color="info"
+                size="medium"
+                sx={{ fontSize: "10px" }}
+              >
+                Reset
+              </Button>
+            </Grid>
           </>
         ) : (
           <Typography variant="h4" color="error">
