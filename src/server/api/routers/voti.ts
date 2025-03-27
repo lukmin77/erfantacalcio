@@ -65,9 +65,9 @@ export const votiRouter = createTRPCRouter({
             voto: result.voto?.toNumber() ?? null,
             ammonizione: result.ammonizione?.toNumber() ?? null,
             espulsione: result.espulsione?.toNumber() ?? null,
-            gol: result.Giocatori.ruolo === 'P' ? (result.gol?.toNumber() ?? 0) / Configurazione.bonusGolSubito : (result.gol?.toNumber() ?? 0) / Configurazione.bonusGol ?? null,
-            assist: (result.assist?.toNumber() ?? 0) / Configurazione.bonusAssist ?? null,
-            autogol: (result.autogol?.toNumber() ?? 0) / Configurazione.bonusAutogol ?? null,
+            gol: result.Giocatori.ruolo === 'P' ? (result.gol?.toNumber() ?? 0) / Configurazione.bonusGolSubito : (result.gol?.toNumber() ?? 0) / Configurazione.bonusGol,
+            assist: (result.assist?.toNumber() ?? 0) / Configurazione.bonusAssist,
+            autogol: (result.autogol?.toNumber() ?? 0) / Configurazione.bonusAutogol,
             altriBonus: result.altriBonus?.toNumber() ?? null,
             torneo: result.Calendario.Tornei.nome,
             gruppoFase: result.Calendario.Tornei.gruppoFase
@@ -118,9 +118,9 @@ export const votiRouter = createTRPCRouter({
             voto: c.voto?.toNumber() ?? null,
             ammonizione: c.ammonizione.toNumber() ?? null,
             espulsione: c.espulsione.toNumber() ?? null,
-            gol: c.Giocatori.ruolo === 'P' ? (c.gol?.toNumber() ?? 0) / Configurazione.bonusGolSubito : (c.gol?.toNumber() ?? 0) / Configurazione.bonusGol ?? null,
-            assist: (c.assist?.toNumber() ?? 0) / Configurazione.bonusAssist ?? null,
-            autogol: (c.autogol?.toNumber() ?? 0) / Configurazione.bonusAutogol ?? null,
+            gol: c.Giocatori.ruolo === 'P' ? (c.gol?.toNumber() ?? 0) / Configurazione.bonusGolSubito : (c.gol?.toNumber() ?? 0) / Configurazione.bonusGol,
+            assist: (c.assist?.toNumber() ?? 0) / Configurazione.bonusAssist,
+            autogol: (c.autogol?.toNumber() ?? 0) / Configurazione.bonusAutogol,
             altriBonus: c.altriBonus?.toNumber() ?? null,
             torneo: c.Calendario.Tornei.nome,
             gruppoFase: c.Calendario.Tornei.gruppoFase,
@@ -173,8 +173,8 @@ export const votiRouter = createTRPCRouter({
                 voto: c.voto?.toNumber() ?? null,
                 ammonizione: c.ammonizione.toNumber() ?? null,
                 espulsione: c.espulsione.toNumber() ?? null,
-                gol: c.Giocatori.ruolo === 'P' ? (c.gol?.toNumber() ?? 0) / Configurazione.bonusGolSubito : (c.gol?.toNumber() ?? 0) / Configurazione.bonusGol ?? null,
-                assist: (c.assist?.toNumber() ?? 0) / Configurazione.bonusAssist ?? null,
+                gol: c.Giocatori.ruolo === 'P' ? (c.gol?.toNumber() ?? 0) / Configurazione.bonusGolSubito : (c.gol?.toNumber() ?? 0) / Configurazione.bonusGol,
+                assist: (c.assist?.toNumber() ?? 0) / Configurazione.bonusAssist,
                 giornataSerieA: giornata
               });
             }
