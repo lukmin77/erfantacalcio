@@ -329,7 +329,7 @@ export default function Giocatori() {
             <Stack direction="row" spacing={1} justifyContent="flex-start" >
                 <Typography variant="h5">IdGiocatore: {selectedGiocatoreId}</Typography>
                 <Typography variant="h5">IdTrasferimento: {selectedTrasferimentoId}</Typography>
-            </Stack>
+            </Stack> 
             <Card sx={{ p: 0 }}>
                 <CardHeader title="Anagrafica giocatore" subheader="Inserisci/aggiorna giocatore" titleTypographyProps={{ variant: 'h4' }} />
                 <CardContent>
