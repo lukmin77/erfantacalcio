@@ -235,7 +235,7 @@ export default function Voti() {
     setOpenModalEdit(false);
     await handleCancelVoto();
   };
-
+ 
   return (
     <>
       <Stack direction="column" spacing={1} justifyContent="space-between">
