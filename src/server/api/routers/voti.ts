@@ -165,6 +165,7 @@ export const votiRouter = createTRPCRouter({
           take: opts.input.top ? opts.input.top : 1000
         });
 
+        
         if (result !== null) {
           const voti = result.reduce((acc, c) => {
             const giornata = c.Calendario.giornataSerieA;
