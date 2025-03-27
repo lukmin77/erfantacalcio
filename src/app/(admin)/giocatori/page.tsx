@@ -324,6 +324,7 @@ export default function Giocatori() {
 
     return (
         <Stack direction="column" spacing={1} justifyContent="space-between" paddingTop={2} paddingBottom={2}>
+            <Typography variant="h5">Gestione giocatori</Typography>
             <AutocompleteTextbox onItemSelected={handleGiocatoreSelected} items={giocatori ?? []}></AutocompleteTextbox>
             <Stack direction="row" spacing={1} justifyContent="flex-start" >
                 <Typography variant="h5">IdGiocatore: {selectedGiocatoreId}</Typography>
