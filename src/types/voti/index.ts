@@ -13,7 +13,7 @@ export type votoType = {
 }
 
 export type votoListType = {
-    idVoto: number,
+    id: number,
     nome: string,
     ruolo: string,
     voto: number | null,

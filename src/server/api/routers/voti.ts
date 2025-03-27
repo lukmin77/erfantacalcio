@@ -112,7 +112,7 @@ export const votiRouter = createTRPCRouter({
 
         if (result !== null) {
           return result.map(c => ({
-            idVoto: c.idVoto,
+            id: c.idVoto,
             nome: c.Giocatori.nome,
             ruolo: c.Giocatori.ruolo,
             voto: c.voto?.toNumber() ?? null,
