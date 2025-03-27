@@ -28,6 +28,8 @@ import {
   Snackbar,
   Alert,
   Divider,
+  Zoom,
+  Slide,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { api } from "~/utils/api";
@@ -273,14 +275,7 @@ function Formazione() {
               <Grid container spacing={0} key={player.idGiocatore}>
                 <Grid item xs={10}>
                   <div onClick={() => handleClickPlayer(player)}>
-                    <ListItem
-                      sx={{
-                        cursor: "pointer",
-                        zIndex: 2,
-                        paddingTop: "0px",
-                        paddingBottom: "0px",
-                      }}
-                    >
+                    <ListItem sx={{ cursor: "pointer", zIndex: 2, paddingTop: "0px", paddingBottom: "0px" }} >
                       <Image
                         src={player.urlCampioncinoSmall}
                         width={42}
@@ -295,13 +290,15 @@ function Formazione() {
                   </div>
                 </Grid>
                 <Grid item xs={2} display={"flex"} justifyContent={"flex-end"}>
-                  <Tooltip title={"Statistiche giocatore"}>
-                    <IconButton
-                      onClick={() => handleStatGiocatore(player.idGiocatore)}
-                    >
-                      <Analytics color="info" />
-                    </IconButton>
-                  </Tooltip>
+                  <Slide direction="right" in={true} style={{ transitionDelay: '300ms' }} mountOnEnter unmountOnExit>
+                    <Tooltip title={"Statistiche giocatore"}>
+                      <IconButton
+                        onClick={() => handleStatGiocatore(player.idGiocatore)}
+                      >
+                        <Analytics color="info" />
+                      </IconButton>
+                    </Tooltip>
+                  </Slide>
                 </Grid>
               </Grid>
             ))}
@@ -310,12 +307,7 @@ function Formazione() {
                 <Grid item xs={10}>
                   <div onClick={() => handleClickPlayer(player)}>
                     <ListItem
-                      sx={{
-                        cursor: "pointer",
-                        zIndex: 2,
-                        paddingTop: "0px",
-                        paddingBottom: "0px",
-                      }}
+                      sx={{ cursor: "pointer", zIndex: 2, paddingTop: "0px", paddingBottom: "0px" }}
                     >
                       <Image
                         src={player.urlCampioncinoSmall}
@@ -331,11 +323,13 @@ function Formazione() {
                   </div>
                 </Grid>
                 <Grid item xs={2} display={"flex"} justifyContent={"flex-end"}>
-                  <Tooltip title={`Riserva ${player.riserva}`}>
-                    <IconButton>
-                      {filterIcons[(player.riserva ?? 0) - 1]}
-                    </IconButton>
-                  </Tooltip>
+                  <Slide direction="right" in={true} style={{ transitionDelay: '300ms' }} mountOnEnter unmountOnExit>
+                    <Tooltip title={`Riserva ${player.riserva}`}>
+                      <IconButton>
+                        {filterIcons[(player.riserva ?? 0) - 1]}
+                      </IconButton>
+                    </Tooltip>
+                  </Slide>
                 </Grid>
               </Grid>
             ))}

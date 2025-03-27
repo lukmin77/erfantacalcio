@@ -31,6 +31,7 @@ import {
   IconButton,
   Divider,
   Tooltip,
+  Slide,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { api } from "~/utils/api";
@@ -279,13 +280,13 @@ function FormazioneXs() {
                   </div>
                 </Grid>
                 <Grid item xs={3} display={"flex"} justifyContent={"flex-end"}>
-                  <Tooltip title={"Statistiche giocatore"}>
-                    <IconButton
-                      onClick={() => handleStatGiocatore(player.idGiocatore)}
-                    >
-                      <Analytics color="info" />
-                    </IconButton>
-                  </Tooltip>
+                  <Slide direction="right" in={true} style={{ transitionDelay: '300ms' }} mountOnEnter unmountOnExit>
+                    <Tooltip title={"Statistiche giocatore"}>
+                      <IconButton onClick={() => handleStatGiocatore(player.idGiocatore)} >
+                        <Analytics color="info" />
+                      </IconButton>
+                    </Tooltip>
+                  </Slide>
                 </Grid>
               </Grid>
             ))}
@@ -320,11 +321,13 @@ function FormazioneXs() {
                   </div>
                 </Grid>
                 <Grid item xs={3} display={"flex"} justifyContent={"flex-end"}>
-                  <Tooltip title={`Riserva ${player.riserva}`}>
-                    <IconButton>
-                      {filterIcons[(player.riserva ?? 0) - 1]}
-                    </IconButton>
-                  </Tooltip>
+                  <Slide direction="right" in={true} style={{ transitionDelay: '300ms' }} mountOnEnter unmountOnExit>
+                    <Tooltip title={`Riserva ${player.riserva}`}>
+                      <IconButton>
+                        {filterIcons[(player.riserva ?? 0) - 1]}
+                      </IconButton>
+                    </Tooltip>
+                  </Slide>
                 </Grid>
               </Grid>
             ))}
