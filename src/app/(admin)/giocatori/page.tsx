@@ -387,7 +387,7 @@ export default function Giocatori() {
                                         variant="outlined"
                                         sx={{ mt: 3, mb: 2 }}
                                     >
-                                        Annulla
+                                        Chiudi
                                     </Button>
                                     {selectedGiocatoreId !== undefined && (
                                         <Button
@@ -525,7 +525,7 @@ export default function Giocatori() {
                                                 variant="outlined"
                                                 sx={{ mt: 3, mb: 2 }}
                                             >
-                                                Annulla
+                                                Chiudi
                                             </Button>
                                             {selectedTrasferimentoId !== undefined && selectedTrasferimentoStagione === Configurazione.stagione && (
                                                 <Button

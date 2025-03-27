@@ -472,7 +472,7 @@ export default function Calendario() {
                 variant="outlined"
                 sx={{ mt: 3, mb: 2 }}
               >
-                Annulla
+                Chiudi
               </Button>
             </Grid>
             <Grid item xs={12}>
