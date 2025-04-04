@@ -4,7 +4,7 @@ import { api } from "~/utils/api";
 import Modal from "~/components/modal/Modal";
 import { z } from "zod";
 import { type CalendarioType } from "~/types/calendario";
-import { format } from "date-fns";
+
 
 //import material ui
 import CheckIcon from "@mui/icons-material/CheckCircle";
@@ -140,7 +140,7 @@ export default function Calendario() {
       type: "date",
       valueFormatter: (value) => {
         if (value) {
-          return format(value, "dd/MM/yyyy HH:mm");
+          return dayjs(value).format("DD/MM/YYYY HH:mm");
         }
         return "";
       },

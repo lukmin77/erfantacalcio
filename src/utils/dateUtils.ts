@@ -1,4 +1,4 @@
-import { format, parseISO } from 'date-fns';
+import dayjs from 'dayjs';
 
 export function toLocaleDateTime(date: Date) {
     const day = date.getDate();
@@ -13,7 +13,7 @@ export function toLocaleDateTime(date: Date) {
 
 export function getTimestamp(): string {
     const now = toLocaleDateTime(new Date());
-    return format(now, 'yyyyMMdd_HHmmss');
+    return dayjs(now).format("yyyyMMdd_HHmmss");
 }
 
 export function convertFromIsoToDatetimeMUI(dataISO: string | undefined | null) {
@@ -34,5 +34,5 @@ export function convertFromIsoToDatetimeMUI(dataISO: string | undefined | null) 
 
 
 export function formatDateFromIso(dataISO: string | undefined | null, stringFormat: string) {
-        return dataISO ? format(parseISO(dataISO), stringFormat) : '';
-}
+    return dataISO ? dayjs(dataISO).format(stringFormat) : '';
+  }

@@ -8,7 +8,8 @@ import { LineChart } from "@mui/x-charts/LineChart";
 import Image from "next/image";
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import { autosizeOptions } from "~/utils/datatable";
-import { format } from "date-fns";
+
+import dayjs from "dayjs";
 
 interface GiocatoreProps {
   idGiocatore: number;
@@ -134,7 +135,7 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
       type: "date",
       valueFormatter: (value) => {
         if (value) {
-          return format(value, "MM/yyyy");
+          return dayjs(value).format("DD/MM/YYYY HH:mm");
         }
         return "";
       },
@@ -145,7 +146,7 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
       type: "date",
       valueFormatter: (value) => {
         if (value) {
-          return format(value, "MM/yyyy");
+          return dayjs(value).format("DD/MM/YYYY HH:mm");
         }
         return "";
       },
