@@ -1,8 +1,8 @@
-import Logger from "~/lib/logger";
-import { z } from "zod";
-import prisma from "~/utils/db";
+import Logger from '~/lib/logger'
+import { z } from 'zod'
+import prisma from '~/utils/db'
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
 
 export const alboRouter = createTRPCRouter({
   list: publicProcedure.query(async () => {
@@ -10,11 +10,11 @@ export const alboRouter = createTRPCRouter({
       return (
         await prisma.alboTrofei_new.findMany({
           orderBy: [
-            { stagione: "desc" },
-            { campionato: "desc" },
-            { champions: "desc" },
-            { secondo: "desc" },
-            { terzo: "desc" },
+            { stagione: 'desc' },
+            { campionato: 'desc' },
+            { champions: 'desc' },
+            { secondo: 'desc' },
+            { terzo: 'desc' },
           ],
         })
       ).map((c) => ({
@@ -24,10 +24,10 @@ export const alboRouter = createTRPCRouter({
         champions: c.champions,
         secondo: c.secondo,
         terzo: c.terzo,
-      }));
+      }))
     } catch (error) {
-      Logger.error("Si è verificato un errore", error);
-      throw error;
+      Logger.error('Si è verificato un errore', error)
+      throw error
     }
   }),
 
@@ -35,7 +35,7 @@ export const alboRouter = createTRPCRouter({
     .input(
       z.object({
         idSquadra: z.number(),
-      })
+      }),
     )
     .query(async (opts) => {
       try {
@@ -43,7 +43,7 @@ export const alboRouter = createTRPCRouter({
           where: {
             idUtente: opts.input.idSquadra,
           },
-        });
+        })
         if (utente) {
           return {
             squadra: utente.nomeSquadra,
@@ -51,11 +51,11 @@ export const alboRouter = createTRPCRouter({
             champions: utente.Champions,
             secondo: utente.Secondo,
             terzo: utente.Terzo,
-          };
+          }
         }
       } catch (error) {
-        Logger.error("Si è verificato un errore", error);
-        throw error;
+        Logger.error('Si è verificato un errore', error)
+        throw error
       }
     }),
-});
+})

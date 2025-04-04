@@ -1,4 +1,4 @@
-import { Ballot, Diversity1, SportsSoccer } from "@mui/icons-material";
+import { Ballot, Diversity1, SportsSoccer } from '@mui/icons-material'
 import {
   Box,
   Card,
@@ -15,31 +15,31 @@ import {
   Tooltip,
   Typography,
   useTheme,
-} from "@mui/material";
-import { api } from "~/utils/api";
-import { FrameType } from "~/utils/enums";
-import { useSession } from "next-auth/react";
-import { useState } from "react";
-import { PieChart } from "@mui/x-charts/PieChart";
-import { type GiornataType } from "~/types/common";
-import Link from "next/link";
+} from '@mui/material'
+import { api } from '~/utils/api'
+import { FrameType } from '~/utils/enums'
+import { useSession } from 'next-auth/react'
+import { useState } from 'react'
+import { PieChart } from '@mui/x-charts/PieChart'
+import { type GiornataType } from '~/types/common'
+import Link from 'next/link'
 
 interface StatisticaSquadraProps {
-  onActionChangePartita: (action: FrameType, idPartita: number) => void;
+  onActionChangePartita: (action: FrameType, idPartita: number) => void
   onActionGoToRosa: (
     action: FrameType,
     idSquadra: number,
-    squadra: string
-  ) => void;
-  onActionGoToFormazione: (action: FrameType) => void;
-  idSquadra: number;
+    squadra: string,
+  ) => void
+  onActionGoToFormazione: (action: FrameType) => void
+  idSquadra: number
 }
 
 interface TabPanelProps {
-  children?: React.ReactNode;
-  dir?: string;
-  index: number;
-  value: number;
+  children?: React.ReactNode
+  dir?: string
+  index: number
+  value: number
 }
 
 function StatisticaSquadra({
@@ -48,40 +48,40 @@ function StatisticaSquadra({
   onActionGoToFormazione: onActionActiveFormazione,
   idSquadra,
 }: StatisticaSquadraProps) {
-  const { data: session } = useSession();
-  const theme = useTheme();
+  const { data: session } = useSession()
+  const theme = useTheme()
   const apiSquadra = api.squadre.get.useQuery(
     { idSquadra: idSquadra },
-    { refetchOnWindowFocus: false, refetchOnReconnect: false }
-  );
+    { refetchOnWindowFocus: false, refetchOnReconnect: false },
+  )
   const apiAlbo = api.albo.get.useQuery(
     { idSquadra: idSquadra },
-    { refetchOnWindowFocus: false, refetchOnReconnect: false }
-  );
+    { refetchOnWindowFocus: false, refetchOnReconnect: false },
+  )
   const apiPartite = api.calendario.listPartiteBySquadra.useQuery(
     { idSquadra: idSquadra },
-    { refetchOnWindowFocus: false, refetchOnReconnect: false }
-  );
-  const [value, setValue] = useState(0);
+    { refetchOnWindowFocus: false, refetchOnReconnect: false },
+  )
+  const [value, setValue] = useState(0)
 
   const handleActionRosa = (
     newFrame: FrameType,
     idSquadra: number,
-    squadra: string
+    squadra: string,
   ) => {
-    onActionActiveRosa(newFrame, idSquadra, squadra);
-  };
+    onActionActiveRosa(newFrame, idSquadra, squadra)
+  }
 
   const handleActionFormazione = (newFrame: FrameType) => {
-    onActionActiveFormazione(newFrame);
-  };
+    onActionActiveFormazione(newFrame)
+  }
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
+    setValue(newValue)
+  }
 
   function TabPanel(props: TabPanelProps) {
-    const { children, value, index, ...other } = props;
+    const { children, value, index, ...other } = props
 
     return (
       <div
@@ -93,18 +93,18 @@ function StatisticaSquadra({
       >
         {value === index && children}
       </div>
-    );
+    )
   }
 
-  const datiSquadra = apiSquadra.data;
-  const datiAlbo = apiAlbo.data;
-  const datiPartite = apiPartite.data;
+  const datiSquadra = apiSquadra.data
+  const datiAlbo = apiAlbo.data
+  const datiPartite = apiPartite.data
 
   const renderPartite = (torneo: string) => (
     <Grid
       container
       spacing={1}
-      sx={{ overflowY: "auto", width: "100%", maxHeight: "360px" }}
+      sx={{ overflowY: 'auto', width: '100%', maxHeight: '360px' }}
     >
       {datiPartite
         ?.filter((c) => c.Torneo === torneo)
@@ -113,7 +113,7 @@ function StatisticaSquadra({
             ...partita,
             isGiocata: c.isGiocata,
             giornata: c.giornata,
-          }))
+          })),
         )
         .map((partita, index) => (
           <Grid item xs={12} key={`card_partita_${index}_${partita.idPartita}`}>
@@ -124,7 +124,7 @@ function StatisticaSquadra({
                 color="text.secondary"
                 key={`typography_${partita.idPartita}`}
               >
-                {partita.giornata} - {partita.squadraHome} -{" "}
+                {partita.giornata} - {partita.squadraHome} -{' '}
                 {partita.squadraAway}
               </Typography>
               <Stack
@@ -147,7 +147,7 @@ function StatisticaSquadra({
                       href={`/tabellini?idPartita=${partita.idPartita}`}
                       passHref
                     >
-                      <IconButton sx={{ height: "24px" }}>
+                      <IconButton sx={{ height: '24px' }}>
                         <Ballot color="primary" fontSize="small" />
                       </IconButton>
                     </Link>
@@ -159,7 +159,7 @@ function StatisticaSquadra({
                       href={`/formazioni?idPartita=${partita.idPartita}`}
                       passHref
                     >
-                      <IconButton sx={{ height: "24px" }}>
+                      <IconButton sx={{ height: '24px' }}>
                         <SportsSoccer color="primary" fontSize="small" />
                       </IconButton>
                     </Link>
@@ -171,7 +171,7 @@ function StatisticaSquadra({
           </Grid>
         ))}
     </Grid>
-  );
+  )
 
   function getStatsPartite(torneo: string, datiPartite: GiornataType[]) {
     const vinte =
@@ -179,58 +179,62 @@ function StatisticaSquadra({
         .filter((c) => c.Torneo === torneo && c.isGiocata)
         .flatMap((c) =>
           c.partite.filter(
-            (c) => c.idHome === idSquadra && (c.golHome ?? 0) > (c.golAway ?? 0)
-          )
+            (c) =>
+              c.idHome === idSquadra && (c.golHome ?? 0) > (c.golAway ?? 0),
+          ),
         ).length +
       datiPartite
         .filter((c) => c.Torneo === torneo && c.isGiocata)
         .flatMap((c) =>
           c.partite.filter(
-            (c) => c.idAway === idSquadra && (c.golAway ?? 0) > (c.golHome ?? 0)
-          )
-        ).length;
+            (c) =>
+              c.idAway === idSquadra && (c.golAway ?? 0) > (c.golHome ?? 0),
+          ),
+        ).length
     const pareggi =
       datiPartite
         .filter((c) => c.Torneo === torneo && c.isGiocata)
         .flatMap((c) =>
           c.partite.filter(
             (c) =>
-              c.idHome === idSquadra && (c.golHome ?? 0) === (c.golAway ?? 0)
-          )
+              c.idHome === idSquadra && (c.golHome ?? 0) === (c.golAway ?? 0),
+          ),
         ).length +
       datiPartite
         .filter((c) => c.Torneo === torneo && c.isGiocata)
         .flatMap((c) =>
           c.partite.filter(
             (c) =>
-              c.idAway === idSquadra && (c.golAway ?? 0) === (c.golHome ?? 0)
-          )
-        ).length;
+              c.idAway === idSquadra && (c.golAway ?? 0) === (c.golHome ?? 0),
+          ),
+        ).length
     const perse =
       datiPartite
         .filter((c) => c.Torneo === torneo && c.isGiocata)
         .flatMap((c) =>
           c.partite.filter(
-            (c) => c.idHome === idSquadra && (c.golHome ?? 0) < (c.golAway ?? 0)
-          )
+            (c) =>
+              c.idHome === idSquadra && (c.golHome ?? 0) < (c.golAway ?? 0),
+          ),
         ).length +
       datiPartite
         .filter((c) => c.Torneo === torneo && c.isGiocata)
         .flatMap((c) =>
           c.partite.filter(
-            (c) => c.idAway === idSquadra && (c.golAway ?? 0) < (c.golHome ?? 0)
-          )
-        ).length;
+            (c) =>
+              c.idAway === idSquadra && (c.golAway ?? 0) < (c.golHome ?? 0),
+          ),
+        ).length
 
     return [
       {
         data: [
-          { id: 0, value: vinte, label: "Vittorie" },
-          { id: 1, value: pareggi, label: "Pareggi" },
-          { id: 2, value: perse, label: "Sconfitte" },
+          { id: 0, value: vinte, label: 'Vittorie' },
+          { id: 1, value: pareggi, label: 'Pareggi' },
+          { id: 2, value: perse, label: 'Sconfitte' },
         ],
       },
-    ];
+    ]
   }
 
   return (
@@ -239,10 +243,10 @@ function StatisticaSquadra({
         <Grid item xs={12}>
           <Box
             sx={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
           >
             <CircularProgress color="warning" />
@@ -252,13 +256,13 @@ function StatisticaSquadra({
       {datiSquadra && datiAlbo && datiPartite && (
         <>
           <Grid item xs={8} sm={8}>
-            <Typography variant={"h4"}>{datiSquadra.squadra}</Typography>
+            <Typography variant={'h4'}>{datiSquadra.squadra}</Typography>
           </Grid>
           <Grid
             item
             xs={4}
             sm={4}
-            sx={{ display: "flex", justifyContent: "flex-end" }}
+            sx={{ display: 'flex', justifyContent: 'flex-end' }}
           >
             {session?.user && (
               <Tooltip title="Schiera formazione" placement="top-start">
@@ -277,27 +281,26 @@ function StatisticaSquadra({
                   handleActionRosa(
                     FrameType.rosa,
                     idSquadra,
-                    datiSquadra.squadra
+                    datiSquadra.squadra,
                   )
                 }
               >
                 <Diversity1 color="success" />
               </IconButton>
             </Tooltip>
-            
           </Grid>
           <Grid item xs={12} sm={3}>
             <Card>
               <CardHeader
                 title={datiSquadra.presidente}
-                titleTypographyProps={{ variant: "h4" }}
-                subheader={session?.user ? datiSquadra.email : ""}
+                titleTypographyProps={{ variant: 'h4' }}
+                subheader={session?.user ? datiSquadra.email : ''}
               ></CardHeader>
               <CardMedia
                 component="img"
                 height="250"
-                sx={{ paddingTop: 0, display: { xs: "none", sm: "block" } }}
-                image={datiSquadra.foto ?? ""}
+                sx={{ paddingTop: 0, display: { xs: 'none', sm: 'block' } }}
+                image={datiSquadra.foto ?? ''}
                 alt={datiSquadra.presidente}
               />
               <CardContent>
@@ -322,38 +325,38 @@ function StatisticaSquadra({
             </Card>
           </Grid>
           <Grid item xs={12} sm={9}>
-            <Grid container spacing={0} sx={{ m: "15px" }}>
+            <Grid container spacing={0} sx={{ m: '15px' }}>
               <Grid item xs={12} sm={6}>
                 <Tabs
                   value={value}
                   onChange={handleChange}
                   indicatorColor="secondary"
                   textColor="inherit"
-                  variant={"standard"}
+                  variant={'standard'}
                   aria-label="Partite squadra"
                 >
                   <Tab label="Campionato" />
                   <Tab label="Champions" />
                 </Tabs>
                 <TabPanel value={value} index={0} dir={theme.direction}>
-                  {renderPartite("Campionato")}
+                  {renderPartite('Campionato')}
                 </TabPanel>
                 <TabPanel value={value} index={1} dir={theme.direction}>
-                  {renderPartite("Champions")}
+                  {renderPartite('Champions')}
                 </TabPanel>
               </Grid>
               <Grid item sm={6} xs={12}>
                 <Box flexGrow={1}>
                   <Typography
                     variant="body2"
-                    display={"flex"}
-                    justifyContent={"center"}
+                    display={'flex'}
+                    justifyContent={'center'}
                   >
                     Risultati Campionato
                   </Typography>
                   <PieChart
-                    colors={["lightGreen", "orange", "red"]}
-                    series={getStatsPartite("Campionato", datiPartite)}
+                    colors={['lightGreen', 'orange', 'red']}
+                    series={getStatsPartite('Campionato', datiPartite)}
                     width={350}
                     height={200}
                   />
@@ -361,13 +364,13 @@ function StatisticaSquadra({
                 <Box flexGrow={1}>
                   <Typography
                     variant="body2"
-                    display={"flex"}
-                    justifyContent={"center"}
+                    display={'flex'}
+                    justifyContent={'center'}
                   >
                     Risultati Champions
                   </Typography>
                   <PieChart
-                    series={getStatsPartite("Champions", datiPartite)}
+                    series={getStatsPartite('Champions', datiPartite)}
                     width={350}
                     height={200}
                   />
@@ -377,11 +380,11 @@ function StatisticaSquadra({
           </Grid>
         </>
       )}
-      <Grid item xs={12} sx={{ height: "100px" }}>
+      <Grid item xs={12} sx={{ height: '100px' }}>
         <></>
       </Grid>
     </Grid>
-  );
+  )
 }
 
-export default StatisticaSquadra;
+export default StatisticaSquadra

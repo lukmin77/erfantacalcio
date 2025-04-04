@@ -1,1 +1,1 @@
-declare module 'eslint-config-next';
+declare module 'eslint-config-next'

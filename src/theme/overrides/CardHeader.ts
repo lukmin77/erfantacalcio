@@ -1,4 +1,4 @@
-import type { Theme } from '@mui/material/styles';
+import type { Theme } from '@mui/material/styles'
 
 // ==============================|| OVERRIDES - CARD CONTENT ||============================== //
 
@@ -7,17 +7,17 @@ export default function CardHeader(theme: Theme) {
     MuiCardHeader: {
       styleOverrides: {
         root: {
-          padding: "1px",
+          padding: '1px',
           backgroundColor: theme.palette.secondary.light,
           color: theme.palette.primary.main,
-          "&:last-child": {
+          '&:last-child': {
             paddingBottom: 0,
           },
-          "& .MuiCardHeader-subheader": {
+          '& .MuiCardHeader-subheader': {
             color: theme.palette.primary.main,
           },
         },
       },
     },
-  };
+  }
 }

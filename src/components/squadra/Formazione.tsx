@@ -1,4 +1,4 @@
-"use client";
+'use client'
 import {
   Analytics,
   HourglassTop,
@@ -10,7 +10,7 @@ import {
   LooksTwoOutlined,
   ResetTv,
   Save,
-} from "@mui/icons-material";
+} from '@mui/icons-material'
 import {
   Box,
   CircularProgress,
@@ -30,19 +30,19 @@ import {
   Divider,
   Zoom,
   Slide,
-} from "@mui/material";
-import { useSession } from "next-auth/react";
-import { api } from "~/utils/api";
-import React, { useEffect, useState } from "react";
-import { type GiornataType, type Moduli } from "~/types/common";
-import { getShortName, moduloDefault } from "~/utils/helper";
+} from '@mui/material'
+import { useSession } from 'next-auth/react'
+import { api } from '~/utils/api'
+import React, { useEffect, useState } from 'react'
+import { type GiornataType, type Moduli } from '~/types/common'
+import { getShortName, moduloDefault } from '~/utils/helper'
 import {
   type GiocatoreFormazioneType,
   type GiocatoreType,
-} from "~/types/squadre";
-import Image from "next/image";
-import Modal from "../modal/Modal";
-import Giocatore from "../giocatori/Giocatore";
+} from '~/types/squadre'
+import Image from 'next/image'
+import Modal from '../modal/Modal'
+import Giocatore from '../giocatori/Giocatore'
 import {
   allowedFormations,
   calcolaCodiceFormazione,
@@ -51,73 +51,73 @@ import {
   getPlayerStylePosition,
   sortPlayersByRoleDescThenCostoDesc,
   sortPlayersByRoleDescThenRiserva,
-} from "./utils";
+} from './utils'
 
 function Formazione() {
-  const session = useSession();
-  const idSquadra = parseInt(session.data?.user?.id ?? "0");
-  const squadra = session.data?.user?.squadra ?? "";
-  const [idGiocatoreStat, setIdGiocatoreStat] = useState<number>();
-  const [openModalCalendario, setOpenModalCalendario] = useState(false);
-  const [enableRosa, setEnableRosa] = useState(false);
-  const [message, setMessage] = useState("");
-  const [giornate, setGiornate] = useState<GiornataType[]>([]);
-  const [idTorneo, setIdTorneo] = useState<number>();
-  const [rosa, setRosa] = useState<GiocatoreFormazioneType[]>([]);
-  const [campo, setCampo] = useState<GiocatoreFormazioneType[]>([]);
-  const [panca, setPanca] = useState<GiocatoreFormazioneType[]>([]);
-  const [idPartita, setIdPartita] = useState<number>();
-  const [modulo, setModulo] = useState<Moduli>(moduloDefault);
-  const [openAlert, setOpenAlert] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
-  const [alertSeverity, setAlertSeverity] = useState<"success" | "error">(
-    "success"
-  );
+  const session = useSession()
+  const idSquadra = parseInt(session.data?.user?.id ?? '0')
+  const squadra = session.data?.user?.squadra ?? ''
+  const [idGiocatoreStat, setIdGiocatoreStat] = useState<number>()
+  const [openModalCalendario, setOpenModalCalendario] = useState(false)
+  const [enableRosa, setEnableRosa] = useState(false)
+  const [message, setMessage] = useState('')
+  const [giornate, setGiornate] = useState<GiornataType[]>([])
+  const [idTorneo, setIdTorneo] = useState<number>()
+  const [rosa, setRosa] = useState<GiocatoreFormazioneType[]>([])
+  const [campo, setCampo] = useState<GiocatoreFormazioneType[]>([])
+  const [panca, setPanca] = useState<GiocatoreFormazioneType[]>([])
+  const [idPartita, setIdPartita] = useState<number>()
+  const [modulo, setModulo] = useState<Moduli>(moduloDefault)
+  const [openAlert, setOpenAlert] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [alertMessage, setAlertMessage] = useState('')
+  const [alertSeverity, setAlertSeverity] = useState<'success' | 'error'>(
+    'success',
+  )
   const styleCampo = {
-    borderStyle: "none",
-    borderWidth: "0px",
-    borderColor: "#E4221F",
-    position: "relative",
-    width: "95%", //410px
-    aspectRatio: "360 / 509",
+    borderStyle: 'none',
+    borderWidth: '0px',
+    borderColor: '#E4221F',
+    position: 'relative',
+    width: '95%', //410px
+    aspectRatio: '360 / 509',
     //height: '509px',
-    backgroundRepeat: "no-repeat",
-    backgroundSize: "cover", //100%
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover', //100%
     backgroundImage: "url('images/campo.jpg')",
-  };
+  }
   const styleRosa = {
-    borderStyle: "none",
-    borderWidth: "0px",
-    borderColor: "#E4221F",
-  };
+    borderStyle: 'none',
+    borderWidth: '0px',
+    borderColor: '#E4221F',
+  }
 
   const calendarioProssima = api.formazione.getGiornateDaGiocare.useQuery(
     undefined,
-    { refetchOnWindowFocus: false, refetchOnReconnect: false }
-  );
+    { refetchOnWindowFocus: false, refetchOnReconnect: false },
+  )
   const saveFormazione = api.formazione.create.useMutation({
     onSuccess: async () => {
-      setAlertMessage("Salvataggio completato");
-      setAlertSeverity("success");
+      setAlertMessage('Salvataggio completato')
+      setAlertSeverity('success')
     },
-  });
+  })
   const formazioneList = api.formazione.get.useQuery(
     { idTorneo: idTorneo! },
     {
       enabled: !!idTorneo,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
-    }
-  );
+    },
+  )
   const rosaList = api.squadre.getRosa.useQuery(
     { idSquadra: idSquadra, includeVenduti: false },
     {
       enabled: enableRosa,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
-    }
-  );
+    },
+  )
 
   useEffect(() => {
     if (calendarioProssima.data) {
@@ -125,12 +125,12 @@ function Formazione() {
         calendarioProssima.data.length > 0 &&
         checkDataFormazione(calendarioProssima.data[0]?.data)
       ) {
-        setEnableRosa(true);
-        setIdTorneo(calendarioProssima.data[0]?.idTorneo);
-      } else setMessage("Formazione non rilasciabile");
-      setGiornate(calendarioProssima.data);
+        setEnableRosa(true)
+        setIdTorneo(calendarioProssima.data[0]?.idTorneo)
+      } else setMessage('Formazione non rilasciabile')
+      setGiornate(calendarioProssima.data)
     }
-  }, [calendarioProssima.data]);
+  }, [calendarioProssima.data])
 
   useEffect(() => {
     if (rosaList.data) {
@@ -138,56 +138,52 @@ function Formazione() {
         ...giocatore,
         titolare: false,
         riserva: null,
-      }));
+      }))
 
-      setRosa(rosaConRuolo);
+      setRosa(rosaConRuolo)
     }
-  }, [rosaList.data, idTorneo]);
+  }, [rosaList.data, idTorneo])
 
   useEffect(() => {
     if (formazioneList.data) {
-      setIdPartita(formazioneList.data.idPartita);
-      setModulo(formazioneList.data.modulo as Moduli);
-      setCampo(formazioneList.data.giocatori.filter((c) => c.titolare));
+      setIdPartita(formazioneList.data.idPartita)
+      setModulo(formazioneList.data.modulo as Moduli)
+      setCampo(formazioneList.data.giocatori.filter((c) => c.titolare))
       setRosa(
         sortPlayersByRoleDescThenCostoDesc(
           formazioneList.data.giocatori.filter(
-            (c) => !c.titolare && c.riserva === null
-          )
-        )
-      );
+            (c) => !c.titolare && c.riserva === null,
+          ),
+        ),
+      )
       setPanca(
         sortPlayersByRoleDescThenRiserva(
-          formazioneList.data.giocatori.filter((c) => !c.titolare && c.riserva)
-        )
-      );
+          formazioneList.data.giocatori.filter((c) => !c.titolare && c.riserva),
+        ),
+      )
     }
-  }, [
-    formazioneList.isFetching,
-    formazioneList.isSuccess,
-    formazioneList.data,
-  ]);
+  }, [formazioneList.isFetching, formazioneList.isSuccess, formazioneList.data])
 
   const handleClickPlayer = async (playerClicked: GiocatoreFormazioneType) => {
-    playerClicked.riserva = null;
-    playerClicked.titolare = false;
+    playerClicked.riserva = null
+    playerClicked.titolare = false
 
-    const canAdd = canAddPlayer(playerClicked.ruolo);
+    const canAdd = canAddPlayer(playerClicked.ruolo)
 
     if (
       rosa.some((c) => c.idGiocatore === playerClicked.idGiocatore) &&
       canAdd
     ) {
       // Va da rosa a campo
-      playerClicked.titolare = true;
-      await updateLists(playerClicked, campo, setCampo, rosa, setRosa, false);
+      playerClicked.titolare = true
+      await updateLists(playerClicked, campo, setCampo, rosa, setRosa, false)
     } else if (rosa.some((c) => c.idGiocatore === playerClicked.idGiocatore)) {
       // Va da rosa a panca
-      playerClicked.riserva = 100;
-      await updateLists(playerClicked, panca, setPanca, rosa, setRosa, true);
+      playerClicked.riserva = 100
+      await updateLists(playerClicked, panca, setPanca, rosa, setRosa, true)
     } else if (campo.some((c) => c.idGiocatore === playerClicked.idGiocatore)) {
       // Va da campo a rosa
-      await updateLists(playerClicked, rosa, setRosa, campo, setCampo, true);
+      await updateLists(playerClicked, rosa, setRosa, campo, setCampo, true)
     } else if (panca.some((c) => c.idGiocatore === playerClicked.idGiocatore)) {
       // Va da panca a rosa
       await updateLists(
@@ -197,35 +193,35 @@ function Formazione() {
         panca,
         setPanca,
         false,
-        true
-      );
+        true,
+      )
     }
-  };
+  }
 
   function canAddPlayer(ruoloGiocatore: string): boolean {
-    const newState = calcolaCodiceFormazione(campo, ruoloGiocatore);
-    const newStateStr = newState.toString().padStart(4, "0");
+    const newState = calcolaCodiceFormazione(campo, ruoloGiocatore)
+    const newStateStr = newState.toString().padStart(4, '0')
 
     const isValid = allowedFormations.some((formation) => {
-      const formationStr = formation.toString().padStart(4, "0");
+      const formationStr = formation.toString().padStart(4, '0')
 
       for (let i = 0; i < 4; i++) {
-        const currentRoleCount = parseInt(newStateStr.charAt(i), 10);
-        const maxRoleCount = parseInt(formationStr.charAt(i), 10);
+        const currentRoleCount = parseInt(newStateStr.charAt(i), 10)
+        const maxRoleCount = parseInt(formationStr.charAt(i), 10)
 
         if (currentRoleCount > maxRoleCount) {
-          return false;
+          return false
         }
       }
-      return true;
-    });
+      return true
+    })
 
     if (isValid) {
-      const moduloFormatted = formatModulo(newStateStr);
-      setModulo(moduloFormatted as Moduli);
+      const moduloFormatted = formatModulo(newStateStr)
+      setModulo(moduloFormatted as Moduli)
     }
 
-    return isValid;
+    return isValid
   }
 
   const updateLists = async (
@@ -235,47 +231,52 @@ function Formazione() {
     sourceArray: GiocatoreFormazioneType[],
     setSourceArray: (value: GiocatoreFormazioneType[]) => void,
     orderTargetList = true,
-    orderSourceList = false
+    orderSourceList = false,
   ) => {
     if (
       playerSelected &&
       !targetArray.find((c) => c.idGiocatore === playerSelected.idGiocatore)
     ) {
       const updatedSourceArray = sourceArray.filter(
-        (player) => player.idGiocatore !== playerSelected.idGiocatore
-      );
-      setSourceArray(updatedSourceArray);
-      const updatedTargetArray = [...targetArray, playerSelected];
+        (player) => player.idGiocatore !== playerSelected.idGiocatore,
+      )
+      setSourceArray(updatedSourceArray)
+      const updatedTargetArray = [...targetArray, playerSelected]
       orderSourceList
         ? sortPlayersByRoleDescThenRiserva(updatedSourceArray)
-        : setSourceArray(updatedSourceArray);
+        : setSourceArray(updatedSourceArray)
       orderTargetList
         ? setTargetArray(sortPlayersByRoleDescThenRiserva(updatedTargetArray))
-        : setTargetArray(updatedTargetArray);
+        : setTargetArray(updatedTargetArray)
     }
-  };
+  }
 
   const renderRosa = (roles: string[], columns: number, title: string) => {
-    const filteredRosa = rosa.filter((player) => roles.includes(player.ruolo));
-    const filteredPanca = panca.filter((player) =>
-      roles.includes(player.ruolo)
-    );
+    const filteredRosa = rosa.filter((player) => roles.includes(player.ruolo))
+    const filteredPanca = panca.filter((player) => roles.includes(player.ruolo))
 
     const handleStatGiocatore = (idGiocatore: number) => {
-      setIdGiocatoreStat(idGiocatore);
-      setOpenModalCalendario(true);
-    };
+      setIdGiocatoreStat(idGiocatore)
+      setOpenModalCalendario(true)
+    }
 
     return (
       <Grid item sm={columns} xs={12}>
         <Box>
           <Typography variant="h5">{title}</Typography>
-          <List sx={{ bgcolor: "background.paper" }}>
+          <List sx={{ bgcolor: 'background.paper' }}>
             {filteredRosa.map((player) => (
               <Grid container spacing={0} key={player.idGiocatore}>
                 <Grid item xs={10}>
                   <div onClick={() => handleClickPlayer(player)}>
-                    <ListItem sx={{ cursor: "pointer", zIndex: 2, paddingTop: "0px", paddingBottom: "0px" }} >
+                    <ListItem
+                      sx={{
+                        cursor: 'pointer',
+                        zIndex: 2,
+                        paddingTop: '0px',
+                        paddingBottom: '0px',
+                      }}
+                    >
                       <Image
                         src={player.urlCampioncinoSmall}
                         width={42}
@@ -289,9 +290,15 @@ function Formazione() {
                     </ListItem>
                   </div>
                 </Grid>
-                <Grid item xs={2} display={"flex"} justifyContent={"flex-end"}>
-                  <Slide direction="right" in={true} style={{ transitionDelay: '300ms' }} mountOnEnter unmountOnExit>
-                    <Tooltip title={"Statistiche giocatore"}>
+                <Grid item xs={2} display={'flex'} justifyContent={'flex-end'}>
+                  <Slide
+                    direction="right"
+                    in={true}
+                    style={{ transitionDelay: '300ms' }}
+                    mountOnEnter
+                    unmountOnExit
+                  >
+                    <Tooltip title={'Statistiche giocatore'}>
                       <IconButton
                         onClick={() => handleStatGiocatore(player.idGiocatore)}
                       >
@@ -307,7 +314,12 @@ function Formazione() {
                 <Grid item xs={10}>
                   <div onClick={() => handleClickPlayer(player)}>
                     <ListItem
-                      sx={{ cursor: "pointer", zIndex: 2, paddingTop: "0px", paddingBottom: "0px" }}
+                      sx={{
+                        cursor: 'pointer',
+                        zIndex: 2,
+                        paddingTop: '0px',
+                        paddingBottom: '0px',
+                      }}
                     >
                       <Image
                         src={player.urlCampioncinoSmall}
@@ -322,8 +334,14 @@ function Formazione() {
                     </ListItem>
                   </div>
                 </Grid>
-                <Grid item xs={2} display={"flex"} justifyContent={"flex-end"}>
-                  <Slide direction="right" in={true} style={{ transitionDelay: '300ms' }} mountOnEnter unmountOnExit>
+                <Grid item xs={2} display={'flex'} justifyContent={'flex-end'}>
+                  <Slide
+                    direction="right"
+                    in={true}
+                    style={{ transitionDelay: '300ms' }}
+                    mountOnEnter
+                    unmountOnExit
+                  >
                     <Tooltip title={`Riserva ${player.riserva}`}>
                       <IconButton>
                         {filterIcons[(player.riserva ?? 0) - 1]}
@@ -336,8 +354,8 @@ function Formazione() {
           </List>
         </Box>
       </Grid>
-    );
-  };
+    )
+  }
 
   const filterIcons = [
     <LooksOneOutlined key={0} color="error" />,
@@ -346,28 +364,28 @@ function Formazione() {
     <Looks4Outlined key={3} color="error" />,
     <Looks5Outlined key={4} color="error" />,
     <Looks6Outlined key={5} color="error" />,
-  ];
+  ]
 
   const renderCampo = (roles: string[]) => {
-    const filtered = campo.filter((player) => roles.includes(player.ruolo));
+    const filtered = campo.filter((player) => roles.includes(player.ruolo))
     return (
       <>
         {filtered.map((player, index) => {
-          const style = getPlayerStylePosition(player.ruolo, index, modulo);
+          const style = getPlayerStylePosition(player.ruolo, index, modulo)
           return (
             <div
               onClick={() => handleClickPlayer(player)}
               key={player.idGiocatore}
               style={{
-                cursor: "pointer",
+                cursor: 'pointer',
                 zIndex: 2,
-                minWidth: "120px",
-                position: "absolute",
+                minWidth: '120px',
+                position: 'absolute',
                 ...style,
               }}
             >
               <Stack
-                direction={"column"}
+                direction={'column'}
                 justifyContent="space-between"
                 alignItems="center"
               >
@@ -381,32 +399,32 @@ function Formazione() {
                 <Typography
                   variant="body2"
                   sx={{
-                    color: "white",
-                    backgroundColor: "#2e865f",
+                    color: 'white',
+                    backgroundColor: '#2e865f',
                     opacity: 0.8,
-                    padding: "2px",
+                    padding: '2px',
                   }}
                 >
                   {player.nome}
                 </Typography>
               </Stack>
             </div>
-          );
+          )
         })}
       </>
-    );
-  };
+    )
+  }
 
   const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+    event.preventDefault()
     if (rosa.length > 0 || campo.length !== 11) {
-      setAlertMessage("Completa la formazione");
-      setAlertSeverity("error");
+      setAlertMessage('Completa la formazione')
+      setAlertSeverity('error')
     } else if (!idPartita && idPartita !== 0) {
-      setAlertMessage("Nessuna partita in programma, impossibile procedere");
-      setAlertSeverity("error");
+      setAlertMessage('Nessuna partita in programma, impossibile procedere')
+      setAlertSeverity('error')
     } else {
-      setSaving(true);
+      setSaving(true)
       if (idPartita !== 0) {
         await saveFormazione.mutateAsync({
           idPartita: idPartita,
@@ -416,8 +434,8 @@ function Formazione() {
             titolare: giocatore.titolare,
             riserva: giocatore.riserva,
           })),
-        });
-        setSaving(false);
+        })
+        setSaving(false)
       } else {
         await Promise.all(
           giornate.map(async (g) => {
@@ -431,18 +449,18 @@ function Formazione() {
                 titolare: giocatore.titolare,
                 riserva: giocatore.riserva,
               })),
-            });
-          })
-        );
-        setSaving(false);
+            })
+          }),
+        )
+        setSaving(false)
       }
     }
-    setOpenAlert(true);
-  };
+    setOpenAlert(true)
+  }
 
   const handleModalClose = () => {
-    setOpenModalCalendario(false);
-  };
+    setOpenModalCalendario(false)
+  }
 
   return (
     <>
@@ -452,10 +470,10 @@ function Formazione() {
           <Grid item xs={12}>
             <Box
               sx={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
             >
               <CircularProgress color="warning" />
@@ -465,17 +483,17 @@ function Formazione() {
         {enableRosa ? (
           <>
             <Grid item xs={6}>
-              <Typography variant={"h3"}>
-                Formazione {squadra}{" "}
+              <Typography variant={'h3'}>
+                Formazione {squadra}{' '}
                 {giornate.length === 1 && ` - ${giornate[0]?.Title}`}
               </Typography>
             </Grid>
-            <Grid item xs={6} justifyItems={"end"}>
+            <Grid item xs={6} justifyItems={'end'}>
               <Stack
-                direction={"row"}
+                direction={'row'}
                 justifyContent="flex-end"
-                alignItems={"center"}
-                sx={{ pb: "5px" }}
+                alignItems={'center'}
+                sx={{ pb: '5px' }}
               >
                 {giornate.length > 1 && (
                   <Select
@@ -484,7 +502,7 @@ function Formazione() {
                     labelId="select-label-giornata"
                     margin="dense"
                     required
-                    sx={{ ml: "10px" }}
+                    sx={{ ml: '10px' }}
                     name="giornata"
                     onChange={(e) =>
                       e.target.value !== 0
@@ -510,18 +528,18 @@ function Formazione() {
                   endIcon={<ResetTv />}
                   variant="contained"
                   onClick={() => {
-                    setModulo(moduloDefault);
-                    setCampo([]);
-                    setPanca([]);
+                    setModulo(moduloDefault)
+                    setCampo([])
+                    setPanca([])
                     setRosa(
                       sortPlayersByRoleDescThenCostoDesc(
-                        rosa.concat(campo, panca)
-                      )
-                    );
+                        rosa.concat(campo, panca),
+                      ),
+                    )
                   }}
                   color="info"
                   size="medium"
-                  sx={{ ml: "5px" }}
+                  sx={{ ml: '5px' }}
                 >
                   Reset
                 </Button>
@@ -533,9 +551,9 @@ function Formazione() {
                     variant="contained"
                     color="success"
                     size="medium"
-                    sx={{ ml: "5px" }}
+                    sx={{ ml: '5px' }}
                   >
-                    {saving ? "Attendere..." : "Salva"}
+                    {saving ? 'Attendere...' : 'Salva'}
                   </Button>
                 </Box>
               </Stack>
@@ -544,25 +562,25 @@ function Formazione() {
             <Grid item sm={4}>
               <>
                 <Grid container spacing={0} sx={styleRosa} padding={1}>
-                  {renderRosa(["P"], 6, "Portieri")}
-                  {renderRosa(["D"], 6, "Difensori")}
+                  {renderRosa(['P'], 6, 'Portieri')}
+                  {renderRosa(['D'], 6, 'Difensori')}
                 </Grid>
               </>
             </Grid>
             <Grid
               item
               sm={4}
-              sx={{ display: "flex", justifyContent: "flex-end" }}
+              sx={{ display: 'flex', justifyContent: 'flex-end' }}
             >
               <Box sx={styleCampo}>
-                {renderCampo(["P"])}
-                {renderCampo(["D"])}
-                {renderCampo(["C"])}
-                {renderCampo(["A"])}
+                {renderCampo(['P'])}
+                {renderCampo(['D'])}
+                {renderCampo(['C'])}
+                {renderCampo(['A'])}
               </Box>
               <Snackbar
-                anchorOrigin={{ vertical: "top", horizontal: "center" }}
-                sx={{ height: "60%" }}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                sx={{ height: '60%' }}
                 open={openAlert}
                 autoHideDuration={3000}
                 onClose={() => setOpenAlert(false)}
@@ -571,7 +589,7 @@ function Formazione() {
                   onClose={() => setOpenAlert(false)}
                   severity={alertSeverity}
                   variant="filled"
-                  sx={{ width: "100%" }}
+                  sx={{ width: '100%' }}
                 >
                   {alertMessage}
                 </Alert>
@@ -580,8 +598,8 @@ function Formazione() {
             <Grid item sm={4}>
               <>
                 <Grid container spacing={0} sx={styleRosa} padding={1}>
-                  {renderRosa(["C"], 6, "Centrocampisti")}
-                  {renderRosa(["A"], 6, "Attaccanti")}
+                  {renderRosa(['C'], 6, 'Centrocampisti')}
+                  {renderRosa(['A'], 6, 'Attaccanti')}
                 </Grid>
               </>
             </Grid>
@@ -590,9 +608,9 @@ function Formazione() {
           <Grid
             item
             xs={12}
-            display={"flex"}
-            justifyContent={"center"}
-            sx={{ mt: "30px" }}
+            display={'flex'}
+            justifyContent={'center'}
+            sx={{ mt: '30px' }}
           >
             <Typography variant="h3" color="error">
               {message}
@@ -602,20 +620,20 @@ function Formazione() {
       </Grid>
 
       <Modal
-        title={"Statistica giocatore"}
+        title={'Statistica giocatore'}
         open={openModalCalendario}
         onClose={handleModalClose}
-        width={"1266px"}
+        width={'1266px'}
       >
         <Divider />
-        <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
+        <Box sx={{ mt: 1, gap: '0px', flexWrap: 'wrap' }}>
           {idGiocatoreStat !== undefined && (
             <Giocatore idGiocatore={idGiocatoreStat} />
           )}
         </Box>
       </Modal>
     </>
-  );
+  )
 }
 
-export default Formazione;
+export default Formazione

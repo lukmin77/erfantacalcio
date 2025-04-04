@@ -1,52 +1,51 @@
-
 export type votoType = {
-    idVoto: number;
-    nome: string,
-    voto: number | null,
-    ruolo: string,
-    ammonizione: number,
-    espulsione: number,
-    gol: number | null,
-    assist: number | null,
-    autogol: number | null,
-    altriBonus: number | null
+  idVoto: number
+  nome: string
+  voto: number | null
+  ruolo: string
+  ammonizione: number
+  espulsione: number
+  gol: number | null
+  assist: number | null
+  autogol: number | null
+  altriBonus: number | null
 }
 
 export type votoListType = {
-    id: number,
-    nome: string,
-    ruolo: string,
-    voto: number | null,
-    ammonizione: number,
-    espulsione: number,
-    gol: number | null,
-    assist: number | null,
-    autogol: number | null,
-    altriBonus: number | null,
-    torneo: string,
-    gruppoFase: string | null
-};
+  id: number
+  nome: string
+  ruolo: string
+  voto: number | null
+  ammonizione: number
+  espulsione: number
+  gol: number | null
+  assist: number | null
+  autogol: number | null
+  altriBonus: number | null
+  torneo: string
+  gruppoFase: string | null
+}
 
 export interface iVotoGiocatore {
-    Nome: string;
-    Ammonizione: number;
-    Assist: number;
-    Autogol: number;
-    Espulsione: number;
-    GolSegnati: number;
-    GolSubiti: number;
-    RigoriErrati: number;
-    RigoriParati: number;
-    Ruolo: string;
-    Squadra: string;
-    Voto: number | null;
+  Nome: string
+  Ammonizione: number
+  Assist: number
+  Autogol: number
+  Espulsione: number
+  GolSegnati: number
+  GolSubiti: number
+  RigoriErrati: number
+  RigoriParati: number
+  Ruolo: string
+  Squadra: string
+  Voto: number | null
 }
 
 export type VotiDistinctItem = {
-    voto: number | null;
-    ammonizione: number | null;
-    espulsione: number | null;
-    gol: number | null;
-    assist: number | null;
-    giornataSerieA: string; 
-};
+  voto: number | null
+  ammonizione: number | null
+  espulsione: number | null
+  gol: number | null
+  assist: number | null
+  giornataSerieA: string
+}

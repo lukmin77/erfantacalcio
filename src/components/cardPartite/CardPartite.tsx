@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 import {
   Card,
   CardHeader,
@@ -11,16 +11,16 @@ import {
   Grid,
   useMediaQuery,
   useTheme,
-} from "@mui/material";
-import { type GiornataType } from "~/types/common";
-import { Gavel } from "@mui/icons-material";
-import { formatDateFromIso } from "~/utils/dateUtils";
+} from '@mui/material'
+import { type GiornataType } from '~/types/common'
+import { Gavel } from '@mui/icons-material'
+import { formatDateFromIso } from '~/utils/dateUtils'
 
 interface GiornataCardProps {
-  prefixTitle: string;
-  giornata: GiornataType[];
-  maxWidth: number | string;
-  withAvatar: boolean;
+  prefixTitle: string
+  giornata: GiornataType[]
+  maxWidth: number | string
+  withAvatar: boolean
 }
 
 export default function CardPartite({
@@ -29,8 +29,8 @@ export default function CardPartite({
   maxWidth,
   withAvatar,
 }: GiornataCardProps) {
-  const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down("md"));
+  const theme = useTheme()
+  const isXs = useMediaQuery(theme.breakpoints.down('md'))
 
   return (
     <>
@@ -40,21 +40,18 @@ export default function CardPartite({
           key={`card_${g.idCalendario}`}
           sx={{ maxWidth: maxWidth }}
         >
-          <Card
-            sx={{ maxWidth: maxWidth }}
-            key={`card_${g.idCalendario}`}
-          >
+          <Card sx={{ maxWidth: maxWidth }} key={`card_${g.idCalendario}`}>
             <CardHeader
               title={`${prefixTitle} ${g?.Title}`}
               subheader={`${g.SubTitle}: ${formatDateFromIso(
                 g.data,
-                "dd/MM HH:mm"
+                'dd/MM HH:mm',
               )}`}
-              titleTypographyProps={{ variant: "h5" }}
-              subheaderTypographyProps={{ variant: "h6" }}
+              titleTypographyProps={{ variant: 'h5' }}
+              subheaderTypographyProps={{ variant: 'h6' }}
             />
             <CardContent
-              sx={{ paddingBottom: "3px", paddingTop: "3px", m: "4px" }}
+              sx={{ paddingBottom: '3px', paddingTop: '3px', m: '4px' }}
               key={`card_content_${g.idCalendario}`}
             >
               {g.partite.length > 0 ? (
@@ -66,7 +63,7 @@ export default function CardPartite({
                         : `/formazioni?idPartita=${partita.idPartita}&idCalendario=${g.idCalendario}`
                     }
                     key={`grid_${partita.idPartita}`}
-                    style={{ textDecoration: "none" }}
+                    style={{ textDecoration: 'none' }}
                   >
                     <Grid
                       container
@@ -75,10 +72,10 @@ export default function CardPartite({
                       key={`grid_${partita.idPartita}`}
                     >
                       {withAvatar && (
-                        <Grid item xs={!isXs ? 1 : 2} alignSelf={"center"}>
+                        <Grid item xs={!isXs ? 1 : 2} alignSelf={'center'}>
                           <Avatar
-                            alt={partita.squadraHome ?? ""}
-                            src={partita.fotoHome ?? ""}
+                            alt={partita.squadraHome ?? ''}
+                            src={partita.fotoHome ?? ''}
                             variant="rounded"
                           ></Avatar>
                         </Grid>
@@ -86,7 +83,7 @@ export default function CardPartite({
                       <Grid
                         item
                         xs={withAvatar ? (!isXs ? 5 : 4) : 6}
-                        alignSelf={"center"}
+                        alignSelf={'center'}
                       >
                         <Typography variant="h6">
                           {partita.squadraHome}
@@ -97,14 +94,14 @@ export default function CardPartite({
                           )}
                         </Typography>
                         <Typography variant="h5">
-                          {partita.golHome ?? "-"}
+                          {partita.golHome ?? '-'}
                         </Typography>
                       </Grid>
                       <Grid
                         item
                         xs={withAvatar ? (!isXs ? 5 : 4) : 6}
-                        alignSelf={"center"}
-                        textAlign={"right"}
+                        alignSelf={'center'}
+                        textAlign={'right'}
                         paddingRight={2}
                       >
                         <Typography variant="h6">
@@ -116,21 +113,21 @@ export default function CardPartite({
                           )}
                         </Typography>
                         <Typography variant="h5">
-                          {partita.golAway ?? "-"}
+                          {partita.golAway ?? '-'}
                         </Typography>
                       </Grid>
                       {withAvatar && (
                         <Grid
                           item
                           xs={!isXs ? 1 : 2}
-                          alignSelf={"center"}
-                          textAlign={"right"}
-                          alignContent={"flex-end"}
-                          alignItems={"flex-end"}
+                          alignSelf={'center'}
+                          textAlign={'right'}
+                          alignContent={'flex-end'}
+                          alignItems={'flex-end'}
                         >
                           <Avatar
-                            alt={partita.squadraAway ?? ""}
-                            src={partita.fotoAway ?? ""}
+                            alt={partita.squadraAway ?? ''}
+                            src={partita.fotoAway ?? ''}
                             variant="rounded"
                           ></Avatar>
                         </Grid>
@@ -160,5 +157,5 @@ export default function CardPartite({
         </Paper>
       ))}
     </>
-  );
+  )
 }

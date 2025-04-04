@@ -1,6 +1,6 @@
-import { Grid } from "@mui/material";
-import { Suspense } from "react";
-import Economia from "~/components/home/Economia";
+import { Grid } from '@mui/material'
+import { Suspense } from 'react'
+import Economia from '~/components/home/Economia'
 
 export default function EconomiaPage() {
   return (
@@ -11,5 +11,5 @@ export default function EconomiaPage() {
         </Suspense>
       </Grid>
     </Grid>
-  );
+  )
 }

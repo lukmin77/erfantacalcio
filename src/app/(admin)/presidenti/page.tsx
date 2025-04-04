@@ -1,10 +1,10 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { api } from "~/utils/api";
-import Modal from "~/components/modal/Modal";
-import { z } from "zod";
+'use client'
+import React, { useEffect, useState } from 'react'
+import { api } from '~/utils/api'
+import Modal from '~/components/modal/Modal'
+import { z } from 'zod'
 
-import CheckIcon from "@mui/icons-material/CheckCircle";
+import CheckIcon from '@mui/icons-material/CheckCircle'
 import {
   CircularProgress,
   Divider,
@@ -19,15 +19,15 @@ import {
   useTheme,
   useMediaQuery,
   Grid,
-} from "@mui/material";
-import { type SquadraType } from "~/types/squadre";
+} from '@mui/material'
+import { type SquadraType } from '~/types/squadre'
 import {
   DataGrid,
   GridActionsCellItem,
   type GridColDef,
-} from "@mui/x-data-grid";
-import { autosizeOptions } from "~/utils/datatable";
-import { Edit } from "@mui/icons-material";
+} from '@mui/x-data-grid'
+import { autosizeOptions } from '~/utils/datatable'
+import { Edit } from '@mui/icons-material'
 
 const UtenteSchema = z.object({
   id: z.number(),
@@ -41,87 +41,87 @@ const UtenteSchema = z.object({
   importoMulte: z.number(),
   importoMercato: z.number(),
   fantamilioni: z.number(),
-});
+})
 
 export default function Presidenti() {
-  const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down("md"));
-  const [idSquadra, setIdSquadra] = useState<number>();
+  const theme = useTheme()
+  const isXs = useMediaQuery(theme.breakpoints.down('md'))
+  const [idSquadra, setIdSquadra] = useState<number>()
 
-  const squadreList = api.squadre.list.useQuery();
+  const squadreList = api.squadre.list.useQuery()
   const squadra = api.squadre.get.useQuery(
     { idSquadra: idSquadra! },
-    { enabled: !!idSquadra }
-  );
+    { enabled: !!idSquadra },
+  )
   const updateSquadra = api.squadre.update.useMutation({
     onSuccess: async () => await squadreList.refetch(),
-  });
+  })
 
-  const [errorMessageModal, setErrorMessageModal] = useState("");
-  const [messageModal, setMessageModal] = useState("");
-  const [data, setData] = useState<SquadraType[]>([]);
-  const [openModalEdit, setOpenModalEdit] = useState(false);
+  const [errorMessageModal, setErrorMessageModal] = useState('')
+  const [messageModal, setMessageModal] = useState('')
+  const [data, setData] = useState<SquadraType[]>([])
+  const [openModalEdit, setOpenModalEdit] = useState(false)
   const [utenteInModifica, setUtenteInModifica] = useState<SquadraType>({
     id: 0,
     isAdmin: false,
     isLockLevel: false,
-    presidente: "",
-    email: "",
-    squadra: "",
+    presidente: '',
+    email: '',
+    squadra: '',
     importoAnnuale: 0,
     importoMulte: 0,
     importoMercato: 0,
     fantamilioni: 0,
-  });
+  })
 
   useEffect(() => {
     if (squadreList.data) {
-      setData(squadreList.data);
+      setData(squadreList.data)
     }
-  }, [squadreList.data]);
+  }, [squadreList.data])
 
   useEffect(() => {
     if (!squadra.isFetching && squadra.isSuccess && squadra.data) {
-      setUtenteInModifica(squadra.data);
-      setErrorMessageModal("");
-      setMessageModal("");
-      setOpenModalEdit(true);
+      setUtenteInModifica(squadra.data)
+      setErrorMessageModal('')
+      setMessageModal('')
+      setOpenModalEdit(true)
     }
-  }, [squadra.data, squadra.isSuccess, squadra.isFetching]);
+  }, [squadra.data, squadra.isSuccess, squadra.isFetching])
 
-  const pageSize = 8;
+  const pageSize = 8
 
   const columns: GridColDef[] = [
-    { field: "id", type: "number", hideable: true },
+    { field: 'id', type: 'number', hideable: true },
     {
-      field: "squadra",
-      type: "string",
+      field: 'squadra',
+      type: 'string',
       renderHeader: () => <strong>Squadra</strong>,
       flex: isXs ? 0 : 1,
     },
     {
-      field: "presidente",
-      type: "string",
+      field: 'presidente',
+      type: 'string',
       renderHeader: () => <strong>Presidente</strong>,
       flex: isXs ? 0 : 1,
     },
     {
-      field: "email",
-      type: "string",
+      field: 'email',
+      type: 'string',
       renderHeader: () => <strong>Email</strong>,
       flex: isXs ? 0 : 1,
     },
     {
-      field: "isAdmin",
-      type: "boolean",
+      field: 'isAdmin',
+      type: 'boolean',
       renderHeader: () => <strong>Admin</strong>,
     },
     {
-      field: "actions",
-      type: "actions",
-      headerName: "Actions",
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Actions',
       width: 100,
-      cellClassName: "actions",
+      cellClassName: 'actions',
       getActions: ({ id }) => {
         return [
           <GridActionsCellItem
@@ -132,67 +132,67 @@ export default function Presidenti() {
             onClick={() => handleEdit(parseInt(id.toString(), 10))}
             color="inherit"
           />,
-        ];
+        ]
       },
     },
-  ];
+  ]
 
   const skeletonRows = Array.from({ length: pageSize }, (_, index) => ({
     id: `skeleton-${index}`,
-  }));
+  }))
 
   const handleEdit = async (_idUtente: number) => {
-    setIdSquadra(_idUtente);
-  };
+    setIdSquadra(_idUtente)
+  }
 
   const handleModalClose = () => {
-    setOpenModalEdit(false);
-    setIdSquadra(undefined);
-  };
+    setOpenModalEdit(false)
+    setIdSquadra(undefined)
+  }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setErrorMessageModal("");
-    setMessageModal("");
-    const responseVal = UtenteSchema.safeParse(utenteInModifica);
+    event.preventDefault()
+    setErrorMessageModal('')
+    setMessageModal('')
+    const responseVal = UtenteSchema.safeParse(utenteInModifica)
     if (!responseVal.success) {
       setErrorMessageModal(
         responseVal.error.issues
           .map(
-            (issue) => `campo ${issue.path.toLocaleString()}: ${issue.message}`
+            (issue) => `campo ${issue.path.toLocaleString()}: ${issue.message}`,
           )
-          .join(", ")
-      );
+          .join(', '),
+      )
     } else {
       try {
-        await updateSquadra.mutateAsync(utenteInModifica);
-        setMessageModal("Salvataggio completato");
+        await updateSquadra.mutateAsync(utenteInModifica)
+        setMessageModal('Salvataggio completato')
       } catch (error) {
         setErrorMessageModal(
-          "Si è verificato un errore nel salvataggio dell'utente"
-        );
+          "Si è verificato un errore nel salvataggio dell'utente",
+        )
       }
     }
-  };
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.currentTarget;
+    const { name, value, type, checked } = e.currentTarget
     setUtenteInModifica((prevState) => ({
       ...prevState,
       [name]:
-        type === "number" ? +value : type === "checkbox" ? checked : value,
-    }));
-  };
+        type === 'number' ? +value : type === 'checkbox' ? checked : value,
+    }))
+  }
 
   return (
     <>
       {squadreList.isLoading ? (
         <div
           style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100vh",
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh',
           }}
         >
           <CircularProgress color="info" />
@@ -201,7 +201,7 @@ export default function Presidenti() {
         <>
           <Typography variant="h5">Squadre / Presidenti</Typography>
           <Box
-            sx={{ width: "100%", overflowX: "auto", contain: "inline-size" }}
+            sx={{ width: '100%', overflowX: 'auto', contain: 'inline-size' }}
           >
             <DataGrid
               columnHeaderHeight={45}
@@ -215,11 +215,11 @@ export default function Presidenti() {
                 },
                 pagination: undefined,
                 filter: undefined,
-                density: "compact",
+                density: 'compact',
               }}
               slotProps={{
                 loadingOverlay: {
-                  variant: "skeleton",
+                  variant: 'skeleton',
                 },
               }}
               checkboxSelection={false}
@@ -236,8 +236,8 @@ export default function Presidenti() {
               disableRowSelectionOnClick={true}
               autosizeOptions={autosizeOptions}
               sx={{
-                backgroundColor: "#fff",
-                "& .MuiDataGrid-columnHeader": {
+                backgroundColor: '#fff',
+                '& .MuiDataGrid-columnHeader': {
                   color: theme.palette.primary.main,
                   backgroundColor: theme.palette.secondary.light,
                 },
@@ -257,7 +257,7 @@ export default function Presidenti() {
           <Grid container spacing={0}>
             <Grid item xs={12}>
               {errorMessageModal && (
-                <Stack sx={{ width: "100%" }} spacing={0}>
+                <Stack sx={{ width: '100%' }} spacing={0}>
                   <Alert
                     icon={<CheckIcon fontSize="inherit" />}
                     severity="error"
@@ -395,7 +395,7 @@ export default function Presidenti() {
             </Grid>
             <Grid item xs={12}>
               {messageModal && (
-                <Stack sx={{ width: "100%" }} spacing={0}>
+                <Stack sx={{ width: '100%' }} spacing={0}>
                   <Alert
                     icon={<CheckIcon fontSize="inherit" />}
                     severity="success"
@@ -409,5 +409,5 @@ export default function Presidenti() {
         </Box>
       </Modal>
     </>
-  );
+  )
 }

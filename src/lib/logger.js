@@ -1,8 +1,8 @@
 // logger.js
-import winston from "winston";
-const { format, transports } = winston;
+import winston from 'winston'
+const { format, transports } = winston
 /* import DailyRotateFile from "winston-daily-rotate-file"; */
-const { combine, splat, timestamp, printf } = format;
+const { combine, splat, timestamp, printf } = format
 
 const levels = {
   error: 0,
@@ -25,11 +25,10 @@ winston.addColors(colors)
 //const logFormat = format.printf(info => `${info.timestamp} ${info.level} [${info.label}]: ${info.message}`);
 const logFormat = printf(({ level, message, timestamp, ...metadata }) => {
   let msg = `${timestamp} [${level}] : ${message} `
-  if (metadata)
-    msg += JSON.stringify(metadata)
+  if (metadata) msg += JSON.stringify(metadata)
 
   return msg
-});
+})
 
 const Logger = winston.createLogger({
   level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
@@ -38,7 +37,7 @@ const Logger = winston.createLogger({
     //format.colorize(),
     splat(),
     timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    logFormat
+    logFormat,
   ),
   transports: [
     new transports.Console(),
@@ -58,6 +57,6 @@ const Logger = winston.createLogger({
       maxFiles: '7d'
     }) */
   ],
-});
+})
 
 export default Logger

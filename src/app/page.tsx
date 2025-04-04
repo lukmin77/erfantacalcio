@@ -1,6 +1,6 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { api } from "~/utils/api";
+'use client'
+import React, { useEffect, useState } from 'react'
+import { api } from '~/utils/api'
 import {
   Box,
   Button,
@@ -17,7 +17,7 @@ import {
   CardMedia,
   Slide,
   CardActionArea,
-} from "@mui/material";
+} from '@mui/material'
 import {
   AccessAlarm,
   Looks3Outlined,
@@ -26,31 +26,30 @@ import {
   LooksOneOutlined,
   LooksTwoOutlined,
   PendingActions,
-} from "@mui/icons-material";
-import Classifica from "~/components/home/Classifica";
-import Squadre from "~/components/home/Squadre";
-import Calendario from "~/components/home/Calendario";
-import Modal from "~/components/modal/Modal";
-import { type GiornataType } from "~/types/common";
-import CardPartite from "~/components/cardPartite/CardPartite";
-import { useSession } from "next-auth/react";
-import SquadreXs from "~/components/home/SquadreXs";
+} from '@mui/icons-material'
+import Classifica from '~/components/home/Classifica'
+import Squadre from '~/components/home/Squadre'
+import Calendario from '~/components/home/Calendario'
+import Modal from '~/components/modal/Modal'
+import { type GiornataType } from '~/types/common'
+import CardPartite from '~/components/cardPartite/CardPartite'
+import { useSession } from 'next-auth/react'
+import SquadreXs from '~/components/home/SquadreXs'
 
 export default function HomePage() {
-  const { data: session } = useSession();
+  const { data: session } = useSession()
   const torneiList = api.tornei.list.useQuery(undefined, {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-  });
-  const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down("md"));
-  const [openModalCalendario, setOpenModalCalendario] = useState(false);
-  const [titleModalCalendario, setTitleModalCalendario] = useState("");
-  const [girone, setGirone] = useState<number>();
-  const [isCalendarioAttuale, setIsCalendarioAttuale] =
-    useState<boolean>(false);
+  })
+  const theme = useTheme()
+  const isXs = useMediaQuery(theme.breakpoints.down('md'))
+  const [openModalCalendario, setOpenModalCalendario] = useState(false)
+  const [titleModalCalendario, setTitleModalCalendario] = useState('')
+  const [girone, setGirone] = useState<number>()
+  const [isCalendarioAttuale, setIsCalendarioAttuale] = useState<boolean>(false)
   const [isCalendarioRecuperi, setIsCalendarioRecuperi] =
-    useState<boolean>(false);
+    useState<boolean>(false)
 
   const calendarioList =
     girone && !isCalendarioAttuale && !isCalendarioRecuperi
@@ -60,17 +59,17 @@ export default function HomePage() {
           refetchOnReconnect: false,
         })
       : isCalendarioAttuale
-      ? api.calendario.listAttuale.useQuery(undefined, {
-          enabled: isCalendarioAttuale,
-          refetchOnWindowFocus: false,
-          refetchOnReconnect: false,
-        })
-      : api.calendario.listRecuperi.useQuery(undefined, {
-          enabled: isCalendarioRecuperi,
-          refetchOnWindowFocus: false,
-          refetchOnReconnect: false,
-        });
-  const [giornata, setGiornata] = useState<GiornataType[]>();
+        ? api.calendario.listAttuale.useQuery(undefined, {
+            enabled: isCalendarioAttuale,
+            refetchOnWindowFocus: false,
+            refetchOnReconnect: false,
+          })
+        : api.calendario.listRecuperi.useQuery(undefined, {
+            enabled: isCalendarioRecuperi,
+            refetchOnWindowFocus: false,
+            refetchOnReconnect: false,
+          })
+  const [giornata, setGiornata] = useState<GiornataType[]>()
 
   useEffect(() => {
     if (
@@ -78,35 +77,31 @@ export default function HomePage() {
       calendarioList.isSuccess &&
       calendarioList.data
     ) {
-      setGiornata(calendarioList.data);
+      setGiornata(calendarioList.data)
     }
-  }, [
-    calendarioList.data,
-    calendarioList.isSuccess,
-    calendarioList.isFetching,
-  ]);
+  }, [calendarioList.data, calendarioList.isSuccess, calendarioList.isFetching])
 
   const handleCalendario = (
     girone: number | undefined,
     isAttuale: boolean,
-    onlyRecuperi: boolean
+    onlyRecuperi: boolean,
   ) => {
     setTitleModalCalendario(
       girone
         ? `Calendario girone ${girone}`
         : isAttuale
-        ? `Calendario ultime partite`
-        : `Calendario partite da recuperare`
-    );
-    setGirone(girone);
-    setIsCalendarioAttuale(isAttuale);
-    setIsCalendarioRecuperi(onlyRecuperi);
-    setOpenModalCalendario(true);
-  };
+          ? `Calendario ultime partite`
+          : `Calendario partite da recuperare`,
+    )
+    setGirone(girone)
+    setIsCalendarioAttuale(isAttuale)
+    setIsCalendarioRecuperi(onlyRecuperi)
+    setOpenModalCalendario(true)
+  }
 
   const handleModalClose = () => {
-    setOpenModalCalendario(false);
-  };
+    setOpenModalCalendario(false)
+  }
 
   return (
     <>
@@ -119,7 +114,7 @@ export default function HomePage() {
           </Grid>
         )}
         {!isXs && (
-          <Slide direction={"down"} in={true}>
+          <Slide direction={'down'} in={true}>
             <Grid item xs={12}>
               <Squadre />
             </Grid>
@@ -131,19 +126,19 @@ export default function HomePage() {
               item
               xs={12}
               sm={6}
-              sx={!isXs ? { pr: "2px", pl: "15px", pt: "15px" } : {}}
+              sx={!isXs ? { pr: '2px', pl: '15px', pt: '15px' } : {}}
             >
               <Calendario
-                tipo={"risultati"}
+                tipo={'risultati'}
                 prefixTitle="Risultati:"
               ></Calendario>
-              <Calendario tipo={"prossima"} prefixTitle=""></Calendario>
+              <Calendario tipo={'prossima'} prefixTitle=""></Calendario>
               <Box
                 sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  "& > *": { m: 1 },
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  '& > *': { m: 1 },
                 }}
               >
                 <ButtonGroup
@@ -208,16 +203,16 @@ export default function HomePage() {
               item
               xs={12}
               sm={6}
-              sx={!isXs ? { pr: "2px", pl: "15px", pt: "15px" } : {}}
+              sx={!isXs ? { pr: '2px', pl: '15px', pt: '15px' } : {}}
             >
               {torneiList.data
                 ?.filter((t) => t.hasClassifica)
                 .map((torneo) => (
                   <Classifica
                     key={torneo?.idTorneo}
-                    nomeTorneo={torneo?.nome ?? ""}
+                    nomeTorneo={torneo?.nome ?? ''}
                     idTorneo={torneo?.idTorneo}
-                    gruppo={torneo?.gruppoFase ?? ""}
+                    gruppo={torneo?.gruppoFase ?? ''}
                   />
                 ))}
             </Grid>
@@ -235,25 +230,25 @@ export default function HomePage() {
                     sm={3}
                     sx={
                       !isXs
-                        ? { pr: "25px", pl: "0px", pt: "15px" }
-                        : { pr: "5px" }
+                        ? { pr: '25px', pl: '0px', pt: '15px' }
+                        : { pr: '5px' }
                     }
                   >
                     <Card>
                       <CardActionArea>
                         <CardHeader
                           title="Statistiche giocatori"
-                          titleTypographyProps={{ variant: "h5" }}
+                          titleTypographyProps={{ variant: 'h5' }}
                         />
                         <CardMedia
                           component="img"
-                          image={"/images/giocatori.jpg"}
-                          width={"201px"}
-                          height={"139px"}
-                          alt={"Statistiche giocatori"}
-                          sx={{ cursor: "pointer" }}
+                          image={'/images/giocatori.jpg'}
+                          width={'201px'}
+                          height={'139px'}
+                          alt={'Statistiche giocatori'}
+                          sx={{ cursor: 'pointer' }}
                           onClick={() =>
-                            (window.location.href = "/statistiche_giocatori")
+                            (window.location.href = '/statistiche_giocatori')
                           }
                         />
                       </CardActionArea>
@@ -267,23 +262,23 @@ export default function HomePage() {
                     sm={3}
                     sx={
                       !isXs
-                        ? { pr: "25px", pl: "0px", pt: "15px" }
-                        : { pl: "5px" }
+                        ? { pr: '25px', pl: '0px', pt: '15px' }
+                        : { pl: '5px' }
                     }
                   >
                     <Card>
                       <CardHeader
                         title="Albo"
-                        titleTypographyProps={{ variant: "h5" }}
+                        titleTypographyProps={{ variant: 'h5' }}
                       />
                       <CardMedia
                         component="img"
-                        image={"/images/albo.jpg"}
-                        width={"201px"}
-                        height={"139px"}
-                        alt={"Albo"}
-                        sx={{ cursor: "pointer" }}
-                        onClick={() => (window.location.href = "/albo")}
+                        image={'/images/albo.jpg'}
+                        width={'201px'}
+                        height={'139px'}
+                        alt={'Albo'}
+                        sx={{ cursor: 'pointer' }}
+                        onClick={() => (window.location.href = '/albo')}
                       />
                     </Card>
                   </Grid>
@@ -295,23 +290,23 @@ export default function HomePage() {
                     sm={3}
                     sx={
                       !isXs
-                        ? { pr: "25px", pl: "0px", pt: "15px" }
-                        : { pr: "5px" }
+                        ? { pr: '25px', pl: '0px', pt: '15px' }
+                        : { pr: '5px' }
                     }
                   >
                     <Card>
                       <CardHeader
                         title="Economia e premi"
-                        titleTypographyProps={{ variant: "h5" }}
+                        titleTypographyProps={{ variant: 'h5' }}
                       />
                       <CardMedia
                         component="img"
-                        image={"/images/soldi.png"}
-                        width={"201px"}
-                        height={"139px"}
-                        alt={"Economia e premi"}
-                        sx={{ cursor: "pointer" }}
-                        onClick={() => (window.location.href = "/economia")}
+                        image={'/images/soldi.png'}
+                        width={'201px'}
+                        height={'139px'}
+                        alt={'Economia e premi'}
+                        sx={{ cursor: 'pointer' }}
+                        onClick={() => (window.location.href = '/economia')}
                       />
                     </Card>
                   </Grid>
@@ -323,25 +318,25 @@ export default function HomePage() {
                     sm={3}
                     sx={
                       !isXs
-                        ? { pr: "0px", pl: "0px", pt: "15px" }
-                        : { pl: "5px" }
+                        ? { pr: '0px', pl: '0px', pt: '15px' }
+                        : { pl: '5px' }
                     }
                   >
                     <Card>
                       <CardHeader
                         title="Regolamento"
-                        titleTypographyProps={{ variant: "h5" }}
+                        titleTypographyProps={{ variant: 'h5' }}
                       />
                       <CardMedia
                         component="img"
-                        image={"/images/regolamento.jpg"}
-                        width={"201px"}
-                        height={"139px"}
-                        alt={"Regolamento"}
-                        sx={{ cursor: "pointer" }}
+                        image={'/images/regolamento.jpg'}
+                        width={'201px'}
+                        height={'139px'}
+                        alt={'Regolamento'}
+                        sx={{ cursor: 'pointer' }}
                         onClick={() =>
                           (window.location.href =
-                            "/docs/Regolamento_erFantacalcio.pdf")
+                            '/docs/Regolamento_erFantacalcio.pdf')
                         }
                       />
                     </Card>
@@ -349,7 +344,7 @@ export default function HomePage() {
                 </Zoom>
               </>
             )}
-            <Grid item xs={12} sx={{ height: "80px" }}>
+            <Grid item xs={12} sx={{ height: '80px' }}>
               <></>
             </Grid>
           </>
@@ -360,12 +355,12 @@ export default function HomePage() {
         title={titleModalCalendario}
         open={openModalCalendario}
         onClose={handleModalClose}
-        width={isXs ? "98%" : "70%"}
-        height={isXs ? "98%" : "500px"}
+        width={isXs ? '98%' : '70%'}
+        height={isXs ? '98%' : '500px'}
       >
         <Divider />
-        <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
-          <Grid container spacing={0} sx={{ gap: "0px" }}>
+        <Box sx={{ mt: 1, gap: '0px', flexWrap: 'wrap' }}>
+          <Grid container spacing={0} sx={{ gap: '0px' }}>
             {giornata?.map((g, index) => (
               <Grid
                 item
@@ -374,12 +369,12 @@ export default function HomePage() {
                 md={6}
                 lg={4}
                 key={`card_partite_${index}_${g.idCalendario}`}
-                sx={{ ml: "0px" }}
+                sx={{ ml: '0px' }}
               >
                 <CardPartite
                   giornata={[g]}
-                  prefixTitle={""}
-                  maxWidth={isXs ? "100%" : "300px"}
+                  prefixTitle={''}
+                  maxWidth={isXs ? '100%' : '300px'}
                   withAvatar={false}
                 ></CardPartite>
               </Grid>
@@ -388,5 +383,5 @@ export default function HomePage() {
         </Box>
       </Modal>
     </>
-  );
+  )
 }

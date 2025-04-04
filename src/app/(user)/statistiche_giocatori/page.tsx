@@ -1,6 +1,6 @@
-import { Grid } from "@mui/material";
-import { Suspense } from "react";
-import Giocatori from "~/components/giocatori/Giocatori";
+import { Grid } from '@mui/material'
+import { Suspense } from 'react'
+import Giocatori from '~/components/giocatori/Giocatori'
 
 export default function GiocatoriPage() {
   return (
@@ -11,5 +11,5 @@ export default function GiocatoriPage() {
         </Suspense>
       </Grid>
     </Grid>
-  );
+  )
 }

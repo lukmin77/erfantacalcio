@@ -1,4 +1,4 @@
-"use client";
+'use client'
 import {
   Box,
   Card,
@@ -11,42 +11,42 @@ import {
   Tabs,
   Typography,
   useMediaQuery,
-} from "@mui/material";
-import { useEffect, useState } from "react";
-import { api } from "~/utils/api";
-import { useTheme } from "@mui/material/styles";
+} from '@mui/material'
+import { useEffect, useState } from 'react'
+import { api } from '~/utils/api'
+import { useTheme } from '@mui/material/styles'
 import {
   type GiocatoreFormazioneType,
   type GiocatoreType,
-} from "~/types/squadre";
-import Modal from "../modal/Modal";
-import Giocatore from "../giocatori/Giocatore";
+} from '~/types/squadre'
+import Modal from '../modal/Modal'
+import Giocatore from '../giocatori/Giocatore'
 
 interface TabPanelProps {
-  children?: React.ReactNode;
-  dir?: string;
-  index: number;
-  value: number;
+  children?: React.ReactNode
+  dir?: string
+  index: number
+  value: number
 }
 
 type RosaProps = {
-  idSquadra: number;
-  squadra: string;
-};
+  idSquadra: number
+  squadra: string
+}
 
 function Rosa({ idSquadra, squadra }: RosaProps) {
-  const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down("md"));
+  const theme = useTheme()
+  const isXs = useMediaQuery(theme.breakpoints.down('md'))
 
-  const [selectedGiocatoreId, setSelectedGiocatoreId] = useState<number>();
-  const [openModalCalendario, setOpenModalCalendario] = useState(false);
+  const [selectedGiocatoreId, setSelectedGiocatoreId] = useState<number>()
+  const [openModalCalendario, setOpenModalCalendario] = useState(false)
 
   const rosaList = api.squadre.getRosa.useQuery(
     { idSquadra: idSquadra, includeVenduti: true },
-    { refetchOnWindowFocus: false, refetchOnReconnect: false }
-  );
-  const [rosa, setRosa] = useState<GiocatoreFormazioneType[]>([]);
-  const [value, setValue] = useState(3);
+    { refetchOnWindowFocus: false, refetchOnReconnect: false },
+  )
+  const [rosa, setRosa] = useState<GiocatoreFormazioneType[]>([])
+  const [value, setValue] = useState(3)
 
   useEffect(() => {
     if (rosaList.data) {
@@ -54,29 +54,30 @@ function Rosa({ idSquadra, squadra }: RosaProps) {
         ...giocatore,
         titolare: false,
         riserva: null,
-      }));
+      }))
 
-      setRosa(rosaConRuolo);
+      setRosa(rosaConRuolo)
     }
-  }, [rosaList.data]);
+  }, [rosaList.data])
 
   const handleGiocatoreSelected = async (idGiocatore: number | undefined) => {
-    setSelectedGiocatoreId(idGiocatore);
-    setOpenModalCalendario(true);
-  };
+    setSelectedGiocatoreId(idGiocatore)
+    setOpenModalCalendario(true)
+  }
 
   const handleModalClose = () => {
-    setOpenModalCalendario(false);
-  };
+    setOpenModalCalendario(false)
+  }
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
+    setValue(newValue)
+  }
 
   const renderRosa = (roles: string[], isVenduto: boolean) => {
     const filteredRosa = rosa.filter(
-      (player) => roles.includes(player.ruolo) && player.isVenduto === isVenduto
-    );
+      (player) =>
+        roles.includes(player.ruolo) && player.isVenduto === isVenduto,
+    )
     return (
       <Grid container spacing={0}>
         {filteredRosa.map((giocatore, index) => (
@@ -86,29 +87,29 @@ function Rosa({ idSquadra, squadra }: RosaProps) {
             xs={6}
             sm={1.5}
             sx={{
-              display: "flex",
-              justifyContent: "center",
-              p: "10px",
-              mb: "10px",
-              flexWrap: "wrap",
+              display: 'flex',
+              justifyContent: 'center',
+              p: '10px',
+              mb: '10px',
+              flexWrap: 'wrap',
             }}
           >
-            <Card sx={{ marginBottom: "1px" }}>
+            <Card sx={{ marginBottom: '1px' }}>
               <CardMedia
                 component="img"
-                sx={{ cursor: "pointer", width: "120px" }}
+                sx={{ cursor: 'pointer', width: '120px' }}
                 image={giocatore.urlCampioncino}
                 alt={giocatore.nome}
                 onClick={() => handleGiocatoreSelected(giocatore.idGiocatore)}
               />
-              <CardContent sx={{ paddingBottom: "0px" }}>
+              <CardContent sx={{ paddingBottom: '0px' }}>
                 <Typography
                   gutterBottom
                   variant="body2"
                   sx={{
-                    fontSize: "10px",
-                    display: "flex",
-                    justifyContent: "center",
+                    fontSize: '10px',
+                    display: 'flex',
+                    justifyContent: 'center',
                   }}
                   component="div"
                 >
@@ -118,9 +119,9 @@ function Rosa({ idSquadra, squadra }: RosaProps) {
                   gutterBottom
                   variant="body1"
                   sx={{
-                    fontSize: "10px",
-                    display: "flex",
-                    justifyContent: "center",
+                    fontSize: '10px',
+                    display: 'flex',
+                    justifyContent: 'center',
                   }}
                   component="div"
                 >
@@ -131,11 +132,11 @@ function Rosa({ idSquadra, squadra }: RosaProps) {
           </Grid>
         ))}
       </Grid>
-    );
-  };
+    )
+  }
 
   function TabPanel(props: TabPanelProps) {
-    const { children, value, index, ...other } = props;
+    const { children, value, index, ...other } = props
 
     return (
       <div
@@ -147,14 +148,14 @@ function Rosa({ idSquadra, squadra }: RosaProps) {
       >
         {value === index && children}
       </div>
-    );
+    )
   }
 
   function a11yProps(index: number) {
     return {
       id: `full-width-tab-${index}`,
-      "aria-controls": `full-width-tabpanel-${index}`,
-    };
+      'aria-controls': `full-width-tabpanel-${index}`,
+    }
   }
 
   return (
@@ -166,10 +167,10 @@ function Rosa({ idSquadra, squadra }: RosaProps) {
         {rosaList.isLoading ? (
           <Box
             sx={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
           >
             <CircularProgress color="warning" />
@@ -183,60 +184,62 @@ function Rosa({ idSquadra, squadra }: RosaProps) {
                   onChange={handleChange}
                   indicatorColor="secondary"
                   textColor="inherit"
-                  variant={isXs ? "scrollable" : "fullWidth"}
-                  sx={isXs ? { maxWidth: "350px" } : {}}
+                  variant={isXs ? 'scrollable' : 'fullWidth'}
+                  sx={isXs ? { maxWidth: '350px' } : {}}
                   scrollButtons="auto"
                   aria-label="Rosa giocatori"
                 >
-                  <Tab label={isXs ? "Por" : "Portieri"} {...a11yProps(0)} />
-                  <Tab label={isXs ? "Dif" : "Difensori"} {...a11yProps(1)} />
+                  <Tab label={isXs ? 'Por' : 'Portieri'} {...a11yProps(0)} />
+                  <Tab label={isXs ? 'Dif' : 'Difensori'} {...a11yProps(1)} />
                   <Tab
-                    label={isXs ? "Cen" : "Centrocampisti"}
+                    label={isXs ? 'Cen' : 'Centrocampisti'}
                     {...a11yProps(2)}
                   />
-                  <Tab label={isXs ? "Att" : "Attaccanti"} {...a11yProps(3)} />
-                  <Tab label={isXs ? "Ex" : "Venduti"} {...a11yProps(4)} />
+                  <Tab label={isXs ? 'Att' : 'Attaccanti'} {...a11yProps(3)} />
+                  <Tab label={isXs ? 'Ex' : 'Venduti'} {...a11yProps(4)} />
                 </Tabs>
               </Grid>
               <Grid item xs={12}>
                 <TabPanel value={value} index={0} dir={theme.direction}>
-                  {renderRosa(["P"], false)}
+                  {renderRosa(['P'], false)}
                 </TabPanel>
                 <TabPanel value={value} index={1} dir={theme.direction}>
-                  {renderRosa(["D"], false)}
+                  {renderRosa(['D'], false)}
                 </TabPanel>
                 <TabPanel value={value} index={2} dir={theme.direction}>
-                  {renderRosa(["C"], false)}
+                  {renderRosa(['C'], false)}
                 </TabPanel>
                 <TabPanel value={value} index={3} dir={theme.direction}>
-                  {renderRosa(["A"], false)}
+                  {renderRosa(['A'], false)}
                 </TabPanel>
                 <TabPanel value={value} index={4} dir={theme.direction}>
-                  {renderRosa(["P", "D", "C", "A"], true)}
+                  {renderRosa(['P', 'D', 'C', 'A'], true)}
                 </TabPanel>
               </Grid>
             </Grid>
           </Grid>
         )}
-        <Grid item xs={12} sx={{ height: "100px" }}>
+        <Grid item xs={12} sx={{ height: '100px' }}>
           <></>
         </Grid>
       </Grid>
 
       <Modal
-        title={"Statistica giocatore"}
+        title={'Statistica giocatore'}
         open={openModalCalendario}
         onClose={handleModalClose}
-        width={isXs ? "98%" : "1266px"}
-        height={isXs ? "98%" : ""}
+        width={isXs ? '98%' : '1266px'}
+        height={isXs ? '98%' : ''}
       >
         <Divider />
-        <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
-          {selectedGiocatoreId !== undefined && <Giocatore idGiocatore={selectedGiocatoreId} />}
+        <Box sx={{ mt: 1, gap: '0px', flexWrap: 'wrap' }}>
+          {selectedGiocatoreId !== undefined && (
+            <Giocatore idGiocatore={selectedGiocatoreId} />
+          )}
         </Box>
       </Modal>
     </>
-  );
+  )
 }
 
-export default Rosa;
+export default Rosa

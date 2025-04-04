@@ -1,6 +1,6 @@
-import { Grid } from "@mui/material";
-import { Suspense } from "react";
-import ViewFormazioni from "~/components/cardPartite/ViewFormazioni";
+import { Grid } from '@mui/material'
+import { Suspense } from 'react'
+import ViewFormazioni from '~/components/cardPartite/ViewFormazioni'
 
 export default function Formazione() {
   return (
@@ -11,5 +11,5 @@ export default function Formazione() {
         </Suspense>
       </Grid>
     </Grid>
-  );
+  )
 }

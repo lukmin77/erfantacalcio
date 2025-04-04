@@ -8,7 +8,8 @@
     "dev": "next dev -p 8080",
     "lint": "next lint",
     "start": "next start -p 8080",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@emotion/react": "^11.13.0",
@@ -51,6 +52,7 @@
     "@typescript-eslint/parser": "^8.29.0",
     "eslint": "^9.23.0",
     "eslint-config-next": "^15.2.4",
+    "prettier": "^3.5.3",
     "prisma": "^5.13.0",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.29.0"

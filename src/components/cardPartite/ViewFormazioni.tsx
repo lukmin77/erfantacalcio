@@ -1,4 +1,4 @@
-"use client";
+'use client'
 import {
   Avatar,
   Box,
@@ -13,44 +13,44 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-} from "@mui/material";
-import { api } from "~/utils/api";
-import { formatDateFromIso } from "~/utils/dateUtils";
-import { Configurazione } from "~/config";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import Modal from "../modal/Modal";
-import { useSearchParams } from "next/navigation";
-import Giocatore from "../giocatori/Giocatore";
+} from '@mui/material'
+import { api } from '~/utils/api'
+import { formatDateFromIso } from '~/utils/dateUtils'
+import { Configurazione } from '~/config'
+import Image from 'next/image'
+import { useEffect, useState } from 'react'
+import Modal from '../modal/Modal'
+import { useSearchParams } from 'next/navigation'
+import Giocatore from '../giocatori/Giocatore'
 
 function ViewFormazioni() {
-  const searchParams = useSearchParams();
+  const searchParams = useSearchParams()
 
   // Recupera i valori della query string
-  const idPartita = searchParams?.get("idPartita");
-  const idCalendario = searchParams?.get("idCalendario");
+  const idPartita = searchParams?.get('idPartita')
+  const idCalendario = searchParams?.get('idCalendario')
 
   // Stato per la partita e il calendario convertiti in numero
-  const [partita, setPartita] = useState<number | null>(null);
+  const [partita, setPartita] = useState<number | null>(null)
 
   useEffect(() => {
     if (idPartita) {
       // Converte i valori in numeri
-      const parsedPartita = Number(idPartita);
+      const parsedPartita = Number(idPartita)
 
       // Verifica se entrambi i valori sono numeri validi
       if (!isNaN(parsedPartita)) {
-        setPartita(parsedPartita);
+        setPartita(parsedPartita)
       } else {
-        setPartita(null);
+        setPartita(null)
       }
     }
-  }, [idPartita, idCalendario]);
+  }, [idPartita, idCalendario])
 
-  const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down("md"));
-  const [idGiocatore, setIdGiocatore] = useState<number | undefined>();
-  const [openModalCalendario, setOpenModalCalendario] = useState(false);
+  const theme = useTheme()
+  const isXs = useMediaQuery(theme.breakpoints.down('md'))
+  const [idGiocatore, setIdGiocatore] = useState<number | undefined>()
+  const [openModalCalendario, setOpenModalCalendario] = useState(false)
 
   const formazioniList = api.partita.getFormazioni.useQuery(
     { idPartita: partita! },
@@ -58,23 +58,23 @@ function ViewFormazioni() {
       enabled: !!partita,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
-    }
-  );
+    },
+  )
 
-  const calendario = formazioniList.data?.Calendario;
-  const infoPartita = formazioniList.data?.Calendario.partite[0];
-  const altrePartite = formazioniList.data?.AltrePartite;
-  const formazioneHome = formazioniList.data?.FormazioneHome;
-  const formazioneAway = formazioniList.data?.FormazioneAway;
+  const calendario = formazioniList.data?.Calendario
+  const infoPartita = formazioniList.data?.Calendario.partite[0]
+  const altrePartite = formazioniList.data?.AltrePartite
+  const formazioneHome = formazioniList.data?.FormazioneHome
+  const formazioneAway = formazioniList.data?.FormazioneAway
 
   const handleModalClose = () => {
-    setOpenModalCalendario(false);
-  };
+    setOpenModalCalendario(false)
+  }
 
   const handleStatGiocatore = (idGiocatore: number) => {
-    setIdGiocatore(idGiocatore);
-    setOpenModalCalendario(true);
-  };
+    setIdGiocatore(idGiocatore)
+    setOpenModalCalendario(true)
+  }
 
   return (
     <>
@@ -82,42 +82,42 @@ function ViewFormazioni() {
         {calendario && (
           <>
             <Grid item xs={12}>
-              <Typography variant={"h4"}>{calendario.Title}</Typography>
+              <Typography variant={'h4'}>{calendario.Title}</Typography>
             </Grid>
 
             <Grid item xs={12}>
-              <Typography variant={"body2"}>
+              <Typography variant={'body2'}>
                 {`Calcio d'inizio ${calendario.SubTitle} il 
                                 ${formatDateFromIso(
                                   calendario.data,
-                                  "dd/MM/yyyy"
+                                  'dd/MM/yyyy',
                                 )} alle 
-                                ${formatDateFromIso(calendario.data, "HH:mm")}`}
+                                ${formatDateFromIso(calendario.data, 'HH:mm')}`}
               </Typography>
             </Grid>
-            <Grid item xs={6} sx={{ pr: "10px" }}>
+            <Grid item xs={6} sx={{ pr: '10px' }}>
               {calendario && (
                 <Card>
                   <CardHeader
                     title={infoPartita?.squadraHome}
-                    titleTypographyProps={{ variant: "h4" }}
+                    titleTypographyProps={{ variant: 'h4' }}
                     subheader={
                       formazioneHome
                         ? `${formatDateFromIso(
-                                          formazioneHome?.dataOra.toISOString(),
-                                          "dd/MM"
-                                        )} alle
+                            formazioneHome?.dataOra.toISOString(),
+                            'dd/MM',
+                          )} alle
                                         ${formatDateFromIso(
                                           formazioneHome?.dataOra.toISOString(),
-                                          "HH:mm"
+                                          'HH:mm',
                                         )}`
                         : `Formazione non rilasciata, multa di ${Configurazione.importoMulta} €`
                     }
                     avatar={
                       <Avatar
-                        alt={infoPartita?.squadraHome ?? ""}
-                        src={infoPartita?.fotoHome ?? ""}
-                        sx={{ display: { xs: "none", sm: "block" }, mr: "5px" }}
+                        alt={infoPartita?.squadraHome ?? ''}
+                        src={infoPartita?.fotoHome ?? ''}
+                        sx={{ display: { xs: 'none', sm: 'block' }, mr: '5px' }}
                       ></Avatar>
                     }
                   ></CardHeader>
@@ -126,23 +126,23 @@ function ViewFormazioni() {
                       <>
                         <Grid container spacing={0}>
                           <Grid item xs={12} sm={7}>
-                            <Typography variant={"h6"} sx={{ m: "3px" }}>
+                            <Typography variant={'h6'} sx={{ m: '3px' }}>
                               <b>Modulo: {formazioneHome.modulo}</b>
                             </Typography>
                           </Grid>
                           <Grid
                             item
                             sm={5}
-                            sx={{ display: { xs: "none", sm: "block" } }}
+                            sx={{ display: { xs: 'none', sm: 'block' } }}
                           >
-                            <Typography variant={"h6"}>
+                            <Typography variant={'h6'}>
                               <b>Panchina</b>
                             </Typography>
                           </Grid>
                           <Grid item xs={12} sm={7}>
                             <Grid container spacing={0}>
                               {formazioneHome.Voti.filter(
-                                (g) => g.titolare
+                                (g) => g.titolare,
                               ).map((g) => (
                                 <>
                                   <Grid item xs={2} sm={1}>
@@ -156,7 +156,7 @@ function ViewFormazioni() {
                                         src={`/images/maglie/${
                                           g.Giocatori.Trasferimenti[0]
                                             ?.SquadreSerieA?.maglia ??
-                                          "NoSerieA.gif"
+                                          'NoSerieA.gif'
                                         }`}
                                         width={26}
                                         height={22}
@@ -172,10 +172,10 @@ function ViewFormazioni() {
                                   <Grid item xs={8} sm={10}>
                                     <Typography
                                       variant="body2"
-                                      sx={{ cursor: "pointer" }}
+                                      sx={{ cursor: 'pointer' }}
                                       onClick={() =>
                                         handleStatGiocatore(
-                                          g.Giocatori.idGiocatore
+                                          g.Giocatori.idGiocatore,
                                         )
                                       }
                                     >
@@ -189,16 +189,16 @@ function ViewFormazioni() {
                           <Grid
                             item
                             xs={12}
-                            sx={{ display: { xs: "block", sm: "none" } }}
+                            sx={{ display: { xs: 'block', sm: 'none' } }}
                           >
-                            <Typography variant={"h6"}>
+                            <Typography variant={'h6'}>
                               <b>Panchina</b>
                             </Typography>
                           </Grid>
                           <Grid item xs={12} sm={5}>
                             <Grid container spacing={0}>
                               {formazioneHome.Voti.filter(
-                                (g) => !g.titolare
+                                (g) => !g.titolare,
                               ).map((g) => (
                                 <>
                                   <Grid item xs={2} sm={2}>
@@ -212,7 +212,7 @@ function ViewFormazioni() {
                                         src={`/images/maglie/${
                                           g.Giocatori.Trasferimenti[0]
                                             ?.SquadreSerieA?.maglia ??
-                                          "NoSerieA.gif"
+                                          'NoSerieA.gif'
                                         }`}
                                         width={26}
                                         height={22}
@@ -228,10 +228,10 @@ function ViewFormazioni() {
                                   <Grid item xs={8} sm={8}>
                                     <Typography
                                       variant="body2"
-                                      sx={{ cursor: "pointer" }}
+                                      sx={{ cursor: 'pointer' }}
                                       onClick={() =>
                                         handleStatGiocatore(
-                                          g.Giocatori.idGiocatore
+                                          g.Giocatori.idGiocatore,
                                         )
                                       }
                                     >
@@ -249,29 +249,29 @@ function ViewFormazioni() {
                 </Card>
               )}
             </Grid>
-            <Grid item xs={6} sx={{ pl: "10px" }}>
+            <Grid item xs={6} sx={{ pl: '10px' }}>
               {calendario && (
                 <Card>
                   <CardHeader
                     title={infoPartita?.squadraAway}
-                    titleTypographyProps={{ variant: "h4" }}
+                    titleTypographyProps={{ variant: 'h4' }}
                     subheader={
                       formazioneAway
                         ? `${formatDateFromIso(
-                                          formazioneAway?.dataOra.toISOString(),
-                                          "dd/MM"
-                                        )} alle
+                            formazioneAway?.dataOra.toISOString(),
+                            'dd/MM',
+                          )} alle
                                         ${formatDateFromIso(
                                           formazioneAway?.dataOra.toISOString(),
-                                          "HH:mm"
+                                          'HH:mm',
                                         )}`
                         : `Formazione non rilasciata, prevista multa di ${Configurazione.importoMulta} €`
                     }
                     avatar={
                       <Avatar
-                        alt={infoPartita?.squadraAway ?? ""}
-                        src={infoPartita?.fotoAway ?? ""}
-                        sx={{ display: { xs: "none", sm: "block" }, mr: "5px" }}
+                        alt={infoPartita?.squadraAway ?? ''}
+                        src={infoPartita?.fotoAway ?? ''}
+                        sx={{ display: { xs: 'none', sm: 'block' }, mr: '5px' }}
                       ></Avatar>
                     }
                   ></CardHeader>
@@ -280,23 +280,23 @@ function ViewFormazioni() {
                       <>
                         <Grid container spacing={0}>
                           <Grid item xs={12} sm={7}>
-                            <Typography variant={"h6"} sx={{ m: "3px" }}>
+                            <Typography variant={'h6'} sx={{ m: '3px' }}>
                               <b>Modulo: {formazioneAway.modulo}</b>
                             </Typography>
                           </Grid>
                           <Grid
                             item
                             sm={5}
-                            sx={{ display: { xs: "none", sm: "block" } }}
+                            sx={{ display: { xs: 'none', sm: 'block' } }}
                           >
-                            <Typography variant={"h6"}>
+                            <Typography variant={'h6'}>
                               <b>Panchina</b>
                             </Typography>
                           </Grid>
                           <Grid item xs={12} sm={7}>
                             <Grid container spacing={0}>
                               {formazioneAway.Voti.filter(
-                                (g) => g.titolare
+                                (g) => g.titolare,
                               ).map((g) => (
                                 <>
                                   <Grid item xs={2} sm={1}>
@@ -310,7 +310,7 @@ function ViewFormazioni() {
                                         src={`/images/maglie/${
                                           g.Giocatori.Trasferimenti[0]
                                             ?.SquadreSerieA?.maglia ??
-                                          "NoSerieA.gif"
+                                          'NoSerieA.gif'
                                         }`}
                                         width={26}
                                         height={22}
@@ -326,10 +326,10 @@ function ViewFormazioni() {
                                   <Grid item xs={8} sm={10}>
                                     <Typography
                                       variant="body2"
-                                      sx={{ cursor: "pointer" }}
+                                      sx={{ cursor: 'pointer' }}
                                       onClick={() =>
                                         handleStatGiocatore(
-                                          g.Giocatori.idGiocatore
+                                          g.Giocatori.idGiocatore,
                                         )
                                       }
                                     >
@@ -343,16 +343,16 @@ function ViewFormazioni() {
                           <Grid
                             item
                             xs={12}
-                            sx={{ display: { xs: "block", sm: "none" } }}
+                            sx={{ display: { xs: 'block', sm: 'none' } }}
                           >
-                            <Typography variant={"h6"}>
+                            <Typography variant={'h6'}>
                               <b>Panchina</b>
                             </Typography>
                           </Grid>
                           <Grid item xs={12} sm={5}>
                             <Grid container spacing={0}>
                               {formazioneAway.Voti.filter(
-                                (g) => !g.titolare
+                                (g) => !g.titolare,
                               ).map((g) => (
                                 <>
                                   <Grid item xs={2} sm={2}>
@@ -366,7 +366,7 @@ function ViewFormazioni() {
                                         src={`/images/maglie/${
                                           g.Giocatori.Trasferimenti[0]
                                             ?.SquadreSerieA?.maglia ??
-                                          "NoSerieA.gif"
+                                          'NoSerieA.gif'
                                         }`}
                                         width={26}
                                         height={22}
@@ -382,10 +382,10 @@ function ViewFormazioni() {
                                   <Grid item xs={8} sm={8}>
                                     <Typography
                                       variant="body2"
-                                      sx={{ cursor: "pointer" }}
+                                      sx={{ cursor: 'pointer' }}
                                       onClick={() =>
                                         handleStatGiocatore(
-                                          g.Giocatori.idGiocatore
+                                          g.Giocatori.idGiocatore,
                                         )
                                       }
                                     >
@@ -406,8 +406,8 @@ function ViewFormazioni() {
           </>
         )}
         {partita && (
-          <Grid item xs={12} justifyItems={"flex-end"}>
-            <Typography variant={"h5"}>
+          <Grid item xs={12} justifyItems={'flex-end'}>
+            <Typography variant={'h5'}>
               Altre partite:
               <Select
                 size="small"
@@ -415,7 +415,7 @@ function ViewFormazioni() {
                 labelId="select-label-partita"
                 margin="dense"
                 required
-                sx={{ ml: "10px" }}
+                sx={{ ml: '10px' }}
                 name="giornata"
                 onChange={(e) => setPartita(e.target.value as number)}
                 defaultValue={partita}
@@ -431,25 +431,25 @@ function ViewFormazioni() {
             </Typography>
           </Grid>
         )}
-        <Grid item xs={12} sx={{ height: "100px" }}>
+        <Grid item xs={12} sx={{ height: '100px' }}>
           <></>
         </Grid>
       </Grid>
 
       <Modal
-        title={"Statistica giocatore"}
+        title={'Statistica giocatore'}
         open={openModalCalendario}
         onClose={handleModalClose}
-        width={isXs ? "98%" : "1266px"}
-        height={isXs ? "98%" : ""}
+        width={isXs ? '98%' : '1266px'}
+        height={isXs ? '98%' : ''}
       >
         <Divider />
-        <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
+        <Box sx={{ mt: 1, gap: '0px', flexWrap: 'wrap' }}>
           {idGiocatore !== undefined && <Giocatore idGiocatore={idGiocatore} />}
         </Box>
       </Modal>
     </>
-  );
+  )
 }
 
-export default ViewFormazioni;
+export default ViewFormazioni

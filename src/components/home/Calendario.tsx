@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { api } from "~/utils/api";
-import { Alert, Box, Skeleton, Stack, Typography } from "@mui/material";
-import { type GiornataType } from "~/types/common";
-import CardPartite from "../cardPartite/CardPartite";
-import CheckIcon from "@mui/icons-material/CheckCircle";
+import React, { useEffect, useState } from 'react'
+import { api } from '~/utils/api'
+import { Alert, Box, Skeleton, Stack, Typography } from '@mui/material'
+import { type GiornataType } from '~/types/common'
+import CardPartite from '../cardPartite/CardPartite'
+import CheckIcon from '@mui/icons-material/CheckCircle'
 
 interface CalendarioProps {
-  prefixTitle: string;
-  tipo: "risultati" | "prossima";
+  prefixTitle: string
+  tipo: 'risultati' | 'prossima'
 }
 
 export default function Calendario({ prefixTitle, tipo }: CalendarioProps) {
   const calendarioList =
-    tipo === "prossima"
+    tipo === 'prossima'
       ? api.calendario.getProssimeGiornate.useQuery(undefined, {
           refetchOnWindowFocus: false,
           refetchOnReconnect: false,
@@ -20,9 +20,9 @@ export default function Calendario({ prefixTitle, tipo }: CalendarioProps) {
       : api.calendario.getUltimiRisultati.useQuery(undefined, {
           refetchOnWindowFocus: false,
           refetchOnReconnect: false,
-        });
-  const [errorMessage, setErrorMessage] = useState("");
-  const [giornata, setGiornata] = useState<GiornataType[]>();
+        })
+  const [errorMessage, setErrorMessage] = useState('')
+  const [giornata, setGiornata] = useState<GiornataType[]>()
 
   useEffect(() => {
     if (
@@ -30,19 +30,15 @@ export default function Calendario({ prefixTitle, tipo }: CalendarioProps) {
       calendarioList.isSuccess &&
       calendarioList.data
     ) {
-      setGiornata(calendarioList.data);
+      setGiornata(calendarioList.data)
     }
-  }, [
-    calendarioList.data,
-    calendarioList.isSuccess,
-    calendarioList.isFetching,
-  ]);
+  }, [calendarioList.data, calendarioList.isSuccess, calendarioList.isFetching])
 
   useEffect(() => {
     if (calendarioList.isError) {
-      setErrorMessage("Si è verificato un errore in fase di caricamento");
+      setErrorMessage('Si è verificato un errore in fase di caricamento')
     }
-  }, [calendarioList.isError]);
+  }, [calendarioList.isError])
 
   return (
     <>
@@ -71,12 +67,12 @@ export default function Calendario({ prefixTitle, tipo }: CalendarioProps) {
         </Box>
       )}
       {errorMessage && (
-        <Stack sx={{ width: "100%" }} spacing={0}>
+        <Stack sx={{ width: '100%' }} spacing={0}>
           <Alert icon={<CheckIcon fontSize="inherit" />} severity="error">
             {errorMessage}
           </Alert>
         </Stack>
       )}
     </>
-  );
+  )
 }

@@ -1,6 +1,6 @@
 export enum RuoloUtente {
-  contributor = "contributor",
-  admin = "admin",
+  contributor = 'contributor',
+  admin = 'admin',
 }
 
 export enum FrameType {
@@ -12,5 +12,5 @@ export enum FrameType {
   statisticheSquadra = 'statisticheSquadra',
   giocatori = 'giocatori',
   albo = 'albo',
-  economia = 'economia'
+  economia = 'economia',
 }

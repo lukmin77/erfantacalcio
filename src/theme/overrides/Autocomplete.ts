@@ -1,4 +1,4 @@
-import type { Theme } from '@mui/material/styles';
+import type { Theme } from '@mui/material/styles'
 // ==============================|| OVERRIDES - BADGE ||============================== //
 
 export default function Autocomplete(theme: Theme) {
@@ -11,7 +11,7 @@ export default function Autocomplete(theme: Theme) {
         listbox: {
           color: theme.palette.primary.dark,
         },
-      }
-    }
-  };
+      },
+    },
+  }
 }

@@ -1,33 +1,37 @@
-import Logger from "~/lib/logger";
-import { type GetServerSidePropsContext } from "next";
-import { getServerSession, type DefaultSession, type NextAuthOptions, type DefaultUser, type IUser } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { computeMD5Hash } from '~/utils/hashPassword';
-import { RuoloUtente } from "~/utils/enums";
-import prisma from "~/utils/db";
+import Logger from '~/lib/logger'
+import { type GetServerSidePropsContext } from 'next'
+import {
+  getServerSession,
+  type DefaultSession,
+  type NextAuthOptions,
+  type DefaultUser,
+  type IUser,
+} from 'next-auth'
+import CredentialsProvider from 'next-auth/providers/credentials'
+import { computeMD5Hash } from '~/utils/hashPassword'
+import { RuoloUtente } from '~/utils/enums'
+import prisma from '~/utils/db'
 
-
-declare module "next-auth" {
-
+declare module 'next-auth' {
   interface IUser extends DefaultUser {
     ruolo?: RuoloUtente
-    idSquadra: number;
-    squadra: string;
-    presidente: string;
+    idSquadra: number
+    squadra: string
+    presidente: string
   }
-  
+
   interface User extends IUser {
-    idSquadra: number;
+    idSquadra: number
   }
 
   interface Session extends DefaultSession {
-    user?: User;
+    user?: User
   }
 }
 
-declare module "next-auth/jwt" {
+declare module 'next-auth/jwt' {
   interface JWT extends IUser {
-    idSquadra: number;
+    idSquadra: number
   }
 }
 
@@ -39,19 +43,19 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, trigger, session }) {
       /* Step 1: update the token based on the user object */
       if (user) {
-        token.ruolo = user.ruolo;
-        token.squadra = user.squadra;
-        token.idSquadra = user.idSquadra;
-        token.email = user.email;
-        token.image = user.image;
-        token.presidente = user.presidente;
+        token.ruolo = user.ruolo
+        token.squadra = user.squadra
+        token.idSquadra = user.idSquadra
+        token.email = user.email
+        token.image = user.image
+        token.presidente = user.presidente
       }
-      if (trigger === "update" && session) {
+      if (trigger === 'update' && session) {
         /* eslint-disable */
-        token.image = session?.user.image as string;
+        token.image = session?.user.image as string
         /* eslint-enable */
       }
-      return token;
+      return token
     },
     async session({ session, token }) {
       const updatedSession = {
@@ -64,77 +68,80 @@ export const authOptions: NextAuthOptions = {
           squadra: token.squadra,
           email: token.email,
           presidente: token.presidente,
-          image: token.image?.toString()
-        }
-      };
-      return updatedSession;
-    }
+          image: token.image?.toString(),
+        },
+      }
+      return updatedSession
+    },
   },
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
   providers: [
     CredentialsProvider({
-      id: "erFantacalcio",
-      name: "erFantacalcio",
+      id: 'erFantacalcio',
+      name: 'erFantacalcio',
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "username" },
-        password: { label: "Password", type: "password" }
+        username: { label: 'Username', type: 'text', placeholder: 'username' },
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
         const apiResponse = await authenticate({
           username: credentials?.username ?? '',
-          password: credentials?.password ?? ''
-        });
+          password: credentials?.password ?? '',
+        })
 
         if (apiResponse) {
           const user: IUser = {
             id: apiResponse.idUtente.toString(),
-            ruolo: apiResponse.adminLevel ? RuoloUtente.admin : RuoloUtente.contributor,
+            ruolo: apiResponse.adminLevel
+              ? RuoloUtente.admin
+              : RuoloUtente.contributor,
             idSquadra: apiResponse.idUtente,
             squadra: apiResponse.nomeSquadra,
             presidente: apiResponse.presidente,
             email: apiResponse.mail,
-            image: apiResponse.foto
-          };
-          Logger.info(`autenticato:${apiResponse.presidente}`);
-          return { ...user };
+            image: apiResponse.foto,
+          }
+          Logger.info(`autenticato:${apiResponse.presidente}`)
+          return { ...user }
         } else {
-          return null;
+          return null
         }
-      }
-    })
+      },
+    }),
     // Add more providers here if needed
   ],
   pages: {
-    signIn: "/login",
+    signIn: '/login',
   },
-  secret: process.env.NEXTAUTH_SECRET
-};
+  secret: process.env.NEXTAUTH_SECRET,
+}
 
 /**
  * Wrapper for `getServerSession` so that you don't need to import the `authOptions` in every file.
  */
 export const getServerAuthSession = (ctx: {
-  req: GetServerSidePropsContext["req"];
-  res: GetServerSidePropsContext["res"];
+  req: GetServerSidePropsContext['req']
+  res: GetServerSidePropsContext['res']
 }) => {
-  return getServerSession(ctx.req, ctx.res, authOptions);
-};
+  return getServerSession(ctx.req, ctx.res, authOptions)
+}
 
 async function authenticate(input: { username: string; password: string }) {
-  Logger.info('authenticate: ' + input.username);
+  Logger.info('authenticate: ' + input.username)
   try {
-    const hashedPassword = computeMD5Hash(input.password);
+    const hashedPassword = computeMD5Hash(input.password)
     return await prisma.utenti.findUnique({
       where: {
-        username_pwd: { username: input.username.toLowerCase(), pwd: hashedPassword}
-      }
-    });
-  } 
-  catch (error) 
-  {
-    Logger.error('Si è verificato un errore', error);
-    return null;
+        username_pwd: {
+          username: input.username.toLowerCase(),
+          pwd: hashedPassword,
+        },
+      },
+    })
+  } catch (error) {
+    Logger.error('Si è verificato un errore', error)
+    return null
   }
 }

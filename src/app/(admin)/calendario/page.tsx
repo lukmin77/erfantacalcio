@@ -1,13 +1,12 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { api } from "~/utils/api";
-import Modal from "~/components/modal/Modal";
-import { z } from "zod";
-import { type CalendarioType } from "~/types/calendario";
-
+'use client'
+import React, { useEffect, useState } from 'react'
+import { api } from '~/utils/api'
+import Modal from '~/components/modal/Modal'
+import { z } from 'zod'
+import { type CalendarioType } from '~/types/calendario'
 
 //import material ui
-import CheckIcon from "@mui/icons-material/CheckCircle";
+import CheckIcon from '@mui/icons-material/CheckCircle'
 import {
   CircularProgress,
   Grid,
@@ -27,19 +26,19 @@ import {
   Typography,
   useTheme,
   useMediaQuery,
-} from "@mui/material";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { MobileDateTimePicker } from "@mui/x-date-pickers/MobileDateTimePicker";
-import dayjs from "dayjs";
-import "dayjs/locale/it";
+} from '@mui/material'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker'
+import dayjs from 'dayjs'
+import 'dayjs/locale/it'
 import {
   DataGrid,
   GridActionsCellItem,
   type GridColDef,
-} from "@mui/x-data-grid";
-import { autosizeOptions } from "~/utils/datatable";
-import { Edit } from "@mui/icons-material";
+} from '@mui/x-data-grid'
+import { autosizeOptions } from '~/utils/datatable'
+import { Edit } from '@mui/icons-material'
 
 const CalendarioSchema = z.object({
   id: z.number(),
@@ -49,50 +48,50 @@ const CalendarioSchema = z.object({
   data: z.string().datetime().optional(),
   dataFine: z.string().datetime().nullable(),
   girone: z.number().optional().nullable(),
-});
+})
 
 export default function Calendario() {
-  const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down("md"));
-  const [idCalendario, setIdCalendario] = useState<number>();
-  const calendarioList = api.calendario.list.useQuery();
+  const theme = useTheme()
+  const isXs = useMediaQuery(theme.breakpoints.down('md'))
+  const [idCalendario, setIdCalendario] = useState<number>()
+  const calendarioList = api.calendario.list.useQuery()
   const oneCalendario = api.calendario.getOne.useQuery(
     { idCalendario: idCalendario! },
-    { enabled: !!idCalendario }
-  );
+    { enabled: !!idCalendario },
+  )
   const torneiList = api.tornei.list.useQuery(undefined, {
     refetchOnWindowFocus: false,
-  });
+  })
   const updateCalendario = api.calendario.update.useMutation({
     onSuccess: async () => await calendarioList.refetch(),
-  });
+  })
 
-  const [errorMessageModal, setErrorMessageModal] = useState("");
-  const [messageModal, setMessageModal] = useState("");
-  const [data, setData] = useState<CalendarioType[]>([]);
-  const [openModalEdit, setOpenModalEdit] = useState(false);
+  const [errorMessageModal, setErrorMessageModal] = useState('')
+  const [messageModal, setMessageModal] = useState('')
+  const [data, setData] = useState<CalendarioType[]>([])
+  const [openModalEdit, setOpenModalEdit] = useState(false)
   const [calendarioInModifica, setCalendarioInModifica] =
     useState<CalendarioType>({
       id: 0,
       idTorneo: 1,
-      nome: "",
-      gruppoFase: "",
+      nome: '',
+      gruppoFase: '',
       giornata: 0,
       giornataSerieA: 0,
       isGiocata: false,
       isSovrapposta: false,
       isRecupero: false,
-      data: "",
-      dataFine: "",
+      data: '',
+      dataFine: '',
       girone: 1,
       isSelected: false,
-    });
+    })
 
   useEffect(() => {
     if (calendarioList.data) {
-      setData(calendarioList.data);
+      setData(calendarioList.data)
     }
-  }, [calendarioList.data]);
+  }, [calendarioList.data])
 
   useEffect(() => {
     if (
@@ -100,75 +99,75 @@ export default function Calendario() {
       oneCalendario.isSuccess &&
       oneCalendario.data
     ) {
-      setCalendarioInModifica(oneCalendario.data);
-      setErrorMessageModal("");
-      setMessageModal("");
-      setOpenModalEdit(true);
+      setCalendarioInModifica(oneCalendario.data)
+      setErrorMessageModal('')
+      setMessageModal('')
+      setOpenModalEdit(true)
     }
-  }, [oneCalendario.data, oneCalendario.isSuccess, oneCalendario.isFetching]);
+  }, [oneCalendario.data, oneCalendario.isSuccess, oneCalendario.isFetching])
 
-  const pageSize = 8;
+  const pageSize = 8
 
   const columns: GridColDef[] = [
-    { field: "id", type: "number", hideable: true },
+    { field: 'id', type: 'number', hideable: true },
     {
-      field: "nome",
-      type: "string",
+      field: 'nome',
+      type: 'string',
       renderHeader: () => <strong>Nome</strong>,
       flex: isXs ? 0 : 1,
     },
     {
-      field: "giornataSerieA",
-      type: "number",
+      field: 'giornataSerieA',
+      type: 'number',
       renderHeader: () => <strong>Giornata Serie A</strong>,
       flex: isXs ? 0 : 1,
     },
     {
-      field: "girone",
-      type: "number",
+      field: 'girone',
+      type: 'number',
       renderHeader: () => <strong>Girone</strong>,
       flex: isXs ? 0 : 1,
     },
     {
-      field: "gruppoFase",
-      type: "string",
+      field: 'gruppoFase',
+      type: 'string',
       renderHeader: () => <strong>Gruppo fase</strong>,
       flex: isXs ? 0 : 1,
     },
     {
-      field: "data",
-      type: "date",
+      field: 'data',
+      type: 'date',
       valueFormatter: (value) => {
         if (value) {
-          return dayjs(value).format("DD/MM/YYYY HH:mm");
+          return dayjs(value).format('DD/MM/YYYY HH:mm')
         }
-        return "";
+        return ''
       },
       renderHeader: () => <strong>Data</strong>,
       flex: isXs ? 0 : 1,
     },
     {
-      field: "giornata",
-      type: "number",
+      field: 'giornata',
+      type: 'number',
       renderHeader: () => <strong>Giornata</strong>,
       flex: isXs ? 0 : 1,
     },
     {
-      field: "isSovrapposta",
-      type: "boolean",
+      field: 'isSovrapposta',
+      type: 'boolean',
       renderHeader: () => <strong>Sovrapposta</strong>,
     },
     {
-      field: "isRecupero",
-      type: "boolean",
+      field: 'isRecupero',
+      type: 'boolean',
       renderHeader: () => <strong>Recupero</strong>,
     },
     {
-      field: "actions",
-      type: "actions",
-      headerName: "Actions",
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Actions',
       width: 100,
-      cellClassName: "actions",
+      cellClassName: 'actions',
       getActions: ({ id }) => {
         return [
           <GridActionsCellItem
@@ -179,74 +178,74 @@ export default function Calendario() {
             onClick={() => handleEdit(parseInt(id.toString(), 10))}
             color="inherit"
           />,
-        ];
+        ]
       },
     },
-  ];
+  ]
 
   const skeletonRows = Array.from({ length: pageSize }, (_, index) => ({
     id: `skeleton-${index}`,
-  }));
+  }))
 
   //#region edit
 
   const handleEdit = async (_idCalendario: number) => {
-    setIdCalendario(_idCalendario);
-  };
+    setIdCalendario(_idCalendario)
+  }
 
   const handleModalClose = () => {
-    setOpenModalEdit(false);
-    setIdCalendario(undefined);
-  };
+    setOpenModalEdit(false)
+    setIdCalendario(undefined)
+  }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setErrorMessageModal("");
-    setMessageModal("");
-    const responseVal = CalendarioSchema.safeParse(calendarioInModifica);
+    event.preventDefault()
+    setErrorMessageModal('')
+    setMessageModal('')
+    const responseVal = CalendarioSchema.safeParse(calendarioInModifica)
     if (!responseVal.success) {
       setErrorMessageModal(
         responseVal.error.issues
           .map(
-            (issue) => `campo ${issue.path.toLocaleString()}: ${issue.message}`
+            (issue) => `campo ${issue.path.toLocaleString()}: ${issue.message}`,
           )
-          .join(", ")
-      );
+          .join(', '),
+      )
     } else {
       try {
-        await updateCalendario.mutateAsync(calendarioInModifica);
-        setMessageModal("Salvataggio completato");
-        handleModalClose();
+        await updateCalendario.mutateAsync(calendarioInModifica)
+        setMessageModal('Salvataggio completato')
+        handleModalClose()
       } catch (error) {
         setErrorMessageModal(
-          "Si è verificato un errore nel salvataggio del calendario"
-        );
+          'Si è verificato un errore nel salvataggio del calendario',
+        )
       }
     }
-  };
+  }
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = event.currentTarget;
-    console.log(event.currentTarget);
+    const { name, value, type, checked } = event.currentTarget
+    console.log(event.currentTarget)
     setCalendarioInModifica((prevState) => ({
       ...prevState,
       [name]:
-        type === "number"
+        type === 'number'
           ? +value
-          : type === "checkbox"
-          ? checked
-          : type === "datetime-local"
-          ? dayjs(value).toISOString()
-          : value,
-    }));
-  };
+          : type === 'checkbox'
+            ? checked
+            : type === 'datetime-local'
+              ? dayjs(value).toISOString()
+              : value,
+    }))
+  }
 
   const handleSelectChange = (event: SelectChangeEvent) => {
     setCalendarioInModifica((prevState) => ({
       ...prevState,
       [event.target.name]: event.target.value,
-    }));
-  };
+    }))
+  }
 
   //#endregion
 
@@ -255,10 +254,10 @@ export default function Calendario() {
       {calendarioList.isLoading ? (
         <div
           style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100vh",
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh',
           }}
         >
           <CircularProgress color="info" />
@@ -267,7 +266,7 @@ export default function Calendario() {
         <>
           <Typography variant="h5">Gestione calendario</Typography>
           <Box
-            sx={{ width: "100%", overflowX: "auto", contain: "inline-size" }}
+            sx={{ width: '100%', overflowX: 'auto', contain: 'inline-size' }}
           >
             <DataGrid
               columnHeaderHeight={45}
@@ -285,11 +284,11 @@ export default function Calendario() {
                   },
                 },
                 filter: undefined,
-                density: "compact",
+                density: 'compact',
               }}
               slotProps={{
                 loadingOverlay: {
-                  variant: "skeleton",
+                  variant: 'skeleton',
                 },
               }}
               checkboxSelection={false}
@@ -309,8 +308,8 @@ export default function Calendario() {
               disableRowSelectionOnClick={true}
               autosizeOptions={autosizeOptions}
               sx={{
-                backgroundColor: "#fff",
-                "& .MuiDataGrid-columnHeader": {
+                backgroundColor: '#fff',
+                '& .MuiDataGrid-columnHeader': {
                   color: theme.palette.primary.main,
                   backgroundColor: theme.palette.secondary.light,
                 },
@@ -330,7 +329,7 @@ export default function Calendario() {
           <Grid container spacing={0}>
             <Grid item xs={12}>
               {errorMessageModal && (
-                <Stack sx={{ width: "100%" }} spacing={0}>
+                <Stack sx={{ width: '100%' }} spacing={0}>
                   <Alert
                     icon={<CheckIcon fontSize="inherit" />}
                     severity="error"
@@ -356,7 +355,7 @@ export default function Calendario() {
                   value={
                     torneiList && torneiList.data
                       ? calendarioInModifica.idTorneo.toString()
-                      : ""
+                      : ''
                   }
                 >
                   {torneiList?.data?.map((item) => (
@@ -477,7 +476,7 @@ export default function Calendario() {
             </Grid>
             <Grid item xs={12}>
               {messageModal && (
-                <Stack sx={{ width: "100%" }} spacing={0}>
+                <Stack sx={{ width: '100%' }} spacing={0}>
                   <Alert
                     icon={<CheckIcon fontSize="inherit" />}
                     severity="success"
@@ -491,5 +490,5 @@ export default function Calendario() {
         </Box>
       </Modal>
     </>
-  );
+  )
 }

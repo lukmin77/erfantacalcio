@@ -1,112 +1,112 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-"use client";
-import { Box, Grid, Typography, useTheme, Zoom } from "@mui/material";
-import { api } from "~/utils/api";
-import { BarChart } from "@mui/x-charts/BarChart";
-import { axisClasses } from "@mui/x-charts/ChartsAxis";
-import { LineChart } from "@mui/x-charts/LineChart";
-import Image from "next/image";
-import { DataGrid, type GridColDef } from "@mui/x-data-grid";
-import { autosizeOptions } from "~/utils/datatable";
+'use client'
+import { Box, Grid, Typography, useTheme, Zoom } from '@mui/material'
+import { api } from '~/utils/api'
+import { BarChart } from '@mui/x-charts/BarChart'
+import { axisClasses } from '@mui/x-charts/ChartsAxis'
+import { LineChart } from '@mui/x-charts/LineChart'
+import Image from 'next/image'
+import { DataGrid, type GridColDef } from '@mui/x-data-grid'
+import { autosizeOptions } from '~/utils/datatable'
 
-import dayjs from "dayjs";
+import dayjs from 'dayjs'
 
 interface GiocatoreProps {
-  idGiocatore: number;
+  idGiocatore: number
 }
 
 function Giocatore({ idGiocatore }: GiocatoreProps) {
-  const theme = useTheme();
+  const theme = useTheme()
 
   const giocatoreProfilo = api.giocatori.getStatistica.useQuery(
     { idGiocatore: idGiocatore },
     {
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
-    }
-  );
+    },
+  )
   const giocatoreVoti = api.voti.getStatisticaVoti.useQuery(
     { idGiocatore: idGiocatore },
     {
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
-    }
-  );
+    },
+  )
   const giocatoreTrasferimenti = api.trasferimenti.list.useQuery(
     { idGiocatore: idGiocatore },
     {
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
-    }
-  );
+    },
+  )
   const giocatoreStatsStagioni = api.trasferimenti.statsStagioni.useQuery(
     { idGiocatore: idGiocatore },
     {
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
-    }
-  );
+    },
+  )
 
   //#region bar graph
-  const valueFormatter = (value: number | null) => `${value}`;
+  const valueFormatter = (value: number | null) => `${value}`
 
   const chartSetting = {
     yAxis: [
       {
-        label: "Statistiche stagioni",
+        label: 'Statistiche stagioni',
       },
     ],
     sx: {
       [`.${axisClasses.left} .${axisClasses.label}`]: {
-        transform: "translate(0px, 0)",
+        transform: 'translate(0px, 0)',
       },
     },
-  };
+  }
 
   const customizegraphstagioni = {
     height: 280,
     legend: { hidden: false },
     margin: { top: 5 },
-  };
+  }
   //#endregion
 
   //#region line graph
 
   const keyToLabel: Record<string, string> = {
-    voto: "Voto",
-    gol: "Gol",
-    assist: "Assist",
-    ammonizione: "Ammonizioni",
-    espulsione: "Espulsioni",
-  };
+    voto: 'Voto',
+    gol: 'Gol',
+    assist: 'Assist',
+    ammonizione: 'Ammonizioni',
+    espulsione: 'Espulsioni',
+  }
 
   const stackStrategy = {
-    stack: "total",
+    stack: 'total',
     area: false,
-    stackOffset: "none",
-  } as const;
+    stackOffset: 'none',
+  } as const
 
   const customizegraphvoti = {
     height: 280,
     legend: { hidden: false },
     margin: { top: 5 },
-    stackingOrder: "descending",
-  };
+    stackingOrder: 'descending',
+  }
 
   //#endregion
 
   const columns: GridColDef[] = [
-    { field: "id", hideable: true },
+    { field: 'id', hideable: true },
     {
-      field: "stagione",
-      type: "string",
-      align: "left",
+      field: 'stagione',
+      type: 'string',
+      align: 'left',
       renderHeader: () => <strong>Stagione</strong>,
     },
     {
-      field: "maglia",
-      type: "string",
-      align: "left",
+      field: 'maglia',
+      type: 'string',
+      align: 'left',
       renderCell: (params) => (
         <Image
           src={params.row?.maglia as string}
@@ -119,41 +119,40 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
       renderHeader: () => '',
     },
     {
-      field: "squadra",
-      type: "string",
-      align: "left",
+      field: 'squadra',
+      type: 'string',
+      align: 'left',
       renderHeader: () => <strong>Squadra</strong>,
     },
     {
-      field: "costo",
-      type: "number",
-      align: "right",
+      field: 'costo',
+      type: 'number',
+      align: 'right',
       renderHeader: () => <strong>Costo</strong>,
     },
     {
-      field: "dataAcquisto",
-      type: "date",
+      field: 'dataAcquisto',
+      type: 'date',
       valueFormatter: (value) => {
         if (value) {
-          return dayjs(value).format("DD/MM/YYYY HH:mm");
+          return dayjs(value).format('DD/MM/YYYY HH:mm')
         }
-        return "";
+        return ''
       },
       renderHeader: () => <strong>Data acquisto</strong>,
     },
     {
-      field: "dataCessione",
-      type: "date",
+      field: 'dataCessione',
+      type: 'date',
       valueFormatter: (value) => {
         if (value) {
-          return dayjs(value).format("DD/MM/YYYY HH:mm");
+          return dayjs(value).format('DD/MM/YYYY HH:mm')
         }
-        return "";
+        return ''
       },
       renderHeader: () => <strong>Data cessione</strong>,
     },
-  ];
-
+  ]
 
   return (
     <Grid container spacing={1} paddingTop={2} paddingBottom={2}>
@@ -163,7 +162,7 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
             item
             xs={12}
             sm={6}
-            sx={{ display: { xs: "none", sm: "block" } }}
+            sx={{ display: { xs: 'none', sm: 'block' } }}
           >
             <Grid container>
               <Grid item sm={3}>
@@ -204,7 +203,7 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xs={12} sx={{ display: { xs: "block", sm: "none" } }}>
+          <Grid item xs={12} sx={{ display: { xs: 'block', sm: 'none' } }}>
             <Grid container>
               <Grid item xs={6}>
                 <Typography variant="h6">
@@ -244,39 +243,39 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
             item
             xs={12}
             sm={6}
-            display={"flex"}
-            justifyContent={"flex-end"}
+            display={'flex'}
+            justifyContent={'flex-end'}
           >
             <LineChart
               yAxis={[
                 {
                   min: 0,
                   max: 10,
-                  label: "Voti stagionali",
+                  label: 'Voti stagionali',
                   colorMap: {
-                    type: "piecewise",
+                    type: 'piecewise',
                     thresholds: [6, 10],
-                    colors: ["red", "green"],
+                    colors: ['red', 'green'],
                   },
                 },
               ]}
               xAxis={[
                 {
-                  dataKey: "giornataSerieA",
+                  dataKey: 'giornataSerieA',
                   valueFormatter: (value) => `Giornata ${value}`,
                   min: 1,
                   max: 38,
                 },
               ]}
               series={Object.keys(keyToLabel)
-                .filter((c) => c === "voto")
+                .filter((c) => c === 'voto')
                 .map((key) => ({
                   dataKey: key,
                   label: keyToLabel[key],
                   valueFormatter: (value, item) => {
-                    const dataIndex = item.dataIndex;
+                    const dataIndex = item.dataIndex
                     return value === null
-                      ? ""
+                      ? ''
                       : `${value} - Gol: ${
                           giocatoreVoti?.data[dataIndex]?.gol ?? 0
                         } - Assist: ${
@@ -284,14 +283,14 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
                         } ${
                           (giocatoreVoti?.data[dataIndex]?.ammonizione ?? 0) !==
                           0
-                            ? " - Ammonizione"
-                            : ""
+                            ? ' - Ammonizione'
+                            : ''
                         } ${
                           (giocatoreVoti?.data[dataIndex]?.espulsione ?? 0) !==
                           0
-                            ? "- Espulsione"
-                            : ""
-                        }`;
+                            ? '- Espulsione'
+                            : ''
+                        }`
                   },
                   showMark: true,
                   ...stackStrategy,
@@ -306,7 +305,7 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
       {idGiocatore && giocatoreTrasferimenti.data && (
         <Grid item xs={12} sm={6}>
           <Typography variant="h5">Trasferimenti giocatore</Typography>
-          <Box sx={{ height: 234, width: "100%" }}>
+          <Box sx={{ height: 234, width: '100%' }}>
             <DataGrid
               columnHeaderHeight={45}
               rowHeight={40}
@@ -323,7 +322,7 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
                   },
                 },
                 filter: undefined,
-                density: "compact",
+                density: 'compact',
               }}
               checkboxSelection={false}
               disableColumnFilter={true}
@@ -342,8 +341,8 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
               rows={giocatoreTrasferimenti.data}
               disableRowSelectionOnClick={true}
               sx={{
-                backgroundColor: "#fff",
-                "& .MuiDataGrid-columnHeader": {
+                backgroundColor: '#fff',
+                '& .MuiDataGrid-columnHeader': {
                   color: theme.palette.primary.main,
                   backgroundColor: theme.palette.secondary.light,
                 },
@@ -358,17 +357,17 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
             item
             xs={12}
             sm={6}
-            display={"flex"}
-            justifyContent={"flex-end"}
+            display={'flex'}
+            justifyContent={'flex-end'}
           >
             <BarChart
               dataset={giocatoreStatsStagioni.data}
-              xAxis={[{ scaleType: "band", dataKey: "stagione" }]}
+              xAxis={[{ scaleType: 'band', dataKey: 'stagione' }]}
               series={[
-                { dataKey: "media", label: "Media", valueFormatter },
-                { dataKey: "gol", label: "Gol", valueFormatter },
-                { dataKey: "assist", label: "Assist", valueFormatter },
-                { dataKey: "giocate", label: "Giocate", valueFormatter },
+                { dataKey: 'media', label: 'Media', valueFormatter },
+                { dataKey: 'gol', label: 'Gol', valueFormatter },
+                { dataKey: 'assist', label: 'Assist', valueFormatter },
+                { dataKey: 'giocate', label: 'Giocate', valueFormatter },
               ]}
               {...chartSetting}
               {...customizegraphstagioni}
@@ -378,7 +377,7 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
       )}
       <Grid item xs={12} minHeight={30}></Grid>
     </Grid>
-  );
+  )
 }
 
-export default Giocatore;
+export default Giocatore

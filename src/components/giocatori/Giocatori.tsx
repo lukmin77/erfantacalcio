@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-"use client";
+'use client'
 import {
   Box,
   Divider,
@@ -10,63 +10,63 @@ import {
   Switch,
   Typography,
   useMediaQuery,
-} from "@mui/material";
-import { useEffect, useState } from "react";
-import { api } from "~/utils/api";
-import { useTheme } from "@mui/material/styles";
+} from '@mui/material'
+import { useEffect, useState } from 'react'
+import { api } from '~/utils/api'
+import { useTheme } from '@mui/material/styles'
 import AutocompleteTextbox, {
   type iElements,
-} from "~/components/autocomplete/AutocompleteGiocatore";
-import Image from "next/image";
-import { type Ruoli } from "~/types/common";
-import { getRuoloEsteso } from "~/utils/helper";
-import { BarChartOutlined } from "@mui/icons-material";
-import Modal from "../modal/Modal";
-import Giocatore from "./Giocatore";
+} from '~/components/autocomplete/AutocompleteGiocatore'
+import Image from 'next/image'
+import { type Ruoli } from '~/types/common'
+import { getRuoloEsteso } from '~/utils/helper'
+import { BarChartOutlined } from '@mui/icons-material'
+import Modal from '../modal/Modal'
+import Giocatore from './Giocatore'
 import {
   DataGrid,
   GridActionsCellItem,
   type GridColDef,
-} from "@mui/x-data-grid";
+} from '@mui/x-data-grid'
 
 function Giocatori() {
-  const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down("md"));
+  const theme = useTheme()
+  const isXs = useMediaQuery(theme.breakpoints.down('md'))
 
-  const [selectedGiocatoreId, setSelectedGiocatoreId] = useState<number>();
-  const [openModalCalendario, setOpenModalCalendario] = useState(false);
+  const [selectedGiocatoreId, setSelectedGiocatoreId] = useState<number>()
+  const [openModalCalendario, setOpenModalCalendario] = useState(false)
   const giocatoriList = api.giocatori.listAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-  });
-  const [ruolo, setRuolo] = useState<Ruoli>("C");
+  })
+  const [ruolo, setRuolo] = useState<Ruoli>('C')
   const giocatoriStats = api.giocatori.listStatistiche.useQuery(
     { ruolo: ruolo },
-    { refetchOnWindowFocus: false, refetchOnReconnect: false }
-  );
-  const [giocatori, setGiocatori] = useState<iElements[]>([]);
+    { refetchOnWindowFocus: false, refetchOnReconnect: false },
+  )
+  const [giocatori, setGiocatori] = useState<iElements[]>([])
 
   useEffect(() => {
     if (giocatoriList.data) {
-      setGiocatori(giocatoriList.data);
+      setGiocatori(giocatoriList.data)
     }
-  }, [giocatoriList.data]);
+  }, [giocatoriList.data])
 
   const handleGiocatoreSelected = async (idGiocatore: number | undefined) => {
-    setSelectedGiocatoreId(idGiocatore);
-    setOpenModalCalendario(true);
-  };
+    setSelectedGiocatoreId(idGiocatore)
+    setOpenModalCalendario(true)
+  }
 
   const handleModalClose = () => {
-    setOpenModalCalendario(false);
-  };
+    setOpenModalCalendario(false)
+  }
 
   const columns: GridColDef[] = [
-    { field: "id", hideable: true },
+    { field: 'id', hideable: true },
     {
-      field: "maglia",
-      type: "string",
-      align: "left",
+      field: 'maglia',
+      type: 'string',
+      align: 'left',
       renderCell: (params) => (
         <Image
           src={params.row?.maglia as string}
@@ -76,72 +76,72 @@ function Giocatori() {
           title={params.row?.squadraSerieA as string}
         />
       ),
-      renderHeader: () => "",
+      renderHeader: () => '',
       width: 30,
     },
     {
-      field: "nome",
-      type: "string",
-      align: "left",
+      field: 'nome',
+      type: 'string',
+      align: 'left',
       renderHeader: () => <strong>Nome</strong>,
       flex: isXs ? 0 : 1,
       sortable: true,
     },
     {
-      field: "squadra",
-      type: "string",
-      align: "left",
+      field: 'squadra',
+      type: 'string',
+      align: 'left',
       renderHeader: () => <strong>Squadra</strong>,
       flex: isXs ? 0 : 1,
       sortable: true,
     },
     {
-      field: "media",
-      type: "number",
-      align: "right",
+      field: 'media',
+      type: 'number',
+      align: 'right',
       renderHeader: () => <strong>Media</strong>,
       width: isXs ? 90 : 100,
       sortable: true,
     },
     {
-      field: "golfatti",
-      type: "number",
-      align: "right",
+      field: 'golfatti',
+      type: 'number',
+      align: 'right',
       renderHeader: () => <strong>Gol+</strong>,
       renderCell: (params) =>
-        params.row?.ruolo !== "P" ? params.row?.golfatti : "",
+        params.row?.ruolo !== 'P' ? params.row?.golfatti : '',
       width: isXs ? 90 : 100,
       sortable: true,
     },
     {
-      field: "golsubiti",
-      type: "number",
-      align: "right",
+      field: 'golsubiti',
+      type: 'number',
+      align: 'right',
       renderHeader: () => <strong>Gol-</strong>,
       renderCell: (params) =>
-        params.row?.ruolo === "P" ? params.row?.golsubiti : "",
+        params.row?.ruolo === 'P' ? params.row?.golsubiti : '',
       width: isXs ? 90 : 100,
       sortable: true,
     },
     {
-      field: "assist",
-      type: "number",
-      align: "right",
+      field: 'assist',
+      type: 'number',
+      align: 'right',
       renderHeader: () => <strong>Assist</strong>,
       width: isXs ? 90 : 100,
       sortable: true,
     },
     {
-      field: "giocate",
-      type: "number",
-      align: "right",
+      field: 'giocate',
+      type: 'number',
+      align: 'right',
       renderHeader: () => <strong>Giocate</strong>,
       width: 100,
       sortable: true,
     },
     {
-      field: "actions",
-      type: "actions",
+      field: 'actions',
+      type: 'actions',
       getActions: (params) => [
         <GridActionsCellItem
           key={params.id}
@@ -152,13 +152,13 @@ function Giocatori() {
       ],
       width: isXs ? 90 : 100,
     },
-  ];
+  ]
 
-  const pageSize = isXs ? 10 : 15;
+  const pageSize = isXs ? 10 : 15
 
   const skeletonRows = Array.from({ length: pageSize }, (_, index) => ({
     id: `skeleton-${index}`,
-  }));
+  }))
 
   return (
     <>
@@ -171,41 +171,41 @@ function Giocatori() {
             control={
               <Switch
                 color="warning"
-                onChange={() => setRuolo("P")}
-                checked={ruolo === "P"}
+                onChange={() => setRuolo('P')}
+                checked={ruolo === 'P'}
               />
             }
-            label={isXs ? "P" : getRuoloEsteso("P", true)}
+            label={isXs ? 'P' : getRuoloEsteso('P', true)}
           />
           <FormControlLabel
             control={
               <Switch
                 color="warning"
-                onChange={() => setRuolo("D")}
-                checked={ruolo === "D"}
+                onChange={() => setRuolo('D')}
+                checked={ruolo === 'D'}
               />
             }
-            label={isXs ? "D" : getRuoloEsteso("D", true)}
+            label={isXs ? 'D' : getRuoloEsteso('D', true)}
           />
           <FormControlLabel
             control={
               <Switch
                 color="warning"
-                onChange={() => setRuolo("C")}
-                checked={ruolo === "C"}
+                onChange={() => setRuolo('C')}
+                checked={ruolo === 'C'}
               />
             }
-            label={isXs ? "C" : getRuoloEsteso("C", true)}
+            label={isXs ? 'C' : getRuoloEsteso('C', true)}
           />
           <FormControlLabel
             control={
               <Switch
                 color="warning"
-                onChange={() => setRuolo("A")}
-                checked={ruolo === "A"}
+                onChange={() => setRuolo('A')}
+                checked={ruolo === 'A'}
               />
             }
-            label={isXs ? "A" : getRuoloEsteso("A", true)}
+            label={isXs ? 'A' : getRuoloEsteso('A', true)}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -218,7 +218,9 @@ function Giocatori() {
           <Typography variant="h5">
             Top {getRuoloEsteso(ruolo, true)}
           </Typography>
-          <Box sx={{ width: "100%", overflowX: "auto", contain: "inline-size" }}>
+          <Box
+            sx={{ width: '100%', overflowX: 'auto', contain: 'inline-size' }}
+          >
             <DataGrid
               columnHeaderHeight={45}
               rowHeight={40}
@@ -230,17 +232,17 @@ function Giocatori() {
                   },
                 },
                 filter: undefined,
-                density: "comfortable",
+                density: 'comfortable',
               }}
               slotProps={{
                 loadingOverlay: {
-                  variant: "skeleton",
+                  variant: 'skeleton',
                 },
               }}
               columnVisibilityModel={{
                 id: false,
-                golfatti: ruolo !== "P",
-                golsubiti: ruolo === "P",
+                golfatti: ruolo !== 'P',
+                golsubiti: ruolo === 'P',
               }}
               checkboxSelection={false}
               disableColumnFilter={true}
@@ -260,18 +262,18 @@ function Giocatori() {
               }
               disableRowSelectionOnClick={true}
               sx={{
-                backgroundColor: "#fff",
-                "& .MuiDataGrid-columnHeader": {
+                backgroundColor: '#fff',
+                '& .MuiDataGrid-columnHeader': {
                   color: theme.palette.primary.main,
                   backgroundColor: theme.palette.secondary.light,
                 },
-                overflowX: "auto",
-                "& .MuiDataGrid-virtualScroller": {
-                  overflowX: "auto",
+                overflowX: 'auto',
+                '& .MuiDataGrid-virtualScroller': {
+                  overflowX: 'auto',
                 },
-                minWidth: "100%",
-                "& .MuiDataGrid-viewport": {
-                  overflowX: "auto !important",
+                minWidth: '100%',
+                '& .MuiDataGrid-viewport': {
+                  overflowX: 'auto !important',
                 },
               }}
             />
@@ -281,21 +283,21 @@ function Giocatori() {
       </Grid>
 
       <Modal
-        title={"Statistica giocatore"}
+        title={'Statistica giocatore'}
         open={openModalCalendario}
         onClose={handleModalClose}
-        width={isXs ? "98%" : "1266px"}
-        height={isXs ? "98%" : ""}
+        width={isXs ? '98%' : '1266px'}
+        height={isXs ? '98%' : ''}
       >
         <Divider />
-        <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
+        <Box sx={{ mt: 1, gap: '0px', flexWrap: 'wrap' }}>
           {selectedGiocatoreId !== undefined && (
             <Giocatore idGiocatore={selectedGiocatoreId} />
           )}
         </Box>
       </Modal>
     </>
-  );
+  )
 }
 
-export default Giocatori;
+export default Giocatori
