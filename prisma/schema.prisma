@@ -70,6 +70,7 @@ model Formazioni {
 
 model Giocatori {
   idGiocatore       Int             @id(map: "PK_Giocatori") @unique(map: "IX_Giocatori_idGiocatore") @default(autoincrement())
+  id_pf             Int?
   ruolo             String          @db.VarChar(1)
   nome              String          @unique(map: "UNIQUE_GIOCATORI_NOME") @db.VarChar(50)
   nomeFantaGazzetta String?         @db.VarChar(500)
