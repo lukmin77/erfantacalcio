@@ -323,7 +323,7 @@ function DataTable({
                                   record[key] as string,
                                   column?.formatDate
                                     ? column.formatDate
-                                    : 'dd/MM/yyyy HH:mm',
+                                    : 'DD/MM/YYYY HH:mm',
                                 )
                               : ''
                             return (

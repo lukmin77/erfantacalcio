@@ -13,7 +13,7 @@ export function toLocaleDateTime(date: Date) {
 
 export function getTimestamp(): string {
   const now = toLocaleDateTime(new Date())
-  return dayjs(now).format('yyyyMMdd_HHmmss')
+  return dayjs(now).format('YYYYMMDD_HHmmss')
 }
 
 export function convertFromIsoToDatetimeMUI(

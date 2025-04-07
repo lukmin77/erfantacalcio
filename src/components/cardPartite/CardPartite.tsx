@@ -45,7 +45,7 @@ export default function CardPartite({
               title={`${prefixTitle} ${g?.Title}`}
               subheader={`${g.SubTitle}: ${formatDateFromIso(
                 g.data,
-                'dd/MM HH:mm',
+                'DD/MM HH:mm',
               )}`}
               titleTypographyProps={{ variant: 'h5' }}
               subheaderTypographyProps={{ variant: 'h6' }}

@@ -90,7 +90,7 @@ function ViewFormazioni() {
                 {`Calcio d'inizio ${calendario.SubTitle} il 
                                 ${formatDateFromIso(
                                   calendario.data,
-                                  'dd/MM/yyyy',
+                                  'DD/MM/YYYY',
                                 )} alle 
                                 ${formatDateFromIso(calendario.data, 'HH:mm')}`}
               </Typography>
@@ -105,7 +105,7 @@ function ViewFormazioni() {
                       formazioneHome
                         ? `${formatDateFromIso(
                             formazioneHome?.dataOra.toISOString(),
-                            'dd/MM',
+                            'DD/MM',
                           )} alle
                                         ${formatDateFromIso(
                                           formazioneHome?.dataOra.toISOString(),
@@ -259,7 +259,7 @@ function ViewFormazioni() {
                       formazioneAway
                         ? `${formatDateFromIso(
                             formazioneAway?.dataOra.toISOString(),
-                            'dd/MM',
+                            'DD/MM',
                           )} alle
                                         ${formatDateFromIso(
                                           formazioneAway?.dataOra.toISOString(),
