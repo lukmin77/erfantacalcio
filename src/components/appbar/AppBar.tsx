@@ -148,19 +148,6 @@ function AppAppBar({ isXs }: AppAppBarProps) {
               <>
                 {session?.user?.ruolo === RuoloUtente.admin && (
                   <div>
-                    <Tooltip title="Home Page">
-                      <IconButton
-                        color="info"
-                        onClick={() => (window.location.href = '/')}
-                        size="small"
-                        sx={{ ml: 2 }}
-                        aria-controls={openBo ? 'account-menu' : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={openBo ? 'true' : undefined}
-                      >
-                        <Cottage />
-                      </IconButton>
-                    </Tooltip>
                     <Tooltip title="Admin settings">
                       <IconButton
                         color="info"
@@ -288,19 +275,6 @@ function AppAppBar({ isXs }: AppAppBarProps) {
             )}
           </Box>
           <Box sx={{ display: { sm: '', md: 'none' } }}>
-            <Tooltip title="Home Page">
-              <IconButton
-                color="info"
-                onClick={() => (window.location.href = '/')}
-                size="small"
-                sx={{ ml: 2 }}
-                aria-controls={openBo ? 'account-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={openBo ? 'true' : undefined}
-              >
-                <Cottage />
-              </IconButton>
-            </Tooltip>
             <Button
               variant="text"
               color="info"
