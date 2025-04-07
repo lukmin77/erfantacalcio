@@ -27,6 +27,7 @@ export type votoListType = {
 }
 
 export interface iVotoGiocatore {
+  id_pf: number | null
   Nome: string
   Ammonizione: number
   Assist: number

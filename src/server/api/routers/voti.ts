@@ -16,8 +16,10 @@ import {
   publicProcedure,
   adminProcedure,
 } from '~/server/api/trpc'
+import { parseInt } from 'lodash'
 
 const iVotoGiocatoreSchema = z.object({
+  id_pf: z.number().nullable(),
   Nome: z.string(),
   Ammonizione: z.number(),
   Assist: z.number(),
@@ -367,9 +369,12 @@ export const votiRouter = createTRPCRouter({
       try {
         Logger.info(`Processing ${opts.input.voti.length} voti`)
         for (const v of opts.input.voti) {
-          let idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore
+          let idGiocatore = v.id_pf ? (await getGiocatoreByID(v.id_pf))?.idGiocatore : undefined
+          if (idGiocatore === undefined) 
+            idGiocatore = (await getGiocatoreByNome(v.Nome, v.id_pf))?.idGiocatore
+
           if (!idGiocatore) {
-            idGiocatore = await createGiocatore(v.Nome, v.Ruolo)
+            idGiocatore = await createGiocatore(v.Nome, v.Ruolo, v.id_pf)
           }
 
           if ((await findLastTrasferimento(idGiocatore)) === null) {
@@ -502,6 +507,7 @@ async function readFileVoti(filePath: string): Promise<iVotoGiocatore[]> {
             return
           } else {
             voti.push({
+              id_pf: line[`Col${Configurazione.pfColumnIdGiocatore}`] ? parseInt(line[`Col${Configurazione.pfColumnIdGiocatore}`] ?? '0') : null,
               Nome: normalizeNomeGiocatore(
                 line[`Col${Configurazione.pfColumnNome}`] ?? '',
               ),
@@ -585,6 +591,7 @@ async function readFileVotiVercel(fileUrl: string): Promise<iVotoGiocatore[]> {
               return
             } else {
               voti.push({
+                id_pf: line[`Col${Configurazione.pfColumnIdGiocatore}`] ? parseInt(line[`Col${Configurazione.pfColumnIdGiocatore}`] ?? '0') : null,
                 Nome: normalizeNomeGiocatore(
                   line[`Col${Configurazione.pfColumnNome}`] ?? '',
                 ),
@@ -645,13 +652,49 @@ function getPathVoti(fileName: string) {
   return path.join(process.cwd(), `public/voti/${fileName}`)
 }
 
-async function getGiocatoreByNome(nome: string) {
+async function getGiocatoreByNome(nome: string, id_pf: number | null) {
   try {
     const giocatore = await prisma.giocatori.findFirst({
       where: {
         nome: {
           equals: nome,
           mode: 'insensitive',
+        },
+      },
+    })
+
+    if (giocatore) {
+      if (id_pf) {
+        await prisma.giocatori.update({
+          where: {
+            idGiocatore: giocatore.idGiocatore,
+          },
+          data: {
+            id_pf: id_pf,
+          },
+        })
+      }
+      
+      return {
+        idGiocatore: giocatore.idGiocatore,
+        nome: giocatore.nome,
+        nomeFantagazzetta: giocatore.nomeFantaGazzetta,
+        ruolo: giocatore.ruolo,
+        ruoloEsteso: getRuoloEsteso(giocatore.ruolo),
+      }
+    } else return null
+  } catch (error) {
+    Logger.error('Si è verificato un errore', error)
+    throw error
+  }
+}
+
+async function getGiocatoreByID(id_pf: number) {
+  try {
+    const giocatore = await prisma.giocatori.findFirst({
+      where: {
+        id_pf: {
+          equals: id_pf
         },
       },
     })
@@ -671,10 +714,11 @@ async function getGiocatoreByNome(nome: string) {
   }
 }
 
-async function createGiocatore(nome: string, ruolo: string) {
+async function createGiocatore(nome: string, ruolo: string, id_pf: number | null) {
   try {
     const giocatore = await prisma.giocatori.create({
       data: {
+        id_pf: id_pf,
         nome: normalizeNomeGiocatore(nome),
         nomeFantaGazzetta: null,
         ruolo: ruolo,
@@ -839,9 +883,12 @@ async function saveLocal(idCalendario: number, fileName: string) {
     Logger.info('voti:', voti)
     await Promise.all(
       voti.map(async (v) => {
-        let idGiocatore = (await getGiocatoreByNome(v.Nome))?.idGiocatore
+        let idGiocatore = v.id_pf ? (await getGiocatoreByID(v.id_pf))?.idGiocatore : undefined
+          if (idGiocatore === undefined) 
+            idGiocatore = (await getGiocatoreByNome(v.Nome, v.id_pf))?.idGiocatore
+
         if (!idGiocatore) {
-          idGiocatore = await createGiocatore(v.Nome, v.Ruolo)
+          idGiocatore = await createGiocatore(v.Nome, v.Ruolo, v.id_pf)
         }
         if ((await findLastTrasferimento(idGiocatore)) === null) {
           const squadraSerieA = await findSquadraSerieA(v.Squadra)

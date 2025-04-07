@@ -29,7 +29,7 @@ model Calendario {
   hasDaRecuperare Boolean   @default(false)
   data            DateTime? @default(now()) @db.Timestamptz(3)
   girone          Int?      @db.SmallInt
-  dataFine        DateTime?
+  dataFine        DateTime? @db.Timestamptz(3)
   Tornei          Tornei    @relation(fields: [idTorneo], references: [idTorneo], onUpdate: NoAction, map: "FK_Calendario_Tornei")
   Partite         Partite[]
   Voti            Voti[]
@@ -70,6 +70,7 @@ model Formazioni {
 
 model Giocatori {
   idGiocatore       Int             @id(map: "PK_Giocatori") @unique(map: "IX_Giocatori_idGiocatore") @default(autoincrement())
+  id_pf             Int?
   ruolo             String          @db.VarChar(1)
   nome              String          @unique(map: "UNIQUE_GIOCATORI_NOME") @db.VarChar(50)
   nomeFantaGazzetta String?         @db.VarChar(500)
@@ -264,7 +265,7 @@ model Voti {
 }
 
 model FlowNewSeasosn {
-  id     Int       @id(map: "PK_FlowNewSeason") @default(autoincrement())
+  id     Int       @id(map: "PK_FlowNewSeason") @unique(map: "IX_FlowSeason_id") @default(autoincrement())
   idFase Int
   active Boolean   @default(false)
   data   DateTime? @default(now()) @db.Timestamptz(3)
