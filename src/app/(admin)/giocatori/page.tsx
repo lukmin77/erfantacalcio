@@ -13,21 +13,18 @@ import {
   type SelectChangeEvent,
   Stack,
   TextField,
-  Tooltip,
   Typography,
   FormControl,
   InputLabel,
   Paper,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { z } from 'zod'
 import AutocompleteTextbox, {
   type iElements,
 } from '~/components/autocomplete/AutocompleteGiocatore'
-import DataTable, {
-  type ActionOptions,
-  type Column,
-} from '~/components/tables/datatable'
 import { type GiocatoreType } from '~/types/giocatori'
 import {
   type trasferimentoType,
@@ -36,23 +33,55 @@ import {
 import { api } from '~/utils/api'
 import { ruoliList, getRuoloEsteso } from '~/utils/helper'
 import CheckIcon from '@mui/icons-material/CheckCircle'
-import EditNoteIcon from '@mui/icons-material/EditNote'
 import { Configurazione } from '~/config'
 import dayjs from 'dayjs'
 import { convertFromIsoToDatetimeMUI } from '~/utils/dateUtils'
+import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
+import { BarChartOutlined } from '@mui/icons-material'
 
 export default function Giocatori() {
+  const theme = useTheme()
+  const isXs = useMediaQuery(theme.breakpoints.down('md'))
+
   const [selectedGiocatoreId, setSelectedGiocatoreId] = useState<number>()
   const [selectedGiocatore, setSelectedGiocatore] = useState<string>()
   const [selectedTrasferimentoId, setSelectedTrasferimentoId] =
     useState<number>()
   const [selectedTrasferimentoStagione, setSelectedTrasferimentoStagione] =
     useState<string>()
+  const [giocatori, setGiocatori] = useState<iElements[]>([])
+  const [squadre, setSquadre] = useState<iElements[]>([])
+  const [squadreSerieA, setSquadreSerieA] = useState<iElements[]>([])
+  const [trasferimenti, setTrasferimenti] = useState<trasferimentoListType[]>(
+    [],
+  )
+  const [errorMessageGiocatore, setErrorMessageGiocatore] = useState('')
+  const [messageGiocatore, setMessageGiocatore] = useState('')
+  const [errorMessageTrasferimento, setErrorMessageTrasferimento] = useState('')
+  const [messageTrasferimento, setMessageTrasferimento] = useState('')
+  const defaultGiocatore: GiocatoreType = {
+    idGiocatore: 0,
+    nome: '',
+    nomeFantagazzetta: '',
+    ruolo: 'P',
+  }
+  const [giocatore, setGiocatore] = useState<GiocatoreType>(defaultGiocatore)
+  const defaultTrasferimento: trasferimentoType = {
+    idTrasferimento: 0,
+    idGiocatore: 0,
+    idSquadra: null,
+    idSquadraSerieA: null,
+    costo: 0,
+    dataAcquisto: dayjs(new Date()).toDate(),
+    dataCessione: null,
+  }
+  const [trasferimento, setTrasferimento] =
+    useState<trasferimentoType>(defaultTrasferimento)
+
   const trasferimentiList = api.trasferimenti.list.useQuery(
     { idGiocatore: selectedGiocatoreId! },
     { enabled: !!selectedGiocatoreId },
   )
-  const [errorMessageTrasferimenti, setErrorMessageTrasferimenti] = useState('')
   const giocatoriList = api.giocatori.listAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
@@ -92,12 +121,6 @@ export default function Giocatori() {
       refetchOnReconnect: false,
     },
   )
-  const [giocatori, setGiocatori] = useState<iElements[]>([])
-  const [squadre, setSquadre] = useState<iElements[]>([])
-  const [squadreSerieA, setSquadreSerieA] = useState<iElements[]>([])
-  const [trasferimenti, setTrasferimenti] = useState<trasferimentoListType[]>(
-    [],
-  )
   const trasferimentoUpsert = api.trasferimenti.upsert.useMutation({
     onSuccess: async () => {
       await trasferimentiList.refetch()
@@ -108,94 +131,6 @@ export default function Giocatori() {
       await trasferimentiList.refetch()
     },
   })
-  const [errorMessageGiocatore, setErrorMessageGiocatore] = useState('')
-  const [messageGiocatore, setMessageGiocatore] = useState('')
-  const [errorMessageTrasferimento, setErrorMessageTrasferimento] = useState('')
-  const [messageTrasferimento, setMessageTrasferimento] = useState('')
-  const defaultGiocatore: GiocatoreType = {
-    idGiocatore: 0,
-    nome: '',
-    nomeFantagazzetta: '',
-    ruolo: 'P',
-  }
-  const [giocatore, setGiocatore] = useState<GiocatoreType>(defaultGiocatore)
-  const defaultTrasferimento: trasferimentoType = {
-    idTrasferimento: 0,
-    idGiocatore: 0,
-    idSquadra: null,
-    idSquadraSerieA: null,
-    costo: 0,
-    dataAcquisto: dayjs(new Date()).toDate(),
-    dataCessione: null,
-  }
-  const [trasferimento, setTrasferimento] =
-    useState<trasferimentoType>(defaultTrasferimento)
-  const columns: Column[] = [
-    { key: 'idTrasferimento', type: 'number', align: 'left', visible: false },
-    {
-      key: 'ruolo',
-      type: 'string',
-      align: 'left',
-      header: 'Ruolo',
-      sortable: false,
-    },
-    {
-      key: 'squadra',
-      type: 'string',
-      align: 'left',
-      header: 'Squadra',
-      sortable: false,
-    },
-    {
-      key: 'squadraSerieA',
-      type: 'string',
-      align: 'left',
-      header: 'Serie A',
-      sortable: false,
-    },
-    {
-      key: 'dataAcquisto',
-      type: 'date',
-      align: 'left',
-      header: 'Data',
-      sortable: false,
-    },
-    {
-      key: 'stagione',
-      type: 'string',
-      align: 'left',
-      header: 'Stagione',
-      sortable: false,
-    },
-    {
-      key: 'stagione',
-      type: 'string',
-      align: 'left',
-      header: 'Stagione',
-      sortable: false,
-    },
-    { key: '', type: 'action', align: 'center', width: '1%' },
-  ]
-  const actionEdit = (idTrasferimento: string, stagione: string) => {
-    return (
-      <div>
-        <Tooltip
-          title={'Modifica'}
-          onClick={() => handleEditTrasferimento(+idTrasferimento, stagione)}
-          placement="left"
-        >
-          <EditNoteIcon />
-        </Tooltip>
-      </div>
-    )
-  }
-  const actionOptions: ActionOptions[] = [
-    {
-      keyFields: ['idTrasferimento', 'stagione'],
-      keyEvalVisibility: 'isEditVisible',
-      component: actionEdit,
-    },
-  ]
   const GiocatoreSchema = z.object({
     idGiocatore: z.number(),
     nome: z.string().min(3),
@@ -212,19 +147,97 @@ export default function Giocatori() {
     dataCessione: z.date().optional().nullable(),
   })
 
+  const columns: GridColDef[] = [
+    { field: 'id', hideable: true },
+    {
+      field: 'ruolo',
+      type: 'string',
+      align: 'left',
+      renderHeader: () => <strong>Ruolo</strong>,
+      flex: isXs ? 0 : 1,
+      sortable: true,
+    },
+    {
+      field: 'squadra',
+      type: 'string',
+      align: 'left',
+      renderHeader: () => <strong>Squadra</strong>,
+      flex: isXs ? 0 : 1,
+      sortable: true,
+    },
+    {
+      field: 'squadraSerieA',
+      type: 'string',
+      align: 'left',
+      renderHeader: () => <strong>Squadra serie A</strong>,
+      flex: isXs ? 0 : 1,
+      sortable: true,
+    },
+    {
+      field: 'dataAcquisto',
+      type: 'date',
+      align: 'left',
+      renderHeader: () => <strong>Data acquisto</strong>,
+      flex: isXs ? 0 : 1,
+      sortable: true,
+    },
+    {
+      field: 'dataCessione',
+      type: 'date',
+      align: 'left',
+      renderHeader: () => <strong>Data cessione</strong>,
+      flex: isXs ? 0 : 1,
+      sortable: true,
+    },
+    {
+      field: 'stagione',
+      type: 'string',
+      align: 'left',
+      renderHeader: () => <strong>Stagione</strong>,
+      flex: isXs ? 0 : 1,
+      sortable: true,
+    },
+    {
+      field: 'costo',
+      type: 'number',
+      align: 'right',
+      renderHeader: () => <strong>Costo</strong>,
+      flex: isXs ? 0 : 1,
+      sortable: true,
+    },
+    {
+      field: 'actions',
+      type: 'actions',
+      getActions: (params) => {
+        if (params.row['stagione'] === Configurazione.stagione) {
+          return [
+            <GridActionsCellItem
+              key={params.id}
+              icon={<BarChartOutlined color="success" />}
+              label="Vedi giocatore"
+              onClick={() =>
+                handleEditTrasferimento(params.id as number)
+              }
+            />,
+          ];
+        }
+        return []; // Nessuna azione se la stagione non è quella specificata
+      },
+      width: isXs ? 90 : 100,
+    },
+  ]
+
+  const pageSize = 5
+
+  const skeletonRows = Array.from({ length: pageSize }, (_, index) => ({
+    id: `skeleton-${index}`,
+  }))
+
   useEffect(() => {
     if (trasferimentiList.data) {
       setTrasferimenti(trasferimentiList.data)
     }
   }, [trasferimentiList.data])
-
-  useEffect(() => {
-    if (trasferimentiList.isError) {
-      setErrorMessageTrasferimenti(
-        'Si è verificato un errore in fase di caricamento dei trasferimenti',
-      )
-    }
-  }, [trasferimentiList.isError])
 
   useEffect(() => {
     if (giocatoriList.data) {
@@ -373,17 +386,10 @@ export default function Giocatori() {
   }
 
   const handleEditTrasferimento = async (
-    _idTrasferimento: number,
-    stagione: string,
+    _idTrasferimento: number
   ) => {
-    setSelectedTrasferimentoStagione(stagione)
-
-    if (Configurazione.stagione === stagione) {
-      setSelectedTrasferimentoId(_idTrasferimento)
-    } else {
-      setSelectedTrasferimentoId(undefined)
-      setTrasferimento(defaultTrasferimento)
-    }
+    setSelectedTrasferimentoId(_idTrasferimento)
+    
     document?.getElementById('costo')?.focus()
   }
 
@@ -588,7 +594,7 @@ export default function Giocatori() {
                     variant="outlined"
                     sx={{ mt: 3, mb: 2 }}
                   >
-                    Chiudi
+                    Annulla
                   </Button>
                   {selectedGiocatoreId !== undefined && (
                     <Button
@@ -796,7 +802,7 @@ export default function Giocatori() {
                         variant="outlined"
                         sx={{ mt: 3, mb: 2 }}
                       >
-                        Chiudi
+                        Annulla
                       </Button>
                       {selectedTrasferimentoId !== undefined &&
                         selectedTrasferimentoStagione ===
@@ -876,14 +882,67 @@ export default function Giocatori() {
       ) : selectedGiocatoreId === undefined ? (
         <span></span>
       ) : (
-        <DataTable
-          title={`Trasferimenti ${giocatoreOne.data?.nome}`}
-          pagination={false}
-          data={trasferimenti}
-          errorMessage={errorMessageTrasferimenti}
-          columns={columns}
-          actionOptions={actionOptions}
-        />
+        <>
+          <Typography variant="h5">
+            Trasferimenti ${giocatoreOne.data?.nome}
+          </Typography>
+          <Box
+            sx={{ width: '100%', overflowX: 'auto', contain: 'inline-size' }}
+          >
+            <DataGrid
+              columnHeaderHeight={45}
+              rowHeight={40}
+              loading={trasferimentiList.isLoading}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: pageSize,
+                  },
+                },
+                filter: undefined,
+                density: 'comfortable',
+              }}
+              slotProps={{
+                loadingOverlay: {
+                  variant: 'skeleton',
+                },
+              }}
+              columnVisibilityModel={{
+                id: false,
+              }}
+              checkboxSelection={false}
+              disableColumnFilter={true}
+              disableColumnMenu={true}
+              disableColumnSelector={true}
+              disableColumnSorting={false}
+              disableColumnResize={true}
+              hideFooter={false}
+              hideFooterPagination={false}
+              pageSizeOptions={[5, 10, 20]}
+              paginationMode="client"
+              pagination={true}
+              hideFooterSelectedRowCount={true}
+              columns={columns}
+              rows={trasferimentiList.isLoading ? skeletonRows : trasferimenti}
+              disableRowSelectionOnClick={true}
+              sx={{
+                backgroundColor: '#fff',
+                '& .MuiDataGrid-columnHeader': {
+                  color: theme.palette.primary.main,
+                  backgroundColor: theme.palette.secondary.light,
+                },
+                overflowX: 'auto',
+                '& .MuiDataGrid-virtualScroller': {
+                  overflowX: 'auto',
+                },
+                minWidth: '100%',
+                '& .MuiDataGrid-viewport': {
+                  overflowX: 'auto !important',
+                },
+              }}
+            />
+          </Box>
+        </>
       )}
     </Stack>
   )
