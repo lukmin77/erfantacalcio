@@ -121,12 +121,12 @@ export const themeOptions: ThemeOptions = {
       lineHeight: 1.66,
     },
     body1: {
-      color: 'rgb(3, 126, 175)', //grigio scuro
+      color: 'rgb(3, 126, 175)',
       fontSize: '0.75rem',
       lineHeight: 1.57,
     },
     body2: {
-      color: 'rgb(3, 126, 175)', //verde scuro
+      color: 'rgb(3, 126, 175)',
       fontSize: '0.75rem',
       lineHeight: 1.66,
     },
