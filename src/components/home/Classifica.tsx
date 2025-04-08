@@ -2,10 +2,11 @@
 import React, { useEffect, useState } from 'react'
 import { api } from '~/utils/api'
 import { Avatar, Box, Typography, useMediaQuery, useTheme } from '@mui/material'
-import { type ClassificaType } from '~/types/classifica'
 import { getNomeTorneo } from '~/utils/helper'
 import { DataGrid, type GridColDef } from '@mui/x-data-grid'
 import { autosizeOptions } from '~/utils/datatable'
+import { classificaSchema } from '~/server/api/routers/classifica'
+import { z } from 'zod'
 interface ClassificaProps {
   nomeTorneo: string
   idTorneo: number | undefined
@@ -28,7 +29,7 @@ export default function Classifica({
       refetchOnReconnect: false,
     },
   )
-  const [rows, setRows] = useState<ClassificaType[]>([])
+  const [rows, setRows] = useState<z.infer<typeof classificaSchema>[]>([])
 
   useEffect(() => {
     if (

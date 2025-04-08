@@ -13,8 +13,9 @@ import {
 } from '@mui/material'
 import { api } from '~/utils/api'
 import CheckIcon from '@mui/icons-material/CheckCircle'
-import { type iMessage } from '~/types/nuovastagione'
 import { Configurazione } from '~/config'
+import { messageSchema } from '~/server/api/routers/nuovastagione'
+import { z } from 'zod'
 
 export default function AvvioStagione() {
   const faseNuovaStagione = api.nuovaStagione.getFaseAvvio.useQuery()
@@ -77,7 +78,7 @@ export default function AvvioStagione() {
   const handleNext = async () => {
     setMessage('')
     setDisableButton(true)
-    let message: iMessage = { isError: false, isComplete: false, message: '' }
+    let message = messageSchema.parse({})
     switch (activeStep) {
       case 0:
         message = await chiudiStagione.mutateAsync()

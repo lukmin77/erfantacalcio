@@ -1,10 +1,25 @@
 import Logger from '~/lib/logger'
 import { z } from 'zod'
-import { type ClassificaType } from '~/types/classifica'
 
 import prisma from '~/utils/db'
 
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
+
+export const classificaSchema = z.object({
+  idSquadra: z.number(),
+  squadra: z.string(),
+  foto: z.string().nullable(),
+  punti: z.number(),
+  vinte: z.number(),
+  pareggi: z.number(),
+  perse: z.number(),
+  golFatti: z.number(),
+  golSubiti: z.number(),
+  differenzaReti: z.number(),
+  giocate: z.number(),
+  fantapunti: z.number(),
+})
+
 
 export const classificaRouter = createTRPCRouter({
   list: publicProcedure
@@ -46,7 +61,7 @@ export const classificaRouter = createTRPCRouter({
           ],
         })
 
-        return result.map<ClassificaType>((c) => ({
+        return result.map<z.infer<typeof classificaSchema>>((c) => ({
           id: c.idSquadra,
           idSquadra: c.idSquadra,
           squadra: c.Utenti.nomeSquadra,

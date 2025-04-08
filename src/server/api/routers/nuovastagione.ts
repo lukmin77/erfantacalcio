@@ -8,11 +8,19 @@ import {
 import { generateUniqueRandomNumbers } from '~/utils/numberUtils'
 import { toLocaleDateTime } from '~/utils/dateUtils'
 import { type Partita, RoundRobin4, RoundRobin8 } from '~/utils/bergerTables'
-import { type iMessage } from '~/types/nuovastagione'
 
 import prisma from '~/utils/db'
 
 import { createTRPCRouter, adminProcedure } from '~/server/api/trpc'
+
+import { z } from 'zod'
+
+export const messageSchema = z.object({
+  isError: z.boolean().default(false),
+  isComplete: z.boolean().default(false),
+  message: z.string().default(''),
+})
+
 
 export const nuovastagioneRouter = createTRPCRouter({
   getFaseAvvio: adminProcedure.query(async () => {
@@ -32,7 +40,7 @@ export const nuovastagioneRouter = createTRPCRouter({
     }
   }),
 
-  chiudiStagione: adminProcedure.mutation<iMessage>(async () => {
+  chiudiStagione: adminProcedure.mutation<z.infer<typeof messageSchema>>(async () => {
     try {
       const takeNum = 30
       if ((await checkVotiUltimaGiornata()) === false) {
@@ -89,7 +97,7 @@ export const nuovastagioneRouter = createTRPCRouter({
     }
   }),
 
-  preparaStagione: adminProcedure.mutation<iMessage>(async () => {
+  preparaStagione: adminProcedure.mutation<z.infer<typeof messageSchema>>(async () => {
     try {
       if ((await checkVotiUltimaGiornata()) === false) {
         Logger.warn(
@@ -143,7 +151,7 @@ export const nuovastagioneRouter = createTRPCRouter({
     }
   }),
 
-  preparaIdSquadre: adminProcedure.mutation<iMessage>(async () => {
+  preparaIdSquadre: adminProcedure.mutation<z.infer<typeof messageSchema>>(async () => {
     try {
       //get utenti
       const utenti = await prisma.utenti.findMany({
@@ -249,7 +257,7 @@ export const nuovastagioneRouter = createTRPCRouter({
     }
   }),
 
-  creaClassifiche: adminProcedure.mutation<iMessage>(async () => {
+  creaClassifiche: adminProcedure.mutation<z.infer<typeof messageSchema>>(async () => {
     try {
       if ((await checkCountClassifiche()) === false) {
         Logger.warn(
@@ -316,7 +324,7 @@ export const nuovastagioneRouter = createTRPCRouter({
     }
   }),
 
-  creaPartite: adminProcedure.mutation<iMessage>(async () => {
+  creaPartite: adminProcedure.mutation<z.infer<typeof messageSchema>>(async () => {
     try {
       if ((await checkCountPartite()) === false) {
         Logger.warn(
