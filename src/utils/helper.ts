@@ -1,4 +1,5 @@
-import { type CalendarioType } from '~/types/calendario'
+import { z } from 'zod'
+import { calendarioSchema } from '~/server/api/routers/calendario'
 import { type Moduli, type Ruoli } from '~/types/common'
 import { countOccurrences } from '~/utils/stringUtils'
 
@@ -89,7 +90,7 @@ export function normalizeNomeGiocatore(nome: string): string {
     .replace('Ù', "O'")
 }
 
-export function getIdNextGiornata(calendarioList: CalendarioType[]) {
+export function getIdNextGiornata(calendarioList: z.infer<typeof calendarioSchema>[]) {
   return calendarioList?.find((item) => item.isSelected)?.id ?? undefined
 }
 

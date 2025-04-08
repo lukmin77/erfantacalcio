@@ -22,16 +22,16 @@ import {
 import LinearProgressBar from '~/components/LinearProgressBar/LinearProgressBar'
 import { api } from '~/utils/api'
 import { getDescrizioneGiornata, getIdNextGiornata } from '~/utils/helper'
-import { type CalendarioType } from '~/types/calendario'
 import { CloudUpload } from '@mui/icons-material'
 import { type iVotoGiocatore } from '~/types/voti'
+import { calendarioSchema } from '~/server/api/routers/calendario'
+import { z } from 'zod'
 
 export default function UploadVoti() {
   //#region select calendario
   const [selectedIdCalendario, setSelectedIdCalendario] = useState<number>()
-  const [selectedGiornataSerieA, setSelectedGiornataSerieA] =
-    useState<number>(0)
-  const [calendario, setCalendario] = useState<CalendarioType[]>([])
+  const [selectedGiornataSerieA, setSelectedGiornataSerieA] = useState<number>(0)
+  const [calendario, setCalendario] = useState<z.infer<typeof calendarioSchema>[]>([])
   const calendarioList = api.calendario.list.useQuery(undefined, {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

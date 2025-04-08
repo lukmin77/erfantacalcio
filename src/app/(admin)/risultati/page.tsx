@@ -18,14 +18,15 @@ import {
 } from '@mui/material'
 import { api } from '~/utils/api'
 import { getDescrizioneGiornata, getIdNextGiornata } from '~/utils/helper'
-import { type CalendarioType } from '~/types/calendario'
 import CardPartiteAdmin from '~/components/cardPartite/CardPartiteAdmin'
 import { type GiornataAdminType } from '~/types/risultati'
+import { calendarioSchema } from '~/server/api/routers/calendario'
+import { z } from 'zod'
 
 export default function Risultati() {
   //#region select calendario
   const [selectedIdCalendario, setSelectedIdCalendario] = useState<number>()
-  const [calendario, setCalendario] = useState<CalendarioType[]>([])
+  const [calendario, setCalendario] = useState<z.infer<typeof calendarioSchema>[]>([])
   const [selectedGiornata, setSelectedGiornata] = useState<GiornataAdminType>()
   const calendarioList = api.calendario.list.useQuery(undefined, {
     refetchOnWindowFocus: false,

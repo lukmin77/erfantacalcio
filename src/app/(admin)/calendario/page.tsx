@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import { api } from '~/utils/api'
 import Modal from '~/components/modal/Modal'
 import { z } from 'zod'
-import { type CalendarioType } from '~/types/calendario'
 
 //import material ui
 import CheckIcon from '@mui/icons-material/CheckCircle'
@@ -39,6 +38,7 @@ import {
 } from '@mui/x-data-grid'
 import { autosizeOptions } from '~/utils/datatable'
 import { Edit } from '@mui/icons-material'
+import { calendarioSchema } from '~/server/api/routers/calendario'
 
 const CalendarioSchema = z.object({
   id: z.number(),
@@ -68,24 +68,11 @@ export default function Calendario() {
 
   const [errorMessageModal, setErrorMessageModal] = useState('')
   const [messageModal, setMessageModal] = useState('')
-  const [data, setData] = useState<CalendarioType[]>([])
+  const [data, setData] = useState<z.infer<typeof calendarioSchema>[]>([])
   const [openModalEdit, setOpenModalEdit] = useState(false)
-  const [calendarioInModifica, setCalendarioInModifica] =
-    useState<CalendarioType>({
-      id: 0,
-      idTorneo: 1,
-      nome: '',
-      gruppoFase: '',
-      giornata: 0,
-      giornataSerieA: 0,
-      isGiocata: false,
-      isSovrapposta: false,
-      isRecupero: false,
-      data: '',
-      dataFine: '',
-      girone: 1,
-      isSelected: false,
-    })
+  const [calendarioInModifica, setCalendarioInModifica] = useState(
+    calendarioSchema.parse({})
+  )  
 
   useEffect(() => {
     if (calendarioList.data) {
@@ -415,7 +402,7 @@ export default function Calendario() {
                   onChange={(newValue) =>
                     setCalendarioInModifica({
                       ...calendarioInModifica,
-                      data: newValue?.toISOString(),
+                      data: newValue?.toISOString() ?? new Date().toISOString(),
                     })
                   }
                 />
