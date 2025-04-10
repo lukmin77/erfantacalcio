@@ -1,4 +1,4 @@
-import Logger from '~/lib/logger'
+import Logger from '~/lib/logger.server'
 import { z } from 'zod'
 import { getGiocatoriVenduti, getRosaDisponibile } from './common'
 

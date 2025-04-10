@@ -1,5 +1,5 @@
 import { Configurazione } from '~/config'
-import Logger from '~/lib/logger'
+import Logger from '~/lib/logger.server'
 import {
   type GiornataType,
   type iCalendarioPartite,

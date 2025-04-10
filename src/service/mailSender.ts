@@ -1,5 +1,5 @@
 import { env } from 'process'
-import Logger from '~/lib/logger'
+import Logger from '~/lib/logger.server'
 import { Resend } from 'resend'
 
 const resend = new Resend(env.MAIL_API_KEY)

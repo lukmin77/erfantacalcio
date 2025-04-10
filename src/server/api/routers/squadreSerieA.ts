@@ -1,4 +1,4 @@
-import Logger from '~/lib/logger'
+import Logger from '~/lib/logger.server'
 import prisma from '~/utils/db'
 
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'

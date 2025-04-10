@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import Logger from '~/lib/logger'
+import Logger from '~/lib/logger.server'
 
 const prismaClientSingleton = () => {
   return new PrismaClient({

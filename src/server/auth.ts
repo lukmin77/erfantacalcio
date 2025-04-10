@@ -1,4 +1,4 @@
-import Logger from '~/lib/logger'
+import Logger from '~/lib/logger.server'
 import { type GetServerSidePropsContext } from 'next'
 import {
   getServerSession,

@@ -1,4 +1,4 @@
-import Logger from '~/lib/logger'
+import Logger from '~/lib/logger.server'
 import { getTornei } from './common'
 
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
