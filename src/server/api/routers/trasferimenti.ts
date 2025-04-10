@@ -44,7 +44,7 @@ export const trasferimentiRouter = createTRPCRouter({
               select: { nomeSquadra: true },
             },
             Giocatori: {
-              select: { nome: true, ruolo: true },
+              select: { nome: true, ruolo: true, id_pf: true },
             },
             SquadreSerieA: {
               select: { nome: true, maglia: true },
@@ -63,6 +63,7 @@ export const trasferimentiRouter = createTRPCRouter({
 
         return query.map((t) => ({
           id: t.idTrasferimento,
+          id_pf: t.Giocatori.id_pf,
           idTrasferimento: t.idTrasferimento,
           nome: t.Giocatori.nome,
           ruolo: t.Giocatori.ruolo,

@@ -150,6 +150,14 @@ export default function Giocatori() {
   const columns: GridColDef[] = [
     { field: 'id', hideable: true },
     {
+      field: 'id_pf',
+      type: 'string',
+      align: 'left',
+      renderHeader: () => <strong>ID P.F.</strong>,
+      flex: isXs ? 0 : 1,
+      sortable: true,
+    },
+    {
       field: 'ruolo',
       type: 'string',
       align: 'left',
@@ -884,7 +892,7 @@ export default function Giocatori() {
       ) : (
         <>
           <Typography variant="h5">
-            Trasferimenti ${giocatoreOne.data?.nome}
+            Trasferimenti {giocatoreOne.data?.nome}
           </Typography>
           <Box
             sx={{ width: '100%', overflowX: 'auto', contain: 'inline-size' }}
