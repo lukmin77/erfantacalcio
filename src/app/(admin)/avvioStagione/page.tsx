@@ -78,7 +78,8 @@ export default function AvvioStagione() {
   const handleNext = async () => {
     setMessage('')
     setDisableButton(true)
-    let message = messageSchema.parse({})
+    let message: z.infer<typeof messageSchema> = { isError: false, isComplete: false, message: '' }
+
     switch (activeStep) {
       case 0:
         message = await chiudiStagione.mutateAsync()

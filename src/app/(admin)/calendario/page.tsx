@@ -53,6 +53,7 @@ const CalendarioSchema = z.object({
 export default function Calendario() {
   const theme = useTheme()
   const isXs = useMediaQuery(theme.breakpoints.down('md'))
+
   const [idCalendario, setIdCalendario] = useState<number>()
   const calendarioList = api.calendario.list.useQuery()
   const oneCalendario = api.calendario.getOne.useQuery(
@@ -70,9 +71,21 @@ export default function Calendario() {
   const [messageModal, setMessageModal] = useState('')
   const [data, setData] = useState<z.infer<typeof calendarioSchema>[]>([])
   const [openModalEdit, setOpenModalEdit] = useState(false)
-  const [calendarioInModifica, setCalendarioInModifica] = useState(
-    calendarioSchema.parse({})
-  )  
+  const [calendarioInModifica, setCalendarioInModifica] = useState<z.infer<typeof calendarioSchema>>({
+    id: 0,
+    idTorneo: 1,
+    nome: '',
+    gruppoFase: null,
+    giornata: 0,
+    giornataSerieA: 0,
+    isGiocata: false,
+    isSovrapposta: false,
+    isRecupero: false,
+    data: '',
+    dataFine: '',
+    girone: null,
+    isSelected: false,
+  }) 
 
   useEffect(() => {
     if (calendarioList.data) {
