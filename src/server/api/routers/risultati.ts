@@ -11,9 +11,9 @@ import {
   getBonusSenzaVoto,
   getGolSegnati,
   getTabellino,
+  partitaSchema,
 } from './common'
 import { RuoloUtente } from '~/utils/enums'
-import { type iPartita } from '~/types/common'
 
 import prisma from '~/utils/db'
 
@@ -270,7 +270,7 @@ async function getFormazione(idPartita: number, idSquadra: number) {
 }
 
 function mapPartite(
-  partite: iPartita[],
+  partite: z.infer<typeof partitaSchema>[],
   includeTabellini: boolean,
   backOfficeMode: boolean,
 ) {

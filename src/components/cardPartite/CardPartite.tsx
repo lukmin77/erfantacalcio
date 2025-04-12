@@ -12,13 +12,14 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material'
-import { type GiornataType } from '~/types/common'
 import { Gavel } from '@mui/icons-material'
 import { formatDateFromIso } from '~/utils/dateUtils'
+import { z } from 'zod'
+import { giornataSchema } from '~/server/api/routers/common'
 
 interface GiornataCardProps {
   prefixTitle: string
-  giornata: GiornataType[]
+  giornata: z.infer<typeof giornataSchema>[]
   maxWidth: number | string
   withAvatar: boolean
 }

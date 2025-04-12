@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { api } from '~/utils/api'
 import { Alert, Box, Skeleton, Stack, Typography } from '@mui/material'
-import { type GiornataType } from '~/types/common'
 import CardPartite from '../cardPartite/CardPartite'
 import CheckIcon from '@mui/icons-material/CheckCircle'
+import { z } from 'zod'
+import { giornataSchema } from '~/server/api/routers/common'
 
 interface CalendarioProps {
   prefixTitle: string
@@ -22,7 +23,7 @@ export default function Calendario({ prefixTitle, tipo }: CalendarioProps) {
           refetchOnReconnect: false,
         })
   const [errorMessage, setErrorMessage] = useState('')
-  const [giornata, setGiornata] = useState<GiornataType[]>()
+  const [giornata, setGiornata] = useState<z.infer<typeof giornataSchema>[]>()
 
   useEffect(() => {
     if (

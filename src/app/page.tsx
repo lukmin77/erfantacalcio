@@ -31,10 +31,11 @@ import Classifica from '~/components/home/Classifica'
 import Squadre from '~/components/home/Squadre'
 import Calendario from '~/components/home/Calendario'
 import Modal from '~/components/modal/Modal'
-import { type GiornataType } from '~/types/common'
 import CardPartite from '~/components/cardPartite/CardPartite'
 import { useSession } from 'next-auth/react'
 import SquadreXs from '~/components/home/SquadreXs'
+import { z } from 'zod'
+import { giornataSchema } from '~/server/api/routers/common'
 
 export default function HomePage() {
   const { data: session } = useSession()
@@ -69,7 +70,7 @@ export default function HomePage() {
             refetchOnWindowFocus: false,
             refetchOnReconnect: false,
           })
-  const [giornata, setGiornata] = useState<GiornataType[]>()
+  const [giornata, setGiornata] = useState<z.infer<typeof giornataSchema>[]>()
 
   useEffect(() => {
     if (

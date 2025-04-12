@@ -21,8 +21,9 @@ import { FrameType } from '~/utils/enums'
 import { useSession } from 'next-auth/react'
 import { useState } from 'react'
 import { PieChart } from '@mui/x-charts/PieChart'
-import { type GiornataType } from '~/types/common'
 import Link from 'next/link'
+import { z } from 'zod'
+import { giornataSchema } from '~/server/api/routers/common'
 
 interface StatisticaSquadraProps {
   onActionChangePartita: (action: FrameType, idPartita: number) => void
@@ -173,7 +174,7 @@ function StatisticaSquadra({
     </Grid>
   )
 
-  function getStatsPartite(torneo: string, datiPartite: GiornataType[]) {
+  function getStatsPartite(torneo: string, datiPartite: z.infer<typeof giornataSchema>[]) {
     const vinte =
       datiPartite
         .filter((c) => c.Torneo === torneo && c.isGiocata)

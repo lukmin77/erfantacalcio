@@ -34,7 +34,7 @@ import {
 import { useSession } from 'next-auth/react'
 import { api } from '~/utils/api'
 import React, { useEffect, useState } from 'react'
-import { type GiornataType, type Moduli } from '~/types/common'
+import { type Moduli } from '~/types/common'
 import { getShortName, moduloDefault } from '~/utils/helper'
 import {
   type GiocatoreFormazioneType,
@@ -52,6 +52,8 @@ import {
   sortPlayersByRoleDescThenCostoDesc,
   sortPlayersByRoleDescThenRiserva,
 } from './utils'
+import { giornataSchema } from '~/server/api/routers/common'
+import { z } from 'zod'
 
 function Formazione() {
   const session = useSession()
@@ -61,7 +63,7 @@ function Formazione() {
   const [openModalCalendario, setOpenModalCalendario] = useState(false)
   const [enableRosa, setEnableRosa] = useState(false)
   const [message, setMessage] = useState('')
-  const [giornate, setGiornate] = useState<GiornataType[]>([])
+  const [giornate, setGiornate] = useState<z.infer<typeof giornataSchema>[]>([])
   const [idTorneo, setIdTorneo] = useState<number>()
   const [rosa, setRosa] = useState<GiocatoreFormazioneType[]>([])
   const [campo, setCampo] = useState<GiocatoreFormazioneType[]>([])

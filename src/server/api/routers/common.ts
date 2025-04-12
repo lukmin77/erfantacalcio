@@ -1,10 +1,5 @@
 import { Configurazione } from '~/config'
 import Logger from '~/lib/logger.server'
-import {
-  type GiornataType,
-  type iCalendarioPartite,
-  type iPartita,
-} from '~/types/common'
 import { getRuoloEsteso, normalizeCampioncinoUrl } from '~/utils/helper'
 import { toLocaleDateTime } from '~/utils/dateUtils'
 import { toNumberWithPrecision } from '~/utils/numberUtils'
@@ -12,6 +7,76 @@ import { type GiocatoreType } from '~/types/squadre'
 import { type Decimal } from '@prisma/client/runtime/library'
 
 import prisma from '~/utils/db'
+import { z } from 'zod'
+
+export const giornataSchema = z.object({
+  idCalendario: z.number(),
+  idTorneo: z.number(),
+  giornata: z.number(),
+  giornataSerieA: z.number(),
+  isGiocata: z.boolean(),
+  isSovrapposta: z.boolean(),
+  isRecupero: z.boolean(),
+  data: z.string().optional(),
+  dataFine: z.string().optional(),
+  girone: z.union([z.string(), z.number(), z.null()]),
+  partite: z.object({
+    idPartita: z.number(),
+    idHome: z.number().nullable(),
+    squadraHome: z.string().nullable().optional(),
+    fotoHome: z.string().nullable().optional(),
+    multaHome: z.boolean(),
+    golHome: z.number().nullable(),
+    idAway: z.number().nullable(),
+    squadraAway: z.string().nullable().optional(),
+    fotoAway: z.string().nullable().optional(),
+    multaAway: z.boolean(),
+    golAway: z.number().nullable(),
+    isFattoreHome: z.boolean(),
+  }).array(),
+  Torneo: z.string(),
+  Descrizione: z.string(),
+  Title: z.string(),
+  SubTitle: z.string(),
+})
+
+const torneiSchema = z.object({
+  idTorneo: z.number(),
+  nome: z.string(),
+  gruppoFase: z.string().nullable(),
+})
+
+const utentePartitaSchema = z.object({
+  nomeSquadra: z.string().nullable(),
+  foto: z.string().nullable(),
+})
+
+export const partitaSchema = z.object({
+  idPartita: z.number(),
+  idSquadraH: z.number().nullable(),
+  idSquadraA: z.number().nullable(),
+  hasMultaH: z.boolean(),
+  hasMultaA: z.boolean(),
+  golH: z.number().nullable(),
+  golA: z.number().nullable(),
+  fattoreCasalingo: z.boolean(),
+  Utenti_Partite_idSquadraHToUtenti: utentePartitaSchema.nullable(),
+  Utenti_Partite_idSquadraAToUtenti: utentePartitaSchema.nullable(),
+})
+
+export const calendarioPartiteSchema = z.object({
+  idCalendario: z.number(),
+  giornata: z.number(),
+  giornataSerieA: z.number(),
+  hasGiocata: z.boolean(),
+  hasSovrapposta: z.boolean(),
+  hasDaRecuperare: z.boolean(),
+  data: z.date().nullable(),
+  dataFine: z.date().nullable(),
+  girone: z.union([z.string(), z.number()]).nullable(),
+  Tornei: torneiSchema,
+  Partite: z.array(partitaSchema),
+})
 
 export async function chiudiTrasferimentoGiocatore(
   idGiocatore: number,
@@ -357,8 +422,8 @@ export async function deleteGiocatore(idGiocatore: number) {
 }
 
 export async function mapCalendario(
-  result: iCalendarioPartite[],
-): Promise<GiornataType[]> {
+  result: z.infer<typeof calendarioPartiteSchema>[],
+): Promise<z.infer<typeof giornataSchema>[]> {
   return result.map((c) => ({
     idCalendario: c.idCalendario,
     idTorneo: c.Tornei.idTorneo,
@@ -383,7 +448,7 @@ export async function mapCalendario(
   }))
 }
 
-export function mapPartite(partite: iPartita[]) {
+export function mapPartite(partite: z.infer<typeof partitaSchema>[]) {
   return partite.map((p) => ({
     idPartita: p.idPartita,
     idHome: p.idSquadraH,
