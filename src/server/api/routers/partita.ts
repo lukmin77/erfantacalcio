@@ -266,7 +266,7 @@ export const partitaRouter = createTRPCRouter({
                   dataOra: datiHome?.dataOra,
                   modulo:  datiHome?.modulo,
                   idSquadra:  datiHome?.idSquadra,
-                  fattoreCasalingo: Configurazione.bonusFattoreCasalingo,
+                  fattoreCasalingo: partita?.isFattoreHome === true ? Configurazione.bonusFattoreCasalingo : 0,
                   bonusModulo: getBonusModulo(datiHome.modulo),
                   bonusSenzaVoto: getBonusSenzaVoto(getGiocatoriVotoInfluente(giocatoriInfluentiHome).length),
                   fantapunti: fantapuntiHome,
