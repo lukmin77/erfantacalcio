@@ -264,21 +264,41 @@ export const partitaRouter = createTRPCRouter({
                 Calendario: calendario,
                 TabellinoHome: datiHome && {
                   dataOra: datiHome?.dataOra,
-                  modulo:  datiHome?.modulo,
-                  idSquadra:  datiHome?.idSquadra,
-                  fattoreCasalingo: partita?.isFattoreHome === true ? Configurazione.bonusFattoreCasalingo : 0,
+                  modulo: datiHome?.modulo,
+                  idSquadra: datiHome?.idSquadra,
+                  fattoreCasalingo:
+                    partita?.isFattoreHome === true
+                      ? Configurazione.bonusFattoreCasalingo
+                      : 0,
                   bonusModulo: getBonusModulo(datiHome.modulo),
-                  bonusSenzaVoto: getBonusSenzaVoto(getGiocatoriVotoInfluente(giocatoriInfluentiHome).length),
+                  bonusSenzaVoto: getBonusSenzaVoto(
+                    getGiocatoriVotoInfluente(giocatoriInfluentiHome).length
+                  ),
                   fantapunti: fantapuntiHome,
-                  golSegnati: getGolSegnati(fantapuntiHome + getBonusModulo(datiHome.modulo) + getBonusSenzaVoto(getGiocatoriVotoInfluente(giocatoriInfluentiHome).length) + Configurazione.bonusFattoreCasalingo),
-                  fantapuntiTotale: fantapuntiHome + getBonusModulo(datiHome.modulo) + getBonusSenzaVoto(getGiocatoriVotoInfluente(giocatoriInfluentiHome).length) + Configurazione.bonusFattoreCasalingo,
-                  Voti: datiHome.Voti.map(c => ({
+                  golSegnati: getGolSegnati(
+                    fantapuntiHome +
+                      getBonusModulo(datiHome.modulo) +
+                      getBonusSenzaVoto(
+                        getGiocatoriVotoInfluente(giocatoriInfluentiHome).length
+                      ) +
+                      Configurazione.bonusFattoreCasalingo
+                  ),
+                  fantapuntiTotale:
+                    fantapuntiHome +
+                    getBonusModulo(datiHome.modulo) +
+                    getBonusSenzaVoto(
+                      getGiocatoriVotoInfluente(giocatoriInfluentiHome).length
+                    ) +
+                    (partita?.isFattoreHome === true ? Configurazione.bonusFattoreCasalingo : 0),
+                  Voti: datiHome.Voti.map((c) => ({
                     nome: c.Giocatori.nome,
                     idGiocatore: c.Giocatori.idGiocatore,
                     titolare: c.titolare,
                     riserva: c.riserva,
-                    nomeSquadraSerieA: c.Giocatori.Trasferimenti[0]?.SquadreSerieA?.nome,
-                    magliaSquadraSerieA: c.Giocatori.Trasferimenti[0]?.SquadreSerieA?.maglia,
+                    nomeSquadraSerieA:
+                      c.Giocatori.Trasferimenti[0]?.SquadreSerieA?.nome,
+                    magliaSquadraSerieA:
+                      c.Giocatori.Trasferimenti[0]?.SquadreSerieA?.maglia,
                     ruolo: c.Giocatori.ruolo,
                     voto: c.voto?.toNumber() ?? 0,
                     ammonizione: c.ammonizione.toNumber() ?? 0,
@@ -287,28 +307,52 @@ export const partitaRouter = createTRPCRouter({
                     assist: c.assist?.toNumber() ?? 0,
                     autogol: c.autogol?.toNumber() ?? 0,
                     altriBonus: c.altriBonus?.toNumber() ?? 0,
-                    votoBonus: giocatoriInfluentiHome.find(gi => gi.idVoto === c.idVoto)?.votoBonus ?? 0,
-                    isSostituito: giocatoriInfluentiHome.find(gi => gi.idVoto === c.idVoto)?.isSostituito ?? false,
-                    isVotoInfluente: giocatoriInfluentiHome.find(gi => gi.idVoto === c.idVoto)?.isVotoInfluente ?? false
-                  }))
+                    votoBonus:
+                      giocatoriInfluentiHome.find(
+                        (gi) => gi.idVoto === c.idVoto
+                      )?.votoBonus ?? 0,
+                    isSostituito:
+                      giocatoriInfluentiHome.find(
+                        (gi) => gi.idVoto === c.idVoto
+                      )?.isSostituito ?? false,
+                    isVotoInfluente:
+                      giocatoriInfluentiHome.find(
+                        (gi) => gi.idVoto === c.idVoto
+                      )?.isVotoInfluente ?? false,
+                  })),
                 },
                 TabellinoAway: datiAway && {
                   dataOra: datiAway?.dataOra,
-                  modulo:  datiAway?.modulo,
-                  idSquadra:  datiAway?.idSquadra,
+                  modulo: datiAway?.modulo,
+                  idSquadra: datiAway?.idSquadra,
                   fattoreCasalingo: 0,
                   bonusModulo: getBonusModulo(datiAway.modulo),
-                  bonusSenzaVoto: getBonusSenzaVoto(getGiocatoriVotoInfluente(giocatoriInfluentiAway).length),
+                  bonusSenzaVoto: getBonusSenzaVoto(
+                    getGiocatoriVotoInfluente(giocatoriInfluentiAway).length
+                  ),
                   fantapunti: fantapuntiAway,
-                  golSegnati: getGolSegnati(fantapuntiAway + getBonusModulo(datiAway.modulo) + getBonusSenzaVoto(getGiocatoriVotoInfluente(giocatoriInfluentiAway).length)),
-                  fantapuntiTotale: fantapuntiAway + getBonusModulo(datiAway.modulo) + getBonusSenzaVoto(getGiocatoriVotoInfluente(giocatoriInfluentiAway).length),
-                  Voti: datiAway.Voti.map(c => ({
+                  golSegnati: getGolSegnati(
+                    fantapuntiAway +
+                      getBonusModulo(datiAway.modulo) +
+                      getBonusSenzaVoto(
+                        getGiocatoriVotoInfluente(giocatoriInfluentiAway).length
+                      )
+                  ),
+                  fantapuntiTotale:
+                    fantapuntiAway +
+                    getBonusModulo(datiAway.modulo) +
+                    getBonusSenzaVoto(
+                      getGiocatoriVotoInfluente(giocatoriInfluentiAway).length
+                    ),
+                  Voti: datiAway.Voti.map((c) => ({
                     nome: c.Giocatori.nome,
                     idGiocatore: c.Giocatori.idGiocatore,
                     titolare: c.titolare,
                     riserva: c.riserva,
-                    nomeSquadraSerieA: c.Giocatori.Trasferimenti[0]?.SquadreSerieA?.nome,
-                    magliaSquadraSerieA: c.Giocatori.Trasferimenti[0]?.SquadreSerieA?.maglia,
+                    nomeSquadraSerieA:
+                      c.Giocatori.Trasferimenti[0]?.SquadreSerieA?.nome,
+                    magliaSquadraSerieA:
+                      c.Giocatori.Trasferimenti[0]?.SquadreSerieA?.maglia,
                     ruolo: c.Giocatori.ruolo,
                     voto: c.voto?.toNumber() ?? 0,
                     ammonizione: c.ammonizione.toNumber() ?? 0,
@@ -317,12 +361,21 @@ export const partitaRouter = createTRPCRouter({
                     assist: c.assist?.toNumber() ?? 0,
                     autogol: c.autogol?.toNumber() ?? 0,
                     altriBonus: c.altriBonus?.toNumber() ?? 0,
-                    votoBonus: giocatoriInfluentiAway.find(gi => gi.idVoto === c.idVoto)?.votoBonus ?? 0,
-                    isSostituito: giocatoriInfluentiAway.find(gi => gi.idVoto === c.idVoto)?.isSostituito ?? false,
-                    isVotoInfluente: giocatoriInfluentiAway.find(gi => gi.idVoto === c.idVoto)?.isVotoInfluente ?? false
-                  }))
-                }
-              }
+                    votoBonus:
+                      giocatoriInfluentiAway.find(
+                        (gi) => gi.idVoto === c.idVoto
+                      )?.votoBonus ?? 0,
+                    isSostituito:
+                      giocatoriInfluentiAway.find(
+                        (gi) => gi.idVoto === c.idVoto
+                      )?.isSostituito ?? false,
+                    isVotoInfluente:
+                      giocatoriInfluentiAway.find(
+                        (gi) => gi.idVoto === c.idVoto
+                      )?.isVotoInfluente ?? false,
+                  })),
+                },
+              };
             }
           }
         }
