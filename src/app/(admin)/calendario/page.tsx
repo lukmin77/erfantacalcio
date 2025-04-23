@@ -167,6 +167,7 @@ export default function Calendario() {
             <CircularProgress color="info" />
           </div>
         ) : (
+          <>
           <DataTable
             title="Gestione Calendario"
             pagination={true}
@@ -175,6 +176,9 @@ export default function Calendario() {
             columns={columns}
             actionOptions={actionOptions}
           />
+          <br></br>
+          <br></br>
+          </>
         )}
 
         <Modal
