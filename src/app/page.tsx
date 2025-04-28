@@ -107,13 +107,7 @@ export default function HomePage() {
   return (
     <>
       <Grid container spacing={0}>
-        {isXs && session?.user && (
-          <Grid item xs={12}>
-            <Typography variant="h5">
-              Bentornato {session.user.presidente}
-            </Typography>
-          </Grid>
-        )}
+        
         {!isXs && (
           <Slide direction={'down'} in={true}>
             <Grid item xs={12}>
