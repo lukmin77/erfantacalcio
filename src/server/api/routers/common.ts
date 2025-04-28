@@ -20,20 +20,22 @@ export const giornataSchema = z.object({
   data: z.string().optional(),
   dataFine: z.string().optional(),
   girone: z.union([z.string(), z.number(), z.null()]),
-  partite: z.object({
-    idPartita: z.number(),
-    idHome: z.number().nullable(),
-    squadraHome: z.string().nullable().optional(),
-    fotoHome: z.string().nullable().optional(),
-    multaHome: z.boolean(),
-    golHome: z.number().nullable(),
-    idAway: z.number().nullable(),
-    squadraAway: z.string().nullable().optional(),
-    fotoAway: z.string().nullable().optional(),
-    multaAway: z.boolean(),
-    golAway: z.number().nullable(),
-    isFattoreHome: z.boolean(),
-  }).array(),
+  partite: z
+    .object({
+      idPartita: z.number(),
+      idHome: z.number().nullable(),
+      squadraHome: z.string().nullable().optional(),
+      fotoHome: z.string().nullable().optional(),
+      multaHome: z.boolean(),
+      golHome: z.number().nullable(),
+      idAway: z.number().nullable(),
+      squadraAway: z.string().nullable().optional(),
+      fotoAway: z.string().nullable().optional(),
+      multaAway: z.boolean(),
+      golAway: z.number().nullable(),
+      isFattoreHome: z.boolean(),
+    })
+    .array(),
   Torneo: z.string(),
   Descrizione: z.string(),
   Title: z.string(),
@@ -465,7 +467,11 @@ export function mapPartite(partite: z.infer<typeof partitaSchema>[]) {
   }))
 }
 
-export async function getCalendarioByTorneo(idtorneo: number) {
+type CalendarioFilter =
+  | { idTorneo: number }
+  | { Tornei: { gruppoFase: { not: null } } }
+
+async function getCalendario(filter: CalendarioFilter) {
   return await prisma.calendario.findMany({
     select: {
       idCalendario: true,
@@ -500,53 +506,17 @@ export async function getCalendarioByTorneo(idtorneo: number) {
         },
       },
     },
-    where: {
-      idTorneo: idtorneo,
-    },
+    where: filter,
     orderBy: [{ ordine: 'asc' }, { idTorneo: 'asc' }],
   })
 }
 
+export async function getCalendarioByTorneo(idtorneo: number) {
+  return await getCalendario({ idTorneo: idtorneo })
+}
+
 export async function getCalendarioChampions() {
-  return await prisma.calendario.findMany({
-    select: {
-      idCalendario: true,
-      giornata: true,
-      giornataSerieA: true,
-      ordine: true,
-      data: true,
-      dataFine: true,
-      hasSovrapposta: true,
-      girone: true,
-      hasGiocata: true,
-      hasDaRecuperare: true,
-      Tornei: {
-        select: { idTorneo: true, nome: true, gruppoFase: true },
-      },
-      Partite: {
-        select: {
-          idPartita: true,
-          idSquadraH: true,
-          idSquadraA: true,
-          hasMultaH: true,
-          hasMultaA: true,
-          golH: true,
-          golA: true,
-          fattoreCasalingo: true,
-          Utenti_Partite_idSquadraHToUtenti: {
-            select: { nomeSquadra: true, foto: true },
-          },
-          Utenti_Partite_idSquadraAToUtenti: {
-            select: { nomeSquadra: true, foto: true },
-          },
-        },
-      },
-    },
-    where: {
-      Tornei: { gruppoFase: { not : null } },
-    },
-    orderBy: [{ ordine: 'asc' }, { idTorneo: 'asc' }],
-  })
+  return await getCalendario({ Tornei: { gruppoFase: { not: null } } })
 }
 
 export async function getTornei() {
