@@ -96,7 +96,9 @@ export const themeOptions: ThemeOptions = {
     },
     h4: {
       //titolo classifica
-      color: 'rgb(3, 126, 175)',
+      background: 'linear-gradient(to bottom, rgb(29, 80, 82), rgb(42, 195, 201))',
+  WebkitBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
       fontWeight: 600,
       fontSize: '1.1rem',
       lineHeight: 1.4,
