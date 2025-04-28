@@ -20,6 +20,7 @@ import {
 } from '@mui/material'
 import {
   AccessAlarm,
+  EmojiEvents,
   Looks3Outlined,
   Looks4Outlined,
   Looks5Outlined,
@@ -49,6 +50,7 @@ export default function HomePage() {
   const [titleModalCalendario, setTitleModalCalendario] = useState('')
   const [girone, setGirone] = useState<number>()
   const [isCalendarioAttuale, setIsCalendarioAttuale] = useState<boolean>(false)
+  const [isChampions, setIsChampions] = useState<boolean>(false)
   const [isCalendarioRecuperi, setIsCalendarioRecuperi] =
     useState<boolean>(false)
 
@@ -65,11 +67,17 @@ export default function HomePage() {
             refetchOnWindowFocus: false,
             refetchOnReconnect: false,
           })
-        : api.calendario.listRecuperi.useQuery(undefined, {
-            enabled: isCalendarioRecuperi,
-            refetchOnWindowFocus: false,
-            refetchOnReconnect: false,
-          })
+        : isChampions
+          ? api.calendario.listByTorneo.useQuery(undefined, {
+              enabled: isChampions,
+              refetchOnWindowFocus: false,
+              refetchOnReconnect: false,
+            })
+          : api.calendario.listRecuperi.useQuery(undefined, {
+              enabled: isCalendarioRecuperi,
+              refetchOnWindowFocus: false,
+              refetchOnReconnect: false,
+            })
   const [giornata, setGiornata] = useState<z.infer<typeof giornataSchema>[]>()
 
   useEffect(() => {
@@ -86,17 +94,21 @@ export default function HomePage() {
     girone: number | undefined,
     isAttuale: boolean,
     onlyRecuperi: boolean,
+    isChampions: boolean,
   ) => {
     setTitleModalCalendario(
       girone
         ? `Calendario girone ${girone}`
         : isAttuale
           ? `Calendario ultime partite`
-          : `Calendario partite da recuperare`,
+          : isChampions
+            ? `Calendario Champions`
+            : `Calendario partite da recuperare`,
     )
     setGirone(girone)
     setIsCalendarioAttuale(isAttuale)
     setIsCalendarioRecuperi(onlyRecuperi)
+    setIsChampions(isChampions)
     setOpenModalCalendario(true)
   }
 
@@ -107,7 +119,6 @@ export default function HomePage() {
   return (
     <>
       <Grid container spacing={0}>
-        
         {!isXs && (
           <Slide direction={'down'} in={true}>
             <Grid item xs={12}>
@@ -143,19 +154,21 @@ export default function HomePage() {
                 >
                   <Tooltip title="Calendario partite ultimo periodo">
                     <Button
-                      onClick={() => handleCalendario(undefined, true, false)}
+                      onClick={() =>
+                        handleCalendario(undefined, true, false, false)
+                      }
                       startIcon={<AccessAlarm />}
                     ></Button>
                   </Tooltip>
                   <Tooltip title="Calendario girone 1">
                     <Button
-                      onClick={() => handleCalendario(1, false, false)}
+                      onClick={() => handleCalendario(1, false, false, false)}
                       startIcon={<LooksOneOutlined />}
                     ></Button>
                   </Tooltip>
                   <Tooltip title="Calendario girone 2">
                     <Button
-                      onClick={() => handleCalendario(2, false, false)}
+                      onClick={() => handleCalendario(2, false, false, false)}
                       startIcon={<LooksTwoOutlined />}
                     >
                       &nbsp;
@@ -163,7 +176,7 @@ export default function HomePage() {
                   </Tooltip>
                   <Tooltip title="Calendario girone 3">
                     <Button
-                      onClick={() => handleCalendario(3, false, false)}
+                      onClick={() => handleCalendario(3, false, false, false)}
                       startIcon={<Looks3Outlined />}
                     >
                       &nbsp;
@@ -171,7 +184,7 @@ export default function HomePage() {
                   </Tooltip>
                   <Tooltip title="Calendario girone 4">
                     <Button
-                      onClick={() => handleCalendario(4, false, false)}
+                      onClick={() => handleCalendario(4, false, false, false)}
                       startIcon={<Looks4Outlined />}
                     >
                       &nbsp;
@@ -179,15 +192,27 @@ export default function HomePage() {
                   </Tooltip>
                   <Tooltip title="Calendario girone 5">
                     <Button
-                      onClick={() => handleCalendario(5, false, false)}
+                      onClick={() => handleCalendario(5, false, false, false)}
                       startIcon={<Looks5Outlined />}
+                    >
+                      &nbsp;
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title="Calendario Champions">
+                    <Button
+                      onClick={() =>
+                        handleCalendario(undefined, false, false, true)
+                      }
+                      startIcon={<EmojiEvents />}
                     >
                       &nbsp;
                     </Button>
                   </Tooltip>
                   <Tooltip title="Partite da recuperare">
                     <Button
-                      onClick={() => handleCalendario(undefined, false, true)}
+                      onClick={() =>
+                        handleCalendario(undefined, false, true, false)
+                      }
                       startIcon={<PendingActions />}
                     ></Button>
                   </Tooltip>

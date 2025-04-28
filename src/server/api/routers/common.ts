@@ -507,6 +507,48 @@ export async function getCalendarioByTorneo(idtorneo: number) {
   })
 }
 
+export async function getCalendarioChampions() {
+  return await prisma.calendario.findMany({
+    select: {
+      idCalendario: true,
+      giornata: true,
+      giornataSerieA: true,
+      ordine: true,
+      data: true,
+      dataFine: true,
+      hasSovrapposta: true,
+      girone: true,
+      hasGiocata: true,
+      hasDaRecuperare: true,
+      Tornei: {
+        select: { idTorneo: true, nome: true, gruppoFase: true },
+      },
+      Partite: {
+        select: {
+          idPartita: true,
+          idSquadraH: true,
+          idSquadraA: true,
+          hasMultaH: true,
+          hasMultaA: true,
+          golH: true,
+          golA: true,
+          fattoreCasalingo: true,
+          Utenti_Partite_idSquadraHToUtenti: {
+            select: { nomeSquadra: true, foto: true },
+          },
+          Utenti_Partite_idSquadraAToUtenti: {
+            select: { nomeSquadra: true, foto: true },
+          },
+        },
+      },
+    },
+    where: {
+      Tornei: { gruppoFase: { not : null } },
+    },
+    orderBy: [{ ordine: 'asc' }, { idTorneo: 'asc' }],
+  })
+}
+
 export async function getTornei() {
   return await prisma.tornei.findMany({
     select: {

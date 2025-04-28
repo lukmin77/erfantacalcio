@@ -2,6 +2,7 @@ import Logger from '~/lib/logger.server'
 import { z } from 'zod'
 import {
   getCalendarioByTorneo,
+  getCalendarioChampions,
   getProssimaGiornata,
   getProssimaGiornataSerieA,
   mapCalendario,
@@ -376,10 +377,9 @@ export const calendarioRouter = createTRPCRouter({
     }
   }),
 
-  listByTorneo: publicProcedure.input(z.number()).query(async (opts) => {
+  listByTorneo: publicProcedure.query(async (opts) => {
     try {
-      const idtorneo = opts.input
-      const result = await getCalendarioByTorneo(idtorneo)
+      const result = await getCalendarioChampions()
 
       return await mapCalendario(result)
     } catch (error) {
