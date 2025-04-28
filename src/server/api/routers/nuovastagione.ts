@@ -386,7 +386,7 @@ export const nuovastagioneRouter = createTRPCRouter({
             "Nessun torneo trovato con il nome 'champions' e fase 'semifinali andata'.",
           )
         }
-        await creaPartiteEmpty(2, idTorneo)
+        await creaPartiteEmpty(2, idTorneo, true)
 
         //Semifinali ritorno
         idTorneo =
@@ -400,7 +400,7 @@ export const nuovastagioneRouter = createTRPCRouter({
             "Nessun torneo trovato con il nome 'champions' e fase 'semifinali ritorno'.",
           )
         }
-        await creaPartiteEmpty(2, idTorneo)
+        await creaPartiteEmpty(2, idTorneo, true)
 
         //Finale
         idTorneo =
@@ -414,7 +414,7 @@ export const nuovastagioneRouter = createTRPCRouter({
             "Nessun torneo trovato con il nome 'champions' e fase 'finale'.",
           )
         }
-        await creaPartiteEmpty(1, idTorneo)
+        await creaPartiteEmpty(1, idTorneo, false)
 
         await updateFase(4)
 
@@ -547,7 +547,7 @@ async function creaClassifica(idTorneo: number, from: number, to: number) {
   Logger.info(`create classifiche per idTorneo: ${idTorneo}`)
 }
 
-async function creaPartiteEmpty(partite: number, idTorneo: number) {
+async function creaPartiteEmpty(partite: number, idTorneo: number, fattoreCasalingo: boolean) {
   const calendario = await getCalendarioByTorneo(idTorneo)
   if (calendario?.[0]) {
     for (let i = 0; i < partite; i++) {
@@ -557,8 +557,7 @@ async function creaPartiteEmpty(partite: number, idTorneo: number) {
             idCalendario: calendario[0]?.idCalendario,
             idSquadraH: null,
             idSquadraA: null,
-            fattoreCasalingo:
-              Configurazione.bonusFattoreCasalingo > 0 ? true : false,
+            fattoreCasalingo: fattoreCasalingo,
             golH: null,
             golA: null,
             hasMultaH: false,
