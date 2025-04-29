@@ -14,6 +14,8 @@ import {
   Group,
   HistoryEdu,
   ManageAccounts,
+  Portrait,
+  RecentActors,
   ThumbsUpDown,
   UploadFile,
 } from '@mui/icons-material'
@@ -82,13 +84,13 @@ export function guestListItems(isXs: boolean, isAuthenticated: boolean) {
             'guest_profilo',
             `/formazione?isXs=${isXs}`,
             'Inserisci formazione',
-            <Ballot color="primary" />,
+            <RecentActors color="action" />,
           ),
           listItem(
             'guest_profilo',
             '/foto',
             'Foto profilo',
-            <AddAPhoto color="primary" />,
+            <Badge color="success" />,
           ),
         ]
       : []),
@@ -96,25 +98,25 @@ export function guestListItems(isXs: boolean, isAuthenticated: boolean) {
       'guest_profilo',
       '/statistiche_giocatori',
       'Statistiche giocatori',
-      <Badge color="primary" />,
+      <Portrait color="error" />,
     ),
     listItem(
       'guest_profilo',
       '/economia',
       'Economia e premi',
-      <Euro color="primary" />,
+      <Euro color="error" />,
     ),
     listItem(
       'guest_profilo',
       '/albo',
       "Albo d'oro",
-      <HistoryEdu color="primary" />,
+      <HistoryEdu color="error" />,
     ),
     listItem(
       'guest_profilo',
       '/docs/Regolamento_erFantacalcio.pdf',
       'Regolamento ufficiale',
-      <Grading color="primary" />,
+      <Grading color="error" />,
     ),
   ]
 }

@@ -333,7 +333,6 @@ function ViewTabellini() {
                         >
                           <Typography variant="body2">
                             &nbsp;{g.ruolo}
-                            {g.riserva}
                           </Typography>
                         </Grid>
                         <Grid

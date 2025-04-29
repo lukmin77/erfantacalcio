@@ -157,7 +157,7 @@ export default function HomePage() {
                       onClick={() =>
                         handleCalendario(undefined, true, false, false)
                       }
-                      startIcon={<AccessAlarm />}
+                      startIcon={<AccessAlarm color='error' />}
                     ></Button>
                   </Tooltip>
                   <Tooltip title="Calendario girone 1">
@@ -203,7 +203,7 @@ export default function HomePage() {
                       onClick={() =>
                         handleCalendario(undefined, false, false, true)
                       }
-                      startIcon={<EmojiEvents />}
+                      startIcon={<EmojiEvents color='success' />}
                     >
                       &nbsp;
                     </Button>
@@ -213,7 +213,7 @@ export default function HomePage() {
                       onClick={() =>
                         handleCalendario(undefined, false, true, false)
                       }
-                      startIcon={<PendingActions />}
+                      startIcon={<PendingActions color='action' />}
                     ></Button>
                   </Tooltip>
                 </ButtonGroup>
