@@ -7,9 +7,9 @@ export default function Card() {
         root: {
           padding: '0px',
           marginTop: '3px',
-          marginBottom: '8px'
-        }
-      }
-    }
-  };
+          marginBottom: '8px',
+        },
+      },
+    },
+  }
 }

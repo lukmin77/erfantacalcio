@@ -1,4 +1,4 @@
-import type { Theme } from '@mui/material/styles';
+import type { Theme } from '@mui/material/styles'
 // ==============================|| OVERRIDES - BADGE ||============================== //
 
 export default function Badge(theme: Theme) {
@@ -8,9 +8,9 @@ export default function Badge(theme: Theme) {
         standard: {
           minWidth: theme.spacing(2),
           height: theme.spacing(2),
-          padding: theme.spacing(0.5)
-        }
-      }
-    }
-  };
+          padding: theme.spacing(0.5),
+        },
+      },
+    },
+  }
 }

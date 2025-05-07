@@ -1,30 +1,30 @@
-import * as React from 'react';
-import Backdrop from '@mui/material/Backdrop';
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
-import Fade from '@mui/material/Fade';
-import Typography from '@mui/material/Typography';
-import CloseIcon from '@mui/icons-material/Close';
+import * as React from 'react'
+import Backdrop from '@mui/material/Backdrop'
+import Box from '@mui/material/Box'
+import Modal from '@mui/material/Modal'
+import Fade from '@mui/material/Fade'
+import Typography from '@mui/material/Typography'
+import CloseIcon from '@mui/icons-material/Close'
 
 export type TransitionsModalType = {
-  title: string;
-  open: boolean;
-  onClose?: () => void;
-  children?: React.ReactNode;
-  width?: string;
-  height?: string;
-};
+  title: string
+  open: boolean
+  onClose?: () => void
+  children?: React.ReactNode
+  width?: string
+  height?: string
+}
 
 const style = {
   transform: 'translate(-50%, -50%)',
-};
+}
 
 export default function TransitionsModal(props: TransitionsModalType) {
   const handleClose = () => {
     if (props.onClose) {
-      props.onClose(); // Chiudi la modal chiamando la funzione di chiusura fornita nelle props
+      props.onClose() // Chiudi la modal chiamando la funzione di chiusura fornita nelle props
     }
-  };
+  }
 
   return (
     <div>
@@ -64,11 +64,16 @@ export default function TransitionsModal(props: TransitionsModalType) {
                 right: 10,
                 cursor: 'pointer',
               }}
-              fontSize='medium'
+              fontSize="medium"
               onClick={handleClose}
             />
 
-            <Typography id="transition-modal-title" variant="h4" component="h2" color="primary.light">
+            <Typography
+              id="transition-modal-title"
+              variant="h4"
+              component="h2"
+              color="primary.light"
+            >
               {props.title}
             </Typography>
             <br></br>
@@ -77,5 +82,5 @@ export default function TransitionsModal(props: TransitionsModalType) {
         </Fade>
       </Modal>
     </div>
-  );
+  )
 }

@@ -1,72 +1,92 @@
-import Logger from "~/lib/logger";
-import { getBonusModulo, getBonusSenzaVoto, getGiocatoriVotoInfluente, getGolSegnati, getTabellino, mapCalendario } from "./common";
-import { toLocaleDateTime } from "~/utils/dateUtils";
-import { z } from "zod";
-
+import Logger from '~/lib/logger.server'
 import {
-  createTRPCRouter,
-  publicProcedure,
-} from "~/server/api/trpc";
+  getBonusModulo,
+  getBonusSenzaVoto,
+  getGiocatoriVotoInfluente,
+  getGolSegnati,
+  getTabellino,
+  mapCalendario,
+} from './common'
+import { toLocaleDateTime } from '~/utils/dateUtils'
+import { z } from 'zod'
 
+import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
 
-import prisma from "~/utils/db";
-import { Configurazione } from "~/config";
-
-
+import prisma from '~/utils/db'
+import { Configurazione } from '~/config'
 
 export const partitaRouter = createTRPCRouter({
-
   getFormazioni: publicProcedure
-    .input(z.object({
-      idPartita: z.number()
-    }))
+    .input(
+      z.object({
+        idPartita: z.number(),
+      }),
+    )
     .query(async (opts) => {
-      const idPartita = +opts.input.idPartita;
+      const idPartita = +opts.input.idPartita
       try {
-        const idCalendario = (await prisma.partite.findUnique({
-          select: {
-            Calendario: {
-              select: {
-                idCalendario: true,
-              }
-            }
-          },
-          where: {
-            idPartita: idPartita
-          }
-        }))?.Calendario.idCalendario;
+        const idCalendario = (
+          await prisma.partite.findUnique({
+            select: {
+              Calendario: {
+                select: {
+                  idCalendario: true,
+                },
+              },
+            },
+            where: {
+              idPartita: idPartita,
+            },
+          })
+        )?.Calendario.idCalendario
 
         if (idCalendario) {
           const calendarioQry = await prisma.calendario.findUnique({
             select: {
-              idCalendario: true, giornata: true, giornataSerieA: true, ordine: true, data: true, dataFine: true, hasSovrapposta: true, girone: true, hasGiocata: true, hasDaRecuperare: true,
+              idCalendario: true,
+              giornata: true,
+              giornataSerieA: true,
+              ordine: true,
+              data: true,
+              dataFine: true,
+              hasSovrapposta: true,
+              girone: true,
+              hasGiocata: true,
+              hasDaRecuperare: true,
               Tornei: {
-                select: { idTorneo: true, nome: true, gruppoFase: true }
+                select: { idTorneo: true, nome: true, gruppoFase: true },
               },
               Partite: {
                 select: {
-                  idPartita: true, idSquadraH: true, idSquadraA: true, hasMultaH: true, hasMultaA: true, golH: true, golA: true, fattoreCasalingo: true,
+                  idPartita: true,
+                  idSquadraH: true,
+                  idSquadraA: true,
+                  hasMultaH: true,
+                  hasMultaA: true,
+                  golH: true,
+                  golA: true,
+                  fattoreCasalingo: true,
                   Utenti_Partite_idSquadraHToUtenti: {
-                    select: { nomeSquadra: true, foto: true }
+                    select: { nomeSquadra: true, foto: true },
                   },
                   Utenti_Partite_idSquadraAToUtenti: {
-                    select: { nomeSquadra: true, foto: true }
-                  }
+                    select: { nomeSquadra: true, foto: true },
+                  },
                 },
                 where: {
-                  idPartita: idPartita
-                }
-              }
+                  idPartita: idPartita,
+                },
+              },
             },
             where: {
-              idCalendario: idCalendario
-            }
-          });
+              idCalendario: idCalendario,
+            },
+          })
 
           if (calendarioQry) {
-            const calendario = (await mapCalendario([calendarioQry]))[0];
+            const calendario = (await mapCalendario([calendarioQry]))[0]
             if (calendario && calendario.partite.length === 1) {
-              const partita = calendario.partite[0];
+              const partita = calendario.partite[0]
               const formazioni = await prisma.formazioni.findMany({
                 select: {
                   idFormazione: true,
@@ -79,116 +99,175 @@ export const partitaRouter = createTRPCRouter({
                       riserva: true,
                       Giocatori: {
                         select: {
-                          idGiocatore: true, nome: true, nomeFantaGazzetta: true, ruolo: true,
+                          idGiocatore: true,
+                          nome: true,
+                          nomeFantaGazzetta: true,
+                          ruolo: true,
                           Trasferimenti: {
                             select: {
                               SquadreSerieA: {
-                                select: { maglia: true, nome: true }
-                              }
+                                select: { maglia: true, nome: true },
+                              },
                             },
                             where: {
                               OR: [
-                                { AND: [{ dataCessione: null }, { dataAcquisto: { 'lt': toLocaleDateTime(new Date()) } }] },
+                                {
+                                  AND: [
+                                    { dataCessione: null },
+                                    {
+                                      dataAcquisto: {
+                                        lt: toLocaleDateTime(new Date()),
+                                      },
+                                    },
+                                  ],
+                                },
                                 {
                                   AND: [
                                     { NOT: { dataCessione: null } },
-                                    { dataAcquisto: { 'lt': toLocaleDateTime(new Date()) } },
-                                    { dataCessione: { 'gt': toLocaleDateTime(new Date()) } }]
-                                }
-                              ]
-                            }
-                          }
-                        }
-                      }
+                                    {
+                                      dataAcquisto: {
+                                        lt: toLocaleDateTime(new Date()),
+                                      },
+                                    },
+                                    {
+                                      dataCessione: {
+                                        gt: toLocaleDateTime(new Date()),
+                                      },
+                                    },
+                                  ],
+                                },
+                              ],
+                            },
+                          },
+                        },
+                      },
                     },
                     orderBy: [
                       {
                         Giocatori: {
-                          ruolo: 'desc'
-                        }
+                          ruolo: 'desc',
+                        },
                       },
                       {
-                        riserva: 'asc'
-                      }
-                    ]
-                  }
+                        riserva: 'asc',
+                      },
+                    ],
+                  },
                 },
                 where: {
                   idPartita: idPartita,
                   OR: [
                     { idSquadra: partita?.idHome ?? 0 },
-                    { idSquadra: partita?.idAway ?? 0 }
-                  ]
-                }
-              });
+                    { idSquadra: partita?.idAway ?? 0 },
+                  ],
+                },
+              })
+
+              const altrePartite = await prisma.partite.findMany({
+                select: {
+                  idPartita: true,
+                  Utenti_Partite_idSquadraHToUtenti: {
+                    select: { nomeSquadra: true, foto: true },
+                  },
+                  Utenti_Partite_idSquadraAToUtenti: {
+                    select: { nomeSquadra: true, foto: true },
+                  },
+                },
+                where: {
+                  idCalendario: idCalendario,
+                },
+              })
 
               return {
                 Calendario: calendario,
-                FormazioneHome: formazioni.find(c => c.idSquadra === partita?.idHome),
-                FormazioneAway: formazioni.find(c => c.idSquadra === partita?.idAway)
+                AltrePartite: altrePartite,
+                FormazioneHome: formazioni.find(
+                  (c) => c.idSquadra === partita?.idHome,
+                ),
+                FormazioneAway: formazioni.find(
+                  (c) => c.idSquadra === partita?.idAway,
+                ),
               }
             }
           }
         }
-
-      }
-      catch (error) {
-        Logger.error('Si è verificato un errore', error);
-        throw error;
+      } catch (error) {
+        Logger.error('Si è verificato un errore', error)
+        throw error
       }
     }),
 
-    getTabellini: publicProcedure
-    .input(z.object({
-      idPartita: z.number()
-    }))
+  getTabellini: publicProcedure
+    .input(
+      z.object({
+        idPartita: z.number(),
+      }),
+    )
     .query(async (opts) => {
-      const idPartita = +opts.input.idPartita;
+      const idPartita = +opts.input.idPartita
       try {
-        const idCalendario = (await prisma.partite.findUnique({
-          select: {
-            Calendario: {
-              select: {
-                idCalendario: true,
-              }
-            }
-          },
-          where: {
-            idPartita: idPartita
-          }
-        }))?.Calendario.idCalendario;
+        const idCalendario = (
+          await prisma.partite.findUnique({
+            select: {
+              Calendario: {
+                select: {
+                  idCalendario: true,
+                },
+              },
+            },
+            where: {
+              idPartita: idPartita,
+            },
+          })
+        )?.Calendario.idCalendario
 
         if (idCalendario) {
           const calendarioQry = await prisma.calendario.findUnique({
             select: {
-              idCalendario: true, giornata: true, giornataSerieA: true, ordine: true, data: true, dataFine: true, hasSovrapposta: true, girone: true, hasGiocata: true, hasDaRecuperare: true,
+              idCalendario: true,
+              giornata: true,
+              giornataSerieA: true,
+              ordine: true,
+              data: true,
+              dataFine: true,
+              hasSovrapposta: true,
+              girone: true,
+              hasGiocata: true,
+              hasDaRecuperare: true,
               Tornei: {
-                select: { idTorneo: true, nome: true, gruppoFase: true }
+                select: { idTorneo: true, nome: true, gruppoFase: true },
               },
               Partite: {
                 select: {
-                  idPartita: true, idSquadraH: true, idSquadraA: true, hasMultaH: true, hasMultaA: true, golH: true, golA: true, fattoreCasalingo: true,
+                  idPartita: true,
+                  idSquadraH: true,
+                  idSquadraA: true,
+                  hasMultaH: true,
+                  hasMultaA: true,
+                  golH: true,
+                  golA: true,
+                  fattoreCasalingo: true,
                   Utenti_Partite_idSquadraHToUtenti: {
-                    select: { nomeSquadra: true, foto: true }
+                    select: { nomeSquadra: true, foto: true },
                   },
                   Utenti_Partite_idSquadraAToUtenti: {
-                    select: { nomeSquadra: true, foto: true }
-                  }
+                    select: { nomeSquadra: true, foto: true },
+                  },
                 },
                 where: {
-                  idPartita: idPartita
-                }
-              }
+                  idPartita: idPartita,
+                },
+              },
             },
             where: {
-              idCalendario: idCalendario
-            }
-          });
+              idCalendario: idCalendario,
+            },
+          })
 
           if (calendarioQry) {
-            const calendario = (await mapCalendario([calendarioQry]))[0];
+            const calendario = (await mapCalendario([calendarioQry]))[0]
             if (calendario && calendario.partite.length === 1) {
-              const partita = calendario.partite[0];
+              const partita = calendario.partite[0]
               const formazioni = await prisma.formazioni.findMany({
                 select: {
                   idFormazione: true,
@@ -209,85 +288,132 @@ export const partitaRouter = createTRPCRouter({
                       altriBonus: true,
                       Giocatori: {
                         select: {
-                          idGiocatore: true, nome: true, nomeFantaGazzetta: true, ruolo: true,
+                          idGiocatore: true,
+                          nome: true,
+                          nomeFantaGazzetta: true,
+                          ruolo: true,
                           Trasferimenti: {
                             select: {
                               SquadreSerieA: {
-                                select: { maglia: true, nome: true }
-                              }
+                                select: { maglia: true, nome: true },
+                              },
                             },
                             where: {
                               OR: [
-                                { AND: [{ dataCessione: null }, { dataAcquisto: { 'lt': toLocaleDateTime(new Date()) } }] },
+                                {
+                                  AND: [
+                                    { dataCessione: null },
+                                    {
+                                      dataAcquisto: {
+                                        lt: toLocaleDateTime(new Date()),
+                                      },
+                                    },
+                                  ],
+                                },
                                 {
                                   AND: [
                                     { NOT: { dataCessione: null } },
-                                    { dataAcquisto: { 'lt': toLocaleDateTime(new Date()) } },
-                                    { dataCessione: { 'gt': toLocaleDateTime(new Date()) } }]
-                                }
-                              ]
-                            }
-                          }
-                        }
-                      }
+                                    {
+                                      dataAcquisto: {
+                                        lt: toLocaleDateTime(new Date()),
+                                      },
+                                    },
+                                    {
+                                      dataCessione: {
+                                        gt: toLocaleDateTime(new Date()),
+                                      },
+                                    },
+                                  ],
+                                },
+                              ],
+                            },
+                          },
+                        },
+                      },
                     },
                     orderBy: [
                       {
                         Giocatori: {
-                          ruolo: 'desc'
-                        }
+                          ruolo: 'desc',
+                        },
                       },
                       {
-                        riserva: 'asc'
-                      }
-                    ]
-                  }
+                        riserva: 'asc',
+                      },
+                    ],
+                  },
                 },
                 where: {
                   idPartita: idPartita,
                   OR: [
                     { idSquadra: partita?.idHome ?? 0 },
-                    { idSquadra: partita?.idAway ?? 0 }
-                  ]
-                }
-              });
+                    { idSquadra: partita?.idAway ?? 0 },
+                  ],
+                },
+              })
 
-              const datiHome = formazioni.find(c => c.idSquadra === partita?.idHome);
-              const datiAway = formazioni.find(c => c.idSquadra === partita?.idAway);
+              const datiHome = formazioni.find(
+                (c) => c.idSquadra === partita?.idHome,
+              )
+              const datiAway = formazioni.find(
+                (c) => c.idSquadra === partita?.idAway,
+              )
 
-              const giocatoriInfluentiHome = await getTabellino(datiHome?.idFormazione ?? 0);
-              const fantapuntiHome = getGiocatoriVotoInfluente(giocatoriInfluentiHome).reduce((acc, cur) => acc + (cur.votoBonus ?? 0), 0);
-              const giocatoriInfluentiAway = await getTabellino(datiAway?.idFormazione ?? 0);
-              const fantapuntiAway = getGiocatoriVotoInfluente(giocatoriInfluentiAway).reduce((acc, cur) => acc + (cur.votoBonus ?? 0), 0);
-              
+              const giocatoriInfluentiHome = await getTabellino(
+                datiHome?.idFormazione ?? 0,
+              )
+              const fantapuntiHome = getGiocatoriVotoInfluente(
+                giocatoriInfluentiHome,
+              ).reduce((acc, cur) => acc + (cur.votoBonus ?? 0), 0)
+              const giocatoriInfluentiAway = await getTabellino(
+                datiAway?.idFormazione ?? 0,
+              )
+              const fantapuntiAway = getGiocatoriVotoInfluente(
+                giocatoriInfluentiAway,
+              ).reduce((acc, cur) => acc + (cur.votoBonus ?? 0), 0)
+
+              const altrePartite = await prisma.partite.findMany({
+                select: {
+                  idPartita: true,
+                  Utenti_Partite_idSquadraHToUtenti: {
+                    select: { nomeSquadra: true, foto: true },
+                  },
+                  Utenti_Partite_idSquadraAToUtenti: {
+                    select: { nomeSquadra: true, foto: true },
+                  },
+                },
+                where: {
+                  idCalendario: idCalendario,
+                },
+              })
+
               return {
                 Calendario: calendario,
+                AltrePartite: altrePartite,
                 TabellinoHome: datiHome && {
                   dataOra: datiHome?.dataOra,
                   modulo: datiHome?.modulo,
                   idSquadra: datiHome?.idSquadra,
-                  fattoreCasalingo:
-                    partita?.isFattoreHome === true
-                      ? Configurazione.bonusFattoreCasalingo
-                      : 0,
+                  fattoreCasalingo: partita?.isFattoreHome === true ? Configurazione.bonusFattoreCasalingo : 0,
                   bonusModulo: getBonusModulo(datiHome.modulo),
                   bonusSenzaVoto: getBonusSenzaVoto(
-                    getGiocatoriVotoInfluente(giocatoriInfluentiHome).length
+                    getGiocatoriVotoInfluente(giocatoriInfluentiHome).length,
                   ),
                   fantapunti: fantapuntiHome,
                   golSegnati: getGolSegnati(
                     fantapuntiHome +
                       getBonusModulo(datiHome.modulo) +
                       getBonusSenzaVoto(
-                        getGiocatoriVotoInfluente(giocatoriInfluentiHome).length
+                        getGiocatoriVotoInfluente(giocatoriInfluentiHome)
+                          .length,
                       ) +
-                      (partita?.isFattoreHome === true ? Configurazione.bonusFattoreCasalingo : 0)
+                      (partita?.isFattoreHome === true ? Configurazione.bonusFattoreCasalingo : 0),
                   ),
                   fantapuntiTotale:
                     fantapuntiHome +
                     getBonusModulo(datiHome.modulo) +
                     getBonusSenzaVoto(
-                      getGiocatoriVotoInfluente(giocatoriInfluentiHome).length
+                      getGiocatoriVotoInfluente(giocatoriInfluentiHome).length,
                     ) +
                     (partita?.isFattoreHome === true ? Configurazione.bonusFattoreCasalingo : 0),
                   Voti: datiHome.Voti.map((c) => ({
@@ -309,15 +435,15 @@ export const partitaRouter = createTRPCRouter({
                     altriBonus: c.altriBonus?.toNumber() ?? 0,
                     votoBonus:
                       giocatoriInfluentiHome.find(
-                        (gi) => gi.idVoto === c.idVoto
+                        (gi) => gi.idVoto === c.idVoto,
                       )?.votoBonus ?? 0,
                     isSostituito:
                       giocatoriInfluentiHome.find(
-                        (gi) => gi.idVoto === c.idVoto
+                        (gi) => gi.idVoto === c.idVoto,
                       )?.isSostituito ?? false,
                     isVotoInfluente:
                       giocatoriInfluentiHome.find(
-                        (gi) => gi.idVoto === c.idVoto
+                        (gi) => gi.idVoto === c.idVoto,
                       )?.isVotoInfluente ?? false,
                   })),
                 },
@@ -328,21 +454,22 @@ export const partitaRouter = createTRPCRouter({
                   fattoreCasalingo: 0,
                   bonusModulo: getBonusModulo(datiAway.modulo),
                   bonusSenzaVoto: getBonusSenzaVoto(
-                    getGiocatoriVotoInfluente(giocatoriInfluentiAway).length
+                    getGiocatoriVotoInfluente(giocatoriInfluentiAway).length,
                   ),
                   fantapunti: fantapuntiAway,
                   golSegnati: getGolSegnati(
                     fantapuntiAway +
                       getBonusModulo(datiAway.modulo) +
                       getBonusSenzaVoto(
-                        getGiocatoriVotoInfluente(giocatoriInfluentiAway).length
-                      )
+                        getGiocatoriVotoInfluente(giocatoriInfluentiAway)
+                          .length,
+                      ),
                   ),
                   fantapuntiTotale:
                     fantapuntiAway +
                     getBonusModulo(datiAway.modulo) +
                     getBonusSenzaVoto(
-                      getGiocatoriVotoInfluente(giocatoriInfluentiAway).length
+                      getGiocatoriVotoInfluente(giocatoriInfluentiAway).length,
                     ),
                   Voti: datiAway.Voti.map((c) => ({
                     nome: c.Giocatori.nome,
@@ -363,27 +490,25 @@ export const partitaRouter = createTRPCRouter({
                     altriBonus: c.altriBonus?.toNumber() ?? 0,
                     votoBonus:
                       giocatoriInfluentiAway.find(
-                        (gi) => gi.idVoto === c.idVoto
+                        (gi) => gi.idVoto === c.idVoto,
                       )?.votoBonus ?? 0,
                     isSostituito:
                       giocatoriInfluentiAway.find(
-                        (gi) => gi.idVoto === c.idVoto
+                        (gi) => gi.idVoto === c.idVoto,
                       )?.isSostituito ?? false,
                     isVotoInfluente:
                       giocatoriInfluentiAway.find(
-                        (gi) => gi.idVoto === c.idVoto
+                        (gi) => gi.idVoto === c.idVoto,
                       )?.isVotoInfluente ?? false,
                   })),
                 },
-              };
+              }
             }
           }
         }
-
-      }
-      catch (error) {
-        Logger.error('Si è verificato un errore', error);
-        throw error;
+      } catch (error) {
+        Logger.error('Si è verificato un errore', error)
+        throw error
       }
     }),
-});
+})

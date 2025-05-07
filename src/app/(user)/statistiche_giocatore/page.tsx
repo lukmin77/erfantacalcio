@@ -1,9 +1,13 @@
-import { Grid } from "@mui/material";
-import { Suspense } from "react";
-import Giocatore from "~/components/giocatori/Giocatore";
+import { Grid } from '@mui/material'
+import { Suspense } from 'react'
+import Giocatore from '~/components/giocatori/Giocatore'
 
-export default function GiocatoriPage({ params }: { params: { idGiocatore: string } }) {
-  const id = Number(params.idGiocatore); 
+export default function GiocatoriPage({
+  params,
+}: {
+  params: { idGiocatore: string }
+}) {
+  const id = Number(params.idGiocatore)
 
   return (
     <Grid container justifyContent="center" spacing={0}>
@@ -13,5 +17,5 @@ export default function GiocatoriPage({ params }: { params: { idGiocatore: strin
         </Suspense>
       </Grid>
     </Grid>
-  );
+  )
 }

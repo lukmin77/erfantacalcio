@@ -1,7 +1,7 @@
-import { Box, LinearProgress, Typography } from '@mui/material';
+import { Box, LinearProgress, Typography } from '@mui/material'
 
 interface LinearProgressBarProps {
-  progress: number;
+  progress: number
 }
 
 const LinearProgressBar: React.FC<LinearProgressBarProps> = ({ progress }) => {
@@ -11,10 +11,13 @@ const LinearProgressBar: React.FC<LinearProgressBarProps> = ({ progress }) => {
         <LinearProgress variant="determinate" value={progress} />
       </Box>
       <Box sx={{ minWidth: 35 }}>
-        <Typography variant="body2" color="text.secondary">{`${Math.round(progress)}%`}</Typography>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+        >{`${Math.round(progress)}%`}</Typography>
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export default LinearProgressBar;
+export default LinearProgressBar

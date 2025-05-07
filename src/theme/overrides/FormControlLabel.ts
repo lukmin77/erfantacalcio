@@ -1,15 +1,15 @@
 // ==============================|| OVERRIDES - FORM CONTROL LABEL ||============================== //
 
-import { type Theme } from "@mui/material/styles";
+import { type Theme } from '@mui/material/styles'
 
 export default function FormControlLabel(theme: Theme) {
   return {
     MuiFormControlLabel: {
       styleOverrides: {
         label: {
-          color: theme.palette.secondary.main
-        }
-      }
-    }
-  };
+          color: theme.palette.primary.dark,
+        },
+      },
+    },
+  }
 }

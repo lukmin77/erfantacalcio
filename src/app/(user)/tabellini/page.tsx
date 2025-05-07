@@ -1,6 +1,6 @@
-import { Grid } from "@mui/material";
-import { Suspense } from "react";
-import ViewTabellini from "~/components/cardPartite/ViewTabellini";
+import { Grid } from '@mui/material'
+import { Suspense } from 'react'
+import ViewTabellini from '~/components/cardPartite/ViewTabellini'
 
 export default function Tabellino() {
   return (
@@ -11,5 +11,5 @@ export default function Tabellino() {
         </Suspense>
       </Grid>
     </Grid>
-  );
+  )
 }

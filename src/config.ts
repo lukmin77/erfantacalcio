@@ -1,29 +1,47 @@
 export const Configurazione = {
   stagione: process.env.NEXT_PUBLIC_STAGIONE ?? '',
   recordCount: parseInt(process.env.NEXT_PUBLIC_RECORDCOUNT ?? '20', 10),
-  percentualeMinimaGiocate: parseInt(process.env.NEXT_PUBLIC_PERCENTUALE_MINIMA_GIOCATE ?? '30', 10),
+  percentualeMinimaGiocate: parseInt(
+    process.env.NEXT_PUBLIC_PERCENTUALE_MINIMA_GIOCATE ?? '30',
+    10,
+  ),
   importoMulta: parseInt(process.env.NEXT_PUBLIC_MULTA ?? '10', 10),
   urlCampioncino: process.env.NEXT_PUBLIC_CAMPIONCINO ?? '',
   urlCampioncinoSmall: process.env.NEXT_PUBLIC_CAMPIONCINO_SMALL ?? '',
   locale: process.env.NEXT_PUBLIC_LOCALE ?? 'it-IT',
-  bonusFattoreCasalingo: parseInt(process.env.NEXT_PUBLIC_FATTORE_CASALINGO ?? '0', 10),
+  bonusFattoreCasalingo: parseInt(
+    process.env.NEXT_PUBLIC_FATTORE_CASALINGO ?? '0',
+    10,
+  ),
   bonusGol: parseFloat(process.env.NEXT_PUBLIC_BONUS_GOL ?? '3'),
   bonusAssist: parseFloat(process.env.NEXT_PUBLIC_BONUS_ASSIST ?? '1'),
   bonusGolSubito: parseFloat(process.env.NEXT_PUBLIC_BONUS_GOLSUBITO ?? '-1'),
-  bonusAmmonizione: parseFloat(process.env.NEXT_PUBLIC_BONUS_AMMONIZIONE ?? '-0.5'),
+  bonusAmmonizione: parseFloat(
+    process.env.NEXT_PUBLIC_BONUS_AMMONIZIONE ?? '-0.5',
+  ),
   bonusEspulsione: parseFloat(process.env.NEXT_PUBLIC_BONUS_ESPULSIONE ?? '-1'),
-  bonusRigoreParato: parseFloat(process.env.NEXT_PUBLIC_BONUS_RIGOREPARATO ?? '3'),
-  bonusRigoreSbagliato: parseFloat(process.env.NEXT_PUBLIC_BONUS_RIGORESBAGLIATO ?? '-3'),
+  bonusRigoreParato: parseFloat(
+    process.env.NEXT_PUBLIC_BONUS_RIGOREPARATO ?? '3',
+  ),
+  bonusRigoreSbagliato: parseFloat(
+    process.env.NEXT_PUBLIC_BONUS_RIGORESBAGLIATO ?? '-3',
+  ),
   bonusAutogol: parseFloat(process.env.NEXT_PUBLIC_BONUS_AUTOGOL ?? '-2'),
   bonusSenzaVoto: parseFloat(process.env.NEXT_PUBLIC_BONUS_SENZA_VOTO ?? '0'),
-  bonusModulo: process.env.NEXT_PUBLIC_BONUS_MODULO !== undefined && process.env.NEXT_PUBLIC_BONUS_MODULO?.toLowerCase() === 'true',
+  bonusModulo:
+    process.env.NEXT_PUBLIC_BONUS_MODULO !== undefined &&
+    process.env.NEXT_PUBLIC_BONUS_MODULO?.toLowerCase() === 'true',
   bonusModulo541: parseFloat(process.env.NEXT_PUBLIC_BONUS_MODULO_541 ?? '1.5'),
   bonusModulo451: parseFloat(process.env.NEXT_PUBLIC_BONUS_MODULO_451 ?? '1'),
   bonusModulo532: parseFloat(process.env.NEXT_PUBLIC_BONUS_MODULO_532 ?? '0.5'),
   bonusModulo442: parseFloat(process.env.NEXT_PUBLIC_BONUS_MODULO_442 ?? '0'),
-  bonusModulo352: parseFloat(process.env.NEXT_PUBLIC_BONUS_MODULO_352 ?? '-0.5'),
+  bonusModulo352: parseFloat(
+    process.env.NEXT_PUBLIC_BONUS_MODULO_352 ?? '-0.5',
+  ),
   bonusModulo433: parseFloat(process.env.NEXT_PUBLIC_BONUS_MODULO_433 ?? '-1'),
-  bonusModulo343: parseFloat(process.env.NEXT_PUBLIC_BONUS_MODULO_343 ?? '-1.5'),
+  bonusModulo343: parseFloat(
+    process.env.NEXT_PUBLIC_BONUS_MODULO_343 ?? '-1.5',
+  ),
   maxSostituzioni: parseInt(process.env.NEXT_PUBLIC_SOSTITUZIONI ?? '6'),
   pfColumns: parseInt(process.env.NEXT_PUBLIC_PF_COUNT ?? '35'),
   pfColumnIdGiocatore: parseInt(process.env.NEXT_PUBLIC_PF_IDGIOCATORE ?? '0'),
@@ -39,4 +57,4 @@ export const Configurazione = {
   pfColumnRigErrato: parseInt(process.env.NEXT_PUBLIC_PF_RIGERRATO ?? '0'),
   pfColumnRigParato: parseInt(process.env.NEXT_PUBLIC_PF_RIGPARATO ?? '0'),
   pfColumnAutogol: parseInt(process.env.NEXT_PUBLIC_PF_AUTOGOL ?? '0'),
-};
+}

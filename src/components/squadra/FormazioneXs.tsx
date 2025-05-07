@@ -1,16 +1,17 @@
-"use client";
+'use client'
 import {
-  AutoGraph,
+  Analytics,
   ExpandMore,
-  Filter1,
-  Filter2,
-  Filter3,
-  Filter4,
-  Filter5,
-  Filter6,
   HourglassTop,
+  ResetTv,
+  Looks3Outlined,
+  Looks4Outlined,
+  Looks5Outlined,
+  Looks6Outlined,
+  LooksOneOutlined,
+  LooksTwoOutlined,
   Save,
-} from "@mui/icons-material";
+} from '@mui/icons-material'
 import {
   Box,
   CircularProgress,
@@ -20,7 +21,6 @@ import {
   ListItemText,
   MenuItem,
   Select,
-  type SelectChangeEvent,
   Typography,
   Stack,
   Button,
@@ -32,74 +32,79 @@ import {
   IconButton,
   Divider,
   Tooltip,
-} from "@mui/material";
-import { useSession } from "next-auth/react";
-import { api } from "~/utils/api";
-import React, { useEffect, useState } from "react";
-import { type GiornataType, type Moduli } from "~/types/common";
-import {
-  convertiStringaInRuolo,
-  moduliList,
-  moduloDefault,
-  ModuloPositions,
-  ruoliList,
-} from "~/utils/helper";
+  Slide,
+} from '@mui/material'
+import { useSession } from 'next-auth/react'
+import { api } from '~/utils/api'
+import React, { useEffect, useState } from 'react'
+import { type Moduli } from '~/types/common'
+import { getShortName, moduloDefault } from '~/utils/helper'
 import {
   type GiocatoreFormazioneType,
   type GiocatoreType,
-} from "~/types/squadre";
-import Image from "next/image";
-import Modal from "../modal/Modal";
-import dayjs from "dayjs";
-import Giocatore from "../giocatori/Giocatore";
+} from '~/types/squadre'
+import Image from 'next/image'
+import Modal from '../modal/Modal'
+import Giocatore from '../giocatori/Giocatore'
+import {
+  checkDataFormazione,
+  sortPlayersByRoleDescThenCostoDesc,
+  sortPlayersByRoleDescThenRiserva,
+  calcolaCodiceFormazione,
+  allowedFormations,
+  formatModulo,
+  getPlayerStylePosition,
+} from './utils'
+import { giornataSchema } from '~/server/api/routers/common'
+import { z } from 'zod'
 
 function FormazioneXs() {
-  const session = useSession();
-  const idSquadra = parseInt(session.data?.user?.id ?? "0");
-  const [idGiocatoreStat, setIdGiocatoreStat] = useState<number>();
-  const [openModalCalendario, setOpenModalCalendario] = useState(false);
+  const session = useSession()
+  const idSquadra = parseInt(session.data?.user?.id ?? '0')
+  const [idGiocatoreStat, setIdGiocatoreStat] = useState<number>()
+  const [openModalCalendario, setOpenModalCalendario] = useState(false)
+  const [enableRosa, setEnableRosa] = useState(false)
+  const [message, setMessage] = useState('')
+  const [giornate, setGiornate] = useState<z.infer<typeof giornataSchema>[]>([])
+  const [idTorneo, setIdTorneo] = useState<number>()
+  const [rosa, setRosa] = useState<GiocatoreFormazioneType[]>([])
+  const [campo, setCampo] = useState<GiocatoreFormazioneType[]>([])
+  const [panca, setPanca] = useState<GiocatoreFormazioneType[]>([])
+  const [idPartita, setIdPartita] = useState<number>()
+  const [modulo, setModulo] = useState<Moduli>(moduloDefault)
+  const [openAlert, setOpenAlert] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [alertMessage, setAlertMessage] = useState('')
+  const [alertSeverity, setAlertSeverity] = useState<'success' | 'error'>(
+    'success',
+  )
 
   const calendarioProssima = api.formazione.getGiornateDaGiocare.useQuery(
     undefined,
-    { refetchOnWindowFocus: false, refetchOnReconnect: false }
-  );
+    { refetchOnWindowFocus: false, refetchOnReconnect: false },
+  )
   const saveFormazione = api.formazione.create.useMutation({
     onSuccess: async () => {
-      setAlertMessage("Salvataggio completato");
-      setAlertSeverity("success");
+      setAlertMessage('Salvataggio completato')
+      setAlertSeverity('success')
     },
-  });
-  const [enableRosa, setEnableRosa] = useState(false);
-  const [message, setMessage] = useState("");
-  const [giornate, setGiornate] = useState<GiornataType[]>([]);
-  const [idTorneo, setIdTorneo] = useState<number>();
+  })
   const formazioneList = api.formazione.get.useQuery(
     { idTorneo: idTorneo! },
     {
       enabled: !!idTorneo,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
-    }
-  );
+    },
+  )
   const rosaList = api.squadre.getRosa.useQuery(
     { idSquadra: idSquadra, includeVenduti: false },
     {
       enabled: enableRosa,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
-    }
-  );
-  const [rosa, setRosa] = useState<GiocatoreFormazioneType[]>([]);
-  const [campo, setCampo] = useState<GiocatoreFormazioneType[]>([]);
-  const [panca, setPanca] = useState<GiocatoreFormazioneType[]>([]);
-  const [idPartita, setIdPartita] = useState<number>();
-  const [modulo, setModulo] = useState<Moduli>(moduloDefault);
-  const [openAlert, setOpenAlert] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
-  const [alertSeverity, setAlertSeverity] = useState<"success" | "error">(
-    "success"
-  );
+    },
+  )
 
   useEffect(() => {
     if (calendarioProssima.data) {
@@ -107,12 +112,12 @@ function FormazioneXs() {
         calendarioProssima.data.length > 0 &&
         checkDataFormazione(calendarioProssima.data[0]?.data)
       ) {
-        setEnableRosa(true);
-        setIdTorneo(calendarioProssima.data[0]?.idTorneo);
-      } else setMessage("Formazione non rilasciabile");
-      setGiornate(calendarioProssima.data);
+        setEnableRosa(true)
+        setIdTorneo(calendarioProssima.data[0]?.idTorneo)
+      } else setMessage('Formazione non rilasciabile')
+      setGiornate(calendarioProssima.data)
     }
-  }, [calendarioProssima.data]);
+  }, [calendarioProssima.data])
 
   useEffect(() => {
     if (rosaList.data) {
@@ -120,65 +125,54 @@ function FormazioneXs() {
         ...giocatore,
         titolare: false,
         riserva: null,
-      }));
+      }))
 
-      setRosa(rosaConRuolo);
+      setRosa(rosaConRuolo)
     }
-  }, [rosaList.data, idTorneo]);
+  }, [rosaList.data, idTorneo])
 
   useEffect(() => {
     if (formazioneList.data) {
-      setIdPartita(formazioneList.data.idPartita);
-      setModulo(formazioneList.data.modulo as Moduli);
-      setCampo(formazioneList.data.giocatori.filter((c) => c.titolare));
+      setIdPartita(formazioneList.data.idPartita)
+      setModulo(formazioneList.data.modulo as Moduli)
+      setCampo(formazioneList.data.giocatori.filter((c) => c.titolare))
       setRosa(
         sortPlayersByRoleDescThenCostoDesc(
           formazioneList.data.giocatori.filter(
-            (c) => !c.titolare && c.riserva === null
-          )
-        )
-      );
+            (c) => !c.titolare && c.riserva === null,
+          ),
+        ),
+      )
       setPanca(
         sortPlayersByRoleDescThenRiserva(
-          formazioneList.data.giocatori.filter((c) => !c.titolare && c.riserva)
-        )
-      );
+          formazioneList.data.giocatori.filter((c) => !c.titolare && c.riserva),
+        ),
+      )
     }
-  }, [
-    formazioneList.isFetching,
-    formazioneList.isSuccess,
-    formazioneList.data,
-  ]);
+  }, [formazioneList.isFetching, formazioneList.isSuccess, formazioneList.data])
 
   const handleClickPlayer = async (playerClicked: GiocatoreFormazioneType) => {
-    playerClicked.riserva = null;
-    playerClicked.titolare = false;
+    playerClicked.riserva = null
+    playerClicked.titolare = false
+
+    const canAdd = canAddPlayer(playerClicked.ruolo)
+
     if (
-      rosa.findIndex((c) => c.idGiocatore === playerClicked.idGiocatore) > -1 &&
-      checkModulo(playerClicked.ruolo)
+      rosa.some((c) => c.idGiocatore === playerClicked.idGiocatore) &&
+      canAdd
     ) {
-      //va da rosa a campo
-      playerClicked.titolare = true;
-      await updateLists(playerClicked, campo, setCampo, rosa, setRosa, false);
-    }
-    if (
-      rosa.findIndex((c) => c.idGiocatore === playerClicked.idGiocatore) > -1 &&
-      !checkModulo(playerClicked.ruolo)
-    ) {
-      //va da rosa a panca
-      playerClicked.riserva = 100;
-      await updateLists(playerClicked, panca, setPanca, rosa, setRosa, true);
-    }
-    if (
-      campo.findIndex((c) => c.idGiocatore === playerClicked.idGiocatore) > -1
-    ) {
-      //va da campo a rosa
-      await updateLists(playerClicked, rosa, setRosa, campo, setCampo, true);
-    }
-    if (
-      panca.findIndex((c) => c.idGiocatore === playerClicked.idGiocatore) > -1
-    ) {
-      //va da panca a rosa
+      // Va da rosa a campo
+      playerClicked.titolare = true
+      await updateLists(playerClicked, campo, setCampo, rosa, setRosa, false)
+    } else if (rosa.some((c) => c.idGiocatore === playerClicked.idGiocatore)) {
+      // Va da rosa a panca
+      playerClicked.riserva = 100
+      await updateLists(playerClicked, panca, setPanca, rosa, setRosa, true)
+    } else if (campo.some((c) => c.idGiocatore === playerClicked.idGiocatore)) {
+      // Va da campo a rosa
+      await updateLists(playerClicked, rosa, setRosa, campo, setCampo, true)
+    } else if (panca.some((c) => c.idGiocatore === playerClicked.idGiocatore)) {
+      // Va da panca a rosa
       await updateLists(
         playerClicked,
         rosa,
@@ -186,56 +180,36 @@ function FormazioneXs() {
         panca,
         setPanca,
         false,
-        true
-      );
+        true,
+      )
     }
-  };
+  }
 
-  const sortPlayersByRoleDescThenCostoDesc = (
-    players: GiocatoreFormazioneType[]
-  ) => {
-    return players.sort((a, b) => {
-      if (b.ruolo !== a.ruolo) {
-        return b.ruolo.localeCompare(a.ruolo);
-      } else if (b.costo !== a.costo) {
-        return b.costo - a.costo;
-      } else {
-        return a.nome.localeCompare(b.nome);
+  function canAddPlayer(ruoloGiocatore: string): boolean {
+    const newState = calcolaCodiceFormazione(campo, ruoloGiocatore)
+    const newStateStr = newState.toString().padStart(4, '0')
+
+    const isValid = allowedFormations.some((formation) => {
+      const formationStr = formation.toString().padStart(4, '0')
+
+      for (let i = 0; i < 4; i++) {
+        const currentRoleCount = parseInt(newStateStr.charAt(i), 10)
+        const maxRoleCount = parseInt(formationStr.charAt(i), 10)
+
+        if (currentRoleCount > maxRoleCount) {
+          return false
+        }
       }
-    });
-  };
+      return true
+    })
 
-  const sortPlayersByRoleDescThenRiserva = (
-    players: GiocatoreFormazioneType[]
-  ) => {
-    const playersSorted: GiocatoreFormazioneType[] = [];
-    const ruoliUnici = [...new Set(players.map((player) => player.ruolo))];
+    if (isValid) {
+      const moduloFormatted = formatModulo(newStateStr)
+      setModulo(moduloFormatted as Moduli)
+    }
 
-    ruoliUnici.forEach((ruolo) => {
-      const playersForRuolo = players.filter(
-        (player) => player.ruolo === ruolo
-      );
-      const playersSortedForRuolo = playersForRuolo.sort((a, b) => {
-        if (a.riserva === null && b.riserva === null) {
-          return 0;
-        } else if (a.riserva === null) {
-          return -1;
-        } else if (b.riserva === null) {
-          return 1;
-        }
-        return a.riserva - b.riserva;
-      });
-
-      playersSortedForRuolo.forEach((player, index) => {
-        if (player.riserva !== null) {
-          player.riserva = index + 1;
-        }
-        playersSorted.push(player);
-      });
-    });
-
-    return playersSorted;
-  };
+    return isValid
+  }
 
   const updateLists = async (
     playerSelected: GiocatoreFormazioneType,
@@ -244,173 +218,170 @@ function FormazioneXs() {
     sourceArray: GiocatoreFormazioneType[],
     setSourceArray: (value: GiocatoreFormazioneType[]) => void,
     orderTargetList = true,
-    orderSourceList = false
+    orderSourceList = false,
   ) => {
     if (
       playerSelected &&
       !targetArray.find((c) => c.idGiocatore === playerSelected.idGiocatore)
     ) {
       const updatedSourceArray = sourceArray.filter(
-        (player) => player.idGiocatore !== playerSelected.idGiocatore
-      );
-      setSourceArray(updatedSourceArray);
-      const updatedTargetArray = [...targetArray, playerSelected];
+        (player) => player.idGiocatore !== playerSelected.idGiocatore,
+      )
+      setSourceArray(updatedSourceArray)
+      const updatedTargetArray = [...targetArray, playerSelected]
       orderSourceList
         ? sortPlayersByRoleDescThenRiserva(updatedSourceArray)
-        : setSourceArray(updatedSourceArray);
+        : setSourceArray(updatedSourceArray)
       orderTargetList
         ? setTargetArray(sortPlayersByRoleDescThenRiserva(updatedTargetArray))
-        : setTargetArray(updatedTargetArray);
+        : setTargetArray(updatedTargetArray)
     }
-  };
+  }
 
   const renderRosa = (roles: string[], title: string) => {
-    const filteredRosa = rosa.filter((player) => roles.includes(player.ruolo));
-    if (filteredRosa.length > 0) {
-      const handleStatGiocatore = (idGiocatore: number) => {
-        setIdGiocatoreStat(idGiocatore);
-        setOpenModalCalendario(true);
-      };
-
-      return (
-        <Grid item xs={12}>
-          <Box>
-            <Typography variant="h5">{title}</Typography>
-            <List sx={{ bgcolor: "background.paper" }}>
-              {filteredRosa.map((player) => (
-                <Grid container spacing={0} key={player.idGiocatore}>
-                  <Grid item xs={9}>
-                    <div onClick={() => handleClickPlayer(player)}>
-                      <ListItem
-                        sx={{
-                          cursor: "pointer",
-                          zIndex: 2,
-                          paddingTop: "0px",
-                          paddingBottom: "0px",
-                          paddingLeft: "0px",
-                        }}
-                      >
-                        <Image
-                          src={player.urlCampioncinoSmall}
-                          width={42}
-                          height={42}
-                          alt={player.nome}
-                        />
-                        <ListItemText
-                          primary={player.nome}
-                          secondary={`${
-                            player.ruoloEsteso
-                          } (${player.nomeSquadraSerieA
-                            ?.toUpperCase()
-                            .substring(0, 3)})`}
-                        ></ListItemText>
-                      </ListItem>
-                    </div>
-                  </Grid>
-                  <Grid
-                    item
-                    xs={3}
-                    display={"flex"}
-                    justifyContent={"flex-end"}
-                  >
-                    <Tooltip title={"Statistiche giocatore"}>
-                      <IconButton
-                        onClick={() => handleStatGiocatore(player.idGiocatore)}
-                      >
-                        <AutoGraph color="success" />
-                      </IconButton>
-                    </Tooltip>
-                  </Grid>
-                </Grid>
-              ))}
-            </List>
-          </Box>
-        </Grid>
-      );
-    } else {
-      return <></>;
+    const filteredRosa = rosa.filter((player) => roles.includes(player.ruolo))
+    const filteredPanca = panca.filter((player) => roles.includes(player.ruolo))
+    const handleStatGiocatore = (idGiocatore: number) => {
+      setIdGiocatoreStat(idGiocatore)
+      setOpenModalCalendario(true)
     }
-  };
 
-  const renderPanca = (roles: string[]) => {
-    const filteredPanca = panca.filter((player) =>
-      roles.includes(player.ruolo)
-    );
     return (
       <Grid item xs={12}>
         <Box>
-          <List sx={{ bgcolor: "background.paper" }}>
+          <Typography variant="h5">{title}</Typography>
+          <List sx={{ bgcolor: 'background.paper' }}>
+            {filteredRosa.map((player) => (
+              <Grid container spacing={0} key={player.idGiocatore}>
+                <Grid item xs={9}>
+                  <div onClick={() => handleClickPlayer(player)}>
+                    <ListItem
+                      sx={{
+                        cursor: 'pointer',
+                        zIndex: 2,
+                        paddingTop: '0px',
+                        paddingBottom: '0px',
+                        paddingLeft: '0px',
+                      }}
+                    >
+                      <Image
+                        src={player.urlCampioncinoSmall}
+                        width={42}
+                        height={42}
+                        alt={player.nome}
+                      />
+                      <ListItemText
+                        primary={getShortName(player.nome)}
+                        secondary={`${
+                          player.ruoloEsteso
+                        } (${player.nomeSquadraSerieA
+                          ?.toUpperCase()
+                          .substring(0, 3)})`}
+                      ></ListItemText>
+                    </ListItem>
+                  </div>
+                </Grid>
+                <Grid item xs={3} display={'flex'} justifyContent={'flex-end'}>
+                  <Slide
+                    direction="right"
+                    in={true}
+                    style={{ transitionDelay: '300ms' }}
+                    mountOnEnter
+                    unmountOnExit
+                  >
+                    <Tooltip title={'Statistiche giocatore'}>
+                      <IconButton
+                        onClick={() => handleStatGiocatore(player.idGiocatore)}
+                      >
+                        <Analytics color="info" />
+                      </IconButton>
+                    </Tooltip>
+                  </Slide>
+                </Grid>
+              </Grid>
+            ))}
             {filteredPanca.map((player) => (
-              <div
-                key={player.idGiocatore}
-                onClick={() => handleClickPlayer(player)}
-              >
-                <ListItem
-                  sx={{
-                    cursor: "pointer",
-                    zIndex: 2,
-                    paddingTop: "0px",
-                    paddingBottom: "0px",
-                  }}
-                >
-                  <Image
-                    src={player.urlCampioncinoSmall}
-                    width={42}
-                    height={42}
-                    alt={player.nome}
-                  />
-                  <ListItemText
-                    primary={player.nome}
-                    secondary={`${
-                      player.ruoloEsteso
-                    } (${player.nomeSquadraSerieA
-                      ?.toUpperCase()
-                      .substring(0, 3)})`}
-                  ></ListItemText>
-                  {player.riserva === 1 ? (
-                    <Filter1 color="success"></Filter1>
-                  ) : player.riserva === 2 ? (
-                    <Filter2 color="warning"></Filter2>
-                  ) : player.riserva === 3 ? (
-                    <Filter3 color="error"></Filter3>
-                  ) : player.riserva === 4 ? (
-                    <Filter4 color="secondary"></Filter4>
-                  ) : player.riserva === 5 ? (
-                    <Filter5 color="info"></Filter5>
-                  ) : player.riserva === 6 ? (
-                    <Filter6 color="primary"></Filter6>
-                  ) : (
-                    <></>
-                  )}
-                </ListItem>
-              </div>
+              <Grid container spacing={0} key={player.idGiocatore}>
+                <Grid item xs={9}>
+                  <div onClick={() => handleClickPlayer(player)}>
+                    <ListItem
+                      sx={{
+                        cursor: 'pointer',
+                        zIndex: 2,
+                        paddingTop: '0px',
+                        paddingBottom: '0px',
+                        paddingLeft: '0px',
+                      }}
+                    >
+                      <Image
+                        src={player.urlCampioncinoSmall}
+                        width={42}
+                        height={42}
+                        alt={player.nome}
+                      />
+                      <ListItemText
+                        primary={getShortName(player.nome)}
+                        secondary={`${
+                          player.ruoloEsteso
+                        } (${player.nomeSquadraSerieA
+                          ?.toUpperCase()
+                          .substring(0, 3)})`}
+                      ></ListItemText>
+                    </ListItem>
+                  </div>
+                </Grid>
+                <Grid item xs={3} display={'flex'} justifyContent={'flex-end'}>
+                  <Slide
+                    direction="right"
+                    in={true}
+                    style={{ transitionDelay: '300ms' }}
+                    mountOnEnter
+                    unmountOnExit
+                  >
+                    <Tooltip title={`Riserva ${player.riserva}`}>
+                      <IconButton>
+                        {filterIcons[(player.riserva ?? 0) - 1]}
+                      </IconButton>
+                    </Tooltip>
+                  </Slide>
+                </Grid>
+              </Grid>
             ))}
           </List>
         </Box>
       </Grid>
-    );
-  };
+    )
+  }
+
+  const filterIcons = [
+    <LooksOneOutlined key={0} color="error" />,
+    <LooksTwoOutlined key={1} color="error" />,
+    <Looks3Outlined key={2} color="error" />,
+    <Looks4Outlined key={3} color="error" />,
+    <Looks5Outlined key={4} color="error" />,
+    <Looks6Outlined key={5} color="error" />,
+  ]
 
   const renderCampo = (roles: string[]) => {
-    const filtered = campo.filter((player) => roles.includes(player.ruolo));
+    const filtered = campo.filter((player) => roles.includes(player.ruolo))
     return (
       <>
         {filtered.map((player, index) => {
-          const style = getPlayerStylePosition(player.ruolo, index);
+          const style = getPlayerStylePosition(player.ruolo, index, modulo)
           return (
             <div
               key={player.idGiocatore}
               onClick={() => handleClickPlayer(player)}
               style={{
-                cursor: "pointer",
+                cursor: 'pointer',
                 zIndex: 2,
-                minWidth: "120px",
-                position: "absolute",
+                minWidth: '120px',
+                position: 'absolute',
                 ...style,
               }}
             >
               <Stack
-                direction={"column"}
+                direction={'column'}
                 justifyContent="space-between"
                 alignItems="center"
               >
@@ -424,107 +395,81 @@ function FormazioneXs() {
                 <Typography
                   variant="body2"
                   sx={{
-                    color: "white",
-                    backgroundColor: "#2e865f",
+                    color: 'white',
+                    backgroundColor: '#2e865f',
                     opacity: 0.8,
-                    padding: "2px",
+                    padding: '2px',
                   }}
                 >
                   {player.nome}
                 </Typography>
               </Stack>
             </div>
-          );
+          )
         })}
       </>
-    );
-  };
-
-  const handleSetModulo = (event: SelectChangeEvent) => {
-    correctFormazione(event.target.value as Moduli);
-    setModulo(event.target.value as Moduli);
-  };
-
-  function getPlayerStylePosition(ruolo: string, index: number) {
-    return ModuloPositions[modulo][convertiStringaInRuolo(ruolo) ?? "P"][index];
-  }
-
-  function checkModulo(ruolo: string) {
-    const moduloSplitted = modulo.split("-");
-    const maxRuolo =
-      ruolo === "P"
-        ? 1
-        : ruolo === "D"
-        ? parseInt(moduloSplitted[0] ?? "3")
-        : ruolo === "C"
-        ? parseInt(moduloSplitted[1] ?? "4")
-        : parseInt(moduloSplitted[2] ?? "3");
-    return campo.filter((c) => c.ruolo === ruolo).length < maxRuolo;
-  }
-
-  function correctFormazione(modulo: Moduli) {
-    const moduloSplitted = modulo.split("-");
-    moduloSplitted.map((c, index) => {
-      const numRuolo = parseInt(c ?? "0");
-      const giocatori = campo
-        .filter((g) => g.ruolo === ruoliList[index + 1])
-        .slice(numRuolo);
-      giocatori.forEach((playerToRemove) => {
-        rosa.push(playerToRemove);
-        const playerIndex = campo.findIndex(
-          (g) => g.idGiocatore === playerToRemove.idGiocatore
-        );
-        if (playerIndex !== -1) {
-          campo.splice(playerIndex, 1);
-        }
-      });
-    });
-  }
-
-  function checkDataFormazione(dataIso: string | undefined) {
-    return dayjs(dataIso).toDate() >= dayjs(new Date()).toDate();
+    )
   }
 
   const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+    event.preventDefault()
     if (rosa.length > 0 || campo.length !== 11) {
-      setAlertMessage("Completa la formazione");
-      setAlertSeverity("error");
-    } else if (!idPartita) {
-      setAlertMessage("Nessuna partita in programma, impossibile procedere");
-      setAlertSeverity("error");
+      setAlertMessage('Completa la formazione')
+      setAlertSeverity('error')
+    } else if (!idPartita && idPartita !== 0) {
+      setAlertMessage('Nessuna partita in programma, impossibile procedere')
+      setAlertSeverity('error')
     } else {
-      setSaving(true);
-      await saveFormazione.mutateAsync({
-        idPartita: idPartita,
-        modulo: modulo,
-        giocatori: [...campo, ...panca].map((giocatore) => ({
-          idGiocatore: giocatore.idGiocatore,
-          titolare: giocatore.titolare,
-          riserva: giocatore.riserva,
-        })),
-      });
-      setSaving(false);
+      setSaving(true)
+      if (idPartita !== 0) {
+        await saveFormazione.mutateAsync({
+          idPartita: idPartita,
+          modulo: modulo,
+          giocatori: [...campo, ...panca].map((giocatore) => ({
+            idGiocatore: giocatore.idGiocatore,
+            titolare: giocatore.titolare,
+            riserva: giocatore.riserva,
+          })),
+        })
+        setSaving(false)
+      } else {
+        await Promise.all(
+          giornate.map(async (g) => {
+            await saveFormazione.mutateAsync({
+              idPartita: g.partite
+                .filter((c) => c.idHome === idSquadra || c.idAway === idSquadra)
+                .map((p) => p.idPartita)[0]!,
+              modulo: modulo,
+              giocatori: [...campo, ...panca].map((giocatore) => ({
+                idGiocatore: giocatore.idGiocatore,
+                titolare: giocatore.titolare,
+                riserva: giocatore.riserva,
+              })),
+            })
+          }),
+        )
+        setSaving(false)
+      }
     }
-    setOpenAlert(true);
-  };
+    setOpenAlert(true)
+  }
 
   const handleModalClose = () => {
-    setOpenModalCalendario(false);
-  };
+    setOpenModalCalendario(false)
+  }
 
   return (
     <>
-      <Grid container spacing={0}>
+      <Grid container spacing={1}>
         {((rosaList.isLoading && enableRosa) ||
           calendarioProssima.isLoading) && (
           <Grid item xs={12}>
             <Box
               sx={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
             >
               <CircularProgress color="warning" />
@@ -534,148 +479,105 @@ function FormazioneXs() {
         {enableRosa ? (
           <>
             <Grid item xs={8}>
-              <Stack direction={"row"}>
-                {giornate.length > 1 ? (
-                  <Select
-                    size="small"
-                    variant="outlined"
-                    labelId="select-label-giornata"
-                    margin="dense"
-                    required
-                    sx={{
-                      m: "2px",
-                      backgroundColor: "#2e865f",
-                      color: "white",
-                      opacity: 0.8,
-                      fontSize: "11px",
-                    }}
-                    name="giornata"
-                    onChange={(e) => setIdTorneo(e.target.value as number)}
-                    defaultValue={giornate[0]?.idTorneo}
-                  >
-                    {giornate.map((g, index) => (
-                      <MenuItem
-                        value={g.idTorneo}
-                        key={`giornata_${g.idTorneo}`}
-                        selected={index === 0}
-                      >{`${g.Title}`}</MenuItem>
-                    ))}
-                  </Select>
-                ) : (
-                  <Typography
-                    variant={"body2"}
-                    sx={{ lineHeight: 2.66 }}
-                  >
-                    <b>{giornate[0]?.Title}</b>
-                  </Typography>
-                )}
+              {giornate.length > 1 ? (
                 <Select
                   size="small"
                   variant="outlined"
-                  labelId="select-label-modulo"
+                  labelId="select-label-giornata"
                   margin="dense"
                   required
-                  sx={{
-                    m: "4px",
-                    backgroundColor: "#2e865f",
-                    color: "white",
-                    opacity: 0.8,
-                    fontSize: "11px",
-                  }}
-                  name="modulo"
-                  onChange={handleSetModulo}
-                  value={modulo}
+                  name="giornata"
+                  onChange={(e) =>
+                    e.target.value !== 0
+                      ? setIdTorneo(e.target.value as number)
+                      : setIdPartita(0)
+                  }
+                  defaultValue={giornate[0]?.idTorneo}
                 >
-                  {moduliList.map((moduloOption) => (
+                  <MenuItem value={0} key={`giornata_0`}>
+                    Salva entrambe le formazioni
+                  </MenuItem>
+                  {giornate.map((g, index) => (
                     <MenuItem
-                      value={moduloOption}
-                      key={`modulo_${moduloOption}`}
-                    >{`Modulo ${moduloOption}`}</MenuItem>
+                      value={g.idTorneo}
+                      key={`giornata_${g.idTorneo}`}
+                      selected={index === 0}
+                    >{`${g.Title}`}</MenuItem>
                   ))}
                 </Select>
-              </Stack>
+              ) : (
+                <Typography variant="h5" sx={{ lineHeight: 2 }}>
+                  <b>{giornate[0]?.Title}</b>
+                </Typography>
+              )}
             </Grid>
             <Grid item xs={4} justifyItems={'end'}>
-                <Box component="form" onSubmit={handleSave} noValidate>
-                  <Button
-                    type="submit"
-                    disabled={saving}
-                    endIcon={!saving ? <Save /> : <HourglassTop />}
-                    variant="contained"
-                    color="error"
-                    size="medium"
-                    sx={{ m: "4px", fontSize: "10px", opacity: 0.8 }}
-                  >
-                    {saving ? "Attendere..." : "Salva"}
-                  </Button>
-                </Box>
+              <Box component="form" onSubmit={handleSave} noValidate>
+                <Button
+                  type="submit"
+                  disabled={saving}
+                  endIcon={!saving ? <Save /> : <HourglassTop />}
+                  variant="contained"
+                  color="error"
+                  size="medium"
+                  sx={{ fontSize: '10px' }}
+                >
+                  {saving ? 'Attendere...' : 'Salva'}
+                </Button>
+              </Box>
             </Grid>
-            {giornate.length > 1 && (
-              <Grid item xs={12} sx={{ justifyContent: "flex-start" }}>
-                <Typography variant={"h5"} color="error">
-                  Attenzione!!! partita di campionato e di coppa!!!
-                </Typography>
-              </Grid>
-            )}
             <Grid item sm={8} xs={12}>
-              <>
-                <Accordion>
-                  <AccordionSummary expandIcon={<ExpandMore />}>
-                    <Typography variant="h5">Rosa ({rosa.length})</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Grid container spacing={0}>
-                      {renderRosa(["P", "D"], "Portieri/Difensori")}
-                      {renderRosa(["C"], "Centrocampisti")}
-                      {renderRosa(["A"], "Attaccanti")}
-                    </Grid>
-                  </AccordionDetails>
-                </Accordion>
-                <Accordion>
-                  <AccordionSummary expandIcon={<ExpandMore />}>
-                    <Typography variant="h5">
-                      In panchina ({panca.length})
-                    </Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Grid container spacing={0}>
-                      {renderPanca(["P", "D", "C", "A"])}
-                    </Grid>
-                  </AccordionDetails>
-                </Accordion>
-              </>
-            </Grid>
-            <Grid item sm={4} xs={12}>
-              <Accordion defaultExpanded={true}>
+              <Accordion>
                 <AccordionSummary expandIcon={<ExpandMore />}>
                   <Typography variant="h5">
-                    In campo ({campo.length})
+                    Rosa ({rosa.length}) / Panchina ({panca.length})
                   </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Grid container spacing={0}>
+                    {renderRosa(['P'], 'Portieri')}
+                    {renderRosa(['D'], 'Difensori')}
+                    {renderRosa(['C'], 'Centrocampisti')}
+                    {renderRosa(['A'], 'Attaccanti')}
+                  </Grid>
+                </AccordionDetails>
+              </Accordion>
+              <Accordion defaultExpanded={true}>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                  <Stack
+                    direction={'row'}
+                    justifyContent="right"
+                    alignItems="center"
+                  >
+                    <Typography variant="h5" mr={2}>
+                      In campo ({campo.length})
+                    </Typography>
+                  </Stack>
                 </AccordionSummary>
                 <AccordionDetails>
                   <Box
                     sx={{
-                      borderStyle: "none",
-                      borderWidth: "0px",
-                      position: "relative",
-                      width: "100%", //410px
-                      aspectRatio: "360 / 509",
+                      borderStyle: 'none',
+                      borderWidth: '0px',
+                      position: 'relative',
+                      width: '100%', //410px
+                      aspectRatio: '360 / 509',
                       //height: '490px',
-                      backgroundRepeat: "no-repeat",
-                      backgroundSize: "cover", //100%
+                      backgroundRepeat: 'no-repeat',
+                      backgroundSize: 'cover', //100%
                       backgroundImage: "url('images/campo.jpg')",
                     }}
                   >
-                    {renderCampo(["P"])}
-                    {renderCampo(["D"])}
-                    {renderCampo(["C"])}
-                    {renderCampo(["A"])}
+                    {renderCampo(['P'])}
+                    {renderCampo(['D'])}
+                    {renderCampo(['C'])}
+                    {renderCampo(['A'])}
                   </Box>
                 </AccordionDetails>
               </Accordion>
               <Snackbar
-                anchorOrigin={{ vertical: "top", horizontal: "center" }}
-                sx={{ height: "60%" }}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                sx={{ height: '30%' }}
                 open={openAlert}
                 autoHideDuration={3000}
                 onClose={() => setOpenAlert(false)}
@@ -684,34 +586,58 @@ function FormazioneXs() {
                   onClose={() => setOpenAlert(false)}
                   severity={alertSeverity}
                   variant="filled"
-                  sx={{ width: "100%" }}
+                  sx={{ width: '100%' }}
                 >
                   {alertMessage}
                 </Alert>
               </Snackbar>
             </Grid>
+            <Grid item xs={12} minHeight={100} justifyItems={'end'}>
+              <Button
+                type="button"
+                endIcon={<ResetTv />}
+                variant="contained"
+                onClick={() => {
+                  setModulo(moduloDefault)
+                  setCampo([])
+                  setPanca([])
+                  setRosa(
+                    sortPlayersByRoleDescThenCostoDesc(
+                      rosa.concat(campo, panca),
+                    ),
+                  )
+                }}
+                color="info"
+                size="medium"
+                sx={{ fontSize: '10px' }}
+              >
+                Reset
+              </Button>
+            </Grid>
           </>
         ) : (
-          <Typography variant="h3" color="error">
+          <Typography variant="h4" color="error">
             {message}
           </Typography>
         )}
       </Grid>
 
       <Modal
-        title={"Statistica giocatore"}
+        title={'Statistica giocatore'}
         open={openModalCalendario}
         onClose={handleModalClose}
-        width={"98%"}
-        height={"98%"}
+        width={'98%'}
+        height={'98%'}
       >
         <Divider />
-        <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
-          <Giocatore idGiocatore={idGiocatoreStat!} />
+        <Box sx={{ mt: 1, gap: '0px', flexWrap: 'wrap' }}>
+          {idGiocatoreStat !== undefined && (
+            <Giocatore idGiocatore={idGiocatoreStat} />
+          )}
         </Box>
       </Modal>
     </>
-  );
+  )
 }
 
-export default FormazioneXs;
+export default FormazioneXs

@@ -1,36 +1,43 @@
-import React from "react";
+import React from 'react'
 import {
   Card,
   CardHeader,
   CardContent,
   Typography,
-  Stack,
   Divider,
   Paper,
   Tooltip,
-  IconButton,
-} from "@mui/material";
-import { type GiornataType } from "~/types/common";
-import { Ballot, Gavel, SportsSoccer } from "@mui/icons-material";
-import { formatDateFromIso } from "~/utils/dateUtils";
-import Link from "next/link";
+  Avatar,
+  Grid,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material'
+import { Gavel } from '@mui/icons-material'
+import { formatDateFromIso } from '~/utils/dateUtils'
+import { z } from 'zod'
+import { giornataSchema } from '~/server/api/routers/common'
 
 interface GiornataCardProps {
-  prefixTitle: string;
-  giornata: GiornataType[];
-  maxWidth: number | string;
+  prefixTitle: string
+  giornata: z.infer<typeof giornataSchema>[]
+  maxWidth: number | string
+  withAvatar: boolean
 }
 
 export default function CardPartite({
   prefixTitle,
   giornata,
   maxWidth,
+  withAvatar,
 }: GiornataCardProps) {
+  const theme = useTheme()
+  const isXs = useMediaQuery(theme.breakpoints.down('md'))
+
   return (
     <>
       {giornata.map((g) => (
         <Paper
-          elevation={3}
+          elevation={0}
           key={`card_${g.idCalendario}`}
           sx={{ maxWidth: maxWidth }}
         >
@@ -39,109 +46,117 @@ export default function CardPartite({
               title={`${prefixTitle} ${g?.Title}`}
               subheader={`${g.SubTitle}: ${formatDateFromIso(
                 g.data,
-                "dd/MM/yyyy HH:mm"
+                'DD/MM HH:mm',
               )}`}
-              titleTypographyProps={{ variant: "h5" }}
-              subheaderTypographyProps={{ variant: "h6" }}
+              titleTypographyProps={{ variant: 'h5' }}
+              subheaderTypographyProps={{ variant: 'h6' }}
             />
             <CardContent
-              sx={{ paddingBottom: "3px", paddingTop: "3px", m: "4px" }}
+              sx={{ paddingBottom: '3px', paddingTop: '3px', m: '4px' }}
               key={`card_content_${g.idCalendario}`}
             >
               {g.partite.length > 0 ? (
                 g.partite.map((partita) => (
-                  <span key={`span_${partita.idPartita}`}>
-                    <Stack
-                      direction="row"
+                  <a
+                    href={
+                      g.isGiocata
+                        ? `/tabellini?idPartita=${partita.idPartita}&idCalendario=${g.idCalendario}`
+                        : `/formazioni?idPartita=${partita.idPartita}&idCalendario=${g.idCalendario}`
+                    }
+                    key={`grid_${partita.idPartita}`}
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <Grid
+                      container
                       spacing={0}
-                      minHeight={40}
-                      justifyContent="space-between"
-                      key={`infopartita_${partita.idPartita}`}
+                      padding={1}
+                      key={`grid_${partita.idPartita}`}
                     >
-                      <Typography
-                        variant="body2"
-                        component="div"
-                        color="text.secondary"
-                        key={`typography_${partita.idPartita}`}
+                      {withAvatar && (
+                        <Grid item xs={!isXs ? 1 : 2} alignSelf={'center'}>
+                          <Avatar
+                            alt={partita.squadraHome ?? ''}
+                            src={partita.fotoHome ?? ''}
+                            variant="rounded"
+                          ></Avatar>
+                        </Grid>
+                      )}
+                      <Grid
+                        item
+                        xs={withAvatar ? (!isXs ? 5 : 4) : 6}
+                        alignSelf={'center'}
                       >
-                        {partita.squadraHome}{" "}
-                        {partita.multaHome ? (
-                          <Tooltip title="Multa">
-                            <Gavel color="error" fontSize="small" />
-                          </Tooltip>
-                        ) : (
-                          ""
-                        )}{" "}
-                        - {partita.squadraAway}{" "}
-                        {partita.multaAway ? (
-                          <Tooltip title="Multa">
-                            <Gavel color="error" />
-                          </Tooltip>
-                        ) : (
-                          ""
-                        )}
-                      </Typography>
-                      <Stack
-                        direction="row"
-                        spacing={0}
-                        justifyContent="flex-end"
-                        key={`stack2_${partita.idPartita}`}
-                      >
-                        <Typography
-                          variant="body2"
-                          component="div"
-                          color="text.secondary"
-                          key={`typography2_${partita.idPartita}`}
-                        >
-                          {partita.golHome} - {partita.golAway}
+                        <Typography variant="h6">
+                          {partita.squadraHome}
+                          {partita.multaHome ?? (
+                            <Tooltip title="Multa">
+                              <Gavel color="error" fontSize="small" />
+                            </Tooltip>
+                          )}
                         </Typography>
-                        {g.isGiocata && (
-                          <Tooltip title="Tabellino voti" placement="top-start">
-                            <Link
-                              href={`/tabellini?idPartita=${partita.idPartita}&idCalendario=${g.idCalendario}`}
-                              passHref
-                            >
-                              <Ballot color="primary" fontSize="medium" />
-                            </Link>
-                          </Tooltip>
-                        )}
-                        {!g.isGiocata && (
-                          <Tooltip
-                            title="Visualizza Formazioni"
-                            placement="top-start"
-                          >
-                            <Link
-                              href={`/formazioni?idPartita=${partita.idPartita}&idCalendario=${g.idCalendario}`}
-                              passHref
-                            >
-                              <IconButton sx={{ height: "24px" }}>
-                                <SportsSoccer
-                                  color="primary"
-                                  fontSize="medium"
-                                />
-                              </IconButton>
-                            </Link>
-                          </Tooltip>
-                        )}
-                      </Stack>
-                    </Stack>
-                    <Divider></Divider>
-                  </span>
+                        <Typography variant="h5">
+                          {partita.golHome ?? '-'}
+                        </Typography>
+                      </Grid>
+                      <Grid
+                        item
+                        xs={withAvatar ? (!isXs ? 5 : 4) : 6}
+                        alignSelf={'center'}
+                        textAlign={'right'}
+                        paddingRight={2}
+                      >
+                        <Typography variant="h6">
+                          {partita.squadraAway}
+                          {partita.multaAway ?? (
+                            <Tooltip title="Multa">
+                              <Gavel color="error" fontSize="small" />
+                            </Tooltip>
+                          )}
+                        </Typography>
+                        <Typography variant="h5">
+                          {partita.golAway ?? '-'}
+                        </Typography>
+                      </Grid>
+                      {withAvatar && (
+                        <Grid
+                          item
+                          xs={!isXs ? 1 : 2}
+                          alignSelf={'center'}
+                          textAlign={'right'}
+                          alignContent={'flex-end'}
+                          alignItems={'flex-end'}
+                        >
+                          <Avatar
+                            alt={partita.squadraAway ?? ''}
+                            src={partita.fotoAway ?? ''}
+                            variant="rounded"
+                          ></Avatar>
+                        </Grid>
+                      )}
+                      <Grid item xs={12}>
+                        <Divider />
+                      </Grid>
+                    </Grid>
+                  </a>
                 ))
               ) : (
-                <Typography
-                  variant="body2"
-                  component="div"
-                  color="text.secondary"
-                  key={`CardPartiteEmpty_${g.idCalendario}`}
-                >
-                  Nessuna partita in programma
-                </Typography>
+                <Grid container spacing={0} key={`grid_0`}>
+                  <Grid item xs={12}>
+                    <Typography
+                      variant="body2"
+                      component="div"
+                      color="text.secondary"
+                      key={`CardPartiteEmpty_${g.idCalendario}`}
+                    >
+                      Nessuna partita in programma
+                    </Typography>
+                  </Grid>
+                </Grid>
               )}
             </CardContent>
           </Card>
         </Paper>
       ))}
     </>
-  );
+  )
 }

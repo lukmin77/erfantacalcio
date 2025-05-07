@@ -1,281 +1,303 @@
-"use client";
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+'use client'
 import {
   Box,
-  CircularProgress,
   Divider,
   FormControlLabel,
   Grid,
   Switch,
-  Tooltip,
   Typography,
-  Zoom,
   useMediaQuery,
-} from "@mui/material";
-import { useEffect, useState } from "react";
-import { api } from "~/utils/api";
-import { useTheme } from "@mui/material/styles";
-import { type iGiocatoreStats } from "~/types/giocatori";
+} from '@mui/material'
+import { useEffect, useState } from 'react'
+import { api } from '~/utils/api'
+import { useTheme } from '@mui/material/styles'
 import AutocompleteTextbox, {
   type iElements,
-} from "~/components/autocomplete/AutocompleteGiocatore";
-import DataTable, {
-  type ActionOptions,
-  type Column,
-  type Rows,
-} from "~/components/tables/datatable";
-import { type Ruoli } from "~/types/common";
-import { getRuoloEsteso } from "~/utils/helper";
-import { BarChartOutlined } from "@mui/icons-material";
-import Modal from "../modal/Modal";
-import Giocatore from "./Giocatore";
+} from '~/components/autocomplete/AutocompleteGiocatore'
+import Image from 'next/image'
+import { type Ruoli } from '~/types/common'
+import { getRuoloEsteso } from '~/utils/helper'
+import { BarChartOutlined } from '@mui/icons-material'
+import Modal from '../modal/Modal'
+import Giocatore from './Giocatore'
+import {
+  DataGrid,
+  GridActionsCellItem,
+  type GridColDef,
+} from '@mui/x-data-grid'
 
 function Giocatori() {
-  const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down("md"));
-  const [selectedGiocatoreId, setSelectedGiocatoreId] = useState<number>();
-  const [openModalCalendario, setOpenModalCalendario] = useState(false);
+  const theme = useTheme()
+  const isXs = useMediaQuery(theme.breakpoints.down('md'))
+
+  const [selectedGiocatoreId, setSelectedGiocatoreId] = useState<number>()
+  const [openModalCalendario, setOpenModalCalendario] = useState(false)
   const giocatoriList = api.giocatori.listAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-  });
-  const [ruolo, setRuolo] = useState<Ruoli>("C");
+  })
+  const [ruolo, setRuolo] = useState<Ruoli>('C')
   const giocatoriStats = api.giocatori.listStatistiche.useQuery(
     { ruolo: ruolo },
-    { refetchOnWindowFocus: false, refetchOnReconnect: false }
-  );
-  const [giocatori, setGiocatori] = useState<iElements[]>([]);
+    { refetchOnWindowFocus: false, refetchOnReconnect: false },
+  )
+  const [giocatori, setGiocatori] = useState<iElements[]>([])
 
   useEffect(() => {
     if (giocatoriList.data) {
-      setGiocatori(giocatoriList.data);
+      setGiocatori(giocatoriList.data)
     }
-  }, [giocatoriList.data]);
+  }, [giocatoriList.data])
 
   const handleGiocatoreSelected = async (idGiocatore: number | undefined) => {
-    setSelectedGiocatoreId(idGiocatore);
-    setOpenModalCalendario(true);
-  };
+    setSelectedGiocatoreId(idGiocatore)
+    setOpenModalCalendario(true)
+  }
 
   const handleModalClose = () => {
-    setOpenModalCalendario(false);
-  };
+    setOpenModalCalendario(false)
+  }
 
-  // const handleStatGiocatore = (idGiocatore: number) => {
-  //   setIdGiocatore(idGiocatore);
-  //   setOpenModalCalendario(true);
-  // };
-
-  const columns: Column[] = [
+  const columns: GridColDef[] = [
+    { field: 'id', hideable: true },
     {
-      key: "idgiocatore",
-      width: "5%",
-      type: "number",
-      align: "left",
-      visible: false,
+      field: 'maglia',
+      type: 'string',
+      align: 'left',
+      renderCell: (params) => (
+        <Image
+          src={params.row?.maglia as string}
+          width={30}
+          height={26}
+          alt={params.row?.squadraSerieA as string}
+          title={params.row?.squadraSerieA as string}
+        />
+      ),
+      renderHeader: () => '',
+      width: 30,
     },
     {
-      key: "maglia",
-      type: "image",
-      align: "left",
-      header: " ",
-      width: "5%",
-      imageProps: {
-        imageTooltip: "squadraSerieA",
-        imageTooltipType: "dynamic",
-        imageWidth: 26,
-        imageHeight: 22,
-      },
-    },
-    {
-      key: "nome",
-      type: "string",
-      align: "left",
-      header: "Nome",
+      field: 'nome',
+      type: 'string',
+      align: 'left',
+      renderHeader: () => <strong>Nome</strong>,
+      flex: isXs ? 0 : 1,
       sortable: true,
     },
     {
-      key: "squadra",
-      type: "string",
-      align: "left",
-      header: "Squadra",
-      sortable: true,
-    },
-    { key: "media", type: "number", header: "Media", sortable: true },
-    {
-      key: "golfatti",
-      type: "number",
-      header: "Gol",
-      visible: ruolo === "P" ? false : true,
+      field: 'squadra',
+      type: 'string',
+      align: 'left',
+      renderHeader: () => <strong>Squadra</strong>,
+      flex: isXs ? 0 : 1,
       sortable: true,
     },
     {
-      key: "golsubiti",
-      type: "number",
-      header: "Gol",
-      visible: ruolo === "P" ? true : false,
+      field: 'media',
+      type: 'number',
+      align: 'right',
+      renderHeader: () => <strong>Media</strong>,
+      width: isXs ? 90 : 100,
       sortable: true,
     },
-    { key: "assist", type: "number", header: "Assist", sortable: true },
-    { key: "giocate", type: "number", header: "Giocate", sortable: true },
     {
-      key: "",
-      width: "5%",
-      type: "action",
-      align: "right",
-      header: "Statistica",
+      field: 'golfatti',
+      type: 'number',
+      align: 'right',
+      renderHeader: () => <strong>Gol+</strong>,
+      renderCell: (params) =>
+        params.row?.ruolo !== 'P' ? params.row?.golfatti : '',
+      width: isXs ? 90 : 100,
+      sortable: true,
     },
-  ];
-
-  const actionView = (idGiocatore: string) => {
-    return (
-      <div>
-        <Tooltip
-          title={"Vedi statistica"}
-          onClick={() => handleGiocatoreSelected(parseInt(idGiocatore))}
-          placement="left"
-        >
-          <BarChartOutlined color="success" />
-        </Tooltip>
-      </div>
-    );
-  };
-
-  const actionOptions: ActionOptions[] = [
     {
-      keyFields: ["idgiocatore"],
-      component: actionView,
+      field: 'golsubiti',
+      type: 'number',
+      align: 'right',
+      renderHeader: () => <strong>Gol-</strong>,
+      renderCell: (params) =>
+        params.row?.ruolo === 'P' ? params.row?.golsubiti : '',
+      width: isXs ? 90 : 100,
+      sortable: true,
     },
-  ];
+    {
+      field: 'assist',
+      type: 'number',
+      align: 'right',
+      renderHeader: () => <strong>Assist</strong>,
+      width: isXs ? 90 : 100,
+      sortable: true,
+    },
+    {
+      field: 'giocate',
+      type: 'number',
+      align: 'right',
+      renderHeader: () => <strong>Giocate</strong>,
+      width: 100,
+      sortable: true,
+    },
+    {
+      field: 'actions',
+      type: 'actions',
+      getActions: (params) => [
+        <GridActionsCellItem
+          key={params.id}
+          icon={<BarChartOutlined color="success" />}
+          label="Vedi giocatore"
+          onClick={() => handleGiocatoreSelected(params.id as number)}
+        />,
+      ],
+      width: isXs ? 90 : 100,
+    },
+  ]
 
-  const mapStatsToRows = (
-    stats: iGiocatoreStats[] | undefined
-  ): Rows[] | undefined => {
-    if (!stats) {
-      return undefined;
-    }
+  const pageSize = isXs ? 10 : 15
 
-    return stats.map((stat) => ({
-      media: stat.media,
-      mediabonus: stat.mediabonus,
-      golfatti: stat.golfatti,
-      golsubiti: stat.golsubiti,
-      assist: stat.assist,
-      ammonizioni: stat.ammonizioni,
-      espulsioni: stat.espulsioni,
-      giocate: stat.giocate,
-      ruolo: stat.ruolo,
-      nome: stat.nome,
-      nomefantagazzetta: stat.nomefantagazzetta,
-      idgiocatore: stat.idgiocatore,
-      maglia: `/images/maglie/${stat.maglia}`,
-      squadraSerieA: stat.squadraSerieA,
-      squadra: stat.squadra,
-      idSquadra: stat.idSquadra,
-    }));
-  };
+  const skeletonRows = Array.from({ length: pageSize }, (_, index) => ({
+    id: `skeleton-${index}`,
+  }))
 
   return (
     <>
       <Grid container spacing={1} paddingTop={2} paddingBottom={2}>
-        {giocatoriList.isLoading || giocatoriStats.isLoading ? (
+        <Grid item xs={12}>
+          <Typography variant="h4">Statistiche Giocatori</Typography>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <FormControlLabel
+            control={
+              <Switch
+                color="warning"
+                onChange={() => setRuolo('P')}
+                checked={ruolo === 'P'}
+              />
+            }
+            label={isXs ? 'P' : getRuoloEsteso('P', true)}
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                color="warning"
+                onChange={() => setRuolo('D')}
+                checked={ruolo === 'D'}
+              />
+            }
+            label={isXs ? 'D' : getRuoloEsteso('D', true)}
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                color="warning"
+                onChange={() => setRuolo('C')}
+                checked={ruolo === 'C'}
+              />
+            }
+            label={isXs ? 'C' : getRuoloEsteso('C', true)}
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                color="warning"
+                onChange={() => setRuolo('A')}
+                checked={ruolo === 'A'}
+              />
+            }
+            label={isXs ? 'A' : getRuoloEsteso('A', true)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <AutocompleteTextbox
+            onItemSelected={handleGiocatoreSelected}
+            items={giocatori ?? []}
+          />
+        </Grid>
+        <Grid item xs={12} sx={{ minHeight: 500 }}>
+          <Typography variant="h5">
+            Top {getRuoloEsteso(ruolo, true)}
+          </Typography>
           <Box
-            sx={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
+            sx={{ width: '100%', overflowX: 'auto', contain: 'inline-size' }}
           >
-            <CircularProgress color="warning" />
+            <DataGrid
+              columnHeaderHeight={45}
+              rowHeight={40}
+              loading={giocatoriStats.isLoading}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: pageSize,
+                  },
+                },
+                filter: undefined,
+                density: 'comfortable',
+              }}
+              slotProps={{
+                loadingOverlay: {
+                  variant: 'skeleton',
+                },
+              }}
+              columnVisibilityModel={{
+                id: false,
+                golfatti: ruolo !== 'P',
+                golsubiti: ruolo === 'P',
+              }}
+              checkboxSelection={false}
+              disableColumnFilter={true}
+              disableColumnMenu={true}
+              disableColumnSelector={true}
+              disableColumnSorting={false}
+              disableColumnResize={true}
+              hideFooter={false}
+              hideFooterPagination={false}
+              pageSizeOptions={[5, 10, 20]}
+              paginationMode="client"
+              pagination={true}
+              hideFooterSelectedRowCount={true}
+              columns={columns}
+              rows={
+                giocatoriStats.isLoading ? skeletonRows : giocatoriStats.data
+              }
+              disableRowSelectionOnClick={true}
+              sx={{
+                backgroundColor: '#fff',
+                '& .MuiDataGrid-columnHeader': {
+                  color: theme.palette.primary.main,
+                  backgroundColor: theme.palette.secondary.light,
+                },
+                overflowX: 'auto',
+                '& .MuiDataGrid-virtualScroller': {
+                  overflowX: 'auto',
+                },
+                minWidth: '100%',
+                '& .MuiDataGrid-viewport': {
+                  overflowX: 'auto !important',
+                },
+              }}
+            />
           </Box>
-        ) : (
-          <>
-            <Grid item xs={12}>
-              <Typography variant="h4">Statistiche Giocatori</Typography>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="info"
-                    onChange={() => setRuolo("P")}
-                    checked={ruolo === "P"}
-                  />
-                }
-                label={isXs ? "P" : getRuoloEsteso("P", true)}
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="warning"
-                    onChange={() => setRuolo("D")}
-                    checked={ruolo === "D"}
-                  />
-                }
-                label={isXs ? "D" : getRuoloEsteso("D", true)}
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="success"
-                    onChange={() => setRuolo("C")}
-                    checked={ruolo === "C"}
-                  />
-                }
-                label={isXs ? "C" : getRuoloEsteso("C", true)}
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="error"
-                    onChange={() => setRuolo("A")}
-                    checked={ruolo === "A"}
-                  />
-                }
-                label={isXs ? "A" : getRuoloEsteso("A", true)}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <AutocompleteTextbox
-                onItemSelected={handleGiocatoreSelected}
-                items={giocatori ?? []}
-              />
-            </Grid>
-            <Zoom in={true}>
-              <Grid item xs={12}>
-                <DataTable
-                  title={`Top ${getRuoloEsteso(ruolo, true)}`}
-                  pagination={false}
-                  messageWhenEmptyList="Nessun giocatore presente"
-                  data={mapStatsToRows(giocatoriStats.data)}
-                  columns={columns}
-                  actionOptions={actionOptions}
-                  rowsXPage={15}
-                />
-                <br></br>
-                <br></br>
-                <br></br>
-              </Grid>
-            </Zoom>
-          </>
-        )}
+        </Grid>
         <Grid item xs={12} minHeight={30}></Grid>
       </Grid>
 
       <Modal
-        title={"Statistica giocatore"}
+        title={'Statistica giocatore'}
         open={openModalCalendario}
         onClose={handleModalClose}
-        width={isXs ? "98%" : "1266px"}
-        height={isXs ? "98%" : ""}
+        width={isXs ? '98%' : '1266px'}
+        height={isXs ? '98%' : ''}
       >
         <Divider />
-        <Box sx={{ mt: 1, gap: "0px", flexWrap: "wrap" }}>
-          <Giocatore idGiocatore={selectedGiocatoreId!} />
+        <Box sx={{ mt: 1, gap: '0px', flexWrap: 'wrap' }}>
+          {selectedGiocatoreId !== undefined && (
+            <Giocatore idGiocatore={selectedGiocatoreId} />
+          )}
         </Box>
       </Modal>
     </>
-  );
+  )
 }
 
-export default Giocatori;
+export default Giocatori
