@@ -4,6 +4,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import {
   AddAPhoto,
+  AssignmentInd,
   Badge,
   Ballot,
   Calculate,
@@ -85,6 +86,12 @@ export function guestListItems(isXs: boolean, isAuthenticated: boolean) {
             `/formazione?isXs=${isXs}`,
             'Inserisci formazione',
             <RecentActors color="action" />,
+          ),
+          listItem(
+            'guest_profilo',
+            `/maglia`,
+            'Cambia maglia',
+            <AssignmentInd color="info" />,
           ),
           listItem(
             'guest_profilo',
