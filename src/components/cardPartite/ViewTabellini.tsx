@@ -10,6 +10,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  CardMedia,
   Divider,
   Grid,
   MenuItem,
@@ -28,6 +29,7 @@ import Modal from '../modal/Modal'
 import { Configurazione } from '~/config'
 import { useSearchParams } from 'next/navigation'
 import Giocatore from '../giocatori/Giocatore'
+import { JerseySVG, ShirtTemplate, magliaType } from '../selectColors'
 
 interface Tabellino {
   dataOra: Date
@@ -114,6 +116,7 @@ function ViewTabellini() {
     tabellino?: Tabellino,
     squadra?: string | null,
     foto?: string | null,
+    maglia?: magliaType | null,
     multa?: boolean,
   ) => {
     const handleStatGiocatore = (idGiocatore: number) => {
@@ -151,6 +154,19 @@ function ViewTabellini() {
           />
           <CardContent>
             <Grid container spacing={0}>
+              {maglia && (
+                  <Grid item xs={12}  justifyContent={'center'} display={'flex'}>
+                    <JerseySVG
+                      template={maglia.selectedTemplate as ShirtTemplate}
+                      mainColor={maglia.mainColor}
+                      secondaryColor={maglia.secondaryColor}
+                      thirdColor={maglia.thirdColor}
+                      textColor={maglia.textColor}
+                      size={100}
+                      number={maglia.shirtNumber}
+                    />
+                  </Grid>
+                )}
               <Grid item xs={12} sm={8}>
                 <Typography variant={'h6'} sx={{ m: '5px' }}>
                   <b>Titolari</b>
@@ -504,6 +520,7 @@ function ViewTabellini() {
                 tabellinoHome,
                 infoPartita?.squadraHome,
                 infoPartita?.fotoHome,
+                JSON.parse(infoPartita?.magliaHome ?? '{}'),
                 infoPartita?.multaHome,
               )}
             </Grid>
@@ -512,6 +529,7 @@ function ViewTabellini() {
                 tabellinoAway,
                 infoPartita?.squadraAway,
                 infoPartita?.fotoAway,
+                JSON.parse(infoPartita?.magliaAway ?? '{}'),
                 infoPartita?.multaAway,
               )}
             </Grid>
