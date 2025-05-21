@@ -167,10 +167,10 @@ export const partitaRouter = createTRPCRouter({
                 select: {
                   idPartita: true,
                   Utenti_Partite_idSquadraHToUtenti: {
-                    select: { nomeSquadra: true, foto: true },
+                    select: { nomeSquadra: true, foto: true, maglia: true  },
                   },
                   Utenti_Partite_idSquadraAToUtenti: {
-                    select: { nomeSquadra: true, foto: true },
+                    select: { nomeSquadra: true, foto: true, maglia: true  },
                   },
                 },
                 where: {
