@@ -85,8 +85,8 @@ export const JerseySVG = ({
         <svg viewBox="0 0 200 200" width={size} height={size}>
           <g stroke="black" strokeWidth={2}>
             {/* maniche senza arrotondamenti */}
-            <rect x="20" y="40" width="30" height="40" fill={mainColor} />
-            <rect x="150" y="40" width="30" height="40" fill={mainColor} />
+            <rect x="20" y="40" width="30" height="40" fill={thirdColor} />
+            <rect x="150" y="40" width="30" height="40" fill={thirdColor} />
             {/* corpo con arrotondamento solo in basso */}
             <path
               d="M50 40 H150 V150 Q150 160 140 160 H60 Q50 160 50 150 Z"
@@ -111,8 +111,8 @@ export const JerseySVG = ({
       return (
         <svg viewBox="0 0 200 200" width={size} height={size}>
           <g stroke="black" strokeWidth={2}>
-            <rect x="20" y="40" width="30" height="40" fill={mainColor} />
-            <rect x="150" y="40" width="30" height="40" fill={mainColor} />
+            <rect x="20" y="40" width="30" height="40" fill={thirdColor} />
+            <rect x="150" y="40" width="30" height="40" fill={thirdColor} />
             <path
               d="M50 40 H150 V150 Q150 160 140 160 H60 Q50 160 50 150 Z"
               fill={mainColor}
@@ -146,8 +146,8 @@ export const JerseySVG = ({
       return (
         <svg viewBox="0 0 200 200" width={size} height={size}>
           <g stroke="black" strokeWidth={2}>
-            <rect x="20" y="40" width="30" height="40" fill={mainColor} />
-            <rect x="150" y="40" width="30" height="40" fill={mainColor} />
+            <rect x="20" y="40" width="30" height="40" fill={thirdColor} />
+            <rect x="150" y="40" width="30" height="40" fill={thirdColor} />
             <path
               d="M50 40 H150 V150 Q150 160 140 160 H60 Q50 160 50 150 Z"
               fill={mainColor}
@@ -205,8 +205,8 @@ export const JerseySVG = ({
         <svg viewBox="0 0 200 200" width={size} height={size}>
           <g stroke="black" strokeWidth={2}>
             {/* maniche bianche o secondarie */}
-            <rect x="20" y="40" width="30" height="40" fill={secondaryColor} />
-            <rect x="150" y="40" width="30" height="40" fill={secondaryColor} />
+            <rect x="20" y="40" width="30" height="40" fill={thirdColor} />
+            <rect x="150" y="40" width="30" height="40" fill={thirdColor} />
 
             {/* corpo con due fasce laterali bianche e centrale rossa */}
             {/* sinistra - bianca */}
@@ -243,8 +243,8 @@ export const JerseySVG = ({
         <svg viewBox="0 0 200 200" width={size} height={size}>
           <g stroke="black" strokeWidth={2}>
             {/* Maniche con mainColor */}
-            <rect x="20" y="40" width="30" height="40" fill={mainColor} />
-            <rect x="150" y="40" width="30" height="40" fill={mainColor} />
+            <rect x="20" y="40" width="30" height="40" fill={thirdColor} />
+            <rect x="150" y="40" width="30" height="40" fill={thirdColor} />
 
             {/* Corpo con arrotondamento solo in basso */}
             <path
@@ -282,8 +282,8 @@ export const JerseySVG = ({
         <svg viewBox="0 0 200 200" width={size} height={size}>
           <g stroke="black" strokeWidth={2}>
             {/* maniche senza arrotondamenti */}
-            <rect x="20" y="40" width="30" height="40" fill={mainColor} />
-            <rect x="150" y="40" width="30" height="40" fill={mainColor} />
+            <rect x="20" y="40" width="30" height="40" fill={thirdColor} />
+            <rect x="150" y="40" width="30" height="40" fill={thirdColor} />
 
             {/* corpo con arrotondamento solo in basso */}
             <path
@@ -319,8 +319,8 @@ export const JerseySVG = ({
         <svg viewBox="0 0 200 200" width={size} height={size}>
           <g stroke="black" strokeWidth={2}>
             {/* maniche senza arrotondamenti */}
-            <rect x="20" y="40" width="30" height="40" fill={mainColor} />
-            <rect x="150" y="40" width="30" height="40" fill={mainColor} />
+            <rect x="20" y="40" width="30" height="40" fill={thirdColor} />
+            <rect x="150" y="40" width="30" height="40" fill={thirdColor} />
 
             {/* corpo con arrotondamento solo in basso */}
             <path
@@ -372,8 +372,8 @@ export const JerseySVG = ({
         <svg viewBox="0 0 200 200" width={size} height={size}>
           <g stroke="black" strokeWidth={2}>
             {/* maniche senza arrotondamenti */}
-            <rect x="20" y="40" width="30" height="40" fill={mainColor} />
-            <rect x="150" y="40" width="30" height="40" fill={mainColor} />
+            <rect x="20" y="40" width="30" height="40" fill={thirdColor} />
+            <rect x="150" y="40" width="30" height="40" fill={thirdColor} />
 
             {/* corpo con righe orizzontali */}
             <clipPath id="celticClip">
@@ -422,8 +422,8 @@ export const JerseySVG = ({
         <svg viewBox="0 0 200 200" width={size} height={size}>
           <g stroke="black" strokeWidth={2}>
             {/* maniche */}
-            <rect x="20" y="40" width="30" height="40" fill={mainColor} />
-            <rect x="150" y="40" width="30" height="40" fill={mainColor} />
+            <rect x="20" y="40" width="30" height="40" fill={thirdColor} />
+            <rect x="150" y="40" width="30" height="40" fill={thirdColor} />
 
             {/* corpo con righe orizzontali sottili tono su tono */}
             <clipPath id="romaClip">
@@ -475,8 +475,8 @@ export const JerseySVG = ({
         <svg viewBox="0 0 200 200" width={size} height={size}>
           <g stroke="black" strokeWidth={2}>
             {/* maniche */}
-            <rect x="20" y="40" width="30" height="40" fill={mainColor} />
-            <rect x="150" y="40" width="30" height="40" fill={mainColor} />
+            <rect x="20" y="40" width="30" height="40" fill={thirdColor} />
+            <rect x="150" y="40" width="30" height="40" fill={thirdColor} />
 
             {/* corpo con motivo a V */}
             <path
@@ -509,8 +509,8 @@ export const JerseySVG = ({
         <svg viewBox="0 0 200 200" width={size} height={size}>
           <g stroke="black" strokeWidth={2}>
             {/* maniche */}
-            <rect x="20" y="40" width="30" height="40" fill={mainColor} />
-            <rect x="150" y="40" width="30" height="40" fill={mainColor} />
+            <rect x="20" y="40" width="30" height="40" fill={thirdColor} />
+            <rect x="150" y="40" width="30" height="40" fill={thirdColor} />
 
             {/* corpo base */}
             <path
@@ -543,8 +543,8 @@ export const JerseySVG = ({
         <svg viewBox="0 0 200 200" width={size} height={size}>
           <g stroke="black" strokeWidth={2}>
             {/* maniche */}
-            <rect x="20" y="40" width="30" height="40" fill={mainColor} />
-            <rect x="150" y="40" width="30" height="40" fill={mainColor} />
+            <rect x="20" y="40" width="30" height="40" fill={thirdColor} />
+            <rect x="150" y="40" width="30" height="40" fill={thirdColor} />
 
             {/* corpo con zig-zag */}
             <path
@@ -592,8 +592,8 @@ export const JerseySVG = ({
         <svg viewBox="0 0 200 200" width={size} height={size}>
           <g stroke="black" strokeWidth={2}>
             {/* maniche */}
-            <rect x="20" y="40" width="30" height="40" fill={mainColor} />
-            <rect x="150" y="40" width="30" height="40" fill={mainColor} />
+            <rect x="20" y="40" width="30" height="40" fill={thirdColor} />
+            <rect x="150" y="40" width="30" height="40" fill={thirdColor} />
 
             {/* corpo base con arrotondamento in basso */}
             <path
@@ -628,8 +628,8 @@ export const JerseySVG = ({
         <svg viewBox="0 0 200 200" width={size} height={size}>
           <g stroke="black" strokeWidth={2}>
             {/* maniche */}
-            <rect x="20" y="40" width="30" height="40" fill={mainColor} />
-            <rect x="150" y="40" width="30" height="40" fill={mainColor} />
+            <rect x="20" y="40" width="30" height="40" fill={thirdColor} />
+            <rect x="150" y="40" width="30" height="40" fill={thirdColor} />
 
             {/* corpo base con arrotondamento in basso */}
             <path
@@ -684,8 +684,8 @@ export const JerseySVG = ({
           </defs>
           <g stroke="black" strokeWidth={2}>
             {/* maniche */}
-            <rect x="20" y="40" width="30" height="40" fill={mainColor} />
-            <rect x="150" y="40" width="30" height="40" fill={mainColor} />
+            <rect x="20" y="40" width="30" height="40" fill={thirdColor} />
+            <rect x="150" y="40" width="30" height="40" fill={thirdColor} />
             {/* corpo base */}
             <path
               d="M50 40 H150 V150 Q150 160 140 160 H60 Q50 160 50 150 Z"
@@ -733,8 +733,8 @@ export const JerseySVG = ({
           </defs>
           <g stroke="black" strokeWidth={2}>
             {/* maniche */}
-            <rect x="20" y="40" width="30" height="40" fill={mainColor} />
-            <rect x="150" y="40" width="30" height="40" fill={mainColor} />
+            <rect x="20" y="40" width="30" height="40" fill={thirdColor} />
+            <rect x="150" y="40" width="30" height="40" fill={thirdColor} />
             {/* corpo con arrotondamento in basso */}
             <path
               d="M50 40 H150 V150 Q150 160 140 160 H60 Q50 160 50 150 Z"
@@ -790,8 +790,8 @@ export const JerseySVG = ({
           </defs>
           <g stroke="black" strokeWidth={2}>
             {/* maniche */}
-            <rect x="20" y="40" width="30" height="40" fill={secondaryColor} />
-            <rect x="150" y="40" width="30" height="40" fill={secondaryColor} />
+            <rect x="20" y="40" width="30" height="40" fill={thirdColor} />
+            <rect x="150" y="40" width="30" height="40" fill={thirdColor} />
             {/* corpo con arrotondamento in basso */}
             <path
               d="M50 40 H150 V150 Q150 160 140 160 H60 Q50 160 50 150 Z"
@@ -847,8 +847,8 @@ export const JerseySVG = ({
           </defs>
           <g stroke="black" strokeWidth={2}>
             {/* maniche */}
-            <rect x="20" y="40" width="30" height="40" fill={secondaryColor} />
-            <rect x="150" y="40" width="30" height="40" fill={secondaryColor} />
+            <rect x="20" y="40" width="30" height="40" fill={thirdColor} />
+            <rect x="150" y="40" width="30" height="40" fill={thirdColor} />
             {/* corpo con arrotondamento in basso */}
             <path
               d="M50 40 H150 V150 Q150 160 140 160 H60 Q50 160 50 150 Z"
@@ -904,8 +904,8 @@ export const JerseySVG = ({
           </defs>
           <g stroke="black" strokeWidth={2}>
             {/* maniche */}
-            <rect x="20" y="40" width="30" height="40" fill={secondaryColor} />
-            <rect x="150" y="40" width="30" height="40" fill={mainColor} />
+            <rect x="20" y="40" width="30" height="40" fill={thirdColor} />
+            <rect x="150" y="40" width="30" height="40" fill={thirdColor} />
             {/* corpo con arrotondamento in basso */}
             <path
               d="M50 40 H150 V150 Q150 160 140 160 H60 Q50 160 50 150 Z"
@@ -959,8 +959,8 @@ export const JerseySVG = ({
           </defs>
           <g stroke="black" strokeWidth={2}>
             {/* maniche tutte nere (secondaryColor) */}
-            <rect x="20" y="40" width="30" height="40" fill={secondaryColor} />
-            <rect x="150" y="40" width="30" height="40" fill={secondaryColor} />
+            <rect x="20" y="40" width="30" height="40" fill={thirdColor} />
+            <rect x="150" y="40" width="30" height="40" fill={thirdColor} />
             {/* corpo con righe verticali larghe */}
             <path
               d="M50 40 H150 V150 Q150 160 140 160 H60 Q50 160 50 150 Z"
@@ -1011,8 +1011,8 @@ export const JerseySVG = ({
           </defs>
           <g stroke="black" strokeWidth={2}>
             {/* maniche bianche con bordo sfumato */}
-            <rect x="20" y="40" width="30" height="40" fill={secondaryColor} />
-            <rect x="150" y="40" width="30" height="40" fill={secondaryColor} />
+            <rect x="20" y="40" width="30" height="40" fill={thirdColor} />
+            <rect x="150" y="40" width="30" height="40" fill={thirdColor} />
             {/* corpo con fascia orizzontale sottile */}
             <rect
               x="50"
@@ -1162,7 +1162,7 @@ const JerseySelector = () => {
 
         <FormControl>
           <InputLabel shrink htmlFor="third-color">
-            3° Colore
+            Maniche
           </InputLabel>
           <OutlinedInput
             id="third-color"
@@ -1186,7 +1186,7 @@ const JerseySelector = () => {
       </Stack>
 
       <Typography variant="h6" gutterBottom>
-        Seleziona testo maglia
+        Seleziona numero maglia
       </Typography>
       <br></br>
       <Stack direction="row" spacing={4} sx={{ mb: 4 }}>
