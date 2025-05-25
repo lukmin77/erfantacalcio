@@ -22,7 +22,8 @@ import { useEffect, useState } from 'react'
 import Modal from '../modal/Modal'
 import { useSearchParams } from 'next/navigation'
 import Giocatore from '../giocatori/Giocatore'
-import { JerseySVG, magliaType, ShirtTemplate } from '../selectColors'
+import { magliaType, ShirtTemplate } from '../selectColors'
+import { ShirtSVG } from '../selectColors/shirtSVG'
 
 function ViewFormazioni() {
   const searchParams = useSearchParams()
@@ -72,9 +73,9 @@ function ViewFormazioni() {
 
   useEffect(() => {
       if (!formazioniList.isFetching && formazioniList.isSuccess && formazioniList.data) {
-        const mHome = JSON.parse(infoPartita?.magliaHome ?? '{}')
+        const mHome = JSON.parse(infoPartita?.magliaHome ?? '{}') as magliaType
         setMagliaHome(mHome)
-        const mAway = JSON.parse(infoPartita?.magliaAway ?? '{}')
+        const mAway = JSON.parse(infoPartita?.magliaAway ?? '{}') as magliaType
         setMagliaAway(mAway)
       }
     }, [formazioniList.data, formazioniList.isSuccess, formazioniList.isFetching])
@@ -144,7 +145,7 @@ function ViewFormazioni() {
                               justifyContent={'center'}
                               display={'flex'}
                             >
-                              <JerseySVG
+                              <ShirtSVG
                                 template={
                                   magliaHome.selectedTemplate as ShirtTemplate
                                 }
@@ -318,7 +319,7 @@ function ViewFormazioni() {
                               justifyContent={'center'}
                               display={'flex'}
                             >
-                              <JerseySVG
+                              <ShirtSVG
                                 template={
                                   magliaAway.selectedTemplate as ShirtTemplate
                                 }

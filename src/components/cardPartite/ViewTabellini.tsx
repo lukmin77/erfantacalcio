@@ -29,7 +29,8 @@ import Modal from '../modal/Modal'
 import { Configurazione } from '~/config'
 import { useSearchParams } from 'next/navigation'
 import Giocatore from '../giocatori/Giocatore'
-import { JerseySVG, ShirtTemplate, magliaType } from '../selectColors'
+import { ShirtTemplate, magliaType } from '../selectColors'
+import { ShirtSVG } from '../selectColors/shirtSVG'
 
 interface Tabellino {
   dataOra: Date
@@ -156,7 +157,7 @@ function ViewTabellini() {
             <Grid container spacing={0}>
               {maglia && (
                   <Grid item xs={12}  justifyContent={'center'} display={'flex'}>
-                    <JerseySVG
+                    <ShirtSVG
                       template={maglia.selectedTemplate as ShirtTemplate}
                       mainColor={maglia.mainColor}
                       secondaryColor={maglia.secondaryColor}
@@ -520,7 +521,7 @@ function ViewTabellini() {
                 tabellinoHome,
                 infoPartita?.squadraHome,
                 infoPartita?.fotoHome,
-                JSON.parse(infoPartita?.magliaHome ?? '{}'),
+                JSON.parse(infoPartita?.magliaHome ?? '{}') as magliaType,
                 infoPartita?.multaHome,
               )}
             </Grid>
@@ -529,7 +530,7 @@ function ViewTabellini() {
                 tabellinoAway,
                 infoPartita?.squadraAway,
                 infoPartita?.fotoAway,
-                JSON.parse(infoPartita?.magliaAway ?? '{}'),
+                JSON.parse(infoPartita?.magliaAway ?? '{}') as magliaType,
                 infoPartita?.multaAway,
               )}
             </Grid>
