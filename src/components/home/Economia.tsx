@@ -156,7 +156,7 @@ export default function Economia() {
               1° Classificato:{' '}
               {formatCurrency(
                 calcolaPercentuale(
-                  importoAnnuale + importoMercato + importoMulte,
+                  importoAnnuale + importoMercato + importoMulte - detrazioneSito,
                   55,
                 ),
               )}{' '}
@@ -164,7 +164,7 @@ export default function Economia() {
               2° Classificato:{' '}
               {formatCurrency(
                 calcolaPercentuale(
-                  importoAnnuale + importoMercato + importoMulte,
+                  importoAnnuale + importoMercato + importoMulte - detrazioneSito,
                   20,
                 ),
               )}{' '}
@@ -172,7 +172,7 @@ export default function Economia() {
               3° Classificato:{' '}
               {formatCurrency(
                 calcolaPercentuale(
-                  importoAnnuale + importoMercato + importoMulte,
+                  importoAnnuale + importoMercato + importoMulte - detrazioneSito,
                   10,
                 ),
               )}{' '}
@@ -180,7 +180,7 @@ export default function Economia() {
               Vincitore Champions:{' '}
               {formatCurrency(
                 calcolaPercentuale(
-                  importoAnnuale + importoMercato + importoMulte,
+                  importoAnnuale + importoMercato + importoMulte - detrazioneSito,
                   15,
                 ),
               )}{' '}
