@@ -700,6 +700,17 @@ async function getGiocatoreByID(id_pf: number) {
     })
 
     if (giocatore) {
+      if (id_pf) {
+        await prisma.giocatori.update({
+          where: {
+            idGiocatore: giocatore.idGiocatore,
+          },
+          data: {
+            id_pf: id_pf,
+          },
+        });
+      }
+
       return {
         idGiocatore: giocatore.idGiocatore,
         nome: giocatore.nome,
