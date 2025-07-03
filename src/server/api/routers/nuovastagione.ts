@@ -76,7 +76,7 @@ export const nuovastagioneRouter = createTRPCRouter({
           })
           await Promise.all(promises)
 
-          if (giocatoritrasferimenti.length <= takeNum) {
+          if (giocatoritrasferimenti.length < takeNum) {
             await updateFase(1)
             Logger.info(
               `Chiusura trasferimenti stagione ${Configurazione.stagione} completato`,
