@@ -29,7 +29,7 @@ model Calendario {
   hasDaRecuperare Boolean   @default(false)
   data            DateTime? @default(now()) @db.Timestamptz(3)
   girone          Int?      @db.SmallInt
-  dataFine        DateTime? @db.Timestamptz(3)
+  dataFine        DateTime?
   Tornei          Tornei    @relation(fields: [idTorneo], references: [idTorneo], onUpdate: NoAction, map: "FK_Calendario_Tornei")
   Partite         Partite[]
   Voti            Voti[]
@@ -70,10 +70,10 @@ model Formazioni {
 
 model Giocatori {
   idGiocatore       Int             @id(map: "PK_Giocatori") @unique(map: "IX_Giocatori_idGiocatore") @default(autoincrement())
-  id_pf             Int?
   ruolo             String          @db.VarChar(1)
   nome              String          @unique(map: "UNIQUE_GIOCATORI_NOME") @db.VarChar(50)
   nomeFantaGazzetta String?         @db.VarChar(500)
+  id_pf             Int?
   Trasferimenti     Trasferimenti[]
   Voti              Voti[]
 }
@@ -233,6 +233,7 @@ model Utenti {
   Secondo                            Int             @default(0) @db.SmallInt
   Terzo                              Int             @default(0) @db.SmallInt
   lockLevel                          Boolean         @default(false)
+  maglia                             String?         @db.VarChar(500)
   Classifiche                        Classifiche[]
   Formazioni                         Formazioni[]
   Partite_Partite_idSquadraHToUtenti Partite[]       @relation("Partite_idSquadraHToUtenti")
@@ -265,7 +266,7 @@ model Voti {
 }
 
 model FlowNewSeasosn {
-  id     Int       @id(map: "PK_FlowNewSeason") @unique(map: "IX_FlowSeason_id") @default(autoincrement())
+  id     Int       @id(map: "PK_FlowNewSeason") @default(autoincrement())
   idFase Int
   active Boolean   @default(false)
   data   DateTime? @default(now()) @db.Timestamptz(3)

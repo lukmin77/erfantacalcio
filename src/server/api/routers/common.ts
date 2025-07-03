@@ -26,11 +26,13 @@ export const giornataSchema = z.object({
       idHome: z.number().nullable(),
       squadraHome: z.string().nullable().optional(),
       fotoHome: z.string().nullable().optional(),
+      magliaHome: z.string().nullable().optional(),
       multaHome: z.boolean(),
       golHome: z.number().nullable(),
       idAway: z.number().nullable(),
       squadraAway: z.string().nullable().optional(),
       fotoAway: z.string().nullable().optional(),
+      magliaAway: z.string().nullable().optional(),
       multaAway: z.boolean(),
       golAway: z.number().nullable(),
       isFattoreHome: z.boolean(),
@@ -51,6 +53,7 @@ const torneiSchema = z.object({
 const utentePartitaSchema = z.object({
   nomeSquadra: z.string().nullable(),
   foto: z.string().nullable(),
+  maglia: z.string().nullable(),
 })
 
 export const partitaSchema = z.object({
@@ -264,10 +267,10 @@ export async function getProssimaGiornata(giornataSerieA: number) {
           golA: true,
           fattoreCasalingo: true,
           Utenti_Partite_idSquadraHToUtenti: {
-            select: { nomeSquadra: true, foto: true },
+            select: { nomeSquadra: true, foto: true, maglia: true },
           },
           Utenti_Partite_idSquadraAToUtenti: {
-            select: { nomeSquadra: true, foto: true },
+            select: { nomeSquadra: true, foto: true, maglia: true },
           },
         },
       },
@@ -456,11 +459,13 @@ export function mapPartite(partite: z.infer<typeof partitaSchema>[]) {
     idHome: p.idSquadraH,
     squadraHome: p.Utenti_Partite_idSquadraHToUtenti?.nomeSquadra,
     fotoHome: p.Utenti_Partite_idSquadraHToUtenti?.foto,
+    magliaHome: p.Utenti_Partite_idSquadraHToUtenti?.maglia,
     multaHome: p.hasMultaH,
     golHome: p.golH,
     idAway: p.idSquadraA,
     squadraAway: p.Utenti_Partite_idSquadraAToUtenti?.nomeSquadra,
     fotoAway: p.Utenti_Partite_idSquadraAToUtenti?.foto,
+    magliaAway: p.Utenti_Partite_idSquadraAToUtenti?.maglia,
     multaAway: p.hasMultaA,
     golAway: p.golA,
     isFattoreHome: p.fattoreCasalingo,
@@ -498,10 +503,10 @@ async function getCalendario(filter: CalendarioFilter) {
           golA: true,
           fattoreCasalingo: true,
           Utenti_Partite_idSquadraHToUtenti: {
-            select: { nomeSquadra: true, foto: true },
+            select: { nomeSquadra: true, foto: true, maglia: true },
           },
           Utenti_Partite_idSquadraAToUtenti: {
-            select: { nomeSquadra: true, foto: true },
+            select: { nomeSquadra: true, foto: true, maglia: true },
           },
         },
       },

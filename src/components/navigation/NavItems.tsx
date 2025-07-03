@@ -4,6 +4,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import {
   AddAPhoto,
+  AssignmentInd,
   Badge,
   Ballot,
   Calculate,
@@ -13,6 +14,7 @@ import {
   Grading,
   Group,
   HistoryEdu,
+  ListAlt,
   ManageAccounts,
   Portrait,
   RecentActors,
@@ -88,6 +90,12 @@ export function guestListItems(isXs: boolean, isAuthenticated: boolean) {
           ),
           listItem(
             'guest_profilo',
+            `/maglia`,
+            'Cambia maglia',
+            <AssignmentInd color="info" />,
+          ),
+          listItem(
+            'guest_profilo',
             '/foto',
             'Foto profilo',
             <Badge color="success" />,
@@ -111,6 +119,12 @@ export function guestListItems(isXs: boolean, isAuthenticated: boolean) {
       '/albo',
       "Albo d'oro",
       <HistoryEdu color="error" />,
+    ),
+    listItem(
+      'guest_profilo',
+      '/docs/rose_2024-2025.csv',
+      'Rose 2024-2025',
+      <ListAlt color="error" />,
     ),
     listItem(
       'guest_profilo',

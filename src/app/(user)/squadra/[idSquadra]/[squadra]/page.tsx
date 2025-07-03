@@ -1,6 +1,7 @@
 import { Grid } from '@mui/material'
 import { Suspense } from 'react'
 import Rosa from '~/components/squadra/Rosa'
+import StatisticaSquadra from '~/components/squadra/Squadra';
 
 export default function SquadraPage({
   params,
@@ -15,7 +16,12 @@ export default function SquadraPage({
 
   return (
     <Grid container justifyContent="center" spacing={0}>
-      <Grid item xs={12}>
+      <Grid item xs={12} md={2}>
+        <Suspense fallback={<div>Caricamento...</div>}>
+          <StatisticaSquadra idSquadra={idSquadra} />
+        </Suspense>
+      </Grid>
+      <Grid item xs={12} md={10}>
         <Suspense fallback={<div>Caricamento...</div>}>
           <Rosa
             idSquadra={idSquadra}

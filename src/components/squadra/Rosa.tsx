@@ -94,10 +94,10 @@ function Rosa({ idSquadra, squadra }: RosaProps) {
               flexWrap: 'wrap',
             }}
           >
-            <Card sx={{ marginBottom: '1px' }}>
+            <Card sx={{ marginBottom: '1px', maxWidth: '180px' }}>
               <CardMedia
                 component="img"
-                sx={{ cursor: 'pointer', width: '120px' }}
+                sx={{ cursor: 'pointer', width: '60' }}
                 image={giocatore.urlCampioncino}
                 alt={giocatore.nome}
                 onClick={() => handleGiocatoreSelected(giocatore.idGiocatore)}
@@ -126,6 +126,18 @@ function Rosa({ idSquadra, squadra }: RosaProps) {
                   component="div"
                 >
                   {giocatore.ruoloEsteso}
+                </Typography>
+                <Typography
+                  gutterBottom
+                  variant="body1"
+                  sx={{
+                    fontSize: '10px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                  }}
+                  component="div"
+                >
+                  {giocatore.costo.toFixed(0)} M€
                 </Typography>
               </CardContent>
             </Card>
@@ -162,7 +174,7 @@ function Rosa({ idSquadra, squadra }: RosaProps) {
     <>
       <Grid container spacing={0}>
         <Grid item xs={12}>
-          <Typography variant="h3">Rosa {squadra}</Typography>
+          <Typography variant="h4">Rosa</Typography>
         </Grid>
         {rosaList.isLoading ? (
           <Box

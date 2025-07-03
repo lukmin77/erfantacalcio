@@ -22,6 +22,8 @@ import { useEffect, useState } from 'react'
 import Modal from '../modal/Modal'
 import { useSearchParams } from 'next/navigation'
 import Giocatore from '../giocatori/Giocatore'
+import { magliaType, ShirtTemplate } from '../selectColors'
+import { ShirtSVG } from '../selectColors/shirtSVG'
 
 function ViewFormazioni() {
   const searchParams = useSearchParams()
@@ -51,7 +53,9 @@ function ViewFormazioni() {
   const isXs = useMediaQuery(theme.breakpoints.down('md'))
   const [idGiocatore, setIdGiocatore] = useState<number | undefined>()
   const [openModalCalendario, setOpenModalCalendario] = useState(false)
-
+  const [magliaHome, setMagliaHome] = useState<magliaType | undefined>(undefined)
+  const [magliaAway, setMagliaAway] = useState<magliaType | undefined>(undefined)
+  
   const formazioniList = api.partita.getFormazioni.useQuery(
     { idPartita: partita! },
     {
@@ -66,6 +70,15 @@ function ViewFormazioni() {
   const altrePartite = formazioniList.data?.AltrePartite
   const formazioneHome = formazioniList.data?.FormazioneHome
   const formazioneAway = formazioniList.data?.FormazioneAway
+
+  useEffect(() => {
+      if (!formazioniList.isFetching && formazioniList.isSuccess && formazioniList.data) {
+        const mHome = JSON.parse(infoPartita?.magliaHome ?? '{}') as magliaType
+        setMagliaHome(mHome)
+        const mAway = JSON.parse(infoPartita?.magliaAway ?? '{}') as magliaType
+        setMagliaAway(mAway)
+      }
+    }, [formazioniList.data, formazioniList.isSuccess, formazioniList.isFetching])
 
   const handleModalClose = () => {
     setOpenModalCalendario(false)
@@ -125,6 +138,26 @@ function ViewFormazioni() {
                     {formazioneHome && (
                       <>
                         <Grid container spacing={0}>
+                          {magliaHome && (
+                            <Grid
+                              item
+                              xs={12}
+                              justifyContent={'center'}
+                              display={'flex'}
+                            >
+                              <ShirtSVG
+                                template={
+                                  magliaHome.selectedTemplate as ShirtTemplate
+                                }
+                                mainColor={magliaHome.mainColor}
+                                secondaryColor={magliaHome.secondaryColor}
+                                thirdColor={magliaHome.thirdColor}
+                                textColor={magliaHome.textColor}
+                                size={100}
+                                number={magliaHome.shirtNumber}
+                              />
+                            </Grid>
+                          )}
                           <Grid item xs={12} sm={7}>
                             <Typography variant={'h6'} sx={{ m: '3px' }}>
                               <b>Modulo: {formazioneHome.modulo}</b>
@@ -279,6 +312,26 @@ function ViewFormazioni() {
                     {formazioneAway && (
                       <>
                         <Grid container spacing={0}>
+                          {magliaAway && (
+                            <Grid
+                              item
+                              xs={12}
+                              justifyContent={'center'}
+                              display={'flex'}
+                            >
+                              <ShirtSVG
+                                template={
+                                  magliaAway.selectedTemplate as ShirtTemplate
+                                }
+                                mainColor={magliaAway.mainColor}
+                                secondaryColor={magliaAway.secondaryColor}
+                                thirdColor={magliaAway.thirdColor}
+                                textColor={magliaAway.textColor}
+                                size={100}
+                                number={magliaAway.shirtNumber}
+                              />
+                            </Grid>
+                          )}
                           <Grid item xs={12} sm={7}>
                             <Typography variant={'h6'} sx={{ m: '3px' }}>
                               <b>Modulo: {formazioneAway.modulo}</b>

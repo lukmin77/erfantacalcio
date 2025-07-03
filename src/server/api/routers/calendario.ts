@@ -72,10 +72,10 @@ export const calendarioRouter = createTRPCRouter({
                 golA: true,
                 fattoreCasalingo: true,
                 Utenti_Partite_idSquadraHToUtenti: {
-                  select: { nomeSquadra: true, foto: true },
+                  select: { nomeSquadra: true, foto: true, maglia: true },
                 },
                 Utenti_Partite_idSquadraAToUtenti: {
-                  select: { nomeSquadra: true, foto: true },
+                  select: { nomeSquadra: true, foto: true, maglia: true  },
                 },
               },
               where: {
@@ -257,10 +257,10 @@ export const calendarioRouter = createTRPCRouter({
               golA: true,
               fattoreCasalingo: true,
               Utenti_Partite_idSquadraHToUtenti: {
-                select: { nomeSquadra: true, foto: true },
+                select: { nomeSquadra: true, foto: true, maglia: true  },
               },
               Utenti_Partite_idSquadraAToUtenti: {
-                select: { nomeSquadra: true, foto: true },
+                select: { nomeSquadra: true, foto: true, maglia: true  },
               },
             },
           },
@@ -307,10 +307,10 @@ export const calendarioRouter = createTRPCRouter({
               golA: true,
               fattoreCasalingo: true,
               Utenti_Partite_idSquadraHToUtenti: {
-                select: { nomeSquadra: true, foto: true },
+                select: { nomeSquadra: true, foto: true, maglia: true  },
               },
               Utenti_Partite_idSquadraAToUtenti: {
-                select: { nomeSquadra: true, foto: true },
+                select: { nomeSquadra: true, foto: true, maglia: true  },
               },
             },
           },
@@ -356,10 +356,10 @@ export const calendarioRouter = createTRPCRouter({
               golA: true,
               fattoreCasalingo: true,
               Utenti_Partite_idSquadraHToUtenti: {
-                select: { nomeSquadra: true, foto: true },
+                select: { nomeSquadra: true, foto: true, maglia: true  },
               },
               Utenti_Partite_idSquadraAToUtenti: {
-                select: { nomeSquadra: true, foto: true },
+                select: { nomeSquadra: true, foto: true, maglia: true  },
               },
             },
           },
@@ -423,10 +423,10 @@ export const calendarioRouter = createTRPCRouter({
                 golA: true,
                 fattoreCasalingo: true,
                 Utenti_Partite_idSquadraHToUtenti: {
-                  select: { nomeSquadra: true, foto: true },
+                  select: { nomeSquadra: true, foto: true, maglia: true  },
                 },
                 Utenti_Partite_idSquadraAToUtenti: {
-                  select: { nomeSquadra: true, foto: true },
+                  select: { nomeSquadra: true, foto: true, maglia: true  },
                 },
               },
             },
@@ -478,10 +478,10 @@ export const calendarioRouter = createTRPCRouter({
                 golA: true,
                 fattoreCasalingo: true,
                 Utenti_Partite_idSquadraHToUtenti: {
-                  select: { nomeSquadra: true, foto: true },
+                  select: { nomeSquadra: true, foto: true, maglia: true  },
                 },
                 Utenti_Partite_idSquadraAToUtenti: {
-                  select: { nomeSquadra: true, foto: true },
+                  select: { nomeSquadra: true, foto: true, maglia: true  },
                 },
               },
             },
@@ -531,10 +531,10 @@ export const calendarioRouter = createTRPCRouter({
               golA: true,
               fattoreCasalingo: true,
               Utenti_Partite_idSquadraHToUtenti: {
-                select: { nomeSquadra: true, foto: true },
+                select: { nomeSquadra: true, foto: true, maglia: true  },
               },
               Utenti_Partite_idSquadraAToUtenti: {
-                select: { nomeSquadra: true, foto: true },
+                select: { nomeSquadra: true, foto: true, maglia: true  },
               },
             },
           },

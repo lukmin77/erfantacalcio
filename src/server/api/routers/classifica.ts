@@ -48,7 +48,7 @@ export const classificaRouter = createTRPCRouter({
             differenzaReti: true,
             giocate: true,
             Utenti: {
-              select: { nomeSquadra: true, foto: true },
+              select: { nomeSquadra: true, foto: true, maglia: true  },
             },
           },
           where: {

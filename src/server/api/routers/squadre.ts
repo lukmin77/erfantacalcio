@@ -8,7 +8,9 @@ import {
   createTRPCRouter,
   adminProcedure,
   publicProcedure,
+  protectedProcedure,
 } from '~/server/api/trpc'
+import { magliaType } from '~/components/selectColors'
 
 export const squadreRouter = createTRPCRouter({
   list: publicProcedure.query(async (opts) => {
@@ -70,6 +72,7 @@ export const squadreRouter = createTRPCRouter({
             presidente: utente.presidente,
             email: utente.mail,
             squadra: utente.nomeSquadra,
+            maglia: utente.maglia,
             foto: utente.foto,
             importoAnnuale: parseFloat(utente.importoBase.toFixed(2)),
             importoMulte: parseFloat(utente.importoMulte.toFixed(2)),
@@ -82,6 +85,28 @@ export const squadreRouter = createTRPCRouter({
         throw error
       }
     }),
+
+  getMaglia: protectedProcedure.query(
+    async (opts): Promise<magliaType | null> => {
+      const idUtente = +opts.ctx.session.user.idSquadra
+      try {
+        const utente = await prisma.utenti.findUnique({
+          where: {
+            idUtente: idUtente,
+          },
+        })
+
+        if (!utente || !utente.maglia) {
+          return null
+        }
+
+        return JSON.parse(utente.maglia) as magliaType
+      } catch (error) {
+        Logger.error('Si è verificato un errore', error)
+        throw error
+      }
+    },
+  ),
 
   getRosa: publicProcedure
     .input(
@@ -138,6 +163,34 @@ export const squadreRouter = createTRPCRouter({
             importoMercato: opts.input.importoMercato,
             fantaMilioni: opts.input.fantamilioni,
             adminLevel: opts.input.isLockLevel ? true : opts.input.isAdmin,
+          },
+        })
+      } catch (error) {
+        Logger.error('Si è verificato un errore', error)
+        throw error
+      }
+    }),
+
+  updateMaglia: protectedProcedure
+    .input(
+      z.object({
+        mainColor: z.string(),
+        secondaryColor: z.string(),
+        thirdColor: z.string(),
+        textColor: z.string(),
+        shirtNumber: z.number(),
+        selectedTemplate: z.string(),
+      }),
+    )
+    .mutation(async (opts) => {
+      console.log('update maglia', opts.input)
+      try {
+        await prisma.utenti.updateMany({
+          where: {
+            idUtente: opts.ctx.session.user.idSquadra,
+          },
+          data: {
+            maglia: JSON.stringify(opts.input),
           },
         })
       } catch (error) {
