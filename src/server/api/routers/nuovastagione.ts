@@ -92,16 +92,16 @@ export const nuovastagioneRouter = createTRPCRouter({
             return {
               isError: false,
               isComplete: true,
-              message: `Chiusura trasferimenti stagione ${Configurazione.stagione} completato. CONTINUA A CHIUDERE I TRASFERIMENTI (mancanti: ${countTrasferimenti})`,
+              message: `Chiusura trasferimenti stagione ${Configurazione.stagione} completato.`,
             }
           } else {
             Logger.info(
-              `Chiusura trasferimenti stagione ${Configurazione.stagione} ancora incompleto`,
+              `Chiusura trasferimenti stagione ${Configurazione.stagione} ancora incompleto. CONTINUA A CHIUDERE I TRASFERIMENTI (mancanti: ${countTrasferimenti})`,
             )
             return {
               isError: false,
               isComplete: false,
-              message: `Chiusura trasferimenti stagione ${Configurazione.stagione} ancora incompleto`,
+              message: `Chiusura trasferimenti stagione ${Configurazione.stagione} ancora incompleto. CONTINUA A CHIUDERE I TRASFERIMENTI (mancanti: ${countTrasferimenti})`,
             }
           }
         }
