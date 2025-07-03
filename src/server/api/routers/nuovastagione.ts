@@ -68,6 +68,14 @@ export const nuovastagioneRouter = createTRPCRouter({
             },
             take: takeNum,
           })
+          const countTrasferimenti = await prisma.trasferimenti.count({
+            where: {
+              AND: [
+                { dataCessione: null },
+                { stagione: Configurazione.stagione },
+              ],
+            },
+          })
           Logger.info(
             `Trovati ${giocatoritrasferimenti.length} giocatori in trasferimento da chiudere`,
           )
@@ -84,7 +92,7 @@ export const nuovastagioneRouter = createTRPCRouter({
             return {
               isError: false,
               isComplete: true,
-              message: `Chiusura trasferimenti stagione ${Configurazione.stagione} completato`,
+              message: `Chiusura trasferimenti stagione ${Configurazione.stagione} completato. CONTINUA A CHIUDERE I TRASFERIMENTI (mancanti: ${countTrasferimenti})`,
             }
           } else {
             Logger.info(
