@@ -14,6 +14,7 @@ import {
   Grading,
   Group,
   HistoryEdu,
+  ListAlt,
   ManageAccounts,
   Portrait,
   RecentActors,
@@ -118,6 +119,12 @@ export function guestListItems(isXs: boolean, isAuthenticated: boolean) {
       '/albo',
       "Albo d'oro",
       <HistoryEdu color="error" />,
+    ),
+    listItem(
+      'guest_profilo',
+      '/docs/rose_2024-2025.csv',
+      'Rose 2024-2025',
+      <ListAlt color="error" />,
     ),
     listItem(
       'guest_profilo',
