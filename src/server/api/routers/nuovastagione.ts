@@ -21,8 +21,6 @@ export const messageSchema = z.object({
   message: z.string().default(''),
 })
 
-
-
 export const nuovastagioneRouter = createTRPCRouter({
   getFaseAvvio: adminProcedure.query(async () => {
     try {
@@ -41,399 +39,413 @@ export const nuovastagioneRouter = createTRPCRouter({
     }
   }),
 
-  chiudiStagione: adminProcedure.mutation<z.infer<typeof messageSchema>>(async () => {
-    try {
-      const takeNum = 30
-      console.log(`Chiudo la stagione ${Configurazione.stagione} con un massimo di ${takeNum} giocatori in trasferimento`)
-      if ((await checkVotiUltimaGiornata()) === false) {
-        Logger.warn(
-          'Impossibile chiudere la stagione, calendario non completato',
+  chiudiStagione: adminProcedure.mutation<z.infer<typeof messageSchema>>(
+    async () => {
+      try {
+        const takeNum = 30
+        Logger.info(
+          `Chiudo la stagione ${Configurazione.stagione} con un massimo di ${takeNum} giocatori in trasferimento`,
         )
-        return {
-          isError: true,
-          isComplete: true,
-          message:
+        if ((await checkVotiUltimaGiornata()) === false) {
+          Logger.warn(
             'Impossibile chiudere la stagione, calendario non completato',
-        }
-      } else {
-        const giocatoritrasferimenti = await prisma.trasferimenti.findMany({
-          select: { idGiocatore: true },
-          distinct: ['idGiocatore'],
-          where: {
-            AND: [
-              { dataCessione: null },
-              { stagione: Configurazione.stagione },
-            ],
-          },
-          take: takeNum,
-        })
-        console.log(`Trovati ${giocatoritrasferimenti.length} giocatori in trasferimento da chiudere`)
-        const promises = giocatoritrasferimenti.map(async (c) => {
-          await chiudiTrasferimentoGiocatore(c.idGiocatore, true)
-        })
-        await Promise.all(promises)
-
-        if (giocatoritrasferimenti.length <= takeNum) {
-          await updateFase(1)
+          )
+          return {
+            isError: true,
+            isComplete: true,
+            message:
+              'Impossibile chiudere la stagione, calendario non completato',
+          }
+        } else {
+          const giocatoritrasferimenti = await prisma.trasferimenti.findMany({
+            select: { idGiocatore: true },
+            distinct: ['idGiocatore'],
+            where: {
+              AND: [
+                { dataCessione: null },
+                { stagione: Configurazione.stagione },
+              ],
+            },
+            take: takeNum,
+          })
           Logger.info(
-            `Chiusura trasferimenti stagione ${Configurazione.stagione} completato`,
+            `Trovati ${giocatoritrasferimenti.length} giocatori in trasferimento da chiudere`,
+          )
+          const promises = giocatoritrasferimenti.map(async (c) => {
+            await chiudiTrasferimentoGiocatore(c.idGiocatore, true)
+          })
+          await Promise.all(promises)
+
+          if (giocatoritrasferimenti.length <= takeNum) {
+            await updateFase(1)
+            Logger.info(
+              `Chiusura trasferimenti stagione ${Configurazione.stagione} completato`,
+            )
+            return {
+              isError: false,
+              isComplete: true,
+              message: `Chiusura trasferimenti stagione ${Configurazione.stagione} completato`,
+            }
+          } else {
+            Logger.info(
+              `Chiusura trasferimenti stagione ${Configurazione.stagione} ancora incompleto`,
+            )
+            return {
+              isError: false,
+              isComplete: false,
+              message: `Chiusura trasferimenti stagione ${Configurazione.stagione} ancora incompleto`,
+            }
+          }
+        }
+      } catch (error) {
+        Logger.error('Si è verificato un errore', error)
+        throw error
+      }
+    },
+  ),
+
+  preparaStagione: adminProcedure.mutation<z.infer<typeof messageSchema>>(
+    async () => {
+      try {
+        if ((await checkVotiUltimaGiornata()) === false) {
+          Logger.warn(
+            'Impossibile preparare la nuova stagione, calendario non completato',
+          )
+          return {
+            isError: true,
+            isComplete: true,
+            message:
+              'Impossibile preparare la nuova stagione, calendario non completato',
+          }
+        } else if ((await checkVerificaPartiteGiocate()) === false) {
+          Logger.warn(
+            'Impossibile preparare la nuova stagione: ci sono ancora partite da giocare',
+          )
+          return {
+            isError: true,
+            isComplete: true,
+            message:
+              'Impossibile preparare la nuova stagione: ci sono ancora partite da giocare',
+          }
+        } else {
+          await prisma.$transaction([
+            prisma.classifiche.deleteMany(),
+            prisma.voti.deleteMany(),
+            prisma.formazioni.deleteMany(),
+            prisma.partite.deleteMany(),
+            prisma.calendario.updateMany({
+              data: {
+                hasGiocata: false,
+                data: toLocaleDateTime(new Date()),
+                dataFine: toLocaleDateTime(new Date()),
+              },
+            }),
+          ])
+
+          await updateFase(2)
+
+          Logger.info(
+            `Azzeramento dati della scorsa stagione ${Configurazione.stagione}`,
           )
           return {
             isError: false,
             isComplete: true,
-            message: `Chiusura trasferimenti stagione ${Configurazione.stagione} completato`,
+            message: `Azzeramento dati della scorsa stagione ${Configurazione.stagione}`,
+          }
+        }
+      } catch (error) {
+        Logger.error('Si è verificato un errore', error)
+        throw error
+      }
+    },
+  ),
+
+  preparaIdSquadre: adminProcedure.mutation<z.infer<typeof messageSchema>>(
+    async () => {
+      try {
+        //get utenti
+        const utenti = await prisma.utenti.findMany({
+          orderBy: { idUtente: 'asc' },
+        })
+        //creazione duplicati utenti
+        const startNewId = 10
+        const promises = utenti.map(async (c) => {
+          const newIdUtente = c.idUtente + startNewId
+          const username = c.username + '_temp'
+
+          await prisma.utenti.create({
+            data: {
+              idUtente: newIdUtente,
+              username: username,
+              pwd: c.pwd,
+              adminLevel: c.adminLevel,
+              presidente: c.presidente,
+              mail: c.mail,
+              nomeSquadra: c.nomeSquadra,
+              foto: c.foto,
+              importoBase: 100,
+              importoMulte: 0,
+              importoMercato: 0,
+              fantaMilioni: 600,
+              Campionato: c.Campionato,
+              Champions: c.Champions,
+              Secondo: c.Secondo,
+              Terzo: c.Terzo,
+              lockLevel: c.lockLevel,
+            },
+          })
+        })
+        await Promise.all(promises)
+        Logger.info('creati nuovi utenti temporanei')
+
+        //sorteggio nuovi idutente
+        const uniqueRandomNumbers = generateUniqueRandomNumbers(
+          startNewId + 1,
+          startNewId + 8,
+          8,
+        )
+        Logger.info('sorteggiati nuovi idutente', uniqueRandomNumbers)
+
+        for (let i = 0; i <= 7; i++) {
+          //get utente from numeri estratti a partire dal primo
+          const user = await prisma.utenti.findUnique({
+            where: { idUtente: uniqueRandomNumbers[i] },
+          })
+          //save utente where idutente = index
+          await prisma.utenti.update({
+            data: {
+              username: `${user?.username.replace('_temp', '_new')}`,
+              adminLevel: user?.adminLevel,
+              lockLevel: user?.lockLevel,
+              mail: user?.mail,
+              nomeSquadra: user?.nomeSquadra,
+              presidente: user?.presidente,
+              foto: user?.foto,
+              pwd: user?.pwd,
+              Campionato: user?.Campionato,
+              Champions: user?.Champions,
+              fantaMilioni: user?.fantaMilioni,
+              importoBase: user?.importoBase,
+              importoMercato: user?.importoMercato,
+              importoMulte: user?.importoMulte,
+              Secondo: user?.Secondo,
+              Terzo: user?.Terzo,
+            },
+            where: {
+              idUtente: i + 1,
+            },
+          })
+          Logger.info(
+            `aggiornato utente: ${i + 1} con utente estratto: ${
+              uniqueRandomNumbers[i]
+            }`,
+          )
+        }
+
+        //eliminazione utenti con idutente > 8
+        await prisma.utenti.deleteMany({
+          where: { idUtente: { gt: 8 } },
+        })
+        Logger.info('eliminati utenti con idutente > 8')
+
+        //aggiorno gli username togliendo il '_new'
+        await prisma.$transaction([
+          prisma.$executeRaw`UPDATE "Utenti" SET username=REPLACE(username, '_new', '');`,
+        ])
+        Logger.info('aggiornati usernames utenti')
+
+        await updateFase(3)
+
+        return {
+          isError: false,
+          isComplete: true,
+          message: 'Sorteggio nuove squadre completato',
+        }
+      } catch (error) {
+        Logger.error('Si è verificato un errore', error)
+        throw error
+      }
+    },
+  ),
+
+  creaClassifiche: adminProcedure.mutation<z.infer<typeof messageSchema>>(
+    async () => {
+      try {
+        if ((await checkCountClassifiche()) === false) {
+          Logger.warn(
+            'Impossibile procedere con la nuova Stagione, classifiche già inserite',
+          )
+          return {
+            isError: true,
+            isComplete: true,
+            message:
+              'Impossibile procedere con la nuova Stagione, classifiche già inserite',
           }
         } else {
+          const tornei = await getTornei()
+
+          //campionato
+          let idTorneo = tornei.find(
+            (c) => c.nome.toLowerCase() === 'campionato',
+          )?.idTorneo
+          if (!idTorneo) {
+            throw new Error("Nessun torneo trovato con il nome 'campionato'.")
+          }
+          await creaClassifica(idTorneo, 1, 8)
+
+          //champions girone A
+          idTorneo = tornei.find(
+            (c) =>
+              c.nome.toLowerCase() === 'champions' &&
+              c.gruppoFase?.toUpperCase() === 'A',
+          )?.idTorneo
+          if (!idTorneo) {
+            throw new Error(
+              "Nessun torneo trovato con il nome 'champions' girone 'A'.",
+            )
+          }
+          await creaClassifica(idTorneo, 1, 4)
+
+          //champions girone B
+          idTorneo = tornei.find(
+            (c) =>
+              c.nome.toLowerCase() === 'champions' &&
+              c.gruppoFase?.toUpperCase() === 'B',
+          )?.idTorneo
+          if (!idTorneo) {
+            throw new Error(
+              "Nessun torneo trovato con il nome 'champions' e fase girone 'B'.",
+            )
+          }
+          await creaClassifica(idTorneo, 5, 8)
+
+          await updateFase(5)
+
           Logger.info(
-            `Chiusura trasferimenti stagione ${Configurazione.stagione} ancora incompleto`,
+            `Le classifiche della stagione ${Configurazione.stagione} sono state create`,
           )
           return {
             isError: false,
-            isComplete: false,
-            message: `Chiusura trasferimenti stagione ${Configurazione.stagione} ancora incompleto`,
+            isComplete: true,
+            message: `Le classifiche della stagione ${Configurazione.stagione} sono state create`,
           }
         }
+      } catch (error) {
+        Logger.error('Si è verificato un errore', error)
+        throw error
       }
-    } catch (error) {
-      Logger.error('Si è verificato un errore', error)
-      throw error
-    }
-  }),
+    },
+  ),
 
-  preparaStagione: adminProcedure.mutation<z.infer<typeof messageSchema>>(async () => {
-    try {
-      if ((await checkVotiUltimaGiornata()) === false) {
-        Logger.warn(
-          'Impossibile preparare la nuova stagione, calendario non completato',
-        )
-        return {
-          isError: true,
-          isComplete: true,
-          message:
-            'Impossibile preparare la nuova stagione, calendario non completato',
-        }
-      } else if ((await checkVerificaPartiteGiocate()) === false) {
-        Logger.warn(
-          'Impossibile preparare la nuova stagione: ci sono ancora partite da giocare',
-        )
-        return {
-          isError: true,
-          isComplete: true,
-          message:
-            'Impossibile preparare la nuova stagione: ci sono ancora partite da giocare',
-        }
-      } else {
-        await prisma.$transaction([
-          prisma.classifiche.deleteMany(),
-          prisma.voti.deleteMany(),
-          prisma.formazioni.deleteMany(),
-          prisma.partite.deleteMany(),
-          prisma.calendario.updateMany({
-            data: {
-              hasGiocata: false,
-              data: toLocaleDateTime(new Date()),
-              dataFine: toLocaleDateTime(new Date()),
-            },
-          }),
-        ])
-
-        await updateFase(2)
-
-        Logger.info(
-          `Azzeramento dati della scorsa stagione ${Configurazione.stagione}`,
-        )
-        return {
-          isError: false,
-          isComplete: true,
-          message: `Azzeramento dati della scorsa stagione ${Configurazione.stagione}`,
-        }
-      }
-    } catch (error) {
-      Logger.error('Si è verificato un errore', error)
-      throw error
-    }
-  }),
-
-  preparaIdSquadre: adminProcedure.mutation<z.infer<typeof messageSchema>>(async () => {
-    try {
-      //get utenti
-      const utenti = await prisma.utenti.findMany({
-        orderBy: { idUtente: 'asc' },
-      })
-      //creazione duplicati utenti
-      const startNewId = 10
-      const promises = utenti.map(async (c) => {
-        const newIdUtente = c.idUtente + startNewId
-        const username = c.username + '_temp'
-
-        await prisma.utenti.create({
-          data: {
-            idUtente: newIdUtente,
-            username: username,
-            pwd: c.pwd,
-            adminLevel: c.adminLevel,
-            presidente: c.presidente,
-            mail: c.mail,
-            nomeSquadra: c.nomeSquadra,
-            foto: c.foto,
-            importoBase: 100,
-            importoMulte: 0,
-            importoMercato: 0,
-            fantaMilioni: 600,
-            Campionato: c.Campionato,
-            Champions: c.Champions,
-            Secondo: c.Secondo,
-            Terzo: c.Terzo,
-            lockLevel: c.lockLevel,
-          },
-        })
-      })
-      await Promise.all(promises)
-      Logger.info('creati nuovi utenti temporanei')
-
-      //sorteggio nuovi idutente
-      const uniqueRandomNumbers = generateUniqueRandomNumbers(
-        startNewId + 1,
-        startNewId + 8,
-        8,
-      )
-      Logger.info('sorteggiati nuovi idutente', uniqueRandomNumbers)
-
-      for (let i = 0; i <= 7; i++) {
-        //get utente from numeri estratti a partire dal primo
-        const user = await prisma.utenti.findUnique({
-          where: { idUtente: uniqueRandomNumbers[i] },
-        })
-        //save utente where idutente = index
-        await prisma.utenti.update({
-          data: {
-            username: `${user?.username.replace('_temp', '_new')}`,
-            adminLevel: user?.adminLevel,
-            lockLevel: user?.lockLevel,
-            mail: user?.mail,
-            nomeSquadra: user?.nomeSquadra,
-            presidente: user?.presidente,
-            foto: user?.foto,
-            pwd: user?.pwd,
-            Campionato: user?.Campionato,
-            Champions: user?.Champions,
-            fantaMilioni: user?.fantaMilioni,
-            importoBase: user?.importoBase,
-            importoMercato: user?.importoMercato,
-            importoMulte: user?.importoMulte,
-            Secondo: user?.Secondo,
-            Terzo: user?.Terzo,
-          },
-          where: {
-            idUtente: i + 1,
-          },
-        })
-        Logger.info(
-          `aggiornato utente: ${i + 1} con utente estratto: ${
-            uniqueRandomNumbers[i]
-          }`,
-        )
-      }
-
-      //eliminazione utenti con idutente > 8
-      await prisma.utenti.deleteMany({
-        where: { idUtente: { gt: 8 } },
-      })
-      Logger.info('eliminati utenti con idutente > 8')
-
-      //aggiorno gli username togliendo il '_new'
-      await prisma.$transaction([
-        prisma.$executeRaw`UPDATE "Utenti" SET username=REPLACE(username, '_new', '');`,
-      ])
-      Logger.info('aggiornati usernames utenti')
-
-      await updateFase(3)
-
-      return {
-        isError: false,
-        isComplete: true,
-        message: 'Sorteggio nuove squadre completato',
-      }
-    } catch (error) {
-      Logger.error('Si è verificato un errore', error)
-      throw error
-    }
-  }),
-
-  creaClassifiche: adminProcedure.mutation<z.infer<typeof messageSchema>>(async () => {
-    try {
-      if ((await checkCountClassifiche()) === false) {
-        Logger.warn(
-          'Impossibile procedere con la nuova Stagione, classifiche già inserite',
-        )
-        return {
-          isError: true,
-          isComplete: true,
-          message:
-            'Impossibile procedere con la nuova Stagione, classifiche già inserite',
-        }
-      } else {
-        const tornei = await getTornei()
-
-        //campionato
-        let idTorneo = tornei.find(
-          (c) => c.nome.toLowerCase() === 'campionato',
-        )?.idTorneo
-        if (!idTorneo) {
-          throw new Error("Nessun torneo trovato con il nome 'campionato'.")
-        }
-        await creaClassifica(idTorneo, 1, 8)
-
-        //champions girone A
-        idTorneo = tornei.find(
-          (c) =>
-            c.nome.toLowerCase() === 'champions' &&
-            c.gruppoFase?.toUpperCase() === 'A',
-        )?.idTorneo
-        if (!idTorneo) {
-          throw new Error(
-            "Nessun torneo trovato con il nome 'champions' girone 'A'.",
-          )
-        }
-        await creaClassifica(idTorneo, 1, 4)
-
-        //champions girone B
-        idTorneo = tornei.find(
-          (c) =>
-            c.nome.toLowerCase() === 'champions' &&
-            c.gruppoFase?.toUpperCase() === 'B',
-        )?.idTorneo
-        if (!idTorneo) {
-          throw new Error(
-            "Nessun torneo trovato con il nome 'champions' e fase girone 'B'.",
-          )
-        }
-        await creaClassifica(idTorneo, 5, 8)
-
-        await updateFase(5)
-
-        Logger.info(
-          `Le classifiche della stagione ${Configurazione.stagione} sono state create`,
-        )
-        return {
-          isError: false,
-          isComplete: true,
-          message: `Le classifiche della stagione ${Configurazione.stagione} sono state create`,
-        }
-      }
-    } catch (error) {
-      Logger.error('Si è verificato un errore', error)
-      throw error
-    }
-  }),
-
-  creaPartite: adminProcedure.mutation<z.infer<typeof messageSchema>>(async () => {
-    try {
-      if ((await checkCountPartite()) === false) {
-        Logger.warn(
-          'Impossibile procedere con la nuova Stagione, partite già inserite',
-        )
-        return {
-          isError: true,
-          isComplete: true,
-          message:
+  creaPartite: adminProcedure.mutation<z.infer<typeof messageSchema>>(
+    async () => {
+      try {
+        if ((await checkCountPartite()) === false) {
+          Logger.warn(
             'Impossibile procedere con la nuova Stagione, partite già inserite',
-        }
-      } else {
-        const tornei = await getTornei()
-
-        //campionato
-        let idTorneo = tornei.find(
-          (c) => c.nome.toLowerCase() === 'campionato',
-        )?.idTorneo
-        if (!idTorneo) {
-          throw new Error("Nessun torneo trovato con il nome 'campionato'.")
-        }
-        await creaPartite(8, idTorneo, true)
-
-        //champions girone A
-        idTorneo = tornei.find(
-          (c) =>
-            c.nome.toLowerCase() === 'champions' &&
-            c.gruppoFase?.toUpperCase() === 'A',
-        )?.idTorneo
-        if (!idTorneo) {
-          throw new Error(
-            "Nessun torneo trovato con il nome 'champions' girone 'A'.",
           )
-        }
-        await creaPartite(4, idTorneo, false)
+          return {
+            isError: true,
+            isComplete: true,
+            message:
+              'Impossibile procedere con la nuova Stagione, partite già inserite',
+          }
+        } else {
+          const tornei = await getTornei()
 
-        //champions girone B
-        idTorneo = tornei.find(
-          (c) =>
-            c.nome.toLowerCase() === 'champions' &&
-            c.gruppoFase?.toUpperCase() === 'B',
-        )?.idTorneo
-        if (!idTorneo) {
-          throw new Error(
-            "Nessun torneo trovato con il nome 'champions' e fase girone 'B'.",
-          )
-        }
-        await creaPartite(4, idTorneo, false, 4)
+          //campionato
+          let idTorneo = tornei.find(
+            (c) => c.nome.toLowerCase() === 'campionato',
+          )?.idTorneo
+          if (!idTorneo) {
+            throw new Error("Nessun torneo trovato con il nome 'campionato'.")
+          }
+          await creaPartite(8, idTorneo, true)
 
-        //Semifinali andata
-        idTorneo = tornei.find(
-          (c) =>
-            c.nome.toLowerCase() === 'champions' &&
-            c.gruppoFase?.toLowerCase() === 'semifinali andata',
-        )?.idTorneo
-        if (!idTorneo) {
-          throw new Error(
-            "Nessun torneo trovato con il nome 'champions' e fase 'semifinali andata'.",
-          )
-        }
-        await creaPartiteEmpty(2, idTorneo, true)
-
-        //Semifinali ritorno
-        idTorneo =
-          tornei.find(
+          //champions girone A
+          idTorneo = tornei.find(
             (c) =>
               c.nome.toLowerCase() === 'champions' &&
-              c.gruppoFase?.toLowerCase() === 'semifinali ritorno',
-          )?.idTorneo ?? 0
-        if (!idTorneo) {
-          throw new Error(
-            "Nessun torneo trovato con il nome 'champions' e fase 'semifinali ritorno'.",
-          )
-        }
-        await creaPartiteEmpty(2, idTorneo, true)
+              c.gruppoFase?.toUpperCase() === 'A',
+          )?.idTorneo
+          if (!idTorneo) {
+            throw new Error(
+              "Nessun torneo trovato con il nome 'champions' girone 'A'.",
+            )
+          }
+          await creaPartite(4, idTorneo, false)
 
-        //Finale
-        idTorneo =
-          tornei.find(
+          //champions girone B
+          idTorneo = tornei.find(
             (c) =>
               c.nome.toLowerCase() === 'champions' &&
-              c.gruppoFase?.toLowerCase() === 'finale',
-          )?.idTorneo ?? 0
-        if (!idTorneo) {
-          throw new Error(
-            "Nessun torneo trovato con il nome 'champions' e fase 'finale'.",
+              c.gruppoFase?.toUpperCase() === 'B',
+          )?.idTorneo
+          if (!idTorneo) {
+            throw new Error(
+              "Nessun torneo trovato con il nome 'champions' e fase girone 'B'.",
+            )
+          }
+          await creaPartite(4, idTorneo, false, 4)
+
+          //Semifinali andata
+          idTorneo = tornei.find(
+            (c) =>
+              c.nome.toLowerCase() === 'champions' &&
+              c.gruppoFase?.toLowerCase() === 'semifinali andata',
+          )?.idTorneo
+          if (!idTorneo) {
+            throw new Error(
+              "Nessun torneo trovato con il nome 'champions' e fase 'semifinali andata'.",
+            )
+          }
+          await creaPartiteEmpty(2, idTorneo, true)
+
+          //Semifinali ritorno
+          idTorneo =
+            tornei.find(
+              (c) =>
+                c.nome.toLowerCase() === 'champions' &&
+                c.gruppoFase?.toLowerCase() === 'semifinali ritorno',
+            )?.idTorneo ?? 0
+          if (!idTorneo) {
+            throw new Error(
+              "Nessun torneo trovato con il nome 'champions' e fase 'semifinali ritorno'.",
+            )
+          }
+          await creaPartiteEmpty(2, idTorneo, true)
+
+          //Finale
+          idTorneo =
+            tornei.find(
+              (c) =>
+                c.nome.toLowerCase() === 'champions' &&
+                c.gruppoFase?.toLowerCase() === 'finale',
+            )?.idTorneo ?? 0
+          if (!idTorneo) {
+            throw new Error(
+              "Nessun torneo trovato con il nome 'champions' e fase 'finale'.",
+            )
+          }
+          await creaPartiteEmpty(1, idTorneo, false)
+
+          await updateFase(4)
+
+          Logger.info(
+            `Le partite della stagione ${Configurazione.stagione} sono state create`,
           )
+          return {
+            isError: false,
+            isComplete: true,
+            message: `Le partite della stagione ${Configurazione.stagione} sono state create`,
+          }
         }
-        await creaPartiteEmpty(1, idTorneo, false)
-
-        await updateFase(4)
-
-        Logger.info(
-          `Le partite della stagione ${Configurazione.stagione} sono state create`,
-        )
-        return {
-          isError: false,
-          isComplete: true,
-          message: `Le partite della stagione ${Configurazione.stagione} sono state create`,
-        }
+      } catch (error) {
+        Logger.error('Si è verificato un errore', error)
+        throw error
       }
-    } catch (error) {
-      Logger.error('Si è verificato un errore', error)
-      throw error
-    }
-  }),
+    },
+  ),
 })
 
 async function updateFase(idFase: number) {
@@ -549,7 +561,11 @@ async function creaClassifica(idTorneo: number, from: number, to: number) {
   Logger.info(`create classifiche per idTorneo: ${idTorneo}`)
 }
 
-async function creaPartiteEmpty(partite: number, idTorneo: number, fattoreCasalingo: boolean) {
+async function creaPartiteEmpty(
+  partite: number,
+  idTorneo: number,
+  fattoreCasalingo: boolean,
+) {
   const calendario = await getCalendarioByTorneo(idTorneo)
   if (calendario?.[0]) {
     for (let i = 0; i < partite; i++) {
