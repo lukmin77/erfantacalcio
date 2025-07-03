@@ -127,6 +127,18 @@ function Rosa({ idSquadra, squadra }: RosaProps) {
                 >
                   {giocatore.ruoloEsteso}
                 </Typography>
+                <Typography
+                  gutterBottom
+                  variant="body1"
+                  sx={{
+                    fontSize: '10px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                  }}
+                  component="div"
+                >
+                  {giocatore.costo.toFixed(0)} M€
+                </Typography>
               </CardContent>
             </Card>
           </Grid>
