@@ -44,6 +44,7 @@ export const nuovastagioneRouter = createTRPCRouter({
   chiudiStagione: adminProcedure.mutation<z.infer<typeof messageSchema>>(async () => {
     try {
       const takeNum = 30
+      console.log(`Chiudo la stagione ${Configurazione.stagione} con un massimo di ${takeNum} giocatori in trasferimento`)
       if ((await checkVotiUltimaGiornata()) === false) {
         Logger.warn(
           'Impossibile chiudere la stagione, calendario non completato',
@@ -66,7 +67,7 @@ export const nuovastagioneRouter = createTRPCRouter({
           },
           take: takeNum,
         })
-        console.log(`Trovati ${giocatoritrasferimenti.length} giocatori in trasferimento (stagione ${Configurazione.stagione}) da chiudere`)
+        console.log(`Trovati ${giocatoritrasferimenti.length} giocatori in trasferimento da chiudere`)
         const promises = giocatoritrasferimenti.map(async (c) => {
           await chiudiTrasferimentoGiocatore(c.idGiocatore, true)
         })
