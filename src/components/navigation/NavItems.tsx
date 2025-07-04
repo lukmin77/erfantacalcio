@@ -21,6 +21,7 @@ import {
   ThumbsUpDown,
   UploadFile,
 } from '@mui/icons-material'
+import { Configurazione } from '~/config'
 
 const listItem = (
   key: string,
@@ -122,8 +123,8 @@ export function guestListItems(isXs: boolean, isAuthenticated: boolean) {
     ),
     listItem(
       'guest_profilo',
-      '/docs/rose_2024-2025.csv',
-      'Rose 2024-2025',
+      `/docs/rose_${Configurazione.stagionePrecedente}.csv`,
+      `Rose ${Configurazione.stagionePrecedente}`,
       <ListAlt color="error" />,
     ),
     listItem(

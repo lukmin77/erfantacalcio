@@ -329,21 +329,40 @@ export default function HomePage() {
                         : { pr: '5px' }
                     }
                   >
-                    <Card>
-                      <CardHeader
-                        title="Economia e premi"
-                        titleTypographyProps={{ variant: 'h5' }}
-                      />
-                      <CardMedia
-                        component="img"
-                        image={'/images/soldi.png'}
-                        width={'201px'}
-                        height={'139px'}
-                        alt={'Economia e premi'}
-                        sx={{ cursor: 'pointer' }}
-                        onClick={() => (window.location.href = '/economia')}
-                      />
-                    </Card>
+                    {new Date() < Configurazione.mercatoSettembre && (
+                      <Card>
+                        <CardHeader
+                          title={`Rose ${Configurazione.stagionePrecedente}`}
+                          titleTypographyProps={{ variant: 'h5' }}
+                        />
+                        <CardMedia
+                          component="img"
+                          image={'/images/soldi.png'}
+                          width={'201px'}
+                          height={'139px'}
+                          alt={`Rose ${Configurazione.stagionePrecedente}`}
+                          sx={{ cursor: 'pointer' }}
+                          onClick={() => (window.location.href = `/docs/rose_${Configurazione.stagionePrecedente}.csv`)}
+                        />
+                      </Card>
+                    )}
+                    {new Date() >= Configurazione.mercatoSettembre && (
+                      <Card>
+                        <CardHeader
+                          title="Economia e premi"
+                          titleTypographyProps={{ variant: 'h5' }}
+                        />
+                        <CardMedia
+                          component="img"
+                          image={'/images/soldi.png'}
+                          width={'201px'}
+                          height={'139px'}
+                          alt={'Economia e premi'}
+                          sx={{ cursor: 'pointer' }}
+                          onClick={() => (window.location.href = '/economia')}
+                        />
+                      </Card>
+                    )}
                   </Grid>
                 </Zoom>
                 <Zoom in={true}>

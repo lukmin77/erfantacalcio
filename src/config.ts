@@ -1,5 +1,6 @@
 export const Configurazione = {
   stagione: process.env.NEXT_PUBLIC_STAGIONE ?? '',
+  stagionePrecedente: process.env.NEXT_PUBLIC_STAGIONEPRECEDENTE ?? '',
   recordCount: parseInt(process.env.NEXT_PUBLIC_RECORDCOUNT ?? '20', 10),
   percentualeMinimaGiocate: parseInt(
     process.env.NEXT_PUBLIC_PERCENTUALE_MINIMA_GIOCATE ?? '30',
@@ -58,4 +59,5 @@ export const Configurazione = {
   pfColumnRigParato: parseInt(process.env.NEXT_PUBLIC_PF_RIGPARATO ?? '0'),
   pfColumnAutogol: parseInt(process.env.NEXT_PUBLIC_PF_AUTOGOL ?? '0'),
   dataGiornata1SerieA: new Date(process.env.NEXT_PUBLIC_DATA_GIORNATA_1_SERIEA as string) ?? new Date(),
+  mercatoSettembre: new Date(process.env.NEXT_PUBLIC_MERCATO_SETTEMBRE as string) ?? new Date(),
 }
