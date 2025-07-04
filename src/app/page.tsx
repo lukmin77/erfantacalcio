@@ -339,7 +339,7 @@ export default function HomePage() {
                         />
                         <CardMedia
                           component="img"
-                          image={'/images/giocatori2.jpeg'}
+                          image={'/images/giocatori2.png'}
                           width={'201px'}
                           height={'139px'}
                           alt={`Rose ${Configurazione.stagionePrecedente}`}
