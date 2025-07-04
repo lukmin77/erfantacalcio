@@ -9,7 +9,6 @@ import {
   Grid,
   Tooltip,
   Zoom,
-  Typography,
   useMediaQuery,
   useTheme,
   Card,
@@ -38,6 +37,7 @@ import SquadreXs from '~/components/home/SquadreXs'
 import { z } from 'zod'
 import { giornataSchema } from '~/server/api/routers/common'
 import { Configurazione } from '~/config'
+import logger from '~/lib/logger.server'
 
 export default function HomePage() {
   const { data: session } = useSession()
@@ -116,6 +116,8 @@ export default function HomePage() {
   const handleModalClose = () => {
     setOpenModalCalendario(false)
   }
+
+  logger.info('HomePage - data mercato settembre:', Configurazione.mercatoSettembre)
 
   return (
     <>
