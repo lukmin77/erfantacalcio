@@ -127,7 +127,7 @@ export default function HomePage() {
             </Grid>
           </Slide>
         )}
-        {!torneiList.isLoading && new Date() >= Configurazione.dataGiornata1SerieA && (
+        {!torneiList.isLoading && (
           <>
             <Grid
               item
@@ -237,7 +237,7 @@ export default function HomePage() {
                   />
                 ))}
             </Grid>
-            {isXs && (
+            {isXs && new Date() >= Configurazione.dataGiornata1SerieA && (
               <Grid item xs={12}>
                 <SquadreXs />
               </Grid>
