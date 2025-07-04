@@ -256,7 +256,7 @@ export default function HomePage() {
                 <SquadreXs />
               </Grid>
             )}
-            {(!isXs || new Date() >= Configurazione.dataGiornata1SerieA) && (
+            {(!isXs || new Date() < Configurazione.dataGiornata1SerieA) && (
               <>
                 <Zoom in={true}>
                   <Grid
