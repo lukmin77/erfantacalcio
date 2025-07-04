@@ -127,7 +127,7 @@ export default function HomePage() {
             </Grid>
           </Slide>
         )}
-        {!torneiList.isLoading && new Date() < Configurazione.dataGiornata1SerieA && (
+        {!torneiList.isLoading && new Date() >= Configurazione.dataGiornata1SerieA && (
           <>
             <Grid
               item

@@ -200,6 +200,7 @@ export const nuovastagioneRouter = createTRPCRouter({
               Secondo: c.Secondo,
               Terzo: c.Terzo,
               lockLevel: c.lockLevel,
+              maglia: c.maglia,
             },
           })
         })
@@ -238,6 +239,7 @@ export const nuovastagioneRouter = createTRPCRouter({
               importoMulte: user?.importoMulte,
               Secondo: user?.Secondo,
               Terzo: user?.Terzo,
+              maglia: user?.maglia,
             },
             where: {
               idUtente: i + 1,
