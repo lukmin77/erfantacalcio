@@ -37,6 +37,7 @@ import { useSession } from 'next-auth/react'
 import SquadreXs from '~/components/home/SquadreXs'
 import { z } from 'zod'
 import { giornataSchema } from '~/server/api/routers/common'
+import { Configurazione } from '~/config'
 
 export default function HomePage() {
   const { data: session } = useSession()
@@ -126,7 +127,7 @@ export default function HomePage() {
             </Grid>
           </Slide>
         )}
-        {!torneiList.isLoading && (
+        {!torneiList.isLoading && new Date() < Configurazione.dataGiornata1SerieA && (
           <>
             <Grid
               item
