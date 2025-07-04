@@ -331,7 +331,7 @@ export default function HomePage() {
                         : { pr: '5px' }
                     }
                   >
-                    {new Date() < Configurazione.mercatoSettembre && (
+                    {new Date() < Configurazione.mercatoSettembre ? (
                       <Card>
                         <CardHeader
                           title={`Rose ${Configurazione.stagionePrecedente}`}
@@ -347,8 +347,7 @@ export default function HomePage() {
                           onClick={() => (window.location.href = `/docs/rose_${Configurazione.stagionePrecedente}.csv`)}
                         />
                       </Card>
-                    )}
-                    {new Date() >= Configurazione.mercatoSettembre && (
+                    ) : (
                       <Card>
                         <CardHeader
                           title="Economia e premi"
