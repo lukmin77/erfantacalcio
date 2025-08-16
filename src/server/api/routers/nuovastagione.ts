@@ -191,7 +191,7 @@ export const nuovastagioneRouter = createTRPCRouter({
               mail: c.mail,
               nomeSquadra: c.nomeSquadra,
               foto: c.foto,
-              importoBase: 100,
+              importoBase: 120,
               importoMulte: 0,
               importoMercato: 0,
               fantaMilioni: 600,
@@ -494,7 +494,8 @@ async function creaPartite(
     let index = 1
     let previousGirone = calendario[0]?.girone
     const lastGirone = calendario[calendario.length - 1]?.girone
-
+    Logger.info(`lastGirone: ${lastGirone}, evaluateLastGirone: ${evaluateLastGirone}`)
+    
     for (const c of calendario) {
       if (c.girone !== previousGirone) {
         previousGirone = c.girone!
@@ -502,7 +503,8 @@ async function creaPartite(
       }
 
       const matches = roundRobin.filter((x) => x.giornata === index)
-
+      Logger.info(`Matches for girone ${c.girone}:`, matches)
+      
       for (const p of matches) {
         let fattoreCasalingo = Configurazione.bonusFattoreCasalingo > 0
         if (evaluateLastGirone && lastGirone === c.girone && fattoreCasalingo) {
