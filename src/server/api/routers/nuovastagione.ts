@@ -504,12 +504,14 @@ async function creaPartite(
 
       const matches = roundRobin.filter((x) => x.giornata === index)
       Logger.info(`Matches for girone ${c.girone}:`, matches)
-      
+
       for (const p of matches) {
         let fattoreCasalingo = Configurazione.bonusFattoreCasalingo > 0
         if (evaluateLastGirone && lastGirone === c.girone && fattoreCasalingo) {
           fattoreCasalingo =
             (calendario[calendario.length - 1]?.girone ?? 0) % 2 === 0
+
+          Logger.info(`Fattore casalingo per l'ultima giornata: ${fattoreCasalingo}`)
         }
 
         await prisma.partite.createMany({
