@@ -303,21 +303,39 @@ export default function HomePage() {
                         : { pl: '5px' }
                     }
                   >
-                    <Card>
-                      <CardHeader
-                        title="Albo"
-                        titleTypographyProps={{ variant: 'h5' }}
-                      />
-                      <CardMedia
-                        component="img"
-                        image={'/images/albo.jpg'}
-                        width={'201px'}
-                        height={'139px'}
-                        alt={'Albo'}
-                        sx={{ cursor: 'pointer' }}
-                        onClick={() => (window.location.href = '/albo')}
-                      />
-                    </Card>
+                    {new Date() < Configurazione.mercatoSettembre ? (
+                      <Card>
+                        <CardHeader
+                        title={`Quotazioni Gazzetta`}
+                          titleTypographyProps={{ variant: 'h5' }}
+                        />
+                        <CardMedia
+                          component="img"
+                          image={'/images/giocatori.png'}
+                          width={'201px'}
+                          height={'139px'}
+                          alt={`Quotazioni Gazzetta`}
+                          sx={{ cursor: 'pointer' }}
+                          onClick={() => (window.location.href = `/docs/QuotazioniExcel.xls`)}
+                        />
+                      </Card>
+                    ) : (
+                      <Card>
+                        <CardHeader
+                          title="Albo"
+                          titleTypographyProps={{ variant: 'h5' }}
+                        />
+                        <CardMedia
+                          component="img"
+                          image={'/images/albo.jpg'}
+                          width={'201px'}
+                          height={'139px'}
+                          alt={'Albo'}
+                          sx={{ cursor: 'pointer' }}
+                          onClick={() => (window.location.href = '/albo')}
+                        />
+                      </Card>
+                    )}
                   </Grid>
                 </Zoom>
                 <Zoom in={true}>
