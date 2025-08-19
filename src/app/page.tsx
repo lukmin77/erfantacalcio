@@ -311,7 +311,7 @@ export default function HomePage() {
                         />
                         <CardMedia
                           component="img"
-                          image={'/images/giocatori.png'}
+                          image={'/images/giocatori.jpg'}
                           width={'201px'}
                           height={'139px'}
                           alt={`Quotazioni Gazzetta`}
