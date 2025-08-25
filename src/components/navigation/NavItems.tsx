@@ -123,6 +123,12 @@ export function guestListItems(isXs: boolean, isAuthenticated: boolean) {
     ),
     listItem(
       'guest_profilo',
+      `/docs/QuotazioniExcel.xls`,
+      `Quotazioni Gazzetta`,
+      <ListAlt color="error" />,
+    ),
+    listItem(
+      'guest_profilo',
       `/docs/rose_${Configurazione.stagionePrecedente}.csv`,
       `Rose ${Configurazione.stagionePrecedente}`,
       <ListAlt color="error" />,
