@@ -369,6 +369,7 @@ export const votiRouter = createTRPCRouter({
       try {
         Logger.info(`Processing ${opts.input.voti.length} voti`)
         for (const v of opts.input.voti) {
+          console.log(`Processing voto for player: ${v.Nome} ${v.Squadra}`)
           let idGiocatore = v.id_pf ? (await getGiocatoreByID(v.id_pf))?.idGiocatore : undefined
           if (idGiocatore === undefined) 
             idGiocatore = (await getGiocatoreByNome(v.Nome, v.id_pf))?.idGiocatore
