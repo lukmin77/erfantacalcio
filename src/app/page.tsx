@@ -316,7 +316,7 @@ export default function HomePage() {
                           height={'139px'}
                           alt={`Quotazioni Gazzetta`}
                           sx={{ cursor: 'pointer' }}
-                          onClick={() => (window.location.href = `/docs/QuotazioniExcel.xls`)}
+                          onClick={() => (window.location.href = `/docs/QuotazioniExcel.csv`)}
                         />
                       </Card>
                     ) : (
