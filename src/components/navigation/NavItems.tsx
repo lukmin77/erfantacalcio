@@ -123,21 +123,9 @@ export function guestListItems(isXs: boolean, isAuthenticated: boolean) {
     ),
     listItem(
       'guest_profilo',
-      `/docs/QuotazioniExcel.csv`,
-      `Quotazioni Gazzetta`,
+      `/documenti`,
+      `Documenti`,
       <ListAlt color="error" />,
-    ),
-    listItem(
-      'guest_profilo',
-      `/docs/rose_${Configurazione.stagionePrecedente}.csv`,
-      `Rose ${Configurazione.stagionePrecedente}`,
-      <ListAlt color="error" />,
-    ),
-    listItem(
-      'guest_profilo',
-      '/docs/Regolamento_erFantacalcio.pdf',
-      'Regolamento ufficiale',
-      <Grading color="error" />,
     ),
   ]
 }
