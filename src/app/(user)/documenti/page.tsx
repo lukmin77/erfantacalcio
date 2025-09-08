@@ -35,7 +35,7 @@ export default function DocumentiPage() {
               alt={`Quotazioni Gazzetta`}
               sx={{ cursor: 'pointer' }}
               onClick={() =>
-                (window.location.href = `/docs/QuotazioniExcel.xls`)
+                (window.location.href = `/docs/QuotazioniExcel.xlsx`)
               }
             />
           </Card>
