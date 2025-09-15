@@ -125,6 +125,18 @@ function Rosa({ idSquadra, squadra }: RosaProps) {
                   }}
                   component="div"
                 >
+                  {giocatore.nomeSquadraSerieA}
+                </Typography>
+                <Typography
+                  gutterBottom
+                  variant="body1"
+                  sx={{
+                    fontSize: '10px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                  }}
+                  component="div"
+                >
                   {giocatore.ruoloEsteso}
                 </Typography>
                 <Typography
