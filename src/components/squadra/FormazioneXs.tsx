@@ -11,6 +11,7 @@ import {
   LooksOneOutlined,
   LooksTwoOutlined,
   Save,
+  SportsSoccer,
 } from '@mui/icons-material'
 import {
   Box,
@@ -26,13 +27,9 @@ import {
   Button,
   Snackbar,
   Alert,
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   IconButton,
   Divider,
   Tooltip,
-  Slide,
 } from '@mui/material'
 import { useSession } from 'next-auth/react'
 import { api } from '~/utils/api'
@@ -240,6 +237,7 @@ function FormazioneXs() {
 
   const renderRosa = (roles: string[], title: string) => {
     const filteredRosa = rosa.filter((player) => roles.includes(player.ruolo))
+    const filteredCampo = campo.filter((player) => roles.includes(player.ruolo))
     const filteredPanca = panca.filter((player) => roles.includes(player.ruolo))
     const handleStatGiocatore = (idGiocatore: number) => {
       setIdGiocatoreStat(idGiocatore)
@@ -282,21 +280,59 @@ function FormazioneXs() {
                   </div>
                 </Grid>
                 <Grid item xs={3} display={'flex'} justifyContent={'flex-end'}>
-                  <Slide
-                    direction="right"
-                    in={true}
-                    style={{ transitionDelay: '300ms' }}
-                    mountOnEnter
-                    unmountOnExit
-                  >
-                    <Tooltip title={'Statistiche giocatore'}>
-                      <IconButton
-                        onClick={() => handleStatGiocatore(player.idGiocatore)}
-                      >
-                        <Analytics color="info" />
-                      </IconButton>
-                    </Tooltip>
-                  </Slide>
+                  <Tooltip title={'Statistiche giocatore'}>
+                    <IconButton
+                      onClick={() => handleStatGiocatore(player.idGiocatore)}
+                    >
+                      <Analytics color="info" />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+              </Grid>
+            ))}
+            {filteredCampo.map((player) => (
+              <Grid container spacing={0} key={player.idGiocatore}>
+                <Grid item xs={9}>
+                  <div onClick={() => handleClickPlayer(player)}>
+                    <ListItem
+                      sx={{
+                        cursor: 'pointer',
+                        zIndex: 2,
+                        paddingTop: '0px',
+                        paddingBottom: '0px',
+                        paddingLeft: '0px',
+                      }}
+                    >
+                      <Image
+                        src={player.urlCampioncinoSmall}
+                        width={42}
+                        height={42}
+                        alt={player.nome}
+                      />
+                      <ListItemText
+                        primary={getShortName(player.nome)}
+                        secondary={`${
+                          player.ruoloEsteso
+                        } (${player.nomeSquadraSerieA
+                          ?.toUpperCase()
+                          .substring(0, 3)})`}
+                      ></ListItemText>
+                    </ListItem>
+                  </div>
+                </Grid>
+                <Grid item xs={3} display={'flex'} justifyContent={'flex-end'}>
+                  <Tooltip title={`Titolare`}>
+                    <IconButton>
+                      <SportsSoccer color="success" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title={'Statistiche giocatore'}>
+                    <IconButton
+                      onClick={() => handleStatGiocatore(player.idGiocatore)}
+                    >
+                      <Analytics color="info" />
+                    </IconButton>
+                  </Tooltip>
                 </Grid>
               </Grid>
             ))}
@@ -331,19 +367,18 @@ function FormazioneXs() {
                   </div>
                 </Grid>
                 <Grid item xs={3} display={'flex'} justifyContent={'flex-end'}>
-                  <Slide
-                    direction="right"
-                    in={true}
-                    style={{ transitionDelay: '300ms' }}
-                    mountOnEnter
-                    unmountOnExit
-                  >
-                    <Tooltip title={`Riserva ${player.riserva}`}>
-                      <IconButton>
-                        {filterIcons[(player.riserva ?? 0) - 1]}
-                      </IconButton>
-                    </Tooltip>
-                  </Slide>
+                  <Tooltip title={`Riserva ${player.riserva}`}>
+                    <IconButton>
+                      {filterIcons[(player.riserva ?? 7) - 1]}
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title={'Statistiche giocatore'}>
+                    <IconButton
+                      onClick={() => handleStatGiocatore(player.idGiocatore)}
+                    >
+                      <Analytics color="info" />
+                    </IconButton>
+                  </Tooltip>
                 </Grid>
               </Grid>
             ))}
@@ -527,54 +562,15 @@ function FormazioneXs() {
               </Box>
             </Grid>
             <Grid item sm={8} xs={12}>
-              <Accordion>
-                <AccordionSummary expandIcon={<ExpandMore />}>
-                  <Typography variant="h5">
-                    Rosa ({rosa.length}) / Panchina ({panca.length})
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Grid container spacing={0}>
-                    {renderRosa(['P'], 'Portieri')}
-                    {renderRosa(['D'], 'Difensori')}
-                    {renderRosa(['C'], 'Centrocampisti')}
-                    {renderRosa(['A'], 'Attaccanti')}
-                  </Grid>
-                </AccordionDetails>
-              </Accordion>
-              <Accordion defaultExpanded={true}>
-                <AccordionSummary expandIcon={<ExpandMore />}>
-                  <Stack
-                    direction={'row'}
-                    justifyContent="right"
-                    alignItems="center"
-                  >
-                    <Typography variant="h5" mr={2}>
-                      In campo ({campo.length})
-                    </Typography>
-                  </Stack>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Box
-                    sx={{
-                      borderStyle: 'none',
-                      borderWidth: '0px',
-                      position: 'relative',
-                      width: '100%', //410px
-                      aspectRatio: '360 / 509',
-                      //height: '490px',
-                      backgroundRepeat: 'no-repeat',
-                      backgroundSize: 'cover', //100%
-                      backgroundImage: "url('images/campo.jpg')",
-                    }}
-                  >
-                    {renderCampo(['P'])}
-                    {renderCampo(['D'])}
-                    {renderCampo(['C'])}
-                    {renderCampo(['A'])}
-                  </Box>
-                </AccordionDetails>
-              </Accordion>
+              <Typography variant="h5">
+                Rosa ({rosa.length}) / Panchina ({panca.length})
+              </Typography>
+              <Grid container spacing={0}>
+                {renderRosa(['P'], 'Portieri')}
+                {renderRosa(['D'], 'Difensori')}
+                {renderRosa(['C'], 'Centrocampisti')}
+                {renderRosa(['A'], 'Attaccanti')}
+              </Grid>
               <Snackbar
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
                 sx={{ height: '30%' }}
