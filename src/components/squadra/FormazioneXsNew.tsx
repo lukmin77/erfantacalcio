@@ -50,16 +50,17 @@ import {
   calcolaCodiceFormazione,
   allowedFormations,
   formatModulo,
-  getPlayerStylePosition,
 } from './utils'
 import { giornataSchema } from '~/server/api/routers/common'
 import { z } from 'zod'
+import Statistica from './Statistica'
 
 function FormazioneXsNew() {
   const session = useSession()
   const idSquadra = parseInt(session.data?.user?.id ?? '0')
   const [idGiocatoreStat, setIdGiocatoreStat] = useState<number>()
   const [openModalCalendario, setOpenModalCalendario] = useState(false)
+  const [openModalStatistica, setOpenModalStatistica] = useState(false)
   const [enableRosa, setEnableRosa] = useState(false)
   const [message, setMessage] = useState('')
   const [giornate, setGiornate] = useState<z.infer<typeof giornataSchema>[]>([])
@@ -380,8 +381,16 @@ function FormazioneXsNew() {
     setOpenAlert(true)
   }
 
-  const handleModalClose = () => {
+  const handleModalCalendarioClose = () => {
     setOpenModalCalendario(false)
+  }
+
+  const handleModalStatisticaClose = () => {
+    setOpenModalStatistica(false)
+  }
+
+  function StatisticaSquadra(): void {
+    setOpenModalStatistica(true)
   }
 
   return (
@@ -404,8 +413,13 @@ function FormazioneXsNew() {
         )}
         {enableRosa ? (
           <>
-            <Grid item xs={8}>
-              {giornate.length > 1 ? (
+            <Grid item xs={12} textAlign={'center'}>
+              <Typography variant="h5" sx={{ lineHeight: 2 }}>
+                <b>{giornate[0]?.Title}</b>
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              {giornate.length > 1 && (
                 <Select
                   size="small"
                   variant="outlined"
@@ -431,14 +445,21 @@ function FormazioneXsNew() {
                     >{`${g.Title}`}</MenuItem>
                   ))}
                 </Select>
-              ) : (
-                <Typography variant="h5" sx={{ lineHeight: 2 }}>
-                  <b>{giornate[0]?.Title}</b>
-                </Typography>
               )}
             </Grid>
-            <Grid item xs={4} justifyItems={'end'}>
+            <Grid item xs={12} justifyItems={'end'}>
               <Box component="form" onSubmit={handleSave} noValidate>
+                <Button
+                  type="button"
+                  variant="contained"
+                  color="primary"
+                  size="medium"
+                  onClick={() => StatisticaSquadra()}
+                  endIcon={<SportsSoccer />}
+                  sx={{ mr: 1, fontSize: '11px' }}
+                >
+                  Andamento
+                </Button>
                 <Button
                   type="submit"
                   disabled={saving}
@@ -446,25 +467,21 @@ function FormazioneXsNew() {
                   variant="contained"
                   color="error"
                   size="medium"
-                  sx={{ fontSize: '10px' }}
+                  sx={{ fontSize: '11px' }}
                 >
                   {saving ? 'Attendere...' : 'Salva'}
                 </Button>
               </Box>
             </Grid>
-            <Grid item sm={8} xs={12}>
+            <Grid item xs={12}>
               <Grid container spacing={0}>
                 <Grid item sm={6} xs={6}>
-                <Typography variant="h5">
-                  Rosa ({rosa.length}) / Panchina ({panca.length})
-                </Typography>
-                </Grid>
-                <Grid item sm={6} xs={6} textAlign={'right'}>
                   <Typography variant="h5">
-                    {`Modulo: ${modulo}`}
+                    Rosa ({rosa.length}) / Panchina ({panca.length})
                   </Typography>
                 </Grid>
-                <Grid item xs={12} minHeight={20}>
+                <Grid item sm={6} xs={6} textAlign={'right'}>
+                  <Typography variant="h5">{`Modulo: ${modulo}`}</Typography>
                 </Grid>
               </Grid>
               <Grid container spacing={0}>
@@ -523,7 +540,7 @@ function FormazioneXsNew() {
       <Modal
         title={'Statistica giocatore'}
         open={openModalCalendario}
-        onClose={handleModalClose}
+        onClose={handleModalCalendarioClose}
         width={'98%'}
         height={'98%'}
       >
@@ -532,6 +549,19 @@ function FormazioneXsNew() {
           {idGiocatoreStat !== undefined && (
             <Giocatore idGiocatore={idGiocatoreStat} />
           )}
+        </Box>
+      </Modal>
+
+      <Modal
+        title={'Statistica squadra'}
+        open={openModalStatistica}
+        onClose={handleModalStatisticaClose}
+        width={'98%'}
+        height={'98%'}
+      >
+        <Divider />
+        <Box sx={{ mt: 1, gap: '0px', flexWrap: 'wrap' }}>
+          <Statistica idSquadra={parseInt(session.data?.user?.id ?? '0')} />
         </Box>
       </Modal>
     </>

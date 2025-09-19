@@ -89,7 +89,7 @@ export function guestListItems(isXs: boolean, isAuthenticated: boolean) {
                   'guest_profilo',
                   `/formazione?isXs=${isXs}&isXsNew=true`,
                   'Inserisci formazione (new)',
-                  <RecentActors color="success" />,
+                  <FiberNew color="success" />,
                 ),
               ]
             : []),
