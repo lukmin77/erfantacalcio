@@ -25,3 +25,18 @@ export interface iGiocatoreStats {
   squadra: string | null
   idSquadra: number | null
 }
+
+export interface iRosaStats {
+  media: Decimal | null
+  mediabonus: Decimal | null
+  golfatti: Decimal | null
+  golsubiti: Decimal | null
+  assist: Decimal | null
+  giocate: number | null
+  ruolo: string | null
+  nome: string
+  idgiocatore: number
+  maglia: string
+  squadraSerieA: string
+  idSquadra: number | null
+}
