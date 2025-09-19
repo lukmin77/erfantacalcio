@@ -55,7 +55,7 @@ import {
 import { giornataSchema } from '~/server/api/routers/common'
 import { z } from 'zod'
 
-function FormazioneXs() {
+function FormazioneXsNew() {
   const session = useSession()
   const idSquadra = parseInt(session.data?.user?.id ?? '0')
   const [idGiocatoreStat, setIdGiocatoreStat] = useState<number>()
@@ -453,9 +453,20 @@ function FormazioneXs() {
               </Box>
             </Grid>
             <Grid item sm={8} xs={12}>
-              <Typography variant="h5">
-                Rosa ({rosa.length}) / Panchina ({panca.length})
-              </Typography>
+              <Grid container spacing={0}>
+                <Grid item sm={6} xs={6}>
+                <Typography variant="h5">
+                  Rosa ({rosa.length}) / Panchina ({panca.length})
+                </Typography>
+                </Grid>
+                <Grid item sm={6} xs={6} textAlign={'right'}>
+                  <Typography variant="h5">
+                    {`Modulo: ${modulo}`}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} minHeight={20}>
+                </Grid>
+              </Grid>
               <Grid container spacing={0}>
                 {renderRosa(['P'], 'Portieri')}
                 {renderRosa(['D'], 'Difensori')}
@@ -527,4 +538,4 @@ function FormazioneXs() {
   )
 }
 
-export default FormazioneXs
+export default FormazioneXsNew

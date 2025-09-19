@@ -83,6 +83,16 @@ export function guestListItems(isXs: boolean, isAuthenticated: boolean) {
   return [
     ...(isAuthenticated
       ? [
+          ...(isXs
+            ? [
+                listItem(
+                  'guest_profilo',
+                  `/formazione?isXs=${isXs}&isXsNew=true`,
+                  'Inserisci formazione (new)',
+                  <RecentActors color="success" />,
+                ),
+              ]
+            : []),
           listItem(
             'guest_profilo',
             `/formazione?isXs=${isXs}`,
