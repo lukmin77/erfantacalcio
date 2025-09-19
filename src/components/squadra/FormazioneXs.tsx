@@ -11,7 +11,6 @@ import {
   LooksOneOutlined,
   LooksTwoOutlined,
   Save,
-  SportsSoccer,
 } from '@mui/icons-material'
 import {
   Box,
@@ -27,9 +26,13 @@ import {
   Button,
   Snackbar,
   Alert,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   IconButton,
   Divider,
   Tooltip,
+  Slide,
 } from '@mui/material'
 import { useSession } from 'next-auth/react'
 import { api } from '~/utils/api'
@@ -236,45 +239,11 @@ function FormazioneXs() {
   }
 
   const renderRosa = (roles: string[], title: string) => {
-    // creo un array unico con info su dove si trova il giocatore
-    const mergedPlayers = [
-      ...rosa
-        .filter((p) => roles.includes(p.ruolo))
-        .map((p) => ({ ...p, status: 'rosa' })),
-      ...campo
-        .filter((p) => roles.includes(p.ruolo))
-        .map((p) => ({ ...p, status: 'campo' })),
-      ...panca
-        .filter((p) => roles.includes(p.ruolo))
-        .map((p) => ({ ...p, status: 'panca' })),
-    ]
-
+    const filteredRosa = rosa.filter((player) => roles.includes(player.ruolo))
+    const filteredPanca = panca.filter((player) => roles.includes(player.ruolo))
     const handleStatGiocatore = (idGiocatore: number) => {
       setIdGiocatoreStat(idGiocatore)
       setOpenModalCalendario(true)
-    }
-
-    const renderStatusIcon = (player: any) => {
-      if (player.status === 'campo') {
-        return (
-          <Tooltip title="Titolare">
-            <IconButton>
-              <SportsSoccer color="success" />
-            </IconButton>
-          </Tooltip>
-        )
-      }
-
-      if (player.status === 'panca') {
-        return (
-          <Tooltip title={`Riserva ${player.riserva}`}>
-            <IconButton>{filterIcons[(player.riserva ?? 7) - 1]}</IconButton>
-          </Tooltip>
-        )
-      }
-
-      // se è solo in rosa -> nessuna icona extra
-      return null
     }
 
     return (
@@ -282,7 +251,7 @@ function FormazioneXs() {
         <Box>
           <Typography variant="h5">{title}</Typography>
           <List sx={{ bgcolor: 'background.paper' }}>
-            {mergedPlayers.map((player) => (
+            {filteredRosa.map((player) => (
               <Grid container spacing={0} key={player.idGiocatore}>
                 <Grid item xs={9}>
                   <div onClick={() => handleClickPlayer(player)}>
@@ -303,22 +272,78 @@ function FormazioneXs() {
                       />
                       <ListItemText
                         primary={getShortName(player.nome)}
-                        secondary={`${player.ruoloEsteso} (${player.nomeSquadraSerieA
+                        secondary={`${
+                          player.ruoloEsteso
+                        } (${player.nomeSquadraSerieA
                           ?.toUpperCase()
                           .substring(0, 3)})`}
-                      />
+                      ></ListItemText>
                     </ListItem>
                   </div>
                 </Grid>
-                <Grid item xs={3} display="flex" justifyContent="flex-end">
-                  {renderStatusIcon(player)}
-                  <Tooltip title="Statistiche giocatore">
-                    <IconButton
-                      onClick={() => handleStatGiocatore(player.idGiocatore)}
+                <Grid item xs={3} display={'flex'} justifyContent={'flex-end'}>
+                  <Slide
+                    direction="right"
+                    in={true}
+                    style={{ transitionDelay: '300ms' }}
+                    mountOnEnter
+                    unmountOnExit
+                  >
+                    <Tooltip title={'Statistiche giocatore'}>
+                      <IconButton
+                        onClick={() => handleStatGiocatore(player.idGiocatore)}
+                      >
+                        <Analytics color="info" />
+                      </IconButton>
+                    </Tooltip>
+                  </Slide>
+                </Grid>
+              </Grid>
+            ))}
+            {filteredPanca.map((player) => (
+              <Grid container spacing={0} key={player.idGiocatore}>
+                <Grid item xs={9}>
+                  <div onClick={() => handleClickPlayer(player)}>
+                    <ListItem
+                      sx={{
+                        cursor: 'pointer',
+                        zIndex: 2,
+                        paddingTop: '0px',
+                        paddingBottom: '0px',
+                        paddingLeft: '0px',
+                      }}
                     >
-                      <Analytics color="info" />
-                    </IconButton>
-                  </Tooltip>
+                      <Image
+                        src={player.urlCampioncinoSmall}
+                        width={42}
+                        height={42}
+                        alt={player.nome}
+                      />
+                      <ListItemText
+                        primary={getShortName(player.nome)}
+                        secondary={`${
+                          player.ruoloEsteso
+                        } (${player.nomeSquadraSerieA
+                          ?.toUpperCase()
+                          .substring(0, 3)})`}
+                      ></ListItemText>
+                    </ListItem>
+                  </div>
+                </Grid>
+                <Grid item xs={3} display={'flex'} justifyContent={'flex-end'}>
+                  <Slide
+                    direction="right"
+                    in={true}
+                    style={{ transitionDelay: '300ms' }}
+                    mountOnEnter
+                    unmountOnExit
+                  >
+                    <Tooltip title={`Riserva ${player.riserva}`}>
+                      <IconButton>
+                        {filterIcons[(player.riserva ?? 0) - 1]}
+                      </IconButton>
+                    </Tooltip>
+                  </Slide>
                 </Grid>
               </Grid>
             ))}
@@ -336,6 +361,55 @@ function FormazioneXs() {
     <Looks5Outlined key={4} color="error" />,
     <Looks6Outlined key={5} color="error" />,
   ]
+
+  const renderCampo = (roles: string[]) => {
+    const filtered = campo.filter((player) => roles.includes(player.ruolo))
+    return (
+      <>
+        {filtered.map((player, index) => {
+          const style = getPlayerStylePosition(player.ruolo, index, modulo)
+          return (
+            <div
+              key={player.idGiocatore}
+              onClick={() => handleClickPlayer(player)}
+              style={{
+                cursor: 'pointer',
+                zIndex: 2,
+                minWidth: '120px',
+                position: 'absolute',
+                ...style,
+              }}
+            >
+              <Stack
+                direction={'column'}
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Image
+                  src={player.urlCampioncinoSmall}
+                  key={player.idGiocatore}
+                  width={48}
+                  height={48}
+                  alt={player.nome}
+                />
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'white',
+                    backgroundColor: '#2e865f',
+                    opacity: 0.8,
+                    padding: '2px',
+                  }}
+                >
+                  {player.nome}
+                </Typography>
+              </Stack>
+            </div>
+          )
+        })}
+      </>
+    )
+  }
 
   const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -453,15 +527,54 @@ function FormazioneXs() {
               </Box>
             </Grid>
             <Grid item sm={8} xs={12}>
-              <Typography variant="h5">
-                Rosa ({rosa.length}) / Panchina ({panca.length})
-              </Typography>
-              <Grid container spacing={0}>
-                {renderRosa(['P'], 'Portieri')}
-                {renderRosa(['D'], 'Difensori')}
-                {renderRosa(['C'], 'Centrocampisti')}
-                {renderRosa(['A'], 'Attaccanti')}
-              </Grid>
+              <Accordion>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                  <Typography variant="h5">
+                    Rosa ({rosa.length}) / Panchina ({panca.length})
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Grid container spacing={0}>
+                    {renderRosa(['P'], 'Portieri')}
+                    {renderRosa(['D'], 'Difensori')}
+                    {renderRosa(['C'], 'Centrocampisti')}
+                    {renderRosa(['A'], 'Attaccanti')}
+                  </Grid>
+                </AccordionDetails>
+              </Accordion>
+              <Accordion defaultExpanded={true}>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                  <Stack
+                    direction={'row'}
+                    justifyContent="right"
+                    alignItems="center"
+                  >
+                    <Typography variant="h5" mr={2}>
+                      In campo ({campo.length})
+                    </Typography>
+                  </Stack>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Box
+                    sx={{
+                      borderStyle: 'none',
+                      borderWidth: '0px',
+                      position: 'relative',
+                      width: '100%', //410px
+                      aspectRatio: '360 / 509',
+                      //height: '490px',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundSize: 'cover', //100%
+                      backgroundImage: "url('images/campo.jpg')",
+                    }}
+                  >
+                    {renderCampo(['P'])}
+                    {renderCampo(['D'])}
+                    {renderCampo(['C'])}
+                    {renderCampo(['A'])}
+                  </Box>
+                </AccordionDetails>
+              </Accordion>
               <Snackbar
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
                 sx={{ height: '30%' }}
