@@ -552,7 +552,7 @@ function Formazione() {
                   }}
                   color="info"
                   size="medium"
-                  sx={{ ml: '5px' }}
+                  sx={{ mr: 1, ml: 1 }}
                 >
                   Reset
                 </Button>
@@ -564,7 +564,7 @@ function Formazione() {
                     size="medium"
                     onClick={() => StatisticaSquadra()}
                     endIcon={<SportsSoccer />}
-                    sx={{ mr: 1, fontSize: '11px' }}
+                    sx={{ mr: 1, ml: 1 }}
                   >
                     Andamento
                   </Button>
@@ -575,7 +575,7 @@ function Formazione() {
                     variant="contained"
                     color="success"
                     size="medium"
-                    sx={{ ml: '5px' }}
+                    sx={{ mr: 1, ml: 1 }}
                   >
                     {saving ? 'Attendere...' : 'Salva'}
                   </Button>
