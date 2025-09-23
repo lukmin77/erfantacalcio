@@ -536,27 +536,28 @@ function Formazione() {
                     ))}
                   </Select>
                 )}
-                <Button
-                  type="button"
-                  endIcon={<ResetTv />}
-                  variant="contained"
-                  onClick={() => {
-                    setModulo(moduloDefault)
-                    setCampo([])
-                    setPanca([])
-                    setRosa(
-                      sortPlayersByRoleDescThenCostoDesc(
-                        rosa.concat(campo, panca),
-                      ),
-                    )
-                  }}
-                  color="info"
-                  size="medium"
-                  sx={{ mr: 1, ml: 1 }}
-                >
-                  Reset
-                </Button>
+
                 <Box component="form" onSubmit={handleSave} noValidate>
+                  <Button
+                    type="button"
+                    endIcon={<ResetTv />}
+                    variant="contained"
+                    onClick={() => {
+                      setModulo(moduloDefault)
+                      setCampo([])
+                      setPanca([])
+                      setRosa(
+                        sortPlayersByRoleDescThenCostoDesc(
+                          rosa.concat(campo, panca),
+                        ),
+                      )
+                    }}
+                    color="info"
+                    size="medium"
+                    sx={{ mr: 1, ml: 1 }}
+                  >
+                    Reset
+                  </Button>
                   <Button
                     type="button"
                     variant="contained"
