@@ -662,8 +662,7 @@ function Formazione() {
         title={'Statistica squadra'}
         open={openModalStatistica}
         onClose={handleModalStatisticaClose}
-        width={'98%'}
-        height={'98%'}
+        width={'1266px'}
       >
         <Divider />
         <Box sx={{ mt: 1, gap: '0px', flexWrap: 'wrap' }}>
