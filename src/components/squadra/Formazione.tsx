@@ -554,7 +554,7 @@ function Formazione() {
                     }}
                     color="info"
                     size="medium"
-                    sx={{ mr: 1, ml: 1 }}
+                    sx={{ mr: 1 }}
                   >
                     Reset
                   </Button>
@@ -576,7 +576,7 @@ function Formazione() {
                     variant="contained"
                     color="success"
                     size="medium"
-                    sx={{ mr: 1, ml: 1 }}
+                    sx={{ ml: 1 }}
                   >
                     {saving ? 'Attendere...' : 'Salva'}
                   </Button>
