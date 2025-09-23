@@ -10,6 +10,7 @@ import {
   LooksTwoOutlined,
   ResetTv,
   Save,
+  SportsSoccer,
 } from '@mui/icons-material'
 import {
   Box,
@@ -54,6 +55,7 @@ import {
 } from './utils'
 import { giornataSchema } from '~/server/api/routers/common'
 import { z } from 'zod'
+import Statistica from './Statistica'
 
 function Formazione() {
   const session = useSession()
@@ -61,6 +63,7 @@ function Formazione() {
   const squadra = session.data?.user?.squadra ?? ''
   const [idGiocatoreStat, setIdGiocatoreStat] = useState<number>()
   const [openModalCalendario, setOpenModalCalendario] = useState(false)
+  const [openModalStatistica, setOpenModalStatistica] = useState(false)
   const [enableRosa, setEnableRosa] = useState(false)
   const [message, setMessage] = useState('')
   const [giornate, setGiornate] = useState<z.infer<typeof giornataSchema>[]>([])
@@ -464,6 +467,14 @@ function Formazione() {
     setOpenModalCalendario(false)
   }
 
+  const handleModalStatisticaClose = () => {
+    setOpenModalStatistica(false)
+  }
+
+  function StatisticaSquadra(): void {
+    setOpenModalStatistica(true)
+  }
+
   return (
     <>
       <Grid container spacing={0}>
@@ -546,6 +557,17 @@ function Formazione() {
                   Reset
                 </Button>
                 <Box component="form" onSubmit={handleSave} noValidate>
+                  <Button
+                    type="button"
+                    variant="contained"
+                    color="primary"
+                    size="medium"
+                    onClick={() => StatisticaSquadra()}
+                    endIcon={<SportsSoccer />}
+                    sx={{ mr: 1, fontSize: '11px' }}
+                  >
+                    Andamento
+                  </Button>
                   <Button
                     type="submit"
                     disabled={saving}
@@ -632,6 +654,19 @@ function Formazione() {
           {idGiocatoreStat !== undefined && (
             <Giocatore idGiocatore={idGiocatoreStat} />
           )}
+        </Box>
+      </Modal>
+
+      <Modal
+        title={'Statistica squadra'}
+        open={openModalStatistica}
+        onClose={handleModalStatisticaClose}
+        width={'98%'}
+        height={'98%'}
+      >
+        <Divider />
+        <Box sx={{ mt: 1, gap: '0px', flexWrap: 'wrap' }}>
+          <Statistica idSquadra={parseInt(session.data?.user?.id ?? '0')} />
         </Box>
       </Modal>
     </>
