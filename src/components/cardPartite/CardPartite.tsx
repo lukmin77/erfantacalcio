@@ -73,7 +73,7 @@ export default function CardPartite({
                       key={`grid_${partita.idPartita}`}
                     >
                       {withAvatar && (
-                        <Grid item xs={!isXs ? 1 : 2} alignSelf={'center'}>
+                        <Grid item xs={!isXs ? 1 : 1.5} alignSelf={'center'}>
                           <Avatar
                             alt={partita.squadraHome ?? ''}
                             src={partita.fotoHome ?? ''}
@@ -83,8 +83,7 @@ export default function CardPartite({
                       )}
                       <Grid
                         item
-                        xs={withAvatar ? (!isXs ? 5 : 4) : 6}
-                        alignSelf={'center'}
+                        xs={withAvatar ? (!isXs ? 4 : 3.5) : 5}
                       >
                         <Typography variant="h6">
                           {partita.squadraHome}
@@ -94,14 +93,20 @@ export default function CardPartite({
                             </Tooltip>
                           )}
                         </Typography>
+                      </Grid>
+                      <Grid item xs={1}>
                         <Typography variant="h5">
                           {partita.golHome ?? '-'}
                         </Typography>
                       </Grid>
+                      <Grid item xs={1}>
+                        <Typography variant="h5">
+                          {partita.golAway ?? '-'}
+                        </Typography>
+                      </Grid>
                       <Grid
                         item
-                        xs={withAvatar ? (!isXs ? 5 : 4) : 6}
-                        alignSelf={'center'}
+                        xs={withAvatar ? (!isXs ? 4 : 3.5) : 5}
                         textAlign={'right'}
                         paddingRight={2}
                       >
@@ -113,14 +118,11 @@ export default function CardPartite({
                             </Tooltip>
                           )}
                         </Typography>
-                        <Typography variant="h5">
-                          {partita.golAway ?? '-'}
-                        </Typography>
                       </Grid>
                       {withAvatar && (
                         <Grid
                           item
-                          xs={!isXs ? 1 : 2}
+                          xs={!isXs ? 1 : 1.5}
                           alignSelf={'center'}
                           textAlign={'right'}
                           alignContent={'flex-end'}
