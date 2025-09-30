@@ -393,6 +393,13 @@ function FormazioneXsNew() {
     setOpenModalStatistica(true)
   }
 
+  function resetFormazione(idTorneo: number): void {
+    setCampo([])
+    setPanca([])
+    setRosa([])
+    setIdTorneo(idTorneo)
+  }
+
   return (
     <>
       <Grid container spacing={1}>
@@ -414,8 +421,8 @@ function FormazioneXsNew() {
         {enableRosa ? (
           <>
             <Grid item xs={12} textAlign={'center'}>
-              <Typography variant="h5" sx={{ lineHeight: 2 }}>
-                <b>{giornate[0]?.Title}</b>
+              <Typography variant={giornate.length > 0 ? 'h6' : 'h5'} sx={{ lineHeight: 2 }}>
+                <b>{giornate.length > 0 ? `${giornate[0]?.Title} / ${giornate[1]?.Title}` : giornate[0]?.Title}</b>
               </Typography>
             </Grid>
             <Grid item xs={12}>
@@ -429,7 +436,7 @@ function FormazioneXsNew() {
                   name="giornata"
                   onChange={(e) =>
                     e.target.value !== 0
-                      ? setIdTorneo(e.target.value as number)
+                      ? resetFormazione(e.target.value as number) 
                       : setIdPartita(0)
                   }
                   defaultValue={giornate[0]?.idTorneo}
@@ -442,7 +449,7 @@ function FormazioneXsNew() {
                       value={g.idTorneo}
                       key={`giornata_${g.idTorneo}`}
                       selected={index === 0}
-                    >{`${g.Title}`}</MenuItem>
+                    >{`Salva solo ${g.Title}`}</MenuItem>
                   ))}
                 </Select>
               )}
