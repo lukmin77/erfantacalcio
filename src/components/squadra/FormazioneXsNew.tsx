@@ -305,10 +305,9 @@ function FormazioneXsNew() {
                       />
                       <ListItemText
                         primary={getShortName(player.nome)}
-                        secondary={getMatch(giornate[0], player)}
-                        // secondary={`${player.ruoloEsteso} (${player.nomeSquadraSerieA
-                        //   ?.toUpperCase()
-                        //   .substring(0, 3)})`}
+                        secondary={`(${player.nomeSquadraSerieA
+                          ?.toUpperCase()
+                          .substring(0, 3)}) - ${getMatch(giornate[0], player, false)}`}
                       />
                     </ListItem>
                   </div>

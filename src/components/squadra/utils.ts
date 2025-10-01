@@ -121,7 +121,7 @@ export function getOpponent(giornata: any, player: any) {
     : match.squadraHome.toUpperCase().trim();
 }
 
-export function getMatch(giornata: any, player: any) {
+export function getMatch(giornata: any, player: any, withSubstring: boolean) {
   if (!giornata?.SerieA) return null;
 
   const playerTeam = player.nomeSquadraSerieA?.toLowerCase();
@@ -134,5 +134,8 @@ export function getMatch(giornata: any, player: any) {
 
   if (!match) return '';
 
-  return `${match.squadraHome?.trim().substring(0,3) ?? ''} - ${match.squadraAway?.trim().substring(0,3) ?? ''}`;
+  if (withSubstring)
+    return `${match.squadraHome?.trim().substring(0,3) ?? ''} - ${match.squadraAway?.trim().substring(0,3) ?? ''}`;
+  else
+    return `${match.squadraHome?.trim() ?? ''} - ${match.squadraAway?.trim() ?? ''}`;
 }

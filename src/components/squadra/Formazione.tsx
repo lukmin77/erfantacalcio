@@ -291,7 +291,7 @@ function Formazione() {
                       />
                       <ListItemText
                         primary={getShortName(player.nome)}
-                        secondary={getMatch(giornate[0], player)}
+                        secondary={getMatch(giornate[0], player, true)}
                       ></ListItemText>
                     </ListItem>
                   </div>
@@ -335,7 +335,7 @@ function Formazione() {
                       />
                       <ListItemText
                         primary={getShortName(player.nome)}
-                        secondary={getMatch(giornate[0], player)}
+                        secondary={getMatch(giornate[0], player, true)}
                       ></ListItemText>
                     </ListItem>
                   </div>
