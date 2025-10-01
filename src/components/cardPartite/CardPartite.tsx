@@ -73,7 +73,7 @@ export default function CardPartite({
                       key={`grid_${partita.idPartita}`}
                     >
                       {withAvatar && (
-                        <Grid item xs={!isXs ? 1 : 1.3} alignSelf={'center'}>
+                        <Grid item xs={!isXs ? 1 : 1.5} alignSelf={'center'} sx={{pr:1}}>
                           <Avatar
                             alt={partita.squadraHome ?? ''}
                             src={partita.fotoHome ?? ''}
@@ -84,6 +84,7 @@ export default function CardPartite({
                       <Grid
                         item
                         xs={withAvatar ? (!isXs ? 4 : 3.7) : 5}
+                        alignSelf={'center'}
                       >
                         <Typography variant="h6">
                           {partita.squadraHome}
@@ -94,14 +95,14 @@ export default function CardPartite({
                           )}
                         </Typography>
                       </Grid>
-                      <Grid item xs={1}>
+                      <Grid item xs={!isXs ? 1 : 0.8} alignSelf={'center'}>
                         <Typography variant="h5">
-                          {partita.golHome ?? '-'}
+                          {partita.golHome ?? ''}
                         </Typography>
                       </Grid>
-                      <Grid item xs={1}>
+                      <Grid item xs={!isXs ? 1 : 0.8} alignSelf={'center'}>
                         <Typography variant="h5">
-                          {partita.golAway ?? '-'}
+                          {partita.golAway ?? ''}
                         </Typography>
                       </Grid>
                       <Grid
@@ -109,6 +110,7 @@ export default function CardPartite({
                         xs={withAvatar ? (!isXs ? 4 : 3.7) : 5}
                         textAlign={'right'}
                         paddingRight={2}
+                        alignSelf={'center'}
                       >
                         <Typography variant="h6">
                           {partita.squadraAway}
@@ -122,7 +124,7 @@ export default function CardPartite({
                       {withAvatar && (
                         <Grid
                           item
-                          xs={!isXs ? 1 : 1.3}
+                          xs={!isXs ? 1 : 1.5}
                           alignSelf={'center'}
                           textAlign={'right'}
                           alignContent={'flex-end'}
@@ -135,9 +137,9 @@ export default function CardPartite({
                           ></Avatar>
                         </Grid>
                       )}
-                      <Grid item xs={12}>
+                      {/* <Grid item xs={12}>
                         <Divider />
-                      </Grid>
+                      </Grid> */}
                     </Grid>
                   </a>
                 ))
