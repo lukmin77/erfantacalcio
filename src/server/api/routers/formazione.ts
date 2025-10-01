@@ -20,7 +20,7 @@ export const formazioneRouter = createTRPCRouter({
     try {
       const idSquadraUtente = opts.ctx.session.user.idSquadra
       const giornataSerieA = await getProssimaGiornataSerieA(false, 'asc')
-      const prossimeGiornate = await getProssimaGiornata(giornataSerieA)
+      const prossimeGiornate = await getProssimaGiornata(giornataSerieA, true)
       const giornateFiltrate = prossimeGiornate.filter((giornata) =>
         giornata.partite.some(
           (partita) =>

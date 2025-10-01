@@ -9,6 +9,12 @@ import { type Decimal } from '@prisma/client/runtime/library'
 import prisma from '~/utils/db'
 import { z } from 'zod'
 
+export const serieASchema = z.object({
+  giornata: z.number(),
+  squadraHome: z.string(),
+  squadraAway: z.string(),
+})
+
 export const giornataSchema = z.object({
   idCalendario: z.number(),
   idTorneo: z.number(),
@@ -42,6 +48,7 @@ export const giornataSchema = z.object({
   Descrizione: z.string(),
   Title: z.string(),
   SubTitle: z.string(),
+  SerieA: z.array(serieASchema).optional(),
 })
 
 const torneiSchema = z.object({
@@ -240,7 +247,10 @@ export async function getProssimaGiornataSerieA(
   return query?.giornataSerieA ?? 0
 }
 
-export async function getProssimaGiornata(giornataSerieA: number) {
+export async function getProssimaGiornata(
+  giornataSerieA: number,
+  withSerieA?: boolean,
+) {
   const result = await prisma.calendario.findMany({
     select: {
       idCalendario: true,
@@ -281,7 +291,19 @@ export async function getProssimaGiornata(giornataSerieA: number) {
     orderBy: [{ ordine: 'asc' }, { idTorneo: 'asc' }],
   })
 
-  return mapCalendario(result)
+  if (withSerieA && withSerieA === true) {
+    const serieAData = await prisma.serieA.findMany({
+      select: {
+        giornata: true,
+        squadraHome: true,
+        squadraAway: true,
+      },
+      where: { giornata: giornataSerieA },
+    })
+    return mapCalendarioWithSerieA(result, serieAData)
+  } else {
+    return mapCalendario(result)
+  }
 }
 
 export async function getRosaDisponibile(idSquadra: number) {
@@ -450,6 +472,39 @@ export async function mapCalendario(
     ),
     Title: getTorneoTitle(c.Tornei.nome, c.giornata, c.Tornei.gruppoFase),
     SubTitle: getTorneoSubTitle(c.giornataSerieA),
+  }))
+}
+
+export async function mapCalendarioWithSerieA(
+  result: z.infer<typeof calendarioPartiteSchema>[],
+  serieAData: z.infer<typeof serieASchema>[],
+): Promise<z.infer<typeof giornataSchema>[]> {
+  return result.map((c) => ({
+    idCalendario: c.idCalendario,
+    idTorneo: c.Tornei.idTorneo,
+    giornata: c.giornata,
+    giornataSerieA: c.giornataSerieA,
+    isGiocata: c.hasGiocata,
+    isSovrapposta: c.hasSovrapposta,
+    isRecupero: c.hasDaRecuperare,
+    data: c.data?.toISOString(),
+    dataFine: c.dataFine?.toISOString(),
+    girone: c.girone,
+    partite: mapPartite(c.Partite),
+    Torneo: c.Tornei.nome,
+    Descrizione: getDescrizioneTorneo(
+      c.Tornei.nome,
+      c.giornata,
+      c.giornataSerieA,
+      c.Tornei.gruppoFase,
+    ),
+    Title: getTorneoTitle(c.Tornei.nome, c.giornata, c.Tornei.gruppoFase),
+    SubTitle: getTorneoSubTitle(c.giornataSerieA),
+    SerieA: serieAData.map((s) => ({
+      giornata: s.giornata,
+      squadraHome: s.squadraHome,
+      squadraAway: s.squadraAway,
+    })),
   }))
 }
 
