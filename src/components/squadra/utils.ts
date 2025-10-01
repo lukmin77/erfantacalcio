@@ -101,3 +101,38 @@ function findModuloCompatibile(modulo: string): Moduli {
 export function checkDataFormazione(dataIso: string | undefined) {
   return dayjs(dataIso).toDate() >= dayjs(new Date()).toDate()
 }
+
+
+export function getOpponent(giornata: any, player: any) {
+  if (!giornata?.SerieA) return null;
+
+  const playerTeam = player.nomeSquadraSerieA?.toLowerCase();
+
+  const match = giornata.SerieA.find(
+    (c: any) =>
+      c.squadraHome?.toLowerCase().trim() === playerTeam ||
+      c.squadraAway?.toLowerCase().trim() === playerTeam
+  );
+
+  if (!match) return '';
+
+  return match.squadraHome?.toLowerCase().trim() === playerTeam
+    ? match.squadraAway.toLowerCase().trim()
+    : match.squadraHome.toUpperCase().trim();
+}
+
+export function getMatch(giornata: any, player: any) {
+  if (!giornata?.SerieA) return null;
+
+  const playerTeam = player.nomeSquadraSerieA?.toLowerCase();
+
+  const match = giornata.SerieA.find(
+    (c: any) =>
+      c.squadraHome?.toLowerCase().trim() === playerTeam ||
+      c.squadraAway?.toLowerCase().trim() === playerTeam
+  );
+
+  if (!match) return '';
+
+  return `${match.squadraHome?.trim().substring(0,3) ?? ''} - ${match.squadraAway?.trim().substring(0,3) ?? ''}`;
+}

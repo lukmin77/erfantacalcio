@@ -50,6 +50,7 @@ import {
   calcolaCodiceFormazione,
   allowedFormations,
   formatModulo,
+  getMatch,
 } from './utils'
 import { giornataSchema } from '~/server/api/routers/common'
 import { z } from 'zod'
@@ -304,9 +305,10 @@ function FormazioneXsNew() {
                       />
                       <ListItemText
                         primary={getShortName(player.nome)}
-                        secondary={`${player.ruoloEsteso} (${player.nomeSquadraSerieA
-                          ?.toUpperCase()
-                          .substring(0, 3)})`}
+                        secondary={getMatch(giornate[0], player)}
+                        // secondary={`${player.ruoloEsteso} (${player.nomeSquadraSerieA
+                        //   ?.toUpperCase()
+                        //   .substring(0, 3)})`}
                       />
                     </ListItem>
                   </div>

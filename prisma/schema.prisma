@@ -29,7 +29,7 @@ model Calendario {
   hasDaRecuperare Boolean   @default(false)
   data            DateTime? @default(now()) @db.Timestamptz(3)
   girone          Int?      @db.SmallInt
-  dataFine        DateTime?
+  dataFine        DateTime? @db.Timestamptz(3)
   Tornei          Tornei    @relation(fields: [idTorneo], references: [idTorneo], onUpdate: NoAction, map: "FK_Calendario_Tornei")
   Partite         Partite[]
   Voti            Voti[]
@@ -266,7 +266,7 @@ model Voti {
 }
 
 model FlowNewSeasosn {
-  id     Int       @id(map: "PK_FlowNewSeason") @default(autoincrement())
+  id     Int       @id(map: "PK_FlowNewSeason") @unique(map: "IX_FlowSeason_id") @default(autoincrement())
   idFase Int
   active Boolean   @default(false)
   data   DateTime? @default(now()) @db.Timestamptz(3)
@@ -279,4 +279,11 @@ model AlboTrofei_new {
   champions  String @db.VarChar(50)
   secondo    String @db.VarChar(50)
   terzo      String @db.VarChar(50)
+}
+
+model SerieA {
+  idSerieA    Int    @id(map: "PK_SerieA") @default(autoincrement())
+  giornata    Int    @db.SmallInt
+  squadraHome String @db.VarChar(50)
+  squadraAway String @db.VarChar(50)
 }

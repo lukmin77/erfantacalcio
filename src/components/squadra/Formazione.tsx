@@ -49,6 +49,7 @@ import {
   calcolaCodiceFormazione,
   checkDataFormazione,
   formatModulo,
+  getMatch,
   getPlayerStylePosition,
   sortPlayersByRoleDescThenCostoDesc,
   sortPlayersByRoleDescThenRiserva,
@@ -290,7 +291,7 @@ function Formazione() {
                       />
                       <ListItemText
                         primary={getShortName(player.nome)}
-                        secondary={`${player.nomeSquadraSerieA}`}
+                        secondary={getMatch(giornate[0], player)}
                       ></ListItemText>
                     </ListItem>
                   </div>
@@ -334,7 +335,7 @@ function Formazione() {
                       />
                       <ListItemText
                         primary={getShortName(player.nome)}
-                        secondary={`${player.nomeSquadraSerieA}`}
+                        secondary={getMatch(giornate[0], player)}
                       ></ListItemText>
                     </ListItem>
                   </div>
