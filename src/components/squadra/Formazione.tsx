@@ -287,7 +287,8 @@ function Formazione() {
                         src={player.urlCampioncinoSmall}
                         width={42}
                         height={42}
-                        alt={player.nome}
+                        alt={player.nomeSquadraSerieA ?? ''}
+                        title={player.nomeSquadraSerieA ?? ''}
                       />
                       <ListItemText
                         primary={getShortName(player.nome)}
@@ -331,7 +332,8 @@ function Formazione() {
                         src={player.urlCampioncinoSmall}
                         width={42}
                         height={42}
-                        alt={player.nome}
+                        alt={player.nomeSquadraSerieA ?? ''}
+                        title={player.nomeSquadraSerieA ?? ''}
                       />
                       <ListItemText
                         primary={getShortName(player.nome)}
@@ -400,7 +402,8 @@ function Formazione() {
                   key={player.idGiocatore}
                   width={48}
                   height={48}
-                  alt={player.nome}
+                  alt={player.nomeSquadraSerieA ?? ''}
+                  title={player.nomeSquadraSerieA ?? ''}
                 />
                 <Typography
                   variant="body2"

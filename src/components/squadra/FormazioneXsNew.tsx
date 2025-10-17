@@ -301,7 +301,8 @@ function FormazioneXsNew() {
                         src={player.urlCampioncinoSmall}
                         width={42}
                         height={42}
-                        alt={player.nome}
+                        alt={player.nomeSquadraSerieA ?? ''}
+                        title={player.nomeSquadraSerieA ?? ''}
                       />
                       <ListItemText
                         primary={getShortName(player.nome)}
