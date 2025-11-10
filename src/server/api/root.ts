@@ -1,7 +1,7 @@
 import { createTRPCRouter } from '~/server/api/trpc'
 
 import { squadreRouter } from './squadre'
-import { calendarioRouter } from './routers/calendario'
+import { calendarioRouter } from './calendario'
 import { formazioneRouter } from './formazione'
 import { profiloRouter } from './profilo'
 import { squadreSerieARouter } from './squadreSerieA'

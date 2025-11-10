@@ -24,7 +24,7 @@ import { api } from '~/utils/api'
 import { getDescrizioneGiornata, getIdNextGiornata } from '~/utils/helper'
 import { CloudUpload } from '@mui/icons-material'
 import { type iVotoGiocatore } from '~/types/voti'
-import { calendarioSchema } from '~/server/api/routers/calendario'
+import { calendarioSchema } from '~/server/api/calendario/schema'
 import { z } from 'zod'
 
 export default function UploadVoti() {
