@@ -730,7 +730,7 @@ async function findAndCreateGiocatori(players: { id_pf: number | null, nome: str
 
       const newPlayers = players.filter((p) => {
         const matchByIdPf = giocatori.some((g) => g !== null && g.id_pf === p.id_pf)
-        const matchByName = giocatori.some((g) => g !== null && g.nome === p.nome)
+        const matchByName = giocatori.some((g) => g !== null && g.nome === normalizeNomeGiocatore(p.nome))
         return !matchByIdPf && !matchByName
       })
       Logger.info(newPlayers)
