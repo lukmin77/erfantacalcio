@@ -4,8 +4,9 @@ import { adminProcedure } from '../../trpc'
 import { normalizeNomeGiocatore } from '~/utils/helper'
 import prisma from '~/utils/db'
 import { Configurazione } from '~/config'
+import _ from 'lodash'
 
-const iVotoGiocatoreSchema = z.object({
+const VotoGiocatoreSchema = z.object({
   id_pf: z.number().nullable(),
   Nome: z.string(),
   Ammonizione: z.number(),
@@ -25,7 +26,7 @@ export const processVotiProcedure = adminProcedure
   .input(
     z.object({
       idCalendario: z.number(),
-      voti: z.array(iVotoGiocatoreSchema),
+      voti: z.array(VotoGiocatoreSchema),
     }),
   )
   .mutation(async (opts) => {
