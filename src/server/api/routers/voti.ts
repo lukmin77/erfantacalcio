@@ -707,7 +707,7 @@ async function findAndCreateGiocatori(players: { id_pf: number | null, nome: str
       },
       where: {
         AND: [{
-          nome: { in: players.map(p => p.nome) },
+          nome: { in: players.map(p => normalizeNomeGiocatore(p.nome)) },
           NOT: { id_pf: { in: players.map(p => p.id_pf).filter((id): id is number => id !== null) } },
         }],
       },
