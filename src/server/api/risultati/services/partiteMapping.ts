@@ -9,7 +9,7 @@ import {
   getTabellino,
 } from '../../../utils/common'
 import { z } from 'zod'
-import { partitaSchema } from '~/schemas/schemas'
+import { partitaSchema } from '~/schemas'
 
 async function getFormazione(idPartita: number, idSquadra: number) {
   return await prisma.formazioni.findFirst({

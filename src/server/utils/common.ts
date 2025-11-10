@@ -8,7 +8,7 @@ import { type Decimal } from '@prisma/client/runtime/library'
 
 import prisma from '~/utils/db'
 import { z } from 'zod'
-import { calendarioPartiteSchema, giornataSchema, partitaSchema, serieASchema } from '~/schemas/schemas'
+import { calendarioPartiteSchema, giornataSchema, partitaSchema, serieASchema } from '~/schemas'
 
 type CalendarioFilter =
   | { idTorneo: number }

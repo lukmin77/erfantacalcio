@@ -1,7 +1,7 @@
 import { adminProcedure } from '~/server/api/trpc'
 import Logger from '~/lib/logger.server'
 import prisma from '~/utils/db'
-import { calendarioSchema } from '~/schemas/schemas'
+import { calendarioSchema } from '~/schemas'
 import { z } from 'zod'
 
 

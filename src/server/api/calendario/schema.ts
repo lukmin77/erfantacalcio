@@ -1,1 +1,1 @@
-export { calendarioSchema } from '~/schemas/schemas'
+export { calendarioSchema } from '~/schemas'

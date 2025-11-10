@@ -38,7 +38,7 @@ import {
 } from '@mui/x-data-grid'
 import { autosizeOptions } from '~/utils/datatable'
 import { Edit } from '@mui/icons-material'
-import { calendarioSchema } from '~/schemas/schemas'
+import { calendarioSchema } from '~/schemas'
 
 
 const CalendarioSchema = z.object({
