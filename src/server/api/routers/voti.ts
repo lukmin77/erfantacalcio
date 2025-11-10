@@ -369,12 +369,26 @@ export const votiRouter = createTRPCRouter({
     .mutation(async (opts) => {
       try {
         Logger.info(`Processing ${opts.input.voti.length} voti`)
-        const giocatori = await findAndCreateGiocatori(opts.input.voti.map(v => ({ id_pf: v.id_pf, nome: normalizeNomeGiocatore(v.Nome), ruolo: v.Ruolo })))
-        
+        const giocatori = await findAndCreateGiocatori(
+          opts.input.voti.map((v) => ({
+            id_pf: v.id_pf,
+            nome: normalizeNomeGiocatore(v.Nome),
+            ruolo: v.Ruolo,
+          })),
+        )
+
         for (const voto of opts.input.voti) {
-          console.log(`Processing voto for player: ${voto.Nome} ${voto.Squadra}`)
-          const idGiocatore = giocatori.find(g => g !== null && (g.id_pf === voto.id_pf || g.nome.toLowerCase() === voto.Nome.toLowerCase()))?.idGiocatore ?? 0
-          
+          console.log(
+            `Processing voto for player: ${voto.Nome} ${voto.Squadra}`,
+          )
+          const idGiocatore =
+            giocatori.find(
+              (g) =>
+                g !== null &&
+                (g.id_pf === voto.id_pf ||
+                  g.nome.toLowerCase() === voto.Nome.toLowerCase()),
+            )?.idGiocatore ?? 0
+
           if ((await findLastTrasferimento(idGiocatore)) === null) {
             const squadraSerieA = await findSquadraSerieA(voto.Squadra)
             if (squadraSerieA !== null) {
@@ -389,14 +403,41 @@ export const votiRouter = createTRPCRouter({
             }
           }
 
-          const idVoto = await findIdVoto(opts.input.idCalendario, idGiocatore)
-          if (idVoto) {
-            await updateVoto(idVoto, voto)
-          } else {
-            await createVoto(opts.input.idCalendario, idGiocatore, voto)
+          // Calcola i valori del voto in un oggetto separato
+          const votoData = {
+            voto: voto.Voto,
+            ammonizione:
+              voto.Ammonizione === 1 ? Configurazione.bonusAmmonizione : 0,
+            espulsione:
+              voto.Espulsione === 1 ? Configurazione.bonusEspulsione : 0,
+            gol:
+              voto.Ruolo === 'P'
+                ? voto.GolSubiti * Configurazione.bonusGolSubito
+                : voto.GolSegnati * Configurazione.bonusGol,
+            assist: voto.Assist * Configurazione.bonusAssist,
+            autogol: voto.Autogol * Configurazione.bonusAutogol,
+            altriBonus:
+              (voto.RigoriParati ?? 0) * Configurazione.bonusRigoreParato +
+              (voto.RigoriErrati ?? 0) * Configurazione.bonusRigoreSbagliato,
           }
-        }
 
+          // Upsert con update e create uguali
+          await prisma.voti.upsert({
+            where: {
+              UQ_Voti_Calendario_Giocatore: {
+                idCalendario: opts.input.idCalendario,
+                idGiocatore: idGiocatore,
+              },
+            },
+            update: votoData,
+            create: {
+              idCalendario: opts.input.idCalendario,
+              idGiocatore: idGiocatore,
+              ...votoData,
+            },
+          })
+        }
+          
         Logger.info(`Process voti successfull completed`)
       } catch (error) {
         Logger.error('Si è verificato un errore', error)
@@ -505,7 +546,11 @@ async function readFileVoti(filePath: string): Promise<iVotoGiocatore[]> {
             return
           } else {
             voti.push({
-              id_pf: line[`Col${Configurazione.pfColumnIdGiocatore}`] ? parseInt(line[`Col${Configurazione.pfColumnIdGiocatore}`] ?? '0') : null,
+              id_pf: line[`Col${Configurazione.pfColumnIdGiocatore}`]
+                ? parseInt(
+                    line[`Col${Configurazione.pfColumnIdGiocatore}`] ?? '0',
+                  )
+                : null,
               Nome: normalizeNomeGiocatore(
                 line[`Col${Configurazione.pfColumnNome}`] ?? '',
               ),
@@ -589,7 +634,11 @@ async function readFileVotiVercel(fileUrl: string): Promise<iVotoGiocatore[]> {
               return
             } else {
               voti.push({
-                id_pf: line[`Col${Configurazione.pfColumnIdGiocatore}`] ? parseInt(line[`Col${Configurazione.pfColumnIdGiocatore}`] ?? '0') : null,
+                id_pf: line[`Col${Configurazione.pfColumnIdGiocatore}`]
+                  ? parseInt(
+                      line[`Col${Configurazione.pfColumnIdGiocatore}`] ?? '0',
+                    )
+                  : null,
                 Nome: normalizeNomeGiocatore(
                   line[`Col${Configurazione.pfColumnNome}`] ?? '',
                 ),
@@ -672,7 +721,7 @@ async function getGiocatoreByNome(nome: string, id_pf: number | null) {
           },
         })
       }
-      
+
       return {
         idGiocatore: giocatore.idGiocatore,
         nome: giocatore.nome,
@@ -687,7 +736,9 @@ async function getGiocatoreByNome(nome: string, id_pf: number | null) {
   }
 }
 
-async function findAndCreateGiocatori(players: { id_pf: number | null; nome: string; ruolo: string }[]) {
+async function findAndCreateGiocatori(
+  players: { id_pf: number | null; nome: string; ruolo: string }[],
+) {
   try {
     // 1️⃣ Trova giocatori esistenti per id_pf
     const giocatoriWithId = await prisma.giocatori.findMany({
@@ -697,7 +748,11 @@ async function findAndCreateGiocatori(players: { id_pf: number | null; nome: str
         nome: true,
       },
       where: {
-        id_pf: { in: players.map(p => p.id_pf).filter((id): id is number => id !== null) },
+        id_pf: {
+          in: players
+            .map((p) => p.id_pf)
+            .filter((id): id is number => id !== null),
+        },
       },
     })
 
@@ -709,17 +764,20 @@ async function findAndCreateGiocatori(players: { id_pf: number | null; nome: str
         nome: true,
       },
       where: {
-        nome: { in: players.map(p => p.nome) },
+        nome: { in: players.map((p) => p.nome) },
       },
     })
 
     // 3️⃣ Unisci per nome o id_pf
     const giocatori = _.uniqBy(
       [...giocatoriWithId, ...giocatoriWithNome],
-      (g) => `${g.id_pf ?? ''}_${g.nome}`
+      (g) => `${g.id_pf ?? ''}_${g.nome}`,
     )
 
-    Logger.info('Giocatori trovati in DB:', giocatori.map(g => ({ nome: g.nome, id_pf: g.id_pf })))
+    Logger.info(
+      'Giocatori trovati in DB:',
+      giocatori.map((g) => ({ nome: g.nome, id_pf: g.id_pf })),
+    )
 
     // 4️⃣ Aggiorna eventuali id_pf mancanti
     await Promise.all(
@@ -736,9 +794,7 @@ async function findAndCreateGiocatori(players: { id_pf: number | null; nome: str
     // 5️⃣ Filtra solo i giocatori non ancora in DB
     const newPlayers = players.filter((p) => {
       const match = giocatori.some(
-        (g) =>
-          (g.id_pf && g.id_pf === p.id_pf) ||
-          g.nome === p.nome
+        (g) => (g.id_pf && g.id_pf === p.id_pf) || g.nome === p.nome,
       )
       return !match
     })
@@ -749,8 +805,10 @@ async function findAndCreateGiocatori(players: { id_pf: number | null; nome: str
     if (newPlayers.length > 0) {
       await Promise.all(
         newPlayers.map(async (p) => {
-          const newPlayer = await createGiocatore(p.nome, p.ruolo, p.id_pf)
-          giocatori.push(newPlayer)
+          const created = await createGiocatori([
+            { nome: p.nome, ruolo: p.ruolo, id_pf: p.id_pf },
+          ])
+          giocatori.concat(created)
         }),
       )
     }
@@ -762,18 +820,34 @@ async function findAndCreateGiocatori(players: { id_pf: number | null; nome: str
   }
 }
 
-
-async function createGiocatore(nome: string, ruolo: string, id_pf: number | null) {
+async function createGiocatori(
+  giocatori: { nome: string; ruolo: string; id_pf: number | null }[],
+) {
   try {
-    const giocatore = await prisma.giocatori.create({
-      data: {
-        id_pf: id_pf,
-        nome: normalizeNomeGiocatore(nome),
+    const result = await prisma.giocatori.createMany({
+      data: giocatori.map((g) => ({
+        id_pf: g.id_pf,
+        nome: normalizeNomeGiocatore(g.nome),
         nomeFantaGazzetta: null,
-        ruolo: ruolo,
+        ruolo: g.ruolo,
+      })),
+      skipDuplicates: true,
+    })
+    console.log(`${result.count} giocatori inseriti`)
+
+    const names = giocatori.map((g) => normalizeNomeGiocatore(g.nome))
+    const createdGiocatori = await prisma.giocatori.findMany({
+      select: {
+        idGiocatore: true,
+        id_pf: true,
+        nome: true,
+      },
+      where: {
+        nome: { in: names },
       },
     })
-    return giocatore
+
+    return createdGiocatori
   } catch (error) {
     Logger.error('Si è verificato un errore', error)
     throw error
@@ -931,12 +1005,20 @@ async function saveLocal(idCalendario: number, fileName: string) {
     const voti = await readFileVoti(fileName)
     Logger.info('voti:', voti)
 
-    const giocatori = await findAndCreateGiocatori(voti.map(v => ({ id_pf: v.id_pf, nome: v.Nome, ruolo: v.Ruolo })))
+    const giocatori = await findAndCreateGiocatori(
+      voti.map((v) => ({ id_pf: v.id_pf, nome: v.Nome, ruolo: v.Ruolo })),
+    )
 
     await Promise.all(
       voti.map(async (voto) => {
-        const idGiocatore = giocatori.find(g => g !== null && (g.id_pf === voto.id_pf || g.nome.toLowerCase() === voto.Nome.toLowerCase()))?.idGiocatore ?? 0
-        
+        const idGiocatore =
+          giocatori.find(
+            (g) =>
+              g !== null &&
+              (g.id_pf === voto.id_pf ||
+                g.nome.toLowerCase() === voto.Nome.toLowerCase()),
+          )?.idGiocatore ?? 0
+
         if ((await findLastTrasferimento(idGiocatore)) === null) {
           const squadraSerieA = await findSquadraSerieA(voto.Squadra)
           if (squadraSerieA !== null)
