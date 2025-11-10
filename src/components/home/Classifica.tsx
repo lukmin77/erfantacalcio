@@ -5,8 +5,8 @@ import { Avatar, Box, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { getNomeTorneo } from '~/utils/helper'
 import { DataGrid, type GridColDef } from '@mui/x-data-grid'
 import { autosizeOptions } from '~/utils/datatable'
-import { classificaSchema } from '~/server/api/classifica/schema'
 import { z } from 'zod'
+import { classificaSchema } from '~/schemas/schemas'
 interface ClassificaProps {
   nomeTorneo: string
   idTorneo: number | undefined

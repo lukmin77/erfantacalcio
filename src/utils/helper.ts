@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { calendarioSchema } from '~/server/api/calendario/schema'
+import { calendarioSchema } from '~/schemas/schemas'
 import { type Moduli, type Ruoli } from '~/types/common'
 import { countOccurrences } from '~/utils/stringUtils'
 

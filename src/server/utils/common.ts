@@ -8,87 +8,11 @@ import { type Decimal } from '@prisma/client/runtime/library'
 
 import prisma from '~/utils/db'
 import { z } from 'zod'
+import { calendarioPartiteSchema, giornataSchema, partitaSchema, serieASchema } from '~/schemas/schemas'
 
-export const serieASchema = z.object({
-  giornata: z.number(),
-  squadraHome: z.string(),
-  squadraAway: z.string(),
-})
-
-export const giornataSchema = z.object({
-  idCalendario: z.number(),
-  idTorneo: z.number(),
-  giornata: z.number(),
-  giornataSerieA: z.number(),
-  isGiocata: z.boolean(),
-  isSovrapposta: z.boolean(),
-  isRecupero: z.boolean(),
-  data: z.string().optional(),
-  dataFine: z.string().optional(),
-  girone: z.union([z.string(), z.number(), z.null()]),
-  partite: z
-    .object({
-      idPartita: z.number(),
-      idHome: z.number().nullable(),
-      squadraHome: z.string().nullable().optional(),
-      fotoHome: z.string().nullable().optional(),
-      magliaHome: z.string().nullable().optional(),
-      multaHome: z.boolean(),
-      golHome: z.number().nullable(),
-      idAway: z.number().nullable(),
-      squadraAway: z.string().nullable().optional(),
-      fotoAway: z.string().nullable().optional(),
-      magliaAway: z.string().nullable().optional(),
-      multaAway: z.boolean(),
-      golAway: z.number().nullable(),
-      isFattoreHome: z.boolean(),
-    })
-    .array(),
-  Torneo: z.string(),
-  Descrizione: z.string(),
-  Title: z.string(),
-  SubTitle: z.string(),
-  SerieA: z.array(serieASchema).optional(),
-})
-
-const torneiSchema = z.object({
-  idTorneo: z.number(),
-  nome: z.string(),
-  gruppoFase: z.string().nullable(),
-})
-
-const utentePartitaSchema = z.object({
-  nomeSquadra: z.string().nullable(),
-  foto: z.string().nullable(),
-  maglia: z.string().nullable(),
-})
-
-export const partitaSchema = z.object({
-  idPartita: z.number(),
-  idSquadraH: z.number().nullable(),
-  idSquadraA: z.number().nullable(),
-  hasMultaH: z.boolean(),
-  hasMultaA: z.boolean(),
-  golH: z.number().nullable(),
-  golA: z.number().nullable(),
-  fattoreCasalingo: z.boolean(),
-  Utenti_Partite_idSquadraHToUtenti: utentePartitaSchema.nullable(),
-  Utenti_Partite_idSquadraAToUtenti: utentePartitaSchema.nullable(),
-})
-
-export const calendarioPartiteSchema = z.object({
-  idCalendario: z.number(),
-  giornata: z.number(),
-  giornataSerieA: z.number(),
-  hasGiocata: z.boolean(),
-  hasSovrapposta: z.boolean(),
-  hasDaRecuperare: z.boolean(),
-  data: z.date().nullable(),
-  dataFine: z.date().nullable(),
-  girone: z.union([z.string(), z.number()]).nullable(),
-  Tornei: torneiSchema,
-  Partite: z.array(partitaSchema),
-})
+type CalendarioFilter =
+  | { idTorneo: number }
+  | { Tornei: { gruppoFase: { not: null } } }
 
 export async function chiudiTrasferimentoGiocatore(
   idGiocatore: number,
@@ -527,50 +451,6 @@ export function mapPartite(partite: z.infer<typeof partitaSchema>[]) {
   }))
 }
 
-type CalendarioFilter =
-  | { idTorneo: number }
-  | { Tornei: { gruppoFase: { not: null } } }
-
-async function getCalendario(filter: CalendarioFilter) {
-  return await prisma.calendario.findMany({
-    select: {
-      idCalendario: true,
-      giornata: true,
-      giornataSerieA: true,
-      ordine: true,
-      data: true,
-      dataFine: true,
-      hasSovrapposta: true,
-      girone: true,
-      hasGiocata: true,
-      hasDaRecuperare: true,
-      Tornei: {
-        select: { idTorneo: true, nome: true, gruppoFase: true },
-      },
-      Partite: {
-        select: {
-          idPartita: true,
-          idSquadraH: true,
-          idSquadraA: true,
-          hasMultaH: true,
-          hasMultaA: true,
-          golH: true,
-          golA: true,
-          fattoreCasalingo: true,
-          Utenti_Partite_idSquadraHToUtenti: {
-            select: { nomeSquadra: true, foto: true, maglia: true },
-          },
-          Utenti_Partite_idSquadraAToUtenti: {
-            select: { nomeSquadra: true, foto: true, maglia: true },
-          },
-        },
-      },
-    },
-    where: filter,
-    orderBy: [{ ordine: 'asc' }, { idTorneo: 'asc' }],
-  })
-}
-
 export async function getCalendarioByTorneo(idtorneo: number) {
   return await getCalendario({ idTorneo: idtorneo })
 }
@@ -861,4 +741,44 @@ export function getVotoBonus(voto: {
 
   //Logger.info(`bonus: ${bonus}`);
   return bonus
+}
+
+async function getCalendario(filter: CalendarioFilter) {
+  return await prisma.calendario.findMany({
+    select: {
+      idCalendario: true,
+      giornata: true,
+      giornataSerieA: true,
+      ordine: true,
+      data: true,
+      dataFine: true,
+      hasSovrapposta: true,
+      girone: true,
+      hasGiocata: true,
+      hasDaRecuperare: true,
+      Tornei: {
+        select: { idTorneo: true, nome: true, gruppoFase: true },
+      },
+      Partite: {
+        select: {
+          idPartita: true,
+          idSquadraH: true,
+          idSquadraA: true,
+          hasMultaH: true,
+          hasMultaA: true,
+          golH: true,
+          golA: true,
+          fattoreCasalingo: true,
+          Utenti_Partite_idSquadraHToUtenti: {
+            select: { nomeSquadra: true, foto: true, maglia: true },
+          },
+          Utenti_Partite_idSquadraAToUtenti: {
+            select: { nomeSquadra: true, foto: true, maglia: true },
+          },
+        },
+      },
+    },
+    where: filter,
+    orderBy: [{ ordine: 'asc' }, { idTorneo: 'asc' }],
+  })
 }

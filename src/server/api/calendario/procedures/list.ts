@@ -1,7 +1,10 @@
 import { adminProcedure } from '~/server/api/trpc'
 import Logger from '~/lib/logger.server'
 import prisma from '~/utils/db'
-import { calendarioListSchema } from '../schema'
+import { calendarioSchema } from '~/schemas/schemas'
+import { z } from 'zod'
+
+
 
 export const listCalendarioProcedure = adminProcedure.query(async () => {
   try {
@@ -23,8 +26,7 @@ export const listCalendarioProcedure = adminProcedure.query(async () => {
     })
 
     const indexSelected = result.findIndex((item) => !item.hasGiocata)
-    const mappedResult = calendarioListSchema.parse(
-      result.map((c, index) => ({
+    const mapped = result.map((c, index) => ({
         id: c.idCalendario,
         idTorneo: c.Tornei.idTorneo,
         nome: c.Tornei.nome,
@@ -38,9 +40,9 @@ export const listCalendarioProcedure = adminProcedure.query(async () => {
         dataFine: c.dataFine?.toISOString(),
         girone: c.girone,
         isSelected: index === indexSelected,
-      })),
-    )
-    return mappedResult
+      }))
+    const parsed = z.array(calendarioSchema).parse(mapped)
+    return parsed
   } catch (error) {
     Logger.error('Si è verificato un errore', error)
     throw error

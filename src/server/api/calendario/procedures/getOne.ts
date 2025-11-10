@@ -2,7 +2,7 @@ import { adminProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
 import Logger from '~/lib/logger.server'
 import prisma from '~/utils/db'
-import { calendarioSchema } from '../schema'
+import { calendarioSchema } from '~/schemas/schemas'
 
 function mapCalendarioResult(result: any): z.infer<typeof calendarioSchema> {
   return {

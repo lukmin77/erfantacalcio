@@ -52,9 +52,9 @@ import {
   formatModulo,
   getMatch,
 } from './utils'
-import { giornataSchema } from '~/server/utils/common'
 import { z } from 'zod'
 import Statistica from './Statistica'
+import { giornataSchema } from '~/schemas/schemas'
 
 function FormazioneXsNew() {
   const session = useSession()

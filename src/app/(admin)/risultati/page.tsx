@@ -20,8 +20,8 @@ import { api } from '~/utils/api'
 import { getDescrizioneGiornata, getIdNextGiornata } from '~/utils/helper'
 import CardPartiteAdmin from '~/components/cardPartite/CardPartiteAdmin'
 import { type GiornataAdminType } from '~/types/risultati'
-import { calendarioSchema } from '~/server/api/calendario/schema'
 import { z } from 'zod'
+import { calendarioSchema } from '~/schemas/schemas'
 
 export default function Risultati() {
   //#region select calendario

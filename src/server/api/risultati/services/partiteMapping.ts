@@ -7,9 +7,9 @@ import {
   getBonusSenzaVoto,
   getGolSegnati,
   getTabellino,
-  partitaSchema,
 } from '../../../utils/common'
 import { z } from 'zod'
+import { partitaSchema } from '~/schemas/schemas'
 
 async function getFormazione(idPartita: number, idSquadra: number) {
   return await prisma.formazioni.findFirst({
