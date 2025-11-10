@@ -17,6 +17,7 @@ import {
   adminProcedure,
 } from '~/server/api/trpc'
 import { parseInt } from 'lodash'
+import _ from 'lodash'
 
 const iVotoGiocatoreSchema = z.object({
   id_pf: z.number().nullable(),
@@ -368,21 +369,17 @@ export const votiRouter = createTRPCRouter({
     .mutation(async (opts) => {
       try {
         Logger.info(`Processing ${opts.input.voti.length} voti`)
-        for (const v of opts.input.voti) {
-          console.log(`Processing voto for player: ${v.Nome} ${v.Squadra}`)
-          let idGiocatore = v.id_pf ? (await getGiocatoreByID(v.id_pf))?.idGiocatore : undefined
-          if (idGiocatore === undefined) 
-            idGiocatore = (await getGiocatoreByNome(v.Nome, v.id_pf))?.idGiocatore
-
-          if (!idGiocatore) {
-            idGiocatore = await createGiocatore(v.Nome, v.Ruolo, v.id_pf)
-          }
-
+        const giocatori = await findAndCreateGiocatori(opts.input.voti.map(v => ({ id_pf: v.id_pf, nome: v.Nome, ruolo: v.Ruolo })))
+        
+        for (const voto of opts.input.voti) {
+          console.log(`Processing voto for player: ${voto.Nome} ${voto.Squadra}`)
+          const idGiocatore = giocatori.find(g => g !== null && (g.id_pf === voto.id_pf || g.nome.toLowerCase() === voto.Nome.toLowerCase()))?.idGiocatore ?? 0
+          
           if ((await findLastTrasferimento(idGiocatore)) === null) {
-            const squadraSerieA = await findSquadraSerieA(v.Squadra)
+            const squadraSerieA = await findSquadraSerieA(voto.Squadra)
             if (squadraSerieA !== null) {
               Logger.info(
-                `processing idgiocatore: ${idGiocatore}, nome: ${v.Nome}, squadra: ${squadraSerieA.idSquadraSerieA} ${squadraSerieA.nome}`,
+                `processing idgiocatore: ${idGiocatore}, nome: ${voto.Nome}, squadra: ${squadraSerieA.idSquadraSerieA} ${squadraSerieA.nome}`,
               )
               await createTrasferimento(
                 idGiocatore,
@@ -394,9 +391,9 @@ export const votiRouter = createTRPCRouter({
 
           const idVoto = await findIdVoto(opts.input.idCalendario, idGiocatore)
           if (idVoto) {
-            await updateVoto(idVoto, v)
+            await updateVoto(idVoto, voto)
           } else {
-            await createVoto(opts.input.idCalendario, idGiocatore, v)
+            await createVoto(opts.input.idCalendario, idGiocatore, voto)
           }
         }
 
@@ -690,36 +687,64 @@ async function getGiocatoreByNome(nome: string, id_pf: number | null) {
   }
 }
 
-async function getGiocatoreByID(id_pf: number) {
+async function findAndCreateGiocatori(players: { id_pf: number | null, nome: string, ruolo: string }[]) {
   try {
-    const giocatore = await prisma.giocatori.findFirst({
+    const giocatoriWithId = await prisma.giocatori.findFirst({
+      select: {
+        idGiocatore: true,
+        id_pf: true,
+        nome: true,
+      },
       where: {
-        id_pf: {
-          equals: id_pf
+        id_pf:{ in: players.map(p => p.id_pf).filter((id): id is number => id !== null) },
+      },
+    })
+    const giocatoriWithNome = await prisma.giocatori.findFirst({
+      select: {
+        idGiocatore: true,
+        id_pf: true,
+        nome: true,
+      },
+      where: {
+        AND: {
+          nome: { in: players.map(p => p.nome) },
+          NOT: {
+            id_pf: giocatoriWithId?.id_pf ?? 0,
+          },
         },
       },
     })
-
-    if (giocatore) {
-      if (id_pf) {
+    const giocatori = _.unionBy([giocatoriWithId, giocatoriWithNome].filter(Boolean), 'idGiocatore')
+    
+    await Promise.all(giocatori.map(async (g) => {
+      if (g && g.id_pf)
         await prisma.giocatori.update({
           where: {
-            idGiocatore: giocatore.idGiocatore,
+            idGiocatore: g.idGiocatore,
           },
           data: {
-            id_pf: id_pf,
+            id_pf: g.id_pf,
           },
-        });
-      }
+        })
+      }))
 
-      return {
-        idGiocatore: giocatore.idGiocatore,
-        nome: giocatore.nome,
-        nomeFantagazzetta: giocatore.nomeFantaGazzetta,
-        ruolo: giocatore.ruolo,
-        ruoloEsteso: getRuoloEsteso(giocatore.ruolo),
+      const newPlayers = players.filter((p) => {
+        const matchByIdPf = giocatori.some((g) => g !== null && g.id_pf === p.id_pf)
+        const matchByName = giocatori.some((g) => g !== null && g.nome === p.nome)
+        return !matchByIdPf && !matchByName
+      })
+
+      // Crea nuovi giocatori
+      if (newPlayers.length > 0) {
+        await Promise.all(
+          newPlayers.map(async (p) => {
+            const newPlayer = await createGiocatore(p.nome, p.ruolo, p.id_pf)
+            giocatori.push(newPlayer)
+          }),
+        )
       }
-    } else return null
+    
+      return giocatori
   } catch (error) {
     Logger.error('Si è verificato un errore', error)
     throw error
@@ -736,7 +761,7 @@ async function createGiocatore(nome: string, ruolo: string, id_pf: number | null
         ruolo: ruolo,
       },
     })
-    return giocatore.idGiocatore
+    return giocatore
   } catch (error) {
     Logger.error('Si è verificato un errore', error)
     throw error
@@ -893,17 +918,15 @@ async function saveLocal(idCalendario: number, fileName: string) {
     Logger.info('filename:', fileName)
     const voti = await readFileVoti(fileName)
     Logger.info('voti:', voti)
-    await Promise.all(
-      voti.map(async (v) => {
-        let idGiocatore = v.id_pf ? (await getGiocatoreByID(v.id_pf))?.idGiocatore : undefined
-          if (idGiocatore === undefined) 
-            idGiocatore = (await getGiocatoreByNome(v.Nome, v.id_pf))?.idGiocatore
 
-        if (!idGiocatore) {
-          idGiocatore = await createGiocatore(v.Nome, v.Ruolo, v.id_pf)
-        }
+    const giocatori = await findAndCreateGiocatori(voti.map(v => ({ id_pf: v.id_pf, nome: v.Nome, ruolo: v.Ruolo })))
+
+    await Promise.all(
+      voti.map(async (voto) => {
+        const idGiocatore = giocatori.find(g => g !== null && (g.id_pf === voto.id_pf || g.nome.toLowerCase() === voto.Nome.toLowerCase()))?.idGiocatore ?? 0
+        
         if ((await findLastTrasferimento(idGiocatore)) === null) {
-          const squadraSerieA = await findSquadraSerieA(v.Squadra)
+          const squadraSerieA = await findSquadraSerieA(voto.Squadra)
           if (squadraSerieA !== null)
             await createTrasferimento(
               idGiocatore,
@@ -913,8 +936,8 @@ async function saveLocal(idCalendario: number, fileName: string) {
         }
 
         const idVoto = await findIdVoto(idCalendario, idGiocatore)
-        if (idVoto) await updateVoto(idVoto, v)
-        else await createVoto(idCalendario, idGiocatore, v)
+        if (idVoto) await updateVoto(idVoto, voto)
+        else await createVoto(idCalendario, idGiocatore, voto)
       }),
     )
 
