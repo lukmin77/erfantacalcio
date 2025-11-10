@@ -687,8 +687,9 @@ async function getGiocatoreByNome(nome: string, id_pf: number | null) {
   }
 }
 
-async function findAndCreateGiocatori(players: { id_pf: number | null, nome: string, ruolo: string }[]) {
+async function findAndCreateGiocatori(players: { id_pf: number | null; nome: string; ruolo: string }[]) {
   try {
+    // 1️⃣ Trova giocatori esistenti per id_pf
     const giocatoriWithId = await prisma.giocatori.findMany({
       select: {
         idGiocatore: true,
@@ -696,9 +697,11 @@ async function findAndCreateGiocatori(players: { id_pf: number | null, nome: str
         nome: true,
       },
       where: {
-        id_pf:{ in: players.map(p => p.id_pf).filter((id): id is number => id !== null) },
+        id_pf: { in: players.map(p => p.id_pf).filter((id): id is number => id !== null) },
       },
     })
+
+    // 2️⃣ Trova giocatori esistenti per nome
     const giocatoriWithNome = await prisma.giocatori.findMany({
       select: {
         idGiocatore: true,
@@ -706,53 +709,59 @@ async function findAndCreateGiocatori(players: { id_pf: number | null, nome: str
         nome: true,
       },
       where: {
-        AND: [{
-          nome: { in: players.map(p => p.nome) },
-          NOT: { id_pf: { in: giocatoriWithId.map(p => p.id_pf).filter((id): id is number => id !== null) } },
-        }],
+        nome: { in: players.map(p => p.nome) },
       },
     })
-    const giocatori = _.unionBy(
+
+    // 3️⃣ Unisci per nome o id_pf
+    const giocatori = _.uniqBy(
       [...giocatoriWithId, ...giocatoriWithNome],
-      'idGiocatore',
+      (g) => `${g.id_pf ?? ''}_${g.nome}`
     )
 
-    
-    await Promise.all(giocatori.map(async (g) => {
-      if (g && g.id_pf)
-        await prisma.giocatori.update({
-          where: {
-            idGiocatore: g.idGiocatore,
-          },
-          data: {
-            id_pf: g.id_pf,
-          },
-        })
-      }))
+    Logger.info('Giocatori trovati in DB:', giocatori.map(g => ({ nome: g.nome, id_pf: g.id_pf })))
 
-      const newPlayers = players.filter((p) => {
-        const matchByIdPf = giocatori.some((g) => g !== null && g.id_pf === p.id_pf)
-        const matchByName = giocatori.some((g) => g !== null && g.nome === normalizeNomeGiocatore(p.nome))
-        return !matchByIdPf && !matchByName
-      })
-      Logger.info(newPlayers)
+    // 4️⃣ Aggiorna eventuali id_pf mancanti
+    await Promise.all(
+      giocatori.map(async (g) => {
+        if (g && g.id_pf) {
+          await prisma.giocatori.update({
+            where: { idGiocatore: g.idGiocatore },
+            data: { id_pf: g.id_pf },
+          })
+        }
+      }),
+    )
 
-      // Crea nuovi giocatori
-      if (newPlayers.length > 0) {
-        await Promise.all(
-          newPlayers.map(async (p) => {
-            const newPlayer = await createGiocatore(p.nome, p.ruolo, p.id_pf)
-            giocatori.push(newPlayer)
-          }),
-        )
-      }
-    
-      return giocatori
+    // 5️⃣ Filtra solo i giocatori non ancora in DB
+    const newPlayers = players.filter((p) => {
+      const match = giocatori.some(
+        (g) =>
+          (g.id_pf && g.id_pf === p.id_pf) ||
+          g.nome === p.nome
+      )
+      return !match
+    })
+
+    Logger.info('Nuovi giocatori da creare:', newPlayers)
+
+    // 6️⃣ Crea i nuovi giocatori
+    if (newPlayers.length > 0) {
+      await Promise.all(
+        newPlayers.map(async (p) => {
+          const newPlayer = await createGiocatore(p.nome, p.ruolo, p.id_pf)
+          giocatori.push(newPlayer)
+        }),
+      )
+    }
+
+    return giocatori
   } catch (error) {
     Logger.error('Si è verificato un errore', error)
     throw error
   }
 }
+
 
 async function createGiocatore(nome: string, ruolo: string, id_pf: number | null) {
   try {
