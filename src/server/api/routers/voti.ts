@@ -369,7 +369,7 @@ export const votiRouter = createTRPCRouter({
     .mutation(async (opts) => {
       try {
         Logger.info(`Processing ${opts.input.voti.length} voti`)
-        const giocatori = await findAndCreateGiocatori(opts.input.voti.map(v => ({ id_pf: v.id_pf, nome: v.Nome, ruolo: v.Ruolo })))
+        const giocatori = await findAndCreateGiocatori(opts.input.voti.map(v => ({ id_pf: v.id_pf, nome: normalizeNomeGiocatore(v.Nome), ruolo: v.Ruolo })))
         
         for (const voto of opts.input.voti) {
           console.log(`Processing voto for player: ${voto.Nome} ${voto.Squadra}`)
@@ -707,8 +707,8 @@ async function findAndCreateGiocatori(players: { id_pf: number | null, nome: str
       },
       where: {
         AND: [{
-          nome: { in: players.map(p => normalizeNomeGiocatore(p.nome)) },
-          NOT: { id_pf: { in: players.map(p => p.id_pf).filter((id): id is number => id !== null) } },
+          nome: { in: players.map(p => p.nome) },
+          NOT: { id_pf: { in: giocatoriWithId.map(p => p.id_pf).filter((id): id is number => id !== null) } },
         }],
       },
     })
