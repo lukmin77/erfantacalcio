@@ -52,7 +52,7 @@ import {
   formatModulo,
   getMatch,
 } from './utils'
-import { giornataSchema } from '~/server/api/routers/common'
+import { giornataSchema } from '~/server/utils/common'
 import { z } from 'zod'
 import Statistica from './Statistica'
 

@@ -1,0 +1,48 @@
+import { publicProcedure } from '~/server/api/trpc'
+import { z } from 'zod'
+import Logger from '~/lib/logger.server'
+import prisma from '~/utils/db'
+import { mapCalendario } from '../../../utils/common'
+
+export const listPartiteBySquadraProcedure = publicProcedure
+  .input(z.object({ idSquadra: z.number() }))
+  .query(async (opts) => {
+    const idUtente = +opts.input.idSquadra
+    try {
+      const result = await prisma.calendario.findMany({
+        select: {
+          idCalendario: true,
+          giornata: true,
+          giornataSerieA: true,
+          ordine: true,
+          data: true,
+          dataFine: true,
+          hasSovrapposta: true,
+          girone: true,
+          hasGiocata: true,
+          hasDaRecuperare: true,
+          Tornei: { select: { idTorneo: true, nome: true, gruppoFase: true } },
+          Partite: {
+            select: {
+              idPartita: true,
+              idSquadraH: true,
+              idSquadraA: true,
+              hasMultaH: true,
+              hasMultaA: true,
+              golH: true,
+              golA: true,
+              fattoreCasalingo: true,
+              Utenti_Partite_idSquadraHToUtenti: { select: { nomeSquadra: true, foto: true, maglia: true } },
+              Utenti_Partite_idSquadraAToUtenti: { select: { nomeSquadra: true, foto: true, maglia: true } },
+            },
+            where: { OR: [{ idSquadraH: idUtente }, { idSquadraA: idUtente }] },
+          },
+        },
+        orderBy: [{ ordine: 'asc' }, { idTorneo: 'asc' }],
+      })
+      return await mapCalendario(result)
+    } catch (error) {
+      Logger.error('Si è verificato un errore', error)
+      throw error
+    }
+  })

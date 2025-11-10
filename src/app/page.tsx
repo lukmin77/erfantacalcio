@@ -35,7 +35,7 @@ import CardPartite from '~/components/cardPartite/CardPartite'
 import { useSession } from 'next-auth/react'
 import SquadreXs from '~/components/home/SquadreXs'
 import { z } from 'zod'
-import { giornataSchema } from '~/server/api/routers/common'
+import { giornataSchema } from '~/server/utils/common'
 import { Configurazione } from '~/config'
 import logger from '~/lib/logger.server'
 
