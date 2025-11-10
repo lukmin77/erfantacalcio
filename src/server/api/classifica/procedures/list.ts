@@ -2,7 +2,6 @@ import { publicProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
 import Logger from '~/lib/logger.server'
 import prisma from '~/utils/db'
-import { classificaSchema } from '../schema'
 import { getFantapunti } from '../services/getFantapunti'
 
 export const listClassificaProcedure = publicProcedure

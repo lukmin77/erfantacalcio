@@ -1,5 +1,5 @@
 import Logger from '~/lib/logger.server'
-import { adminProcedure } from '../trpc'
+import { adminProcedure } from '../../trpc'
 import { z } from 'zod'
 import prisma from '~/utils/db'
 import { Configurazione } from '~/config'

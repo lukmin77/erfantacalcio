@@ -1,5 +1,5 @@
 import Logger from '~/lib/logger.server'
-import { adminProcedure } from '../trpc'
+import { adminProcedure } from '../../trpc'
 import { z } from 'zod'
 import { parse } from 'csv-parse'
 import { Configurazione } from '~/config'

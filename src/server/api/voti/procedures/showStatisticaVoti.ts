@@ -1,10 +1,11 @@
 import Logger from '~/lib/logger.server'
-import { publicProcedure } from '../trpc'
+import { adminProcedure } from '../../trpc'
 import { z } from 'zod'
 import prisma from '~/utils/db'
 import { Configurazione } from '~/config'
+import { VotiDistinctItem } from '~/types/voti'
 
-export const listVotiProcedure = publicProcedure
+export const showStatisticaVotiProcedure = adminProcedure
   .input(
     z.object({
       idGiocatore: z.number(),
@@ -16,6 +17,7 @@ export const listVotiProcedure = publicProcedure
       const result = await prisma.voti.findMany({
         where: {
           idGiocatore: opts.input.idGiocatore,
+          voto: { gt: 0 },
         },
         select: {
           idVoto: true,
@@ -40,32 +42,37 @@ export const listVotiProcedure = publicProcedure
         },
         orderBy: {
           Calendario: {
-            giornataSerieA: 'desc',
+            giornataSerieA: 'asc',
           },
         },
         take: opts.input.top ? opts.input.top : 1000,
       })
 
       if (result !== null) {
-        return result.map((c) => ({
-          id: c.idVoto,
-          nome: c.Giocatori.nome,
-          ruolo: c.Giocatori.ruolo,
-          voto: c.voto?.toNumber() ?? null,
-          ammonizione: c.ammonizione.toNumber() ?? null,
-          espulsione: c.espulsione.toNumber() ?? null,
-          gol:
-            c.Giocatori.ruolo === 'P'
-              ? (c.gol?.toNumber() ?? 0) / Configurazione.bonusGolSubito
-              : (c.gol?.toNumber() ?? 0) / Configurazione.bonusGol,
-          assist: (c.assist?.toNumber() ?? 0) / Configurazione.bonusAssist,
-          autogol: (c.autogol?.toNumber() ?? 0) / Configurazione.bonusAutogol,
-          altriBonus: c.altriBonus?.toNumber() ?? null,
-          torneo: c.Calendario.Tornei.nome,
-          gruppoFase: c.Calendario.Tornei.gruppoFase,
-          giornataSerieA: c.Calendario.giornataSerieA,
-        }))
-      } else return null
+        const voti = result.reduce((acc, c) => {
+          const giornata = c.Calendario.giornataSerieA
+          if (!acc.has(giornata)) {
+            acc.set(giornata, {
+              voto: c.voto?.toNumber() ?? null,
+              ammonizione: c.ammonizione.toNumber() ?? null,
+              espulsione: c.espulsione.toNumber() ?? null,
+              gol:
+                c.Giocatori.ruolo === 'P'
+                  ? (c.gol?.toNumber() ?? 0) / Configurazione.bonusGolSubito
+                  : (c.gol?.toNumber() ?? 0) / Configurazione.bonusGol,
+              assist: (c.assist?.toNumber() ?? 0) / Configurazione.bonusAssist,
+              giornataSerieA: giornata,
+            })
+          }
+          return acc
+        }, new Map())
+
+        const votiDistinct: VotiDistinctItem[] = Array.from(
+          voti.values(),
+        ) as VotiDistinctItem[]
+
+        return votiDistinct
+      } else return []
     } catch (error) {
       Logger.error('Si è verificato un errore', error)
       throw error

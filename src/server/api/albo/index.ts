@@ -1,6 +1,6 @@
 import { createTRPCRouter } from '~/server/api/trpc'
-import { listAlboProcedure } from './list'
-import { getAlboProcedure } from './get'
+import { listAlboProcedure } from './procedures/list'
+import { getAlboProcedure } from './procedures/show'
 
 export const alboRouter = createTRPCRouter({
   list: listAlboProcedure,

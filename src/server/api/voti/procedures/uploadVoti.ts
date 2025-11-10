@@ -1,6 +1,6 @@
 import fs from 'fs'
 import Logger from '~/lib/logger.server'
-import { adminProcedure } from '../trpc'
+import { adminProcedure } from '../../trpc'
 import { z } from 'zod'
 import path from 'path'
 

@@ -1,6 +1,6 @@
 import Logger from '~/lib/logger.server'
 import { z } from 'zod'
-import { adminProcedure } from '../trpc'
+import { adminProcedure } from '../../trpc'
 import { normalizeNomeGiocatore } from '~/utils/helper'
 import prisma from '~/utils/db'
 import { Configurazione } from '~/config'
