@@ -733,7 +733,7 @@ async function findAndCreateGiocatori(players: { id_pf: number | null, nome: str
         const matchByName = giocatori.some((g) => g !== null && g.nome === p.nome)
         return !matchByIdPf && !matchByName
       })
-      console.log('newPlayers:', newPlayers)
+      Logger.info('newPlayers:', newPlayers)
 
       // Crea nuovi giocatori
       if (newPlayers.length > 0) {
