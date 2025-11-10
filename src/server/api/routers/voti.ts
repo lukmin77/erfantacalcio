@@ -689,7 +689,7 @@ async function getGiocatoreByNome(nome: string, id_pf: number | null) {
 
 async function findAndCreateGiocatori(players: { id_pf: number | null, nome: string, ruolo: string }[]) {
   try {
-    const giocatoriWithId = await prisma.giocatori.findFirst({
+    const giocatoriWithId = await prisma.giocatori.findMany({
       select: {
         idGiocatore: true,
         id_pf: true,
@@ -699,22 +699,24 @@ async function findAndCreateGiocatori(players: { id_pf: number | null, nome: str
         id_pf:{ in: players.map(p => p.id_pf).filter((id): id is number => id !== null) },
       },
     })
-    const giocatoriWithNome = await prisma.giocatori.findFirst({
+    const giocatoriWithNome = await prisma.giocatori.findMany({
       select: {
         idGiocatore: true,
         id_pf: true,
         nome: true,
       },
       where: {
-        AND: {
+        AND: [{
           nome: { in: players.map(p => p.nome) },
-          NOT: {
-            id_pf: giocatoriWithId?.id_pf ?? 0,
-          },
-        },
+          NOT: { id_pf: { in: players.map(p => p.id_pf).filter((id): id is number => id !== null) } },
+        }],
       },
     })
-    const giocatori = _.unionBy([giocatoriWithId, giocatoriWithNome].filter(Boolean), 'idGiocatore')
+    const giocatori = _.unionBy(
+      [...giocatoriWithId, ...giocatoriWithNome],
+      'idGiocatore',
+    )
+
     
     await Promise.all(giocatori.map(async (g) => {
       if (g && g.id_pf)
