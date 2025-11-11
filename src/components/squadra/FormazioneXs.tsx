@@ -56,7 +56,7 @@ import {
   getPlayerStylePosition,
 } from './utils'
 import { z } from 'zod'
-import { giornataSchema } from '~/schemas'
+import { giornataSchema } from '~/schemas/calendario/schema'
 
 function FormazioneXs() {
   const session = useSession()

@@ -54,7 +54,7 @@ import {
 } from './utils'
 import { z } from 'zod'
 import Statistica from './Statistica'
-import { giornataSchema } from '~/schemas'
+import { giornataSchema } from '~/schemas/calendario/schema'
 
 function FormazioneXsNew() {
   const session = useSession()

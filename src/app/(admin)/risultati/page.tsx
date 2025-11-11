@@ -21,7 +21,7 @@ import { getDescrizioneGiornata, getIdNextGiornata } from '~/utils/helper'
 import CardPartiteAdmin from '~/components/cardPartite/CardPartiteAdmin'
 import { type GiornataAdminType } from '~/types/risultati'
 import { z } from 'zod'
-import { calendarioSchema } from '~/schemas'
+import { calendarioSchema } from '~/schemas/calendario/schema'
 
 export default function Risultati() {
   //#region select calendario
