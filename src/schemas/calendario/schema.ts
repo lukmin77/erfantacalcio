@@ -53,6 +53,12 @@ export const calendarioPartiteSchema = z.object({
   Partite: z.array(partitaSchema),
 })
 
+export const serieASchema = z.object({
+      giornata: z.number(),
+      squadraHome: z.string(),
+      squadraAway: z.string(),
+    })
+
 export const giornataSchema = z.object({
   idCalendario: z.number(),
   idTorneo: z.number(),
@@ -86,13 +92,5 @@ export const giornataSchema = z.object({
   Descrizione: z.string(),
   Title: z.string(),
   SubTitle: z.string(),
-  SerieA: z
-    .array(
-      z.object({
-        giornata: z.number(),
-        squadraHome: z.string(),
-        squadraAway: z.string(),
-      }),
-    )
-    .optional(),
+  SerieA: z.array(serieASchema).optional(),
 })
