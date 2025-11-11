@@ -14,7 +14,7 @@ import {
 import { api } from '~/utils/api'
 import CheckIcon from '@mui/icons-material/CheckCircle'
 import { Configurazione } from '~/config'
-import { messageSchema } from '~/server/api/nuovastagione/schema'
+import { messageSchema } from '~/schemas/schema'
 import { z } from 'zod'
 
 export default function AvvioStagione() {

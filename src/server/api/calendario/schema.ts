@@ -1,1 +1,0 @@
-export { calendarioSchema } from '~/schemas'
