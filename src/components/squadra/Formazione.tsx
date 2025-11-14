@@ -667,6 +667,7 @@ function Formazione() {
         open={openModalStatistica}
         onClose={handleModalStatisticaClose}
         width={'1266px'}
+        height={'80%'}
       >
         <Divider />
         <Box sx={{ mt: 1, gap: '0px', flexWrap: 'wrap' }}>
