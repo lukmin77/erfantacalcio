@@ -3,7 +3,7 @@ import Logger from '~/lib/logger.server'
 import { Configurazione } from '~/config'
 import { checkCountPartite, creaPartite, creaPartiteEmpty, updateFase } from '../services/helpers'
 import { getTornei } from '../../../utils/common'
-import { messageSchema } from '~/schemas/schema'
+import { messageSchema } from '~/schemas/messageSchema'
 import { z } from 'zod'
 
 export const creaPartiteProcedure = adminProcedure.mutation<z.infer<typeof messageSchema>>(async () => {

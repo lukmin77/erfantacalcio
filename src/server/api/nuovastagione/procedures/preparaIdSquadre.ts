@@ -1,7 +1,7 @@
 import { adminProcedure } from '~/server/api/trpc'
 import Logger from '~/lib/logger.server'
 import prisma from '~/utils/db'
-import { messageSchema } from '~/schemas/schema'
+import { messageSchema } from '~/schemas/messageSchema'
 import { generateUniqueRandomNumbers } from '~/utils/numberUtils'
 import { updateFase } from '../services/helpers'
 import { toLocaleDateTime } from '~/utils/dateUtils'

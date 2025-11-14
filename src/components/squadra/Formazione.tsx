@@ -56,7 +56,7 @@ import {
 } from './utils'
 import { z } from 'zod'
 import Statistica from './Statistica'
-import { giornataSchema } from '~/schemas/calendario/schema'
+import { giornataSchema } from '~/schemas/calendario'
 
 function Formazione() {
   const session = useSession()

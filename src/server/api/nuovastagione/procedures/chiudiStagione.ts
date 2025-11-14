@@ -3,7 +3,7 @@ import Logger from '~/lib/logger.server'
 import prisma from '~/utils/db'
 import { Configurazione } from '~/config'
 import { chiudiTrasferimentoGiocatore } from '../../../utils/common'
-import { messageSchema } from '~/schemas/schema'
+import { messageSchema } from '~/schemas/messageSchema'
 import { checkVotiUltimaGiornata, updateFase } from '../services/helpers'
 import { z } from 'zod'
 

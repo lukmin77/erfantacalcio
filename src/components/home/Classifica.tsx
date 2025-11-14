@@ -6,7 +6,7 @@ import { getNomeTorneo } from '~/utils/helper'
 import { DataGrid, type GridColDef } from '@mui/x-data-grid'
 import { autosizeOptions } from '~/utils/datatable'
 import { z } from 'zod'
-import { classificaSchema } from '~/schemas/classifica/schema'
+import { classificaSchema } from '~/schemas/classifica'
 
 interface ClassificaProps {
   nomeTorneo: string

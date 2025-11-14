@@ -36,7 +36,7 @@ import { useSession } from 'next-auth/react'
 import SquadreXs from '~/components/home/SquadreXs'
 import { z } from 'zod'
 import { Configurazione } from '~/config'
-import { giornataSchema } from '~/schemas/calendario/schema'
+import { giornataSchema } from '~/schemas/calendario'
 
 export default function HomePage() {
   const { data: session } = useSession()
