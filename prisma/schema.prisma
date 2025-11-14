@@ -261,6 +261,7 @@ model Voti {
   Calendario   Calendario  @relation(fields: [idCalendario], references: [idCalendario], onUpdate: NoAction, map: "FK_Voti_Calendario")
   Giocatori    Giocatori   @relation(fields: [idGiocatore], references: [idGiocatore], onUpdate: NoAction, map: "FK_Voti_Giocatori")
 
+  @@unique([idCalendario, idGiocatore], name: "UQ_Voti_Calendario_Giocatore", map: "UQ_Voti_Calendario_Giocatore")
   @@index([voto], map: "IX_Voti_StatsGiocatori")
   @@index([idGiocatore], map: "IX_Voti_StatsGiocatori2")
 }

@@ -4,7 +4,8 @@ import { Alert, Box, Skeleton, Stack, Typography } from '@mui/material'
 import CardPartite from '../cardPartite/CardPartite'
 import CheckIcon from '@mui/icons-material/CheckCircle'
 import { z } from 'zod'
-import { giornataSchema } from '~/server/api/routers/common'
+import { giornataSchema } from '~/schemas/calendario'
+
 
 interface CalendarioProps {
   prefixTitle: string

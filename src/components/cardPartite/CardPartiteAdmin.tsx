@@ -18,25 +18,15 @@ import {
   type PartitaAdminType,
   type GiornataAdminType,
 } from '~/types/risultati'
-import { z } from 'zod'
 import { api } from '~/utils/api'
 import CheckIcon from '@mui/icons-material/CheckCircle'
 import dayjs from 'dayjs'
+import { tabellinoSchema } from '~/schemas/calendario'
 
 interface GiornataCardProps {
   giornata: GiornataAdminType
 }
 
-const PartitaSchema = z.object({
-  idPartita: z.number(),
-  escludi: z.boolean(),
-  calcoloGolSegnatiHome: z.number().min(0).max(10),
-  calcoloGolSegnatiAway: z.number().min(0).max(10),
-  fantapuntiHome: z.number().min(0).max(120),
-  fantapuntiAway: z.number().min(0).max(120),
-  multaHome: z.boolean(),
-  multaAway: z.boolean(),
-})
 
 function CardPartiteAdmin({ giornata }: GiornataCardProps) {
   const [risultati, setRisultati] = useState<PartitaAdminType[]>([])
@@ -106,7 +96,7 @@ function CardPartiteAdmin({ giornata }: GiornataCardProps) {
     const promises = risultati
       .filter((c) => c.escludi === false)
       .map(async (partita) => {
-        const responseVal = PartitaSchema.safeParse(partita)
+        const responseVal = tabellinoSchema.safeParse(partita)
         if (!responseVal.success) {
           setErrorMessage(
             responseVal.error.issues

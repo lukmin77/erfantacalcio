@@ -1,0 +1,22 @@
+import Logger from '~/lib/logger.server'
+import prisma from '~/utils/db'
+import { publicProcedure } from '../../trpc'
+import { getRuoloEsteso } from '~/utils/helper'
+
+export const showAll = publicProcedure.query(async () => {
+  try {
+    const giocatori = await prisma.giocatori.findMany({
+      orderBy: { nome: 'asc' },
+    })
+
+    if (giocatori) {
+      return giocatori.map((giocatore) => ({
+        id: giocatore.idGiocatore,
+        label: `${giocatore.nome} - ${getRuoloEsteso(giocatore.ruolo)}`,
+      }))
+    }
+  } catch (error) {
+    Logger.error('Si è verificato un errore', error)
+    throw error
+  }
+})

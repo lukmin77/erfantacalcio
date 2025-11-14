@@ -15,7 +15,8 @@ import {
 import { Gavel } from '@mui/icons-material'
 import { formatDateFromIso } from '~/utils/dateUtils'
 import { z } from 'zod'
-import { giornataSchema } from '~/server/api/routers/common'
+import { giornataSchema } from '~/schemas/calendario'
+
 
 interface GiornataCardProps {
   prefixTitle: string

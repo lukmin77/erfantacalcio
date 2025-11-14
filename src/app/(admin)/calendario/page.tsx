@@ -38,17 +38,8 @@ import {
 } from '@mui/x-data-grid'
 import { autosizeOptions } from '~/utils/datatable'
 import { Edit } from '@mui/icons-material'
-import { calendarioSchema } from '~/server/api/routers/calendario'
+import { calendarioSchema } from '~/schemas/calendario'
 
-const CalendarioSchema = z.object({
-  id: z.number(),
-  idTorneo: z.number(),
-  giornata: z.number(),
-  giornataSerieA: z.number(),
-  data: z.string().datetime().optional(),
-  dataFine: z.string().datetime().nullable(),
-  girone: z.number().optional().nullable(),
-})
 
 export default function Calendario() {
   const theme = useTheme()
@@ -202,7 +193,7 @@ export default function Calendario() {
     event.preventDefault()
     setErrorMessageModal('')
     setMessageModal('')
-    const responseVal = CalendarioSchema.safeParse(calendarioInModifica)
+    const responseVal = calendarioSchema.safeParse(calendarioInModifica)
     if (!responseVal.success) {
       setErrorMessageModal(
         responseVal.error.issues

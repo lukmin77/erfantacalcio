@@ -35,6 +35,7 @@ import {
 } from '@mui/x-data-grid'
 import { autosizeOptions } from '~/utils/datatable'
 import { Edit } from '@mui/icons-material'
+import { votoSchema } from '~/schemas/giocatore'
 
 export default function Voti() {
   const theme = useTheme()
@@ -138,18 +139,6 @@ export default function Voti() {
     id: `skeleton-${index}`,
   }))
 
-  const VotoSchema = z.object({
-    idVoto: z.number(),
-    ruolo: z.string(),
-    voto: z.number(),
-    ammonizione: z.number(),
-    espulsione: z.number(),
-    gol: z.number(),
-    assist: z.number(),
-    autogol: z.number(),
-    altriBonus: z.number(),
-  })
-
   useEffect(() => {
     if (votiList.data) {
       setVoti(votiList.data)
@@ -194,7 +183,7 @@ export default function Voti() {
     console.log('selectedGiocatoreId:', selectedGiocatoreId)
     setErrorMessageVoto('')
     setMessageVoto('')
-    const responseVal = VotoSchema.safeParse(voto)
+    const responseVal = votoSchema.safeParse(voto)
 
     if (!responseVal.success) {
       setErrorMessageVoto(
