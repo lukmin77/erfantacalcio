@@ -4,7 +4,6 @@ import prisma from '~/utils/db'
 import { messageSchema } from '~/schemas/messageSchema'
 import { generateUniqueRandomNumbers } from '~/utils/numberUtils'
 import { updateFase } from '../services/helpers'
-import { toLocaleDateTime } from '~/utils/dateUtils'
 import { z } from 'zod'
 
 export const preparaIdSquadreProcedure = adminProcedure.mutation<z.infer<typeof messageSchema>>(async () => {

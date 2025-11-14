@@ -2,15 +2,11 @@
 import { signIn } from 'next-auth/react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { type ChangeEvent, useState } from 'react'
-import { z } from 'zod'
+
 
 //import material ui
 import { Button, TextField, Box, Typography } from '@mui/material'
-
-const LoginFormSchema = z.object({
-  username: z.string().min(3).max(20),
-  password: z.string().min(6),
-})
+import { loginFormSchema } from '~/schemas/presidente'
 
 export const LoginForm = () => {
   const router = useRouter()
@@ -27,11 +23,8 @@ export const LoginForm = () => {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const validationResult = LoginFormSchema.safeParse(formValues)
+      const validationResult = loginFormSchema.safeParse(formValues)
       if (!validationResult.success) {
-        //const validationErrors = validationResult.error.issues.map(issue => issue.message);
-        //const errorMessage = Object.values(validationErrors).join(", ");
-        //setError(errorMessage);
         throw new Error('Compilare i campi')
       } else {
         setLoading(true)

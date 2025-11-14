@@ -28,20 +28,7 @@ import {
 } from '@mui/x-data-grid'
 import { autosizeOptions } from '~/utils/datatable'
 import { Edit } from '@mui/icons-material'
-
-const UtenteSchema = z.object({
-  id: z.number(),
-  isAdmin: z.boolean(),
-  isLockLevel: z.boolean(),
-  presidente: z.string().min(4),
-  email: z.string().email(),
-  squadra: z.string().min(4),
-  foto: z.string(),
-  importoAnnuale: z.number(),
-  importoMulte: z.number(),
-  importoMercato: z.number(),
-  fantamilioni: z.number(),
-})
+import { utenteSchema } from '~/schemas/presidente'
 
 export default function Presidenti() {
   const theme = useTheme()
@@ -154,7 +141,7 @@ export default function Presidenti() {
     event.preventDefault()
     setErrorMessageModal('')
     setMessageModal('')
-    const responseVal = UtenteSchema.safeParse(utenteInModifica)
+    const responseVal = utenteSchema.safeParse(utenteInModifica)
     if (!responseVal.success) {
       setErrorMessageModal(
         responseVal.error.issues

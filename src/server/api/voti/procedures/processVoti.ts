@@ -5,28 +5,13 @@ import { normalizeNomeGiocatore } from '~/utils/helper'
 import prisma from '~/utils/db'
 import { Configurazione } from '~/config'
 import _ from 'lodash'
-
-const VotoGiocatoreSchema = z.object({
-  id_pf: z.number().nullable(),
-  Nome: z.string(),
-  Ammonizione: z.number(),
-  Assist: z.number(),
-  Autogol: z.number(),
-  Espulsione: z.number(),
-  GolSegnati: z.number(),
-  GolSubiti: z.number(),
-  RigoriErrati: z.number(),
-  RigoriParati: z.number(),
-  Ruolo: z.string(),
-  Squadra: z.string(),
-  Voto: z.number().nullable(),
-})
+import { uploadVotoGiocatoreSchema } from '~/schemas/giocatore'
 
 export const processVotiProcedure = adminProcedure
   .input(
     z.object({
       idCalendario: z.number(),
-      voti: z.array(VotoGiocatoreSchema),
+      voti: z.array(uploadVotoGiocatoreSchema),
     }),
   )
   .mutation(async (opts) => {

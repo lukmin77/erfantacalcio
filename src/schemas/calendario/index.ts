@@ -35,6 +35,17 @@ export const partitaSchema = z.object({
   Utenti_Partite_idSquadraAToUtenti: utentePartitaSchema.nullable(),
 })
 
+export const tabellinoSchema = z.object({
+  idPartita: z.number(),
+  escludi: z.boolean(),
+  calcoloGolSegnatiHome: z.number().min(0).max(10),
+  calcoloGolSegnatiAway: z.number().min(0).max(10),
+  fantapuntiHome: z.number().min(0).max(120),
+  fantapuntiAway: z.number().min(0).max(120),
+  multaHome: z.boolean(),
+  multaAway: z.boolean(),
+})
+
 export const calendarioPartiteSchema = z.object({
   idCalendario: z.number(),
   giornata: z.number(),
