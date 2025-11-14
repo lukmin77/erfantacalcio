@@ -29,7 +29,9 @@
     "paths": {
       "~/*": ["./src/*"]
     },
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": [
     ".eslintrc.cjs",
