@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, type Relation } from 'typeorm'
 import { Giocatori } from './Giocatori'
 import { SquadreSerieA } from './SquadreSerieA'
 import { Utenti } from './Utenti'
@@ -51,11 +51,11 @@ export class Trasferimenti {
   giocate!: number | null
 
   @ManyToOne(() => Giocatori, (g: Giocatori) => g.Trasferimenti)
-  Giocatori!: Giocatori
+  Giocatori!: Relation<Giocatori>
 
   @ManyToOne(() => SquadreSerieA, (s: SquadreSerieA) => s.Trasferimenti, { nullable: true })
-  SquadreSerieA!: SquadreSerieA | null
+  SquadreSerieA!: Relation<SquadreSerieA | null>
 
   @ManyToOne(() => Utenti, (u: Utenti) => u.Trasferimenti, { nullable: true })
-  Utenti!: Utenti | null
+  Utenti!: Relation<Utenti | null>
 }

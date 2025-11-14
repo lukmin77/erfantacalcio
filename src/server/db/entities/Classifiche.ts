@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, type Relation } from 'typeorm'
 import { Tornei } from './Tornei'
 import { Utenti } from './Utenti'
 
@@ -47,8 +47,8 @@ export class Classifiche {
   giocate!: number
 
   @ManyToOne(() => Tornei, (t: Tornei) => t.Classifiche)
-  Tornei!: Tornei
+  Tornei!: Relation<Tornei>
 
   @ManyToOne(() => Utenti, (u: Utenti) => u.Classifiche)
-  Utenti!: Utenti
+  Utenti!: Relation<Utenti>
 }

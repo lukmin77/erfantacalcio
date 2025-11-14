@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, type Relation } from 'typeorm'
 import { Trasferimenti } from './Trasferimenti'
 import { Voti } from './Voti'
 
@@ -20,8 +20,8 @@ export class Giocatori {
   id_pf!: number | null
 
   @OneToMany(() => Trasferimenti, (t: Trasferimenti) => t.Giocatori)
-  Trasferimenti!: Trasferimenti[]
+  Trasferimenti!: Relation<Trasferimenti[]>
 
   @OneToMany(() => Voti, (v: Voti) => v.Giocatori)
-  Voti!: Voti[]
+  Voti!: Relation<Voti[]>
 }

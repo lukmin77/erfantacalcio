@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, type Relation } from 'typeorm'
 import { Classifiche } from './Classifiche'
 import { Formazioni } from './Formazioni'
 import { Partite } from './Partite'
@@ -61,17 +61,17 @@ export class Utenti {
   maglia!: string | null
 
   @OneToMany(() => Classifiche, (c: Classifiche) => c.Utenti)
-  Classifiche!: Classifiche[]
+  Classifiche!: Relation<Classifiche[]>
 
   @OneToMany(() => Formazioni, (f: Formazioni) => f.Utenti)
-  Formazioni!: Formazioni[]
+  Formazioni!: Relation<Formazioni[]>
 
   @OneToMany(() => Partite, (p: Partite) => p.UtentiSquadraH)
-  Partite_Partite_idSquadraHToUtenti!: Partite[]
+  Partite_Partite_idSquadraHToUtenti!: Relation<Partite[]>
 
   @OneToMany(() => Partite, (p: Partite) => p.UtentiSquadraA)
-  Partite_Partite_idSquadraAToUtenti!: Partite[]
+  Partite_Partite_idSquadraAToUtenti!: Relation<Partite[]>
 
   @OneToMany(() => Trasferimenti, (t: Trasferimenti) => t.Utenti)
-  Trasferimenti!: Trasferimenti[]
+  Trasferimenti!: Relation<Trasferimenti[]>
 }

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, type Relation } from 'typeorm'
 import { Trasferimenti } from './Trasferimenti'
 
 @Entity({ name: 'SquadreSerieA' })
@@ -13,5 +13,5 @@ export class SquadreSerieA {
   maglia!: string
 
   @OneToMany(() => Trasferimenti, (t: Trasferimenti) => t.SquadreSerieA)
-  Trasferimenti!: Trasferimenti[]
+  Trasferimenti!: Relation<Trasferimenti[]>
 }

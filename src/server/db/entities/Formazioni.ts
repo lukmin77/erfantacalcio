@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, Unique } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, Unique, type Relation } from 'typeorm'
 import { Partite } from './Partite'
 import { Utenti } from './Utenti'
 import { Voti } from './Voti'
@@ -25,11 +25,11 @@ export class Formazioni {
   hasBloccata!: boolean
 
   @ManyToOne(() => Partite, (p: Partite) => p.Formazioni)
-  Partite!: Partite
+  Partite!: Relation<Partite>
 
   @ManyToOne(() => Utenti, (u: Utenti) => u.Formazioni)
-  Utenti!: Utenti
+  Utenti!: Relation<Utenti>
 
   @OneToMany(() => Voti, (v: Voti) => v.Formazioni)
-  Voti!: Voti[]
+  Voti!: Relation<Voti[]>
 }

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, Index } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, Index, type Relation } from 'typeorm'
 import { Formazioni } from './Formazioni'
 import { Calendario } from './Calendario'
 import { Giocatori } from './Giocatori'
@@ -48,11 +48,11 @@ export class Voti {
   riserva!: number | null
 
   @ManyToOne(() => Formazioni, (f: Formazioni) => f.Voti, { nullable: true })
-  Formazioni!: Formazioni | null
+  Formazioni!: Relation<Formazioni | null>
 
   @ManyToOne(() => Calendario, (c: Calendario) => c.Voti)
-  Calendario!: Calendario
+  Calendario!: Relation<Calendario>
 
   @ManyToOne(() => Giocatori, (g: Giocatori) => g.Voti)
-  Giocatori!: Giocatori
+  Giocatori!: Relation<Giocatori>
 }

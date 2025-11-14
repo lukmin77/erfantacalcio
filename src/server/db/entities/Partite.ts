@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, type Relation } from 'typeorm'
 import { Calendario } from './Calendario'
 import { Formazioni } from './Formazioni'
 import { Utenti } from './Utenti'
@@ -45,17 +45,17 @@ export class Partite {
   fattoreCasalingo!: boolean
 
   @OneToMany(() => Formazioni, (f: Formazioni) => f.Partite)
-  Formazioni!: Formazioni[]
+  Formazioni!: Relation<Formazioni[]>
 
   @ManyToOne(() => Calendario, (c: Calendario) => c.Partite)
   @JoinColumn({ name: 'idCalendario' })
-  Calendario!: Calendario
+  Calendario!: Relation<Calendario>
 
   @ManyToOne(() => Utenti, (u: Utenti) => u.Partite_Partite_idSquadraHToUtenti)
   @JoinColumn({ name: 'idSquadraH' })
-  UtentiSquadraH!: Utenti | null
+  UtentiSquadraH!: Relation<Utenti | null>
 
   @ManyToOne(() => Utenti, (u: Utenti) => u.Partite_Partite_idSquadraAToUtenti)
   @JoinColumn({ name: 'idSquadraA' })
-  UtentiSquadraA!: Utenti | null
+  UtentiSquadraA!: Relation<Utenti | null>
 }

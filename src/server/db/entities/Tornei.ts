@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, type Relation } from 'typeorm'
 import { Calendario } from './Calendario'
 import { Classifiche } from './Classifiche'
 
@@ -17,8 +17,8 @@ export class Tornei {
   hasClassifica!: boolean
 
   @OneToMany(() => Calendario, (c: Calendario) => c.Tornei)
-  Calendario!: Calendario[]
+  Calendario!: Relation<Calendario[]>
 
   @OneToMany(() => Classifiche, (c: Classifiche) => c.Tornei)
-  Classifiche!: Classifiche[]
+  Classifiche!: Relation<Classifiche[]>
 }
