@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, type Relation } from 'typeorm'
-import { Giocatori } from './Giocatori'
-import { SquadreSerieA } from './SquadreSerieA'
-import { Utenti } from './Utenti'
+import * as GiocatoriEntity from './Giocatori'
+import * as SquadreSerieAEntity from './SquadreSerieA'
+import * as UtentiEntity from './Utenti'
 
 @Entity({ name: 'Trasferimenti' })
 export class Trasferimenti {
@@ -50,12 +50,12 @@ export class Trasferimenti {
   @Column({ name: 'giocate', type: 'smallint', nullable: true })
   giocate!: number | null
 
-  @ManyToOne(() => Giocatori, (g: Giocatori) => g.Trasferimenti)
-  Giocatori!: Relation<Giocatori>
+  @ManyToOne(() => GiocatoriEntity.Giocatori, (g: GiocatoriEntity.Giocatori) => g.Trasferimenti)
+  Giocatori!: Relation<GiocatoriEntity.Giocatori>
 
-  @ManyToOne(() => SquadreSerieA, (s: SquadreSerieA) => s.Trasferimenti, { nullable: true })
-  SquadreSerieA!: Relation<SquadreSerieA | null>
+  @ManyToOne(() => SquadreSerieAEntity.SquadreSerieA, (s: SquadreSerieAEntity.SquadreSerieA) => s.Trasferimenti, { nullable: true })
+  SquadreSerieA!: Relation<SquadreSerieAEntity.SquadreSerieA | null>
 
-  @ManyToOne(() => Utenti, (u: Utenti) => u.Trasferimenti, { nullable: true })
-  Utenti!: Relation<Utenti | null>
+  @ManyToOne(() => UtentiEntity.Utenti, (u: UtentiEntity.Utenti) => u.Trasferimenti, { nullable: true })
+  Utenti!: Relation<UtentiEntity.Utenti | null>
 }

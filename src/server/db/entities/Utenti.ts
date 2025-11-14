@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, type Relation } from 'typeorm'
-import { Classifiche } from './Classifiche'
-import { Formazioni } from './Formazioni'
-import { Partite } from './Partite'
-import { Trasferimenti } from './Trasferimenti'
+import * as ClassificheEntity from './Classifiche'
+import * as FormazioniEntity from './Formazioni'
+import * as PartiteEntity from './Partite'
+import * as TrasferimentiEntity from './Trasferimenti'
 
 @Entity({ name: 'Utenti' })
 export class Utenti {
@@ -60,18 +60,18 @@ export class Utenti {
   @Column({ name: 'maglia', type: 'varchar', length: 500, nullable: true })
   maglia!: string | null
 
-  @OneToMany(() => Classifiche, (c: Classifiche) => c.Utenti)
-  Classifiche!: Relation<Classifiche[]>
+  @OneToMany(() => ClassificheEntity.Classifiche, (c: ClassificheEntity.Classifiche) => c.Utenti)
+  Classifiche!: Relation<ClassificheEntity.Classifiche[]>
 
-  @OneToMany(() => Formazioni, (f: Formazioni) => f.Utenti)
-  Formazioni!: Relation<Formazioni[]>
+  @OneToMany(() => FormazioniEntity.Formazioni, (f: FormazioniEntity.Formazioni) => f.Utenti)
+  Formazioni!: Relation<FormazioniEntity.Formazioni[]>
 
-  @OneToMany(() => Partite, (p: Partite) => p.UtentiSquadraH)
-  Partite_Partite_idSquadraHToUtenti!: Relation<Partite[]>
+  @OneToMany(() => PartiteEntity.Partite, (p: PartiteEntity.Partite) => p.UtentiSquadraH)
+  Partite_Partite_idSquadraHToUtenti!: Relation<PartiteEntity.Partite[]>
 
-  @OneToMany(() => Partite, (p: Partite) => p.UtentiSquadraA)
-  Partite_Partite_idSquadraAToUtenti!: Relation<Partite[]>
+  @OneToMany(() => PartiteEntity.Partite, (p: PartiteEntity.Partite) => p.UtentiSquadraA)
+  Partite_Partite_idSquadraAToUtenti!: Relation<PartiteEntity.Partite[]>
 
-  @OneToMany(() => Trasferimenti, (t: Trasferimenti) => t.Utenti)
-  Trasferimenti!: Relation<Trasferimenti[]>
+  @OneToMany(() => TrasferimentiEntity.Trasferimenti, (t: TrasferimentiEntity.Trasferimenti) => t.Utenti)
+  Trasferimenti!: Relation<TrasferimentiEntity.Trasferimenti[]>
 }

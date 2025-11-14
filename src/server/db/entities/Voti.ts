@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, Index, type Relation } from 'typeorm'
-import { Formazioni } from './Formazioni'
-import { Calendario } from './Calendario'
-import { Giocatori } from './Giocatori'
+import * as FormazioniEntity from './Formazioni'
+import * as CalendarioEntity from './Calendario'
+import * as GiocatoriEntity from './Giocatori'
 
 @Entity({ name: 'Voti' })
 @Unique('UQ_Voti_Calendario_Giocatore', ['idCalendario', 'idGiocatore'])
@@ -47,12 +47,12 @@ export class Voti {
   @Column({ name: 'riserva', type: 'smallint', nullable: true })
   riserva!: number | null
 
-  @ManyToOne(() => Formazioni, (f: Formazioni) => f.Voti, { nullable: true })
-  Formazioni!: Relation<Formazioni | null>
+  @ManyToOne(() => FormazioniEntity.Formazioni, (f: FormazioniEntity.Formazioni) => f.Voti, { nullable: true })
+  Formazioni!: Relation<FormazioniEntity.Formazioni | null>
 
-  @ManyToOne(() => Calendario, (c: Calendario) => c.Voti)
-  Calendario!: Relation<Calendario>
+  @ManyToOne(() => CalendarioEntity.Calendario, (c: CalendarioEntity.Calendario) => c.Voti)
+  Calendario!: Relation<CalendarioEntity.Calendario>
 
-  @ManyToOne(() => Giocatori, (g: Giocatori) => g.Voti)
-  Giocatori!: Relation<Giocatori>
+  @ManyToOne(() => GiocatoriEntity.Giocatori, (g: GiocatoriEntity.Giocatori) => g.Voti)
+  Giocatori!: Relation<GiocatoriEntity.Giocatori>
 }

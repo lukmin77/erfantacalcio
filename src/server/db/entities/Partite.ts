@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, type Relation } from 'typeorm'
-import { Calendario } from './Calendario'
-import { Formazioni } from './Formazioni'
-import { Utenti } from './Utenti'
+import * as CalendarioEntity from './Calendario'
+import * as FormazioniEntity from './Formazioni'
+import * as UtentiEntity from './Utenti'
 
 @Entity({ name: 'Partite' })
 export class Partite {
@@ -44,18 +44,18 @@ export class Partite {
   @Column({ name: 'fattoreCasalingo', type: 'boolean', default: false })
   fattoreCasalingo!: boolean
 
-  @OneToMany(() => Formazioni, (f: Formazioni) => f.Partite)
-  Formazioni!: Relation<Formazioni[]>
+  @OneToMany(() => FormazioniEntity.Formazioni, (f: FormazioniEntity.Formazioni) => f.Partite)
+  Formazioni!: Relation<FormazioniEntity.Formazioni[]>
 
-  @ManyToOne(() => Calendario, (c: Calendario) => c.Partite)
+  @ManyToOne(() => CalendarioEntity.Calendario, (c: CalendarioEntity.Calendario) => c.Partite)
   @JoinColumn({ name: 'idCalendario' })
-  Calendario!: Relation<Calendario>
+  Calendario!: Relation<CalendarioEntity.Calendario>
 
-  @ManyToOne(() => Utenti, (u: Utenti) => u.Partite_Partite_idSquadraHToUtenti)
+  @ManyToOne(() => UtentiEntity.Utenti, (u: UtentiEntity.Utenti) => u.Partite_Partite_idSquadraHToUtenti)
   @JoinColumn({ name: 'idSquadraH' })
-  UtentiSquadraH!: Relation<Utenti | null>
+  UtentiSquadraH!: Relation<UtentiEntity.Utenti | null>
 
-  @ManyToOne(() => Utenti, (u: Utenti) => u.Partite_Partite_idSquadraAToUtenti)
+  @ManyToOne(() => UtentiEntity.Utenti, (u: UtentiEntity.Utenti) => u.Partite_Partite_idSquadraAToUtenti)
   @JoinColumn({ name: 'idSquadraA' })
-  UtentiSquadraA!: Relation<Utenti | null>
+  UtentiSquadraA!: Relation<UtentiEntity.Utenti | null>
 }

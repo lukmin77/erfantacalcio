@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, Unique, type Relation } from 'typeorm'
-import { Partite } from './Partite'
-import { Utenti } from './Utenti'
-import { Voti } from './Voti'
+import * as PartiteEntity from './Partite'
+import * as UtentiEntity from './Utenti'
+import * as VotiEntity from './Voti'
 
 @Entity({ name: 'Formazioni' })
 @Unique('UNIQUE_Formazioni_ids', ['idSquadra', 'idPartita'])
@@ -24,12 +24,12 @@ export class Formazioni {
   @Column({ name: 'hasBloccata', type: 'boolean', default: false })
   hasBloccata!: boolean
 
-  @ManyToOne(() => Partite, (p: Partite) => p.Formazioni)
-  Partite!: Relation<Partite>
+  @ManyToOne(() => PartiteEntity.Partite, (p: PartiteEntity.Partite) => p.Formazioni)
+  Partite!: Relation<PartiteEntity.Partite>
 
-  @ManyToOne(() => Utenti, (u: Utenti) => u.Formazioni)
-  Utenti!: Relation<Utenti>
+  @ManyToOne(() => UtentiEntity.Utenti, (u: UtentiEntity.Utenti) => u.Formazioni)
+  Utenti!: Relation<UtentiEntity.Utenti>
 
-  @OneToMany(() => Voti, (v: Voti) => v.Formazioni)
-  Voti!: Relation<Voti[]>
+  @OneToMany(() => VotiEntity.Voti, (v: VotiEntity.Voti) => v.Formazioni)
+  Voti!: Relation<VotiEntity.Voti[]>
 }

@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, type Relation } from 'typeorm'
-import { Tornei } from './Tornei'
-import { Utenti } from './Utenti'
+import * as TorneiEntity from './Tornei'
+import * as UtentiEntity from './Utenti'
 
 @Entity({ name: 'Classifiche' })
 export class Classifiche {
@@ -46,9 +46,9 @@ export class Classifiche {
   @Column({ name: 'giocate', type: 'smallint' })
   giocate!: number
 
-  @ManyToOne(() => Tornei, (t: Tornei) => t.Classifiche)
-  Tornei!: Relation<Tornei>
+  @ManyToOne(() => TorneiEntity.Tornei, (t: TorneiEntity.Tornei) => t.Classifiche)
+  Tornei!: Relation<TorneiEntity.Tornei>
 
-  @ManyToOne(() => Utenti, (u: Utenti) => u.Classifiche)
-  Utenti!: Relation<Utenti>
+  @ManyToOne(() => UtentiEntity.Utenti, (u: UtentiEntity.Utenti) => u.Classifiche)
+  Utenti!: Relation<UtentiEntity.Utenti>
 }

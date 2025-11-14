@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, type Relation } from 'typeorm'
-import { Tornei } from './Tornei'
-import { Partite } from './Partite'
-import { Voti } from './Voti'
+import * as TorneiEntity from './Tornei'
+import * as PartiteEntity from './Partite'
+import * as VotiEntity from './Voti'
 
 @Entity({ name: 'Calendario' })
 export class Calendario {
@@ -38,12 +38,12 @@ export class Calendario {
   @Column({ name: 'dataFine', type: 'timestamptz', nullable: true })
   dataFine!: Date | null
 
-  @ManyToOne(() => Tornei, (t: Tornei) => t.Calendario, { onUpdate: 'NO ACTION' })
-  Tornei!: Relation<Tornei>
+  @ManyToOne(() => TorneiEntity.Tornei, (t: TorneiEntity.Tornei) => t.Calendario, { onUpdate: 'NO ACTION' })
+  Tornei!: Relation<TorneiEntity.Tornei>
 
-  @OneToMany(() => Partite, (p: Partite) => p.Calendario)
-  Partite!: Relation<Partite[]>
+  @OneToMany(() => PartiteEntity.Partite, (p: PartiteEntity.Partite) => p.Calendario)
+  Partite!: Relation<PartiteEntity.Partite[]>
 
-  @OneToMany(() => Voti, (v: Voti) => v.Calendario)
-  Voti!: Relation<Voti[]>
+  @OneToMany(() => VotiEntity.Voti, (v: VotiEntity.Voti) => v.Calendario)
+  Voti!: Relation<VotiEntity.Voti[]>
 }
