@@ -38,6 +38,7 @@ import dayjs from 'dayjs'
 import { convertFromIsoToDatetimeMUI } from '~/utils/dateUtils'
 import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
 import { BarChartOutlined } from '@mui/icons-material'
+import { giocatoreSchema, trasferimentoSchema } from '~/schemas/giocatore'
 
 export default function Giocatori() {
   const theme = useTheme()
@@ -131,21 +132,7 @@ export default function Giocatori() {
       await trasferimentiList.refetch()
     },
   })
-  const GiocatoreSchema = z.object({
-    idGiocatore: z.number(),
-    nome: z.string().min(3),
-    nomeFantagazzetta: z.string().nullable().optional(),
-    ruolo: z.string(),
-  })
-  const TrasferimentoSchema = z.object({
-    idTrasferimento: z.number(),
-    idGiocatore: z.number(),
-    idSquadraSerieA: z.number().optional().nullable(),
-    idSquadra: z.number().optional().nullable(),
-    costo: z.number(),
-    dataAcquisto: z.date().optional(),
-    dataCessione: z.date().optional().nullable(),
-  })
+  
 
   const columns: GridColDef[] = [
     { field: 'id', hideable: true },
@@ -336,7 +323,7 @@ export default function Giocatori() {
     event.preventDefault()
     setErrorMessageGiocatore('')
     setMessageGiocatore('')
-    const responseVal = GiocatoreSchema.safeParse(giocatore)
+    const responseVal = giocatoreSchema.safeParse(giocatore)
     if (!responseVal.success) {
       setErrorMessageGiocatore(
         responseVal.error.issues
@@ -408,7 +395,7 @@ export default function Giocatori() {
     console.log('selectedGiocatoreId:', selectedGiocatoreId)
     setErrorMessageTrasferimento('')
     setMessageTrasferimento('')
-    const responseVal = TrasferimentoSchema.safeParse(trasferimento)
+    const responseVal = trasferimentoSchema.safeParse(trasferimento)
     if (!responseVal.success) {
       setErrorMessageTrasferimento(
         responseVal.error.issues
