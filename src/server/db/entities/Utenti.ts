@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, type Relation } from 'typeorm'
-import * as ClassificheEntity from './Classifiche'
-import * as FormazioniEntity from './Formazioni'
-import * as PartiteEntity from './Partite'
-import * as TrasferimentiEntity from './Trasferimenti'
+import * as ClassificheEntity from './Classifiche.js'
+import * as FormazioniEntity from './Formazioni.js'
+import * as PartiteEntity from './Partite.js'
+import * as TrasferimentiEntity from './Trasferimenti.js'
 
 @Entity({ name: 'Utenti' })
 export class Utenti {

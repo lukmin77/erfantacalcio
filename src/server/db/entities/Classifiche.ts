@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, type Relation } from 'typeorm'
-import * as TorneiEntity from './Tornei'
-import * as UtentiEntity from './Utenti'
+import * as TorneiEntity from './Tornei.js'
+import * as UtentiEntity from './Utenti.js'
 
 @Entity({ name: 'Classifiche' })
 export class Classifiche {

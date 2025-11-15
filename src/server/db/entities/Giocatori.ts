@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, type Relation } from 'typeorm'
-import * as TrasferimentiEntity from './Trasferimenti'
-import * as VotiEntity from './Voti'
+import * as TrasferimentiEntity from './Trasferimenti.js'
+import * as VotiEntity from './Voti.js'
 
 @Entity({ name: 'Giocatori' })
 export class Giocatori {

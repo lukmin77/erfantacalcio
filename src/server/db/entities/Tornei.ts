@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, type Relation } from 'typeorm'
-import { Calendario } from './Calendario'
-import { Classifiche } from './Classifiche'
+import { Calendario } from './Calendario.js'
+import { Classifiche } from './Classifiche.js'
 
 @Entity({ name: 'Tornei' })
 export class Tornei {

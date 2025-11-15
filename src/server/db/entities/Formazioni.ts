@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, Unique, type Relation } from 'typeorm'
-import * as PartiteEntity from './Partite'
-import * as UtentiEntity from './Utenti'
-import * as VotiEntity from './Voti'
+import * as PartiteEntity from './Partite.js'
+import * as UtentiEntity from './Utenti.js'
+import * as VotiEntity from './Voti.js'
 
 @Entity({ name: 'Formazioni' })
 @Unique('UNIQUE_Formazioni_ids', ['idSquadra', 'idPartita'])

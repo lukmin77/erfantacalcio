@@ -9,7 +9,11 @@
     "lint": "next lint",
     "start": "next start -p 8080",
     "postinstall": "prisma generate",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "generate:migration": "cross-env DOTENV_CONFIG_PATH=.env node --loader ts-node/esm --require tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d src/data-source.ts",
+    "migration:run": "cross-env DOTENV_CONFIG_PATH=.env node --loader ts-node/esm --require tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d src/data-source.ts",
+    "migration:revert": "cross-env DOTENV_CONFIG_PATH=.env node --loader ts-node/esm --require tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d src/data-source.ts",
+    "migration:show": "cross-env DOTENV_CONFIG_PATH=.env node --loader ts-node/esm --require tsconfig-paths/register ./node_modules/typeorm/cli.js migration:show -d src/data-source.ts"
   },
   "dependencies": {
     "@dotenvx/dotenvx": "1.31.0",
@@ -55,11 +59,13 @@
     "@types/reflect-metadata": "^0.1.0",
     "@typescript-eslint/eslint-plugin": "^8.29.0",
     "@typescript-eslint/parser": "^8.29.0",
+    "cross-env": "^10.1.0",
     "eslint": "^9.23.0",
     "eslint-config-next": "^15.2.4",
     "prettier": "^3.5.3",
     "prisma": "^5.13.0",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.29.0"
   },

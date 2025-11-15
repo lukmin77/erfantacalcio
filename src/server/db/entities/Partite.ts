@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, type Relation } from 'typeorm'
-import * as CalendarioEntity from './Calendario'
-import * as FormazioniEntity from './Formazioni'
-import * as UtentiEntity from './Utenti'
+import * as CalendarioEntity from './Calendario.js'
+import * as FormazioniEntity from './Formazioni.js'
+import * as UtentiEntity from './Utenti.js'
 
 @Entity({ name: 'Partite' })
 export class Partite {

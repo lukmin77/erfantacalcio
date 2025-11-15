@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, type Relation } from 'typeorm'
-import * as GiocatoriEntity from './Giocatori'
-import * as SquadreSerieAEntity from './SquadreSerieA'
-import * as UtentiEntity from './Utenti'
+import * as GiocatoriEntity from './Giocatori.js'
+import * as SquadreSerieAEntity from './SquadreSerieA.js'
+import * as UtentiEntity from './Utenti.js'
 
 @Entity({ name: 'Trasferimenti' })
 export class Trasferimenti {
