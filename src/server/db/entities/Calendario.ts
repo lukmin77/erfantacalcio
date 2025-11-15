@@ -1,63 +1,49 @@
-import {
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from "typeorm";
-import { Tornei } from "./Tornei.js";
-import { Partite } from "./Partite.js";
-import { Voti } from "./Voti.js";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, type Relation } from 'typeorm'
+import * as TorneiEntity from './Tornei.js'
+import * as PartiteEntity from './Partite.js'
+import * as VotiEntity from './Voti.js'
 
-@Index("IX_Calendario_idCalendario", ["idCalendario"], { unique: true })
-@Index("PK_Calendario", ["idCalendario"], { unique: true })
-@Entity("Calendario", { schema: "public" })
+@Entity({ name: 'Calendario' })
 export class Calendario {
-  @PrimaryGeneratedColumn({ type: "integer", name: "idCalendario" })
-  idCalendario!: number;
+  @PrimaryGeneratedColumn({ name: 'idCalendario' })
+  idCalendario!: number
 
-  @Column("smallint", { name: "giornata" })
-  giornata!: number;
+  @Column({ name: 'giornata', type: 'smallint' })
+  giornata!: number
 
-  @Column("smallint", { name: "giornataSerieA" })
-  giornataSerieA!: number;
+  @Column({ name: 'idTorneo', type: 'int' })
+  idTorneo!: number
 
-  @Column("smallint", { name: "ordine" })
-  ordine!: number;
+  @Column({ name: 'giornataSerieA', type: 'smallint' })
+  giornataSerieA!: number
 
-  @Column("boolean", { name: "hasSovrapposta", default: () => "false" })
-  hasSovrapposta!: boolean;
+  @Column({ name: 'ordine', type: 'smallint' })
+  ordine!: number
 
-  @Column("boolean", { name: "hasGiocata", default: () => "false" })
-  hasGiocata!: boolean;
+  @Column({ name: 'hasSovrapposta', type: 'boolean', default: false })
+  hasSovrapposta!: boolean
 
-  @Column("boolean", { name: "hasDaRecuperare", default: () => "false" })
-  hasDaRecuperare!: boolean;
+  @Column({ name: 'hasGiocata', type: 'boolean', default: false })
+  hasGiocata!: boolean
 
-  @Column("timestamp with time zone", {
-    name: "data",
-    nullable: true,
-    default: () => "CURRENT_TIMESTAMP",
-  })
-  data?: Date | null;
+  @Column({ name: 'hasDaRecuperare', type: 'boolean', default: false })
+  hasDaRecuperare!: boolean
 
-  @Column("smallint", { name: "girone", nullable: true })
-  girone?: number | null;
+  @Column({ name: 'data', type: 'timestamptz', nullable: true })
+  data!: Date | null
 
-  @Column("timestamp with time zone", { name: "dataFine", nullable: true })
-  dataFine?: Date | null;
+  @Column({ name: 'girone', type: 'smallint', nullable: true })
+  girone!: number | null
 
-  @ManyToOne(() => Tornei, (tornei) => tornei.calendarios, {
-    onDelete: "RESTRICT",
-  })
-  @JoinColumn([{ name: "idTorneo", referencedColumnName: "idTorneo" }])
-  idTorneo!: Tornei;
+  @Column({ name: 'dataFine', type: 'timestamptz', nullable: true })
+  dataFine!: Date | null
 
-  @OneToMany(() => Partite, (partite) => partite.idCalendario)
-  partites!: Partite[];
+  @ManyToOne(() => TorneiEntity.Tornei, (t: TorneiEntity.Tornei) => t.Calendario, { onUpdate: 'NO ACTION' })
+  Tornei!: Relation<TorneiEntity.Tornei>
 
-  @OneToMany(() => Voti, (voti) => voti.idCalendario2)
-  votis!: Voti[];
+  @OneToMany(() => PartiteEntity.Partite, (p: PartiteEntity.Partite) => p.Calendario)
+  Partite!: Relation<PartiteEntity.Partite[]>
+
+  @OneToMany(() => VotiEntity.Voti, (v: VotiEntity.Voti) => v.Calendario)
+  Voti!: Relation<VotiEntity.Voti[]>
 }

@@ -1,106 +1,77 @@
-import {
-  Column,
-  Entity,
-  Index,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from "typeorm";
-import { Classifiche } from "./Classifiche.js";
-import { Formazioni } from "./Formazioni.js";
-import { Partite } from "./Partite.js";
-import { Trasferimenti } from "./Trasferimenti.js";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, type Relation } from 'typeorm'
+import * as ClassificheEntity from './Classifiche.js'
+import * as FormazioniEntity from './Formazioni.js'
+import * as PartiteEntity from './Partite.js'
+import * as TrasferimentiEntity from './Trasferimenti.js'
 
-@Index("IX_Utenti_idUtente", ["idUtente"], { unique: true })
-@Index("PK_Utenti", ["idUtente"], { unique: true })
-@Index("IX_Utenti", ["pwd", "username"], { unique: true })
-@Entity("Utenti", { schema: "public" })
+@Entity({ name: 'Utenti' })
 export class Utenti {
-  @PrimaryGeneratedColumn({ type: "integer", name: "idUtente" })
-  idUtente!: number;
+  @PrimaryGeneratedColumn({ name: 'idUtente' })
+  idUtente!: number
 
-  @Column("character varying", { name: "username", length: 50 })
-  username!: string;
+  @Column({ name: 'username', type: 'varchar', length: 50 })
+  username!: string
 
-  @Column("character varying", { name: "pwd", length: 50 })
-  pwd!: string;
+  @Column({ name: 'pwd', type: 'varchar', length: 50 })
+  pwd!: string
 
-  @Column("boolean", { name: "adminLevel", default: () => "false" })
-  adminLevel!: boolean;
+  @Column({ name: 'adminLevel', type: 'boolean', default: false })
+  adminLevel!: boolean
 
-  @Column("character varying", { name: "presidente", length: 50 })
-  presidente!: string;
+  @Column({ name: 'presidente', type: 'varchar', length: 50 })
+  presidente!: string
 
-  @Column("character varying", { name: "mail", length: 50 })
-  mail!: string;
+  @Column({ name: 'mail', type: 'varchar', length: 50 })
+  mail!: string
 
-  @Column("character varying", { name: "nomeSquadra", length: 50 })
-  nomeSquadra!: string;
+  @Column({ name: 'nomeSquadra', type: 'varchar', length: 50 })
+  nomeSquadra!: string
 
-  @Column("character varying", { name: "foto", nullable: true, length: 500 })
-  foto?: string | null;
+  @Column({ name: 'foto', type: 'varchar', length: 500, nullable: true })
+  foto!: string | null
 
-  @Column("numeric", {
-    name: "importoBase",
-    precision: 9,
-    scale: 2,
-    default: () => "100",
-  })
-  importoBase!: string;
+  @Column({ name: 'importoBase', type: 'decimal', precision: 9, scale: 2, default: 100 })
+  importoBase!: string
 
-  @Column("numeric", {
-    name: "importoMulte",
-    precision: 9,
-    scale: 2,
-    default: () => "0",
-  })
-  importoMulte!: string;
+  @Column({ name: 'importoMulte', type: 'decimal', precision: 9, scale: 2, default: 0 })
+  importoMulte!: string
 
-  @Column("numeric", {
-    name: "importoMercato",
-    precision: 9,
-    scale: 2,
-    default: () => "0",
-  })
-  importoMercato!: string;
+  @Column({ name: 'importoMercato', type: 'decimal', precision: 9, scale: 2, default: 0 })
+  importoMercato!: string
 
-  @Column("numeric", {
-    name: "fantaMilioni",
-    precision: 9,
-    scale: 2,
-    default: () => "600",
-  })
-  fantaMilioni!: string;
+  @Column({ name: 'fantaMilioni', type: 'decimal', precision: 9, scale: 2, default: 600 })
+  fantaMilioni!: string
 
-  @Column("smallint", { name: "Campionato", default: () => "0" })
-  campionato!: number;
+  @Column({ name: 'Campionato', type: 'smallint', default: 0 })
+  Campionato!: number
 
-  @Column("smallint", { name: "Champions", default: () => "0" })
-  champions!: number;
+  @Column({ name: 'Champions', type: 'smallint', default: 0 })
+  Champions!: number
 
-  @Column("smallint", { name: "Secondo", default: () => "0" })
-  secondo!: number;
+  @Column({ name: 'Secondo', type: 'smallint', default: 0 })
+  Secondo!: number
 
-  @Column("smallint", { name: "Terzo", default: () => "0" })
-  terzo!: number;
+  @Column({ name: 'Terzo', type: 'smallint', default: 0 })
+  Terzo!: number
 
-  @Column("boolean", { name: "lockLevel", default: () => "false" })
-  lockLevel!: boolean;
+  @Column({ name: 'lockLevel', type: 'boolean', default: false })
+  lockLevel!: boolean
 
-  @Column("character varying", { name: "maglia", nullable: true, length: 500 })
-  maglia?: string | null;
+  @Column({ name: 'maglia', type: 'varchar', length: 500, nullable: true })
+  maglia!: string | null
 
-  @OneToMany(() => Classifiche, (classifiche) => classifiche.idSquadra)
-  classifiches!: Classifiche[];
+  @OneToMany(() => ClassificheEntity.Classifiche, (c: ClassificheEntity.Classifiche) => c.Utenti)
+  Classifiche!: Relation<ClassificheEntity.Classifiche[]>
 
-  @OneToMany(() => Formazioni, (formazioni) => formazioni.idSquadra2)
-  formazionis!: Formazioni[];
+  @OneToMany(() => FormazioniEntity.Formazioni, (f: FormazioniEntity.Formazioni) => f.Utenti)
+  Formazioni!: Relation<FormazioniEntity.Formazioni[]>
 
-  @OneToMany(() => Partite, (partite) => partite.idSquadraA)
-  partites!: Partite[];
+  @OneToMany(() => PartiteEntity.Partite, (p: PartiteEntity.Partite) => p.UtentiSquadraH)
+  Partite_Partite_idSquadraHToUtenti!: Relation<PartiteEntity.Partite[]>
 
-  @OneToMany(() => Partite, (partite) => partite.idSquadraH)
-  partites2!: Partite[];
+  @OneToMany(() => PartiteEntity.Partite, (p: PartiteEntity.Partite) => p.UtentiSquadraA)
+  Partite_Partite_idSquadraAToUtenti!: Relation<PartiteEntity.Partite[]>
 
-  @OneToMany(() => Trasferimenti, (trasferimenti) => trasferimenti.idSquadra)
-  trasferimentis!: Trasferimenti[];
+  @OneToMany(() => TrasferimentiEntity.Trasferimenti, (t: TrasferimentiEntity.Trasferimenti) => t.Utenti)
+  Trasferimenti!: Relation<TrasferimentiEntity.Trasferimenti[]>
 }

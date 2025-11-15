@@ -1,40 +1,27 @@
-import {
-  Column,
-  Entity,
-  Index,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from "typeorm";
-import { Trasferimenti } from "./Trasferimenti.js";
-import { Voti } from "./Voti.js";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, type Relation } from 'typeorm'
+import * as TrasferimentiEntity from './Trasferimenti.js'
+import * as VotiEntity from './Voti.js'
 
-@Index("IX_Giocatori_idGiocatore", ["idGiocatore"], { unique: true })
-@Index("PK_Giocatori", ["idGiocatore"], { unique: true })
-@Index("UNIQUE_GIOCATORI_NOME", ["nome"], { unique: true })
-@Entity("Giocatori", { schema: "public" })
+@Entity({ name: 'Giocatori' })
 export class Giocatori {
-  @PrimaryGeneratedColumn({ type: "integer", name: "idGiocatore" })
-  idGiocatore!: number;
+  @PrimaryGeneratedColumn({ name: 'idGiocatore' })
+  idGiocatore!: number
 
-  @Column("character varying", { name: "ruolo", length: 1 })
-  ruolo!: string;
+  @Column({ name: 'ruolo', type: 'varchar', length: 1 })
+  ruolo!: string
 
-  @Column("character varying", { name: "nome", length: 50 })
-  nome!: string;
+  @Column({ name: 'nome', type: 'varchar', length: 50, unique: true })
+  nome!: string
 
-  @Column("character varying", {
-    name: "nomeFantaGazzetta",
-    nullable: true,
-    length: 500,
-  })
-  nomeFantaGazzetta?: string | null;
+  @Column({ name: 'nomeFantaGazzetta', type: 'varchar', length: 500, nullable: true })
+  nomeFantaGazzetta!: string | null
 
-  @Column("integer", { name: "id_pf", nullable: true })
-  idPf?: number | null;
+  @Column({ name: 'id_pf', type: 'int', nullable: true })
+  id_pf!: number | null
 
-  @OneToMany(() => Trasferimenti, (trasferimenti) => trasferimenti.idGiocatore)
-  trasferimentis!: Trasferimenti[];
+  @OneToMany(() => TrasferimentiEntity.Trasferimenti, (t: TrasferimentiEntity.Trasferimenti) => t.Giocatori)
+  Trasferimenti!: Relation<TrasferimentiEntity.Trasferimenti[]>
 
-  @OneToMany(() => Voti, (voti) => voti.idGiocatore2)
-  votis!: Voti[];
+  @OneToMany(() => VotiEntity.Voti, (v: VotiEntity.Voti) => v.Giocatori)
+  Voti!: Relation<VotiEntity.Voti[]>
 }

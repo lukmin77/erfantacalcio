@@ -1,36 +1,24 @@
-import {
-  Column,
-  Entity,
-  Index,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from "typeorm";
-import { Calendario } from "./Calendario.js";
-import { Classifiche } from "./Classifiche.js";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, type Relation } from 'typeorm'
+import { Calendario } from './Calendario.js'
+import { Classifiche } from './Classifiche.js'
 
-@Index("IX_Tornei_idTorneo", ["idTorneo"], { unique: true })
-@Index("PK_Tornei", ["idTorneo"], { unique: true })
-@Entity("Tornei", { schema: "public" })
+@Entity({ name: 'Tornei' })
 export class Tornei {
-  @PrimaryGeneratedColumn({ type: "integer", name: "idTorneo" })
-  idTorneo!: number;
+  @PrimaryGeneratedColumn({ name: 'idTorneo' })
+  idTorneo!: number
 
-  @Column("character varying", { name: "nome", length: 50 })
-  nome!: string;
+  @Column({ name: 'nome', type: 'varchar', length: 50 })
+  nome!: string
 
-  @Column("character varying", {
-    name: "gruppoFase",
-    nullable: true,
-    length: 50,
-  })
-  gruppoFase?: string | null;
+  @Column({ name: 'gruppoFase', type: 'varchar', length: 50, nullable: true })
+  gruppoFase!: string | null
 
-  @Column("boolean", { name: "hasClassifica" })
-  hasClassifica!: boolean;
+  @Column({ name: 'hasClassifica', type: 'boolean' })
+  hasClassifica!: boolean
 
-  @OneToMany(() => Calendario, (calendario) => calendario.idTorneo)
-  calendarios!: Calendario[];
+  @OneToMany(() => Calendario, (c: Calendario) => c.Tornei)
+  Calendario!: Relation<Calendario[]>
 
-  @OneToMany(() => Classifiche, (classifiche) => classifiche.idTorneo)
-  classifiches!: Classifiche[];
+  @OneToMany(() => Classifiche, (c: Classifiche) => c.Tornei)
+  Classifiche!: Relation<Classifiche[]>
 }

@@ -1,30 +1,17 @@
-import {
-  Column,
-  Entity,
-  Index,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from "typeorm";
-import { Trasferimenti } from "./Trasferimenti.js";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, type Relation } from 'typeorm'
+import { Trasferimenti } from './Trasferimenti.js'
 
-@Index("PK_SquadreSerieA", ["idSquadraSerieA"], { unique: true })
-@Index("IX_SquadreSerieA_idSquadraSerieA", ["idSquadraSerieA"], {
-  unique: true,
-})
-@Entity("SquadreSerieA", { schema: "public" })
+@Entity({ name: 'SquadreSerieA' })
 export class SquadreSerieA {
-  @PrimaryGeneratedColumn({ type: "integer", name: "idSquadraSerieA" })
-  idSquadraSerieA!: number;
+  @PrimaryGeneratedColumn({ name: 'idSquadraSerieA' })
+  idSquadraSerieA!: number
 
-  @Column("character varying", { name: "nome", length: 50 })
-  nome!: string;
+  @Column({ name: 'nome', type: 'varchar', length: 50 })
+  nome!: string
 
-  @Column("character varying", { name: "maglia", length: 50 })
-  maglia!: string;
+  @Column({ name: 'maglia', type: 'varchar', length: 50 })
+  maglia!: string
 
-  @OneToMany(
-    () => Trasferimenti,
-    (trasferimenti) => trasferimenti.idSquadraSerieA
-  )
-  trasferimentis!: Trasferimenti[];
+  @OneToMany(() => Trasferimenti, (t: Trasferimenti) => t.SquadreSerieA)
+  Trasferimenti!: Relation<Trasferimenti[]>
 }

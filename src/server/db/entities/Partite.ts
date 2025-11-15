@@ -1,74 +1,61 @@
-import {
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from "typeorm";
-import { Formazioni } from "./Formazioni.js";
-import { Calendario } from "./Calendario.js";
-import { Utenti } from "./Utenti.js";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, type Relation } from 'typeorm'
+import * as CalendarioEntity from './Calendario.js'
+import * as FormazioniEntity from './Formazioni.js'
+import * as UtentiEntity from './Utenti.js'
 
-@Index("PK_Partita", ["idPartita"], { unique: true })
-@Index("IX_Partite_idPartita", ["idPartita"], { unique: true })
-@Entity("Partite", { schema: "public" })
+@Entity({ name: 'Partite' })
 export class Partite {
-  @PrimaryGeneratedColumn({ type: "integer", name: "idPartita" })
-  idPartita!: number;
+  @PrimaryGeneratedColumn({ name: 'idPartita' })
+  idPartita!: number
 
-  @Column("smallint", { name: "puntiH", nullable: true })
-  puntiH?: number | null;
+  @Column({ name: 'idCalendario', type: 'int' })
+  idCalendario!: number
 
-  @Column("smallint", { name: "puntiA", nullable: true })
-  puntiA?: number | null;
+  @Column({ name: 'idSquadraH', type: 'int', nullable: true })
+  idSquadraH!: number | null
 
-  @Column("smallint", { name: "golH", nullable: true })
-  golH?: number | null;
+  @Column({ name: 'idSquadraA', type: 'int', nullable: true })
+  idSquadraA!: number | null
 
-  @Column("smallint", { name: "golA", nullable: true })
-  golA?: number | null;
+  @Column({ name: 'puntiH', type: 'smallint', nullable: true })
+  puntiH!: number | null
 
-  @Column("boolean", { name: "hasMultaH", default: () => "false" })
-  hasMultaH!: boolean;
+  @Column({ name: 'puntiA', type: 'smallint', nullable: true })
+  puntiA!: number | null
 
-  @Column("boolean", { name: "hasMultaA", default: () => "false" })
-  hasMultaA!: boolean;
+  @Column({ name: 'golH', type: 'smallint', nullable: true })
+  golH!: number | null
 
-  @Column("numeric", {
-    name: "punteggioH",
-    nullable: true,
-    precision: 9,
-    scale: 2,
-  })
-  punteggioH?: string | null;
+  @Column({ name: 'golA', type: 'smallint', nullable: true })
+  golA!: number | null
 
-  @Column("numeric", {
-    name: "punteggioA",
-    nullable: true,
-    precision: 9,
-    scale: 2,
-  })
-  punteggioA?: string | null;
+  @Column({ name: 'hasMultaH', type: 'boolean', default: false })
+  hasMultaH!: boolean
 
-  @Column("boolean", { name: "fattoreCasalingo", default: () => "false" })
-  fattoreCasalingo!: boolean;
+  @Column({ name: 'hasMultaA', type: 'boolean', default: false })
+  hasMultaA!: boolean
 
-  @OneToMany(() => Formazioni, (formazioni) => formazioni.idPartita2)
-  formazionis!: Formazioni[];
+  @Column({ name: 'punteggioH', type: 'decimal', precision: 9, scale: 2, nullable: true })
+  punteggioH!: string | null
 
-  @ManyToOne(() => Calendario, (calendario) => calendario.partites, {
-    onDelete: "RESTRICT",
-  })
-  @JoinColumn([{ name: "idCalendario", referencedColumnName: "idCalendario" }])
-  idCalendario!: Calendario;
+  @Column({ name: 'punteggioA', type: 'decimal', precision: 9, scale: 2, nullable: true })
+  punteggioA!: string | null
 
-  @ManyToOne(() => Utenti, (utenti) => utenti.partites)
-  @JoinColumn([{ name: "idSquadraA", referencedColumnName: "idUtente" }])
-  idSquadraA!: Utenti;
+  @Column({ name: 'fattoreCasalingo', type: 'boolean', default: false })
+  fattoreCasalingo!: boolean
 
-  @ManyToOne(() => Utenti, (utenti) => utenti.partites2)
-  @JoinColumn([{ name: "idSquadraH", referencedColumnName: "idUtente" }])
-  idSquadraH!: Utenti;
+  @OneToMany(() => FormazioniEntity.Formazioni, (f: FormazioniEntity.Formazioni) => f.Partite)
+  Formazioni!: Relation<FormazioniEntity.Formazioni[]>
+
+  @ManyToOne(() => CalendarioEntity.Calendario, (c: CalendarioEntity.Calendario) => c.Partite)
+  @JoinColumn({ name: 'idCalendario' })
+  Calendario!: Relation<CalendarioEntity.Calendario>
+
+  @ManyToOne(() => UtentiEntity.Utenti, (u: UtentiEntity.Utenti) => u.Partite_Partite_idSquadraHToUtenti)
+  @JoinColumn({ name: 'idSquadraH' })
+  UtentiSquadraH!: Relation<UtentiEntity.Utenti | null>
+
+  @ManyToOne(() => UtentiEntity.Utenti, (u: UtentiEntity.Utenti) => u.Partite_Partite_idSquadraAToUtenti)
+  @JoinColumn({ name: 'idSquadraA' })
+  UtentiSquadraA!: Relation<UtentiEntity.Utenti | null>
 }

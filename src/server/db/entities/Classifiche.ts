@@ -1,62 +1,54 @@
-import {
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from "typeorm";
-import { Utenti } from "./Utenti.js";
-import { Tornei } from "./Tornei.js";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, type Relation } from 'typeorm'
+import * as TorneiEntity from './Tornei.js'
+import * as UtentiEntity from './Utenti.js'
 
-@Index("PK_Classifiche", ["id"], { unique: true })
-@Entity("Classifiche", { schema: "public" })
+@Entity({ name: 'Classifiche' })
 export class Classifiche {
-  @PrimaryGeneratedColumn({ type: "integer", name: "id" })
-  id!: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id!: number
 
-  @Column("smallint", { name: "punti" })
-  punti!: number;
+  @Column({ name: 'idSquadra', type: 'int' })
+  idSquadra!: number
 
-  @Column("smallint", { name: "vinteCasa" })
-  vinteCasa!: number;
+  @Column({ name: 'idTorneo', type: 'int' })
+  idTorneo!: number
 
-  @Column("smallint", { name: "pareggiCasa" })
-  pareggiCasa!: number;
+  @Column({ name: 'punti', type: 'smallint' })
+  punti!: number
 
-  @Column("smallint", { name: "perseCasa" })
-  perseCasa!: number;
+  @Column({ name: 'vinteCasa', type: 'smallint' })
+  vinteCasa!: number
 
-  @Column("smallint", { name: "vinteTrasferta" })
-  vinteTrasferta!: number;
+  @Column({ name: 'pareggiCasa', type: 'smallint' })
+  pareggiCasa!: number
 
-  @Column("smallint", { name: "pareggiTrasferta" })
-  pareggiTrasferta!: number;
+  @Column({ name: 'perseCasa', type: 'smallint' })
+  perseCasa!: number
 
-  @Column("smallint", { name: "perseTrasferta" })
-  perseTrasferta!: number;
+  @Column({ name: 'vinteTrasferta', type: 'smallint' })
+  vinteTrasferta!: number
 
-  @Column("smallint", { name: "golFatti" })
-  golFatti!: number;
+  @Column({ name: 'pareggiTrasferta', type: 'smallint' })
+  pareggiTrasferta!: number
 
-  @Column("smallint", { name: "golSubiti" })
-  golSubiti!: number;
+  @Column({ name: 'perseTrasferta', type: 'smallint' })
+  perseTrasferta!: number
 
-  @Column("integer", { name: "differenzaReti" })
-  differenzaReti!: number;
+  @Column({ name: 'golFatti', type: 'smallint' })
+  golFatti!: number
 
-  @Column("smallint", { name: "giocate" })
-  giocate!: number;
+  @Column({ name: 'golSubiti', type: 'smallint' })
+  golSubiti!: number
 
-  @ManyToOne(() => Utenti, (utenti) => utenti.classifiches, {
-    onDelete: "RESTRICT",
-  })
-  @JoinColumn([{ name: "idSquadra", referencedColumnName: "idUtente" }])
-  idSquadra!: Utenti;
+  @Column({ name: 'differenzaReti', type: 'int' })
+  differenzaReti!: number
 
-  @ManyToOne(() => Tornei, (tornei) => tornei.classifiches, {
-    onDelete: "RESTRICT",
-  })
-  @JoinColumn([{ name: "idTorneo", referencedColumnName: "idTorneo" }])
-  idTorneo!: Tornei;
+  @Column({ name: 'giocate', type: 'smallint' })
+  giocate!: number
+
+  @ManyToOne(() => TorneiEntity.Tornei, (t: TorneiEntity.Tornei) => t.Classifiche)
+  Tornei!: Relation<TorneiEntity.Tornei>
+
+  @ManyToOne(() => UtentiEntity.Utenti, (u: UtentiEntity.Utenti) => u.Classifiche)
+  Utenti!: Relation<UtentiEntity.Utenti>
 }
