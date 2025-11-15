@@ -10,15 +10,16 @@ import { Trasferimenti } from './server/db/entities/Trasferimenti.js'
 import { SquadreSerieA } from './server/db/entities/SquadreSerieA.js'
 import { Classifiche } from './server/db/entities/Classifiche.js'
 import { Voti } from './server/db/entities/Voti.js'
+import 'dotenv/config'
 
 // Incremental migration: do NOT enable synchronize in production.
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  host: 'localhost',
+  host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
-  username: 'postgres',
-  password: '11235',
-  database: 'erfantacalcio',
+  username: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
   migrations: ['src/server/db/migrations/*.ts'],
   entities: [
     Utenti,
