@@ -1,35 +1,54 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, Unique, type Relation } from 'typeorm'
-import * as PartiteEntity from './Partite.js'
-import * as UtentiEntity from './Utenti.js'
-import * as VotiEntity from './Voti.js'
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { Partite } from "./Partite.js";
+import { Utenti } from "./Utenti.js";
+import { Voti } from "./Voti.js";
 
-@Entity({ name: 'Formazioni' })
-@Unique('UNIQUE_Formazioni_ids', ['idSquadra', 'idPartita'])
+@Index("PK_Formazioni", ["idFormazione"], { unique: true })
+@Index("IX_Formazioni_idFormazione", ["idFormazione"], { unique: true })
+@Index("UNIQUE_Formazioni_ids", ["idPartita", "idSquadra"], { unique: true })
+@Entity("Formazioni", { schema: "public" })
 export class Formazioni {
-  @PrimaryGeneratedColumn({ name: 'idFormazione' })
-  idFormazione!: number
+  @PrimaryGeneratedColumn({ type: "integer", name: "idFormazione" })
+  idFormazione!: number;
 
-  @Column({ name: 'idSquadra', type: 'int' })
-  idSquadra!: number
+  @Column("integer", { name: "idSquadra" })
+  idSquadra!: number;
 
-  @Column({ name: 'idPartita', type: 'int' })
-  idPartita!: number
+  @Column("integer", { name: "idPartita" })
+  idPartita!: number;
 
-  @Column({ name: 'dataOra', type: 'timestamptz' })
-  dataOra!: Date
+  @Column("timestamp with time zone", {
+    name: "dataOra",
+    default: () => "CURRENT_TIMESTAMP",
+  })
+  dataOra!: Date;
 
-  @Column({ name: 'modulo', type: 'varchar', length: 5 })
-  modulo!: string
+  @Column("character varying", { name: "modulo", length: 5 })
+  modulo!: string;
 
-  @Column({ name: 'hasBloccata', type: 'boolean', default: false })
-  hasBloccata!: boolean
+  @Column("boolean", { name: "hasBloccata", default: () => "false" })
+  hasBloccata!: boolean;
 
-  @ManyToOne(() => PartiteEntity.Partite, (p: PartiteEntity.Partite) => p.Formazioni)
-  Partite!: Relation<PartiteEntity.Partite>
+  @ManyToOne(() => Partite, (partite) => partite.formazionis, {
+    onDelete: "RESTRICT",
+  })
+  @JoinColumn([{ name: "idPartita", referencedColumnName: "idPartita" }])
+  idPartita2!: Partite;
 
-  @ManyToOne(() => UtentiEntity.Utenti, (u: UtentiEntity.Utenti) => u.Formazioni)
-  Utenti!: Relation<UtentiEntity.Utenti>
+  @ManyToOne(() => Utenti, (utenti) => utenti.formazionis, {
+    onDelete: "RESTRICT",
+  })
+  @JoinColumn([{ name: "idSquadra", referencedColumnName: "idUtente" }])
+  idSquadra2!: Utenti;
 
-  @OneToMany(() => VotiEntity.Voti, (v: VotiEntity.Voti) => v.Formazioni)
-  Voti!: Relation<VotiEntity.Voti[]>
+  @OneToMany(() => Voti, (voti) => voti.idFormazione)
+  votis!: Voti[];
 }
