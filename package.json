@@ -10,7 +10,7 @@
     "start": "next start -p 8080",
     "postinstall": "prisma generate",
     "format": "prettier --write .",
-    "generate:migration": "cross-env DOTENV_CONFIG_PATH=.env node --loader ts-node/esm --require tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d src/data-source.ts",
+    "migration:generate": "cross-env DOTENV_CONFIG_PATH=.env node --loader ts-node/esm --require tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d src/data-source.ts",
     "migration:run": "cross-env DOTENV_CONFIG_PATH=.env node --loader ts-node/esm --require tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d src/data-source.ts",
     "migration:revert": "cross-env DOTENV_CONFIG_PATH=.env node --loader ts-node/esm --require tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d src/data-source.ts",
     "migration:show": "cross-env DOTENV_CONFIG_PATH=.env node --loader ts-node/esm --require tsconfig-paths/register ./node_modules/typeorm/cli.js migration:show -d src/data-source.ts"
