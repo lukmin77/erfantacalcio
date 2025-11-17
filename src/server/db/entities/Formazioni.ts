@@ -1,7 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, Unique, type Relation } from 'typeorm'
-import * as PartiteEntity from './Partite.js'
-import * as UtentiEntity from './Utenti.js'
-import * as VotiEntity from './Voti.js'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  Unique,
+  type Relation,
+  JoinColumn,
+} from 'typeorm'
+import { Partite } from './Partite.js'
+import { Utenti } from './Utenti.js'
+import { Voti } from './Voti.js'
 
 @Entity({ name: 'Formazioni' })
 @Unique('UNIQUE_Formazioni_ids', ['idSquadra', 'idPartita'])
@@ -24,12 +33,26 @@ export class Formazioni {
   @Column({ name: 'hasBloccata', type: 'boolean', default: false })
   hasBloccata!: boolean
 
-  @ManyToOne(() => PartiteEntity.Partite, (p: PartiteEntity.Partite) => p.Formazioni)
-  Partite!: Relation<PartiteEntity.Partite>
+  @ManyToOne(() => Partite, (p: Partite) => p.Formazioni, {
+    onUpdate: 'NO ACTION',
+    onDelete: 'RESTRICT',
+  })
+  @JoinColumn({
+    name: 'idPartita',
+    foreignKeyConstraintName: 'FK_Formazioni_Partite',
+  })
+  Partite!: Relation<Partite>
 
-  @ManyToOne(() => UtentiEntity.Utenti, (u: UtentiEntity.Utenti) => u.Formazioni)
-  Utenti!: Relation<UtentiEntity.Utenti>
+  @ManyToOne(() => Utenti, (u: Utenti) => u.Formazioni, {
+    onUpdate: 'NO ACTION',
+    onDelete: 'RESTRICT',
+  })
+  @JoinColumn({
+    name: 'idUtente',
+    foreignKeyConstraintName: 'FK_Formazioni_Utenti',
+  })
+  Utenti!: Relation<Utenti>
 
-  @OneToMany(() => VotiEntity.Voti, (v: VotiEntity.Voti) => v.Formazioni)
-  Voti!: Relation<VotiEntity.Voti[]>
+  @OneToMany(() => Voti, (v: Voti) => v.Formazioni)
+  Voti!: Relation<Voti[]>
 }

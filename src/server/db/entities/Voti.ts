@@ -1,7 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, Index, type Relation } from 'typeorm'
-import * as FormazioniEntity from './Formazioni.js'
-import * as CalendarioEntity from './Calendario.js'
-import * as GiocatoriEntity from './Giocatori.js'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, Index, type Relation, JoinColumn } from 'typeorm'
+import { Formazioni } from './Formazioni.js'
+import { Calendario } from './Calendario.js'
+import { Giocatori } from './Giocatori.js'
 
 @Entity({ name: 'Voti' })
 @Unique('UQ_Voti_Calendario_Giocatore', ['idCalendario', 'idGiocatore'])
@@ -20,25 +20,71 @@ export class Voti {
   @Column({ name: 'idFormazione', type: 'int', nullable: true })
   idFormazione!: number | null
 
-  @Column({ name: 'voto', type: 'decimal', precision: 5, scale: 2, nullable: true })
+  @Column({
+    name: 'voto',
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    nullable: true,
+  })
   voto!: string | null
 
-  @Column({ name: 'ammonizione', type: 'decimal', precision: 5, scale: 1, default: 0 })
+  @Column({
+    name: 'ammonizione',
+    type: 'decimal',
+    precision: 5,
+    scale: 1,
+    default: 0,
+  })
   ammonizione!: string
 
-  @Column({ name: 'espulsione', type: 'decimal', precision: 5, scale: 1, default: 0 })
+  @Column({
+    name: 'espulsione',
+    type: 'decimal',
+    precision: 5,
+    scale: 1,
+    default: 0,
+  })
   espulsione!: string
 
-  @Column({ name: 'gol', type: 'decimal', precision: 5, scale: 1, default: 0, nullable: true })
+  @Column({
+    name: 'gol',
+    type: 'decimal',
+    precision: 5,
+    scale: 1,
+    default: 0,
+    nullable: true,
+  })
   gol!: string | null
 
-  @Column({ name: 'assist', type: 'decimal', precision: 5, scale: 1, default: 0, nullable: true })
+  @Column({
+    name: 'assist',
+    type: 'decimal',
+    precision: 5,
+    scale: 1,
+    default: 0,
+    nullable: true,
+  })
   assist!: string | null
 
-  @Column({ name: 'autogol', type: 'decimal', precision: 5, scale: 1, default: 0, nullable: true })
+  @Column({
+    name: 'autogol',
+    type: 'decimal',
+    precision: 5,
+    scale: 1,
+    default: 0,
+    nullable: true,
+  })
   autogol!: string | null
 
-  @Column({ name: 'altriBonus', type: 'decimal', precision: 5, scale: 1, default: 0, nullable: true })
+  @Column({
+    name: 'altriBonus',
+    type: 'decimal',
+    precision: 5,
+    scale: 1,
+    default: 0,
+    nullable: true,
+  })
   altriBonus!: string | null
 
   @Column({ name: 'titolare', type: 'boolean', default: false })
@@ -47,12 +93,34 @@ export class Voti {
   @Column({ name: 'riserva', type: 'smallint', nullable: true })
   riserva!: number | null
 
-  @ManyToOne(() => FormazioniEntity.Formazioni, (f: FormazioniEntity.Formazioni) => f.Voti, { nullable: true })
-  Formazioni!: Relation<FormazioniEntity.Formazioni | null>
+  @ManyToOne(() => Formazioni, (f: Formazioni) => f.Voti, {
+    nullable: true,
+    onUpdate: 'NO ACTION',
+    onDelete: 'NO ACTION',
+  })
+  @JoinColumn({
+    name: 'idFormazione',
+    foreignKeyConstraintName: 'FK_Formazione_Giocatori',
+  })
+  Formazioni?: Relation<Formazioni | null>
 
-  @ManyToOne(() => CalendarioEntity.Calendario, (c: CalendarioEntity.Calendario) => c.Voti)
-  Calendario!: Relation<CalendarioEntity.Calendario>
+  @ManyToOne(() => Calendario, (c: Calendario) => c.Voti, {
+    onUpdate: 'NO ACTION',
+    onDelete: 'RESTRICT',
+  })
+  @JoinColumn({
+    name: 'idCalendario',
+    foreignKeyConstraintName: 'FK_Voti_Calendario',
+  })
+  Calendario!: Relation<Calendario>
 
-  @ManyToOne(() => GiocatoriEntity.Giocatori, (g: GiocatoriEntity.Giocatori) => g.Voti)
-  Giocatori!: Relation<GiocatoriEntity.Giocatori>
+  @ManyToOne(() => Giocatori, (g: Giocatori) => g.Voti, {
+    onUpdate: 'NO ACTION',
+    onDelete: 'RESTRICT',
+  })
+  @JoinColumn({
+    name: 'idGiocatore',
+    foreignKeyConstraintName: 'FK_Voti_Giocatori',
+  })
+  Giocatori!: Relation<Giocatori>
 }
