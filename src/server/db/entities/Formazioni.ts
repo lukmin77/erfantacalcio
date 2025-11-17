@@ -24,7 +24,7 @@ export class Formazioni {
   @Column({ name: 'idPartita', type: 'int' })
   idPartita!: number
 
-  @Column({ name: 'dataOra', type: 'timestamptz' })
+  @Column({ name: 'dataOra', type: 'timestamp with time zone', default:'CURRENT_TIMESTAMP' })
   dataOra!: Date
 
   @Column({ name: 'modulo', type: 'varchar', length: 5 })

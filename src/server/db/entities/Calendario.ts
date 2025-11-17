@@ -37,13 +37,13 @@ export class Calendario {
   @Column({ name: 'hasDaRecuperare', type: 'boolean', default: false })
   hasDaRecuperare!: boolean
 
-  @Column({ name: 'data', type: 'timestamptz', nullable: true })
+  @Column({ name: 'data', type: 'timestamp with time zone', default:'CURRENT_TIMESTAMP', nullable: true })
   data!: Date | null
 
   @Column({ name: 'girone', type: 'smallint', nullable: true })
   girone!: number | null
 
-  @Column({ name: 'dataFine', type: 'timestamptz', nullable: true })
+  @Column({ name: 'dataFine', type: 'timestamp with time zone', nullable: true })
   dataFine!: Date | null
 
   @ManyToOne(() => Tornei, (t: Tornei) => t.Calendario, {

@@ -14,10 +14,10 @@ export class Trasferimenti {
   @Column({ name: 'idSquadraSerieA', type: 'int', nullable: true })
   idSquadraSerieA!: number | null
 
-  @Column({ name: 'dataAcquisto', type: 'timestamptz' })
+  @Column({ name: 'dataAcquisto', type: 'timestamp with time zone', default:'CURRENT_TIMESTAMP' })
   dataAcquisto!: Date
 
-  @Column({ name: 'dataCessione', type: 'timestamptz', nullable: true })
+  @Column({ name: 'dataCessione', type: 'timestamp with time zone', nullable: true })
   dataCessione!: Date | null
 
   @Column({ name: 'idSquadra', type: 'int', nullable: true })
