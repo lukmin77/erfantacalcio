@@ -68,7 +68,7 @@ export class Classifiche {
     onUpdate: 'NO ACTION',
   })
   @JoinColumn({
-    name: 'idUtente',
+    name: 'idSquadra',
     foreignKeyConstraintName: 'FK_Classifiche_Utenti',
   })
   Utenti!: Relation<Utenti>

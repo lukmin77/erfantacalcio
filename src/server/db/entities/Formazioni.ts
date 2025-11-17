@@ -24,7 +24,7 @@ export class Formazioni {
   @Column({ name: 'idPartita', type: 'int' })
   idPartita!: number
 
-  @Column({ name: 'dataOra', type: 'timestamp with time zone', default:'CURRENT_TIMESTAMP' })
+  @Column({ name: 'dataOra', type: 'timestamptz', default: () => "CURRENT_TIMESTAMP" })
   dataOra!: Date
 
   @Column({ name: 'modulo', type: 'varchar', length: 5 })
@@ -48,7 +48,7 @@ export class Formazioni {
     onDelete: 'RESTRICT',
   })
   @JoinColumn({
-    name: 'idUtente',
+    name: 'idSquadra',
     foreignKeyConstraintName: 'FK_Formazioni_Utenti',
   })
   Utenti!: Relation<Utenti>

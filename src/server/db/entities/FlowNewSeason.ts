@@ -13,7 +13,7 @@ export class FlowNewSeasosn {
   @Column("boolean", { name: "active", default: () => "false" })
   active!: boolean;
 
-  @Column("timestamp with time zone", {
+  @Column("timestamptz", {
     name: "data",
     nullable: true,
     default: () => "CURRENT_TIMESTAMP",

@@ -14,10 +14,10 @@ export class Trasferimenti {
   @Column({ name: 'idSquadraSerieA', type: 'int', nullable: true })
   idSquadraSerieA!: number | null
 
-  @Column({ name: 'dataAcquisto', type: 'timestamp with time zone', default:'CURRENT_TIMESTAMP' })
+  @Column({ name: 'dataAcquisto', type: 'timestamptz', default: () => "CURRENT_TIMESTAMP" })
   dataAcquisto!: Date
 
-  @Column({ name: 'dataCessione', type: 'timestamp with time zone', nullable: true })
+  @Column({ name: 'dataCessione', type: 'timestamptz', nullable: true })
   dataCessione!: Date | null
 
   @Column({ name: 'idSquadra', type: 'int', nullable: true })
@@ -88,7 +88,7 @@ export class Trasferimenti {
     nullable: true,
   })
   @JoinColumn({
-    name: 'idUtente',
+    name: 'idSquadra',
     foreignKeyConstraintName: 'FK_Trasferimenti_Utenti',
   })
   Utenti?: Relation<Utenti | null>

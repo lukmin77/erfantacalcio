@@ -54,10 +54,10 @@ export class Partite {
   Calendario!: Relation<Calendario>
 
   @ManyToOne(() => Utenti, (u: Utenti) => u.Partite_Partite_idSquadraHToUtenti, { onUpdate: 'NO ACTION', onDelete: 'NO ACTION' })
-  @JoinColumn({ name: 'idUtente', foreignKeyConstraintName: 'FK_Partite_SquadreCasa' })
+  @JoinColumn({ name: 'idSquadraH', foreignKeyConstraintName: 'FK_Partite_SquadreCasa' })
   UtentiSquadraH!: Relation<Utenti | null>
 
   @ManyToOne(() => Utenti, (u: Utenti) => u.Partite_Partite_idSquadraAToUtenti, { onUpdate: 'NO ACTION', onDelete: 'NO ACTION' })
-  @JoinColumn({ name: 'idUtente', foreignKeyConstraintName: 'FK_Partite_SquadreTrasferta' })
+  @JoinColumn({ name: 'idSquadraA', foreignKeyConstraintName: 'FK_Partite_SquadreTrasferta' })
   UtentiSquadraA!: Relation<Utenti | null>
 }
