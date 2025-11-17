@@ -1,6 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, type Relation } from 'typeorm'
-import * as TorneiEntity from './Tornei.js'
-import * as UtentiEntity from './Utenti.js'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  type Relation,
+  JoinColumn,
+} from 'typeorm'
+import { Tornei } from './Tornei.js'
+import { Utenti } from './Utenti.js'
 
 @Entity({ name: 'Classifiche' })
 export class Classifiche {
@@ -46,9 +53,23 @@ export class Classifiche {
   @Column({ name: 'giocate', type: 'smallint' })
   giocate!: number
 
-  @ManyToOne(() => TorneiEntity.Tornei, (t: TorneiEntity.Tornei) => t.Classifiche)
-  Tornei!: Relation<TorneiEntity.Tornei>
+  @ManyToOne(() => Tornei, (t: Tornei) => t.Classifiche, {
+    onDelete: 'RESTRICT',
+    onUpdate: 'NO ACTION',
+  })
+  @JoinColumn({
+    name: 'idTorneo',
+    foreignKeyConstraintName: 'FK_Classifiche_Tornei',
+  })
+  Tornei!: Relation<Tornei>
 
-  @ManyToOne(() => UtentiEntity.Utenti, (u: UtentiEntity.Utenti) => u.Classifiche)
-  Utenti!: Relation<UtentiEntity.Utenti>
+  @ManyToOne(() => Utenti, (u: Utenti) => u.Classifiche, {
+    onDelete: 'RESTRICT',
+    onUpdate: 'NO ACTION',
+  })
+  @JoinColumn({
+    name: 'idUtente',
+    foreignKeyConstraintName: 'FK_Classifiche_Utenti',
+  })
+  Utenti!: Relation<Utenti>
 }

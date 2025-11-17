@@ -2,6 +2,8 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColum
 import * as CalendarioEntity from './Calendario.js'
 import * as FormazioniEntity from './Formazioni.js'
 import * as UtentiEntity from './Utenti.js'
+import { Calendario } from './Calendario.js'
+import { Utenti } from './Utenti.js'
 
 @Entity({ name: 'Partite' })
 export class Partite {
@@ -47,15 +49,15 @@ export class Partite {
   @OneToMany(() => FormazioniEntity.Formazioni, (f: FormazioniEntity.Formazioni) => f.Partite)
   Formazioni!: Relation<FormazioniEntity.Formazioni[]>
 
-  @ManyToOne(() => CalendarioEntity.Calendario, (c: CalendarioEntity.Calendario) => c.Partite)
-  @JoinColumn({ name: 'idCalendario' })
-  Calendario!: Relation<CalendarioEntity.Calendario>
+  @ManyToOne(() => Calendario, (c: Calendario) => c.Partite, { onUpdate: 'NO ACTION', onDelete: 'RESTRICT' })
+  @JoinColumn({ name: 'idCalendario', foreignKeyConstraintName: 'FK_Partite_Calendario' })
+  Calendario!: Relation<Calendario>
 
-  @ManyToOne(() => UtentiEntity.Utenti, (u: UtentiEntity.Utenti) => u.Partite_Partite_idSquadraHToUtenti)
-  @JoinColumn({ name: 'idSquadraH' })
-  UtentiSquadraH!: Relation<UtentiEntity.Utenti | null>
+  @ManyToOne(() => Utenti, (u: Utenti) => u.Partite_Partite_idSquadraHToUtenti, { onUpdate: 'NO ACTION', onDelete: 'NO ACTION' })
+  @JoinColumn({ name: 'idUtente', foreignKeyConstraintName: 'FK_Partite_SquadreCasa' })
+  UtentiSquadraH!: Relation<Utenti | null>
 
-  @ManyToOne(() => UtentiEntity.Utenti, (u: UtentiEntity.Utenti) => u.Partite_Partite_idSquadraAToUtenti)
-  @JoinColumn({ name: 'idSquadraA' })
-  UtentiSquadraA!: Relation<UtentiEntity.Utenti | null>
+  @ManyToOne(() => Utenti, (u: Utenti) => u.Partite_Partite_idSquadraAToUtenti, { onUpdate: 'NO ACTION', onDelete: 'NO ACTION' })
+  @JoinColumn({ name: 'idUtente', foreignKeyConstraintName: 'FK_Partite_SquadreTrasferta' })
+  UtentiSquadraA!: Relation<Utenti | null>
 }

@@ -1,7 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, type Relation } from 'typeorm'
-import * as TorneiEntity from './Tornei.js'
-import * as PartiteEntity from './Partite.js'
-import * as VotiEntity from './Voti.js'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  type Relation,
+  JoinColumn,
+} from 'typeorm'
+import { Tornei } from './Tornei.js'
+import { Partite } from './Partite.js'
+import { Voti } from './Voti.js'
 
 @Entity({ name: 'Calendario' })
 export class Calendario {
@@ -38,12 +46,19 @@ export class Calendario {
   @Column({ name: 'dataFine', type: 'timestamptz', nullable: true })
   dataFine!: Date | null
 
-  @ManyToOne(() => TorneiEntity.Tornei, (t: TorneiEntity.Tornei) => t.Calendario, { onUpdate: 'NO ACTION' })
-  Tornei!: Relation<TorneiEntity.Tornei>
+  @ManyToOne(() => Tornei, (t: Tornei) => t.Calendario, {
+    onUpdate: 'NO ACTION',
+    onDelete: 'RESTRICT',
+  })
+  @JoinColumn({
+    name: 'idTorneo',
+    foreignKeyConstraintName: 'FK_Calendario_Tornei',
+  })
+  Tornei!: Relation<Tornei>
 
-  @OneToMany(() => PartiteEntity.Partite, (p: PartiteEntity.Partite) => p.Calendario)
-  Partite!: Relation<PartiteEntity.Partite[]>
+  @OneToMany(() => Partite, (p: Partite) => p.Calendario)
+  Partite!: Relation<Partite[]>
 
-  @OneToMany(() => VotiEntity.Voti, (v: VotiEntity.Voti) => v.Calendario)
-  Voti!: Relation<VotiEntity.Voti[]>
+  @OneToMany(() => Voti, (v: Voti) => v.Calendario)
+  Voti!: Relation<Voti[]>
 }
