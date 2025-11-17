@@ -1,7 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, type Relation } from 'typeorm'
-import * as GiocatoriEntity from './Giocatori.js'
-import * as SquadreSerieAEntity from './SquadreSerieA.js'
-import * as UtentiEntity from './Utenti.js'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, type Relation, JoinColumn } from 'typeorm'
+import { Giocatori } from './Giocatori.js'
+import { SquadreSerieA } from './SquadreSerieA.js'
+import { Utenti } from './Utenti.js'
 
 @Entity({ name: 'Trasferimenti' })
 export class Trasferimenti {
@@ -32,13 +32,24 @@ export class Trasferimenti {
   @Column({ name: 'hasRitirato', type: 'boolean', default: false })
   hasRitirato!: boolean
 
-  @Column({ name: 'nomeSquadraSerieA', type: 'varchar', length: 50, nullable: true })
+  @Column({
+    name: 'nomeSquadraSerieA',
+    type: 'varchar',
+    length: 50,
+    nullable: true,
+  })
   nomeSquadraSerieA!: string | null
 
   @Column({ name: 'nomeSquadra', type: 'varchar', length: 50, nullable: true })
   nomeSquadra!: string | null
 
-  @Column({ name: 'media', type: 'decimal', precision: 9, scale: 2, nullable: true })
+  @Column({
+    name: 'media',
+    type: 'decimal',
+    precision: 9,
+    scale: 2,
+    nullable: true,
+  })
   media!: string | null
 
   @Column({ name: 'gol', type: 'smallint', nullable: true })
@@ -50,12 +61,35 @@ export class Trasferimenti {
   @Column({ name: 'giocate', type: 'smallint', nullable: true })
   giocate!: number | null
 
-  @ManyToOne(() => GiocatoriEntity.Giocatori, (g: GiocatoriEntity.Giocatori) => g.Trasferimenti)
-  Giocatori!: Relation<GiocatoriEntity.Giocatori>
+  @ManyToOne(() => Giocatori, (g: Giocatori) => g.Trasferimenti, {
+    onDelete: 'RESTRICT',
+    onUpdate: 'NO ACTION',
+  })
+  @JoinColumn({
+    name: 'idGiocatore',
+    foreignKeyConstraintName: 'FK_Trasferimenti_Giocatori',
+  })
+  Giocatori!: Relation<Giocatori>
 
-  @ManyToOne(() => SquadreSerieAEntity.SquadreSerieA, (s: SquadreSerieAEntity.SquadreSerieA) => s.Trasferimenti, { nullable: true })
-  SquadreSerieA!: Relation<SquadreSerieAEntity.SquadreSerieA | null>
+  @ManyToOne(() => SquadreSerieA, (s: SquadreSerieA) => s.Trasferimenti, {
+    onDelete: 'NO ACTION',
+    onUpdate: 'NO ACTION',
+    nullable: true,
+  })
+  @JoinColumn({
+    name: 'idSquadraSerieA',
+    foreignKeyConstraintName: 'FK_Trasferimenti_SquadreSerieA',
+  })
+  SquadreSerieA?: Relation<SquadreSerieA | null>
 
-  @ManyToOne(() => UtentiEntity.Utenti, (u: UtentiEntity.Utenti) => u.Trasferimenti, { nullable: true })
-  Utenti!: Relation<UtentiEntity.Utenti | null>
+  @ManyToOne(() => Utenti, (u: Utenti) => u.Trasferimenti, {
+    onDelete: 'NO ACTION',
+    onUpdate: 'NO ACTION',
+    nullable: true,
+  })
+  @JoinColumn({
+    name: 'idUtente',
+    foreignKeyConstraintName: 'FK_Trasferimenti_Utenti',
+  })
+  Utenti?: Relation<Utenti | null>
 }

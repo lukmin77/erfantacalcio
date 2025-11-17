@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, type Relation } from 'typeorm'
-import * as TrasferimentiEntity from './Trasferimenti.js'
 import * as VotiEntity from './Voti.js'
+import { Trasferimenti } from './Trasferimenti.js'
 
 @Entity({ name: 'Giocatori' })
 export class Giocatori {
@@ -19,8 +19,8 @@ export class Giocatori {
   @Column({ name: 'id_pf', type: 'int', nullable: true })
   id_pf!: number | null
 
-  @OneToMany(() => TrasferimentiEntity.Trasferimenti, (t: TrasferimentiEntity.Trasferimenti) => t.Giocatori)
-  Trasferimenti!: Relation<TrasferimentiEntity.Trasferimenti[]>
+  @OneToMany(() => Trasferimenti, (t: Trasferimenti) => t.Giocatori)
+  Trasferimenti!: Relation<Trasferimenti[]>
 
   @OneToMany(() => VotiEntity.Voti, (v: VotiEntity.Voti) => v.Giocatori)
   Voti!: Relation<VotiEntity.Voti[]>

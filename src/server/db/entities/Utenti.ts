@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany, type Relation } from
 import * as ClassificheEntity from './Classifiche.js'
 import * as FormazioniEntity from './Formazioni.js'
 import * as PartiteEntity from './Partite.js'
-import * as TrasferimentiEntity from './Trasferimenti.js'
+import { Trasferimenti } from './Trasferimenti.js'
 
 @Entity({ name: 'Utenti' })
 export class Utenti {
@@ -72,6 +72,6 @@ export class Utenti {
   @OneToMany(() => PartiteEntity.Partite, (p: PartiteEntity.Partite) => p.UtentiSquadraA)
   Partite_Partite_idSquadraAToUtenti!: Relation<PartiteEntity.Partite[]>
 
-  @OneToMany(() => TrasferimentiEntity.Trasferimenti, (t: TrasferimentiEntity.Trasferimenti) => t.Utenti)
-  Trasferimenti!: Relation<TrasferimentiEntity.Trasferimenti[]>
+  @OneToMany(() => Trasferimenti, (t: Trasferimenti) => t.Utenti)
+  Trasferimenti!: Relation<Trasferimenti[]>
 }

@@ -12,7 +12,7 @@ export class NamingStrategy extends DefaultNamingStrategy {
     const refName = referencedTablePath
       ? this.getTableName(referencedTablePath as any).replace('.', '_')
       : (referencedColumnNames ? referencedColumnNames.join('_') : '')
-    return `FK_${tableName}_${refName}`
+    return `FK_${refName}`
   }
 //   joinColumnName(relationName: string, referencedColumnName: string): string {
 //     //console.log('joincolumnname: ', underscore(`${relationName}_${referencedColumnName}`));
