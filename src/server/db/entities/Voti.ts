@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, Index, type Relation, JoinColumn } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, Index, type Relation, JoinColumn, BaseEntity } from 'typeorm'
 import { Formazioni } from './Formazioni.js'
 import { Calendario } from './Calendario.js'
 import { Giocatori } from './Giocatori.js'
@@ -7,7 +7,7 @@ import { Giocatori } from './Giocatori.js'
 @Unique('UQ_Voti_Calendario_Giocatore', ['idCalendario', 'idGiocatore'])
 @Index('IX_Voti_StatsGiocatori', ['voto'])
 @Index('IX_Voti_StatsGiocatori2', ['idGiocatore'])
-export class Voti {
+export class Voti extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'idVoto' })
   idVoto!: number
 

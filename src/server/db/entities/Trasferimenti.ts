@@ -1,10 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, type Relation, JoinColumn } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, type Relation, JoinColumn, BaseEntity } from 'typeorm'
 import { Giocatori } from './Giocatori.js'
 import { SquadreSerieA } from './SquadreSerieA.js'
 import { Utenti } from './Utenti.js'
 
 @Entity({ name: 'Trasferimenti' })
-export class Trasferimenti {
+export class Trasferimenti extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'idTrasferimento' })
   idTrasferimento!: number
 

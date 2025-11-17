@@ -1,9 +1,8 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 
-@Index("PK_AlboTrofei_new", ["id"], { unique: true })
 @Entity("AlboTrofei_new", { schema: "public" })
-export class AlboTrofeiNew {
-  @PrimaryGeneratedColumn({ type: "integer", name: "id" })
+export class AlboTrofeiNew extends BaseEntity {
+  @PrimaryGeneratedColumn({ type: "integer", name: "id", primaryKeyConstraintName: "PK_AlboTrofei_new" })
   id!: number;
 
   @Column("character varying", { name: "stagione", length: 9 })

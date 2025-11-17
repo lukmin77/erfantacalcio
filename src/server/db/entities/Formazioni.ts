@@ -7,6 +7,7 @@ import {
   Unique,
   type Relation,
   JoinColumn,
+  BaseEntity,
 } from 'typeorm'
 import { Partite } from './Partite.js'
 import { Utenti } from './Utenti.js'
@@ -14,7 +15,7 @@ import { Voti } from './Voti.js'
 
 @Entity({ name: 'Formazioni' })
 @Unique('UNIQUE_Formazioni_ids', ['idSquadra', 'idPartita'])
-export class Formazioni {
+export class Formazioni extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'idFormazione' })
   idFormazione!: number
 

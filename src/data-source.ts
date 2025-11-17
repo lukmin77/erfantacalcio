@@ -15,8 +15,8 @@ export const AppDataSource = new DataSource({
   namingStrategy: new NamingStrategy(),
   entities: ['src/server/db/entities/*.ts'],
   synchronize: false,
-  logging: ['migration'],
-  logger: 'file',
+  // logging: ['migration'],
+  // logger: 'file',
 })
 
 let initPromise: Promise<DataSource> | null = null

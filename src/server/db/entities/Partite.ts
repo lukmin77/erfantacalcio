@@ -1,12 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, type Relation } from 'typeorm'
-import * as CalendarioEntity from './Calendario.js'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, type Relation, BaseEntity } from 'typeorm'
 import * as FormazioniEntity from './Formazioni.js'
-import * as UtentiEntity from './Utenti.js'
 import { Calendario } from './Calendario.js'
 import { Utenti } from './Utenti.js'
 
 @Entity({ name: 'Partite' })
-export class Partite {
+export class Partite extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'idPartita' })
   idPartita!: number
 

@@ -5,12 +5,13 @@ import {
   ManyToOne,
   type Relation,
   JoinColumn,
+  BaseEntity,
 } from 'typeorm'
 import { Tornei } from './Tornei.js'
 import { Utenti } from './Utenti.js'
 
 @Entity({ name: 'Classifiche' })
-export class Classifiche {
+export class Classifiche extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'id' })
   id!: number
 

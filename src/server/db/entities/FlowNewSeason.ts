@@ -1,10 +1,8 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 
-@Index("PK_FlowNewSeason", ["id"], { unique: true })
-@Index("IX_FlowSeason_id", ["id"], { unique: true })
 @Entity("FlowNewSeasosn", { schema: "public" })
-export class FlowNewSeasosn {
-  @PrimaryGeneratedColumn({ type: "integer", name: "id" })
+export class FlowNewSeason extends BaseEntity {
+  @PrimaryGeneratedColumn({ type: "integer", name: "id", primaryKeyConstraintName: "PK_FlowNewSeason" })
   id!: number;
 
   @Column("integer", { name: "idFase" })

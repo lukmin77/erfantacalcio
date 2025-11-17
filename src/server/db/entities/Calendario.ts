@@ -6,13 +6,14 @@ import {
   OneToMany,
   type Relation,
   JoinColumn,
+  BaseEntity,
 } from 'typeorm'
 import { Tornei } from './Tornei.js'
 import { Partite } from './Partite.js'
 import { Voti } from './Voti.js'
 
 @Entity({ name: 'Calendario' })
-export class Calendario {
+export class Calendario extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'idCalendario' })
   idCalendario!: number
 

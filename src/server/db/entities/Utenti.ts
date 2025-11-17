@@ -1,11 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, type Relation } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, type Relation, BaseEntity } from 'typeorm'
 import * as ClassificheEntity from './Classifiche.js'
 import * as FormazioniEntity from './Formazioni.js'
 import * as PartiteEntity from './Partite.js'
 import { Trasferimenti } from './Trasferimenti.js'
 
 @Entity({ name: 'Utenti' })
-export class Utenti {
+export class Utenti extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'idUtente' })
   idUtente!: number
 

@@ -1,10 +1,8 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 
-@Index("PK_StatsD", ["id"], { unique: true })
-@Index("IX_StatsD_id", ["id"], { unique: true })
 @Entity("StatsD", { schema: "public" })
-export class StatsD {
-  @PrimaryGeneratedColumn({ type: "integer", name: "id" })
+export class StatsD extends BaseEntity {
+  @PrimaryGeneratedColumn({ type: "integer", name: "id", primaryKeyConstraintName: "PK_StatsD" })
   id!: number;
 
   @Column("numeric", { name: "media", nullable: true, precision: 38, scale: 6 })
