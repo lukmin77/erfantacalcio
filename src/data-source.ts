@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm'
 import 'dotenv/config'
 import { NamingStrategy } from './server/db/utils/namingStrategy'
 import {
-  AlboTrofeiNew,
+  AlboTrofei,
   Calendario,
   Classifiche,
   Giocatori,
@@ -38,7 +38,7 @@ export const AppDataSource = new DataSource({
   })(),
   namingStrategy: new NamingStrategy(),
   entities: [
-    AlboTrofeiNew,
+    AlboTrofei,
     Calendario,
     Classifiche,
     Giocatori,

@@ -1,4 +1,4 @@
-export { AlboTrofeiNew } from './AlboTrofeiNew'
+export { AlboTrofei } from './AlboTrofei'
 export { Calendario } from './Calendario'
 export { Classifiche } from './Classifiche'
 export { Giocatori } from './Giocatori'

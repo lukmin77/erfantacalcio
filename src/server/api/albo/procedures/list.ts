@@ -1,10 +1,10 @@
 import Logger from '~/lib/logger.server'
 import { publicProcedure } from '~/server/api/trpc'
-import { AlboTrofeiNew } from '~/server/db/entities'
+import { AlboTrofei } from '~/server/db/entities'
 
 export const listAlboProcedure = publicProcedure.query(async () => {
   try {
-    const records = await AlboTrofeiNew.find({
+    const records = await AlboTrofei.find({
       order: {
         stagione: 'DESC',
         campionato: 'DESC',
