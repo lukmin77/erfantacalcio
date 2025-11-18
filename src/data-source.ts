@@ -14,6 +14,7 @@ export const AppDataSource = new DataSource({
   migrations: ['src/server/db/migrations/*.ts'],
   namingStrategy: new NamingStrategy(),
   entities: ['src/server/db/entities/*.ts'],
+  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
   synchronize: false,
   // logging: ['migration'],
   // logger: 'file',
