@@ -1,7 +1,27 @@
 import 'reflect-metadata'
 import { DataSource } from 'typeorm'
 import 'dotenv/config'
-import { NamingStrategy } from './server/db/utils/namingStrategy.ts'
+import { NamingStrategy } from '~/server/db/utils/namingStrategy'
+import {
+  AlboTrofeiNew,
+  Calendario,
+  Classifiche,
+  Giocatori,
+  Formazioni,
+  FlowNewSeason,
+  Trasferimenti,
+  Tornei,
+  Utenti,
+  StatsP,
+  StatsD,
+  StatsC,
+  StatsA,
+  SquadreSerieA,
+  SerieA,
+  Partite,
+  Migrations,
+  Voti,
+} from './server/db/entities'
 
 // Incremental migration: do NOT enable synchronize in production.
 export const AppDataSource = new DataSource({
@@ -11,19 +31,45 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
-  migrations: ['src/server/db/migrations/*.ts'],
+  migrations: ((): string[] => {
+    const isDist = typeof import.meta !== 'undefined' && import.meta.url.includes('/dist/')
+    if (isDist) return ['dist/server/db/migrations/*.js']
+    return []
+  })(),
   namingStrategy: new NamingStrategy(),
-  entities: ['src/server/db/entities/*.ts'],
+  entities: [
+    AlboTrofeiNew,
+    Calendario,
+    Classifiche,
+    Giocatori,
+    Formazioni,
+    FlowNewSeason,
+    Trasferimenti,
+    Tornei,
+    Utenti,
+    StatsP,
+    StatsD,
+    StatsC,
+    StatsA,
+    SquadreSerieA,
+    SerieA,
+    Partite,
+    Migrations,
+    Voti,
+  ],
   ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
   synchronize: false,
   // logging: ['migration'],
   // logger: 'file',
 })
 
-let initPromise: Promise<DataSource> | null = null
+// Persist DataSource and initialization promise across module reloads (Next.js HMR)
+const globalRef = globalThis as unknown as { __appDataSource?: DataSource; __appDataSourcePromise?: Promise<DataSource> }
+if (!globalRef.__appDataSource) globalRef.__appDataSource = AppDataSource
+
 export function getDataSource() {
-  if (!initPromise) {
-    initPromise = AppDataSource.initialize()
+  if (!globalRef.__appDataSourcePromise) {
+    globalRef.__appDataSourcePromise = globalRef.__appDataSource!.initialize()
   }
-  return initPromise
+  return globalRef.__appDataSourcePromise
 }

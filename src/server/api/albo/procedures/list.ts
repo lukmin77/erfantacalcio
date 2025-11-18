@@ -1,17 +1,19 @@
 import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { publicProcedure } from '~/server/api/trpc'
+import { getDataSource } from '~/data-source'
+import { AlboTrofeiNew } from '~/server/db/entities'
 
 export const listAlboProcedure = publicProcedure.query(async () => {
   try {
-    const records = await prisma.alboTrofei_new.findMany({
-      orderBy: [
-        { stagione: 'desc' },
-        { campionato: 'desc' },
-        { champions: 'desc' },
-        { secondo: 'desc' },
-        { terzo: 'desc' },
-      ],
+    await getDataSource()
+    const records = await AlboTrofeiNew.find({
+      order: {
+        stagione: 'DESC',
+        campionato: 'DESC',
+        champions: 'DESC',
+        secondo: 'DESC',
+        terzo: 'DESC',
+      },
     })
     return records.map((c) => ({
       id: c.id,

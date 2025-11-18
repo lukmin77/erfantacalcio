@@ -9,9 +9,9 @@ import {
   JoinColumn,
   BaseEntity,
 } from 'typeorm'
-import { Partite } from './Partite.js'
-import { Utenti } from './Utenti.js'
-import { Voti } from './Voti.js'
+import { Partite } from './Partite'
+import { Utenti } from './Utenti'
+import { Voti } from './Voti'
 
 @Entity({ name: 'Formazioni' })
 @Unique('UNIQUE_Formazioni_ids', ['idSquadra', 'idPartita'])

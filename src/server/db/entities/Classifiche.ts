@@ -7,8 +7,8 @@ import {
   JoinColumn,
   BaseEntity,
 } from 'typeorm'
-import { Tornei } from './Tornei.js'
-import { Utenti } from './Utenti.js'
+import { Tornei } from './Tornei'
+import { Utenti } from './Utenti'
 
 @Entity({ name: 'Classifiche' })
 export class Classifiche extends BaseEntity {

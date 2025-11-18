@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, Index, type Relation, JoinColumn, BaseEntity } from 'typeorm'
-import { Formazioni } from './Formazioni.js'
-import { Calendario } from './Calendario.js'
-import { Giocatori } from './Giocatori.js'
+import { Formazioni } from './Formazioni'
+import { Calendario } from './Calendario'
+import { Giocatori } from './Giocatori'
 
 @Entity({ name: 'Voti' })
 @Unique('UQ_Voti_Calendario_Giocatore', ['idCalendario', 'idGiocatore'])

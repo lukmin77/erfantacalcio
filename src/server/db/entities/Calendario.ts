@@ -8,9 +8,9 @@ import {
   JoinColumn,
   BaseEntity,
 } from 'typeorm'
-import { Tornei } from './Tornei.js'
-import { Partite } from './Partite.js'
-import { Voti } from './Voti.js'
+import { Tornei } from './Tornei'
+import { Partite } from './Partite'
+import { Voti } from './Voti'
 
 @Entity({ name: 'Calendario' })
 export class Calendario extends BaseEntity {
