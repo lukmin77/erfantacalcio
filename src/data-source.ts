@@ -69,7 +69,10 @@ if (!globalRef.__appDataSource) globalRef.__appDataSource = AppDataSource
 
 export function getDataSource() {
   if (!globalRef.__appDataSourcePromise) {
+    console.log('Initializing new DataSource...')
     globalRef.__appDataSourcePromise = globalRef.__appDataSource!.initialize()
   }
+  else
+    console.log('Reusing existing DataSource...')
   return globalRef.__appDataSourcePromise
 }

@@ -14,6 +14,7 @@ import { ZodError } from 'zod'
 
 import { getServerAuthSession } from '~/server/auth'
 import { RuoloUtente } from '~/utils/enums'
+import { getDataSource } from '~/data-source'
 
 /**
  * 1. CONTEXT
@@ -37,9 +38,10 @@ interface CreateContextOptions {
  *
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
-const createInnerTRPCContext = ({ session }: CreateContextOptions) => {
+const createInnerTRPCContext = ({ session, dataSource }: CreateContextOptions & { dataSource?: unknown }) => {
   return {
     session,
+    dataSource,
   }
 }
 
@@ -56,8 +58,13 @@ export const createTRPCContext = async ({
   // Get the session from the server using the getServerSession wrapper function
   const session = await getServerAuthSession({ req, res })
 
+  // Ensure DataSource is initialized once per server lifetime (reuses global promise)
+  // This avoids having to call `getDataSource()` in every procedure.
+  const dataSource = await getDataSource()
+
   return createInnerTRPCContext({
     session,
+    dataSource,
   })
 }
 
