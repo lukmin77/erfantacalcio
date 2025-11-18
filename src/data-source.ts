@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { DataSource } from 'typeorm'
 import 'dotenv/config'
-import { NamingStrategy } from '~/server/db/utils/namingStrategy'
+import { NamingStrategy } from './server/db/utils/namingStrategy'
 import {
   AlboTrofeiNew,
   Calendario,
