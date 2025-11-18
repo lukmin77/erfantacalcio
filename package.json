@@ -10,10 +10,14 @@
     "start": "next start -p 8080",
     "postinstall": "prisma generate",
     "format": "prettier --write .",
-    "migration:generate": "cross-env DOTENV_CONFIG_PATH=.env node --loader ts-node/esm --require tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d src/data-source.ts",
-    "migration:run": "cross-env DOTENV_CONFIG_PATH=.env node --loader ts-node/esm --require tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d src/data-source.ts",
-    "migration:revert": "cross-env DOTENV_CONFIG_PATH=.env node --loader ts-node/esm --require tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d src/data-source.ts",
-    "migration:show": "cross-env DOTENV_CONFIG_PATH=.env node --loader ts-node/esm --require tsconfig-paths/register ./node_modules/typeorm/cli.js migration:show -d src/data-source.ts"
+    "migration:generate:local": "cross-env DOTENV_CONFIG_PATH=.env npx typeorm-ts-node-esm migration:generate -d src/data-source.ts",
+    "migration:run:local": "cross-env DOTENV_CONFIG_PATH=.env npx typeorm-ts-node-esm migration:run -d src/data-source.ts",
+    "migration:revert:local": "cross-env DOTENV_CONFIG_PATH=.env npx typeorm-ts-node-esm migration:revert -d src/data-source.ts",
+    "migration:show:local": "cross-env DOTENV_CONFIG_PATH=.env npx typeorm-ts-node-esm migration:show -d src/data-source.ts",
+    "migration:generate:prod": "cross-env DOTENV_CONFIG_PATH=.env npx typeorm-ts-node-esm migration:generate -d src/data-source.ts",
+    "migration:run:prod": "cross-env DOTENV_CONFIG_PATH=.env npx typeorm-ts-node-esm migration:run -d src/data-source.ts",
+    "migration:revert:prod": "cross-env DOTENV_CONFIG_PATH=.env npx typeorm-ts-node-esm migration:revert -d src/data-source.ts",
+    "migration:show:prod": "cross-env DOTENV_CONFIG_PATH=.env npx typeorm-ts-node-esm migration:show -d src/data-source.ts"
   },
   "dependencies": {
     "@dotenvx/dotenvx": "1.31.0",
