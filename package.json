@@ -11,14 +11,14 @@
     "start": "next start -p 8080",
     "postinstall": "prisma generate",
     "format": "prettier --write .",
-    "migration:generate:local": "npm run build:ts && cross-env DOTENV_CONFIG_PATH=.env node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d dist/data-source.js",
-    "migration:run:local": "npm run build:ts && cross-env DOTENV_CONFIG_PATH=.env node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d dist/data-source.js",
-    "migration:revert:local": "npm run build:ts && cross-env DOTENV_CONFIG_PATH=.env node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d dist/data-source.js",
-    "migration:show:local": "npm run build:ts && cross-env DOTENV_CONFIG_PATH=.env node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:show -d dist/data-source.js",
-    "migration:generate:prod": "npm run build:ts && cross-env DOTENV_CONFIG_PATH=.env.prod node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d dist/data-source.js",
-    "migration:run:prod": "npm run build:ts && cross-env DOTENV_CONFIG_PATH=.env.prod node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d dist/data-source.js",
-    "migration:revert:prod": "npm run build:ts && cross-env DOTENV_CONFIG_PATH=.env.prod node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d dist/data-source.js",
-    "migration:show:prod": "npm run build:ts && cross-env DOTENV_CONFIG_PATH=.env.prod node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:show -d dist/data-source.js"
+    "migration:generate:local": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d dist/data-source.js",
+    "migration:run:local": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d dist/data-source.js",
+    "migration:revert:local": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d dist/data-source.js",
+    "migration:show:local": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:show -d dist/data-source.js",
+    "migration:generate:prod": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env.prod node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d dist/data-source.js",
+    "migration:run:prod": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env.prod node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d dist/data-source.js",
+    "migration:revert:prod": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env.prod node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d dist/data-source.js",
+    "migration:show:prod": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env.prod node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:show -d dist/data-source.js"
   },
   "dependencies": {
     "@dotenvx/dotenvx": "1.31.0",
