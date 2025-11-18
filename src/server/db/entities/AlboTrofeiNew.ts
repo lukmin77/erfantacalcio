@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("AlboTrofei_new", { schema: "public" })
 export class AlboTrofeiNew extends BaseEntity {
