@@ -1,11 +1,11 @@
 import { publicProcedure } from '~/server/api/trpc'
 import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { mapCalendario } from '../../../utils/common'
+import { Calendario } from '~/server/db/entities'
 
 export const listRecuperiProcedure = publicProcedure.query(async () => {
   try {
-    const result = await prisma.calendario.findMany({
+    const result = await Calendario.find({
       select: {
         idCalendario: true,
         giornata: true,
@@ -17,24 +17,22 @@ export const listRecuperiProcedure = publicProcedure.query(async () => {
         girone: true,
         hasGiocata: true,
         hasDaRecuperare: true,
-        Tornei: { select: { idTorneo: true, nome: true, gruppoFase: true } },
+        Tornei: { idTorneo: true, nome: true, gruppoFase: true },
         Partite: {
-          select: {
-            idPartita: true,
-            idSquadraH: true,
-            idSquadraA: true,
-            hasMultaH: true,
-            hasMultaA: true,
-            golH: true,
-            golA: true,
-            fattoreCasalingo: true,
-            Utenti_Partite_idSquadraHToUtenti: { select: { nomeSquadra: true, foto: true, maglia: true } },
-            Utenti_Partite_idSquadraAToUtenti: { select: { nomeSquadra: true, foto: true, maglia: true } },
-          },
+          idPartita: true,
+          idSquadraH: true,
+          idSquadraA: true,
+          hasMultaH: true,
+          hasMultaA: true,
+          golH: true,
+          golA: true,
+          fattoreCasalingo: true,
+          UtentiSquadraH: { nomeSquadra: true, foto: true, maglia: true },
+          UtentiSquadraA: { nomeSquadra: true, foto: true, maglia: true },
         },
       },
       where: { hasDaRecuperare: true },
-      orderBy: [{ ordine: 'asc' }, { idTorneo: 'asc' }],
+      order: { ordine: 'asc', idTorneo: 'asc' },
     })
     return await mapCalendario(result)
   } catch (error) {

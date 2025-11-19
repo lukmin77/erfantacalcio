@@ -1,10 +1,11 @@
 import Logger from '~/lib/logger.server'
 import { protectedProcedure } from '../../trpc'
 import { z } from 'zod'
-import prisma from '~/utils/db'
 import { toLocaleDateTime } from '~/utils/dateUtils'
 import { ReSendMailAsync } from '~/service/mailSender'
 import { env } from 'process'
+import { Formazioni, Partite, Voti } from '~/server/db/entities'
+import { AppDataSource } from '~/data-source'
 
 export const create = protectedProcedure
   .input(
@@ -27,119 +28,100 @@ export const create = protectedProcedure
     const giocatori = opts.input.giocatori
 
     try {
-      const idFormazione = (
-        await prisma.formazioni.findFirst({
-          select: { idFormazione: true },
-          where: {
-            AND: [{ idPartita: idPartita }, { idSquadra: idSquadra }],
+      await AppDataSource.transaction(async (trx) => {
+        await trx.delete(Voti, {
+          Formazioni: {
+            idPartita: idPartita,
+            idSquadra: idSquadra,
           },
         })
-      )?.idFormazione
-
-      if (idFormazione) {
-        await prisma.voti.deleteMany({
-          where: { idFormazione: idFormazione },
+        await trx.delete(Formazioni, {
+          idPartita: idPartita,
+          idSquadra: idSquadra,
         })
-      }
-      Logger.info(`Eliminazione voti per idFormazione: ${idFormazione}`)
-
-      const oldFormazione = await prisma.formazioni.findFirst({
-        select: { idFormazione: true },
-        where: {
-          AND: [{ idPartita: idPartita }, { idSquadra: idSquadra }],
-        },
       })
 
-      if (oldFormazione) {
-        await prisma.formazioni.delete({
-          where: {
-            idFormazione: oldFormazione.idFormazione,
-          },
-        })
-      }
-
       Logger.info(
-        `Eliminazione formazione per idSquadra: ${idSquadra} e idPartita:${idPartita}`,
+        `Eliminazione voti e formazioni idPartita: ${idPartita} e idSquadra: ${idSquadra}`,
       )
 
-      const calendario = await prisma.partite.findUnique({
+      const calendario = await Partite.findOne({
         select: {
           idCalendario: true,
-          Utenti_Partite_idSquadraHToUtenti: {
-            select: {
-              nomeSquadra: true,
-              presidente: true,
-              idUtente: true,
-              mail: true,
-            },
+          UtentiSquadraH: {
+            nomeSquadra: true,
+            presidente: true,
+            idUtente: true,
+            mail: true,
           },
-          Utenti_Partite_idSquadraAToUtenti: {
-            select: {
-              nomeSquadra: true,
-              presidente: true,
-              idUtente: true,
-              mail: true,
-            },
+          UtentiSquadraA: {
+            nomeSquadra: true,
+            presidente: true,
+            idUtente: true,
+            mail: true,
           },
+        },
+        relations: {
+          UtentiSquadraH: true,
+          UtentiSquadraA: true,
         },
         where: { idPartita: idPartita },
       })
       Logger.info(
-        `recupero idCalendario per idPartita: ${idSquadra}:${calendario?.idCalendario}`,
+        `recupero idCalendario:${calendario?.idCalendario} per idPartita: ${idPartita}`,
       )
 
-      const formazione = await prisma.formazioni.create({
-        data: {
-          idPartita: idPartita,
-          idSquadra: idSquadra,
-          modulo: modulo,
-          dataOra: toLocaleDateTime(new Date()),
-          hasBloccata: false,
-        },
+      const formazione = await Formazioni.insert({
+        idPartita: idPartita,
+        idSquadra: idSquadra,
+        modulo: modulo,
+        dataOra: toLocaleDateTime(new Date()),
+        hasBloccata: false,
       })
-      Logger.info(`Creazione nuova formazione`, formazione)
+      Logger.info(
+        `Creazione nuova formazione`,
+        formazione.identifiers[0].idFormazione,
+      )
+      const idFormazione = formazione.identifiers[0].idFormazione
 
       if (calendario) {
         await Promise.all(
           giocatori.map(async (c) => {
-            await prisma.voti.createMany({
-              data: {
-                idGiocatore: c.idGiocatore,
-                idCalendario: calendario.idCalendario,
-                idFormazione: formazione.idFormazione,
-                titolare: c.titolare,
-                riserva: c.riserva,
-              },
+            await Voti.insert({
+              idGiocatore: c.idGiocatore,
+              idCalendario: calendario.idCalendario,
+              idFormazione: idFormazione,
+              titolare: c.titolare,
+              riserva: c.riserva,
             })
           }),
         )
         Logger.info(
-          `Inseriti giocatori in tabella voti con idFormazione: ${formazione.idFormazione}`,
+          `Inseriti giocatori in tabella voti con idFormazione: ${idFormazione}`,
         )
 
         //invio mail
         if (env.MAIL_ENABLED) {
-          const subject = `ErFantacalcio: Formazione partita ${calendario.Utenti_Partite_idSquadraHToUtenti?.nomeSquadra} - ${calendario.Utenti_Partite_idSquadraAToUtenti?.nomeSquadra}`
+          const subject = `ErFantacalcio: Formazione partita ${calendario.UtentiSquadraH?.nomeSquadra} - ${calendario.UtentiSquadraA?.nomeSquadra}`
           const avversario =
-            idSquadra === calendario.Utenti_Partite_idSquadraHToUtenti?.idUtente
-              ? calendario.Utenti_Partite_idSquadraHToUtenti?.presidente
-              : calendario.Utenti_Partite_idSquadraAToUtenti?.presidente
+            idSquadra === calendario.UtentiSquadraH?.idUtente
+              ? calendario.UtentiSquadraH?.presidente
+              : calendario.UtentiSquadraA?.presidente
           const to =
-            idSquadra === calendario.Utenti_Partite_idSquadraHToUtenti?.idUtente
-              ? calendario.Utenti_Partite_idSquadraAToUtenti?.mail
-              : calendario.Utenti_Partite_idSquadraHToUtenti?.mail
+            idSquadra === calendario.UtentiSquadraH?.idUtente
+              ? calendario.UtentiSquadraA?.mail
+              : calendario.UtentiSquadraH?.mail
           const htmlMessage = `Notifica automatica da erFantacalcio.com<br><br>
               Il tuo avversario ${avversario} ha inserito la formazione per la prossima partita<br>
               https://www.erfantacalcio.com<br><br>
-              Saluti dal Vostro amato Presidente`
+              Saluti dal Vostro immenso Presidente`
 
           if (to) await ReSendMailAsync(to, subject, htmlMessage)
           else {
             const presidenteWithoutMail =
-              idSquadra ===
-              calendario.Utenti_Partite_idSquadraHToUtenti?.idUtente
-                ? calendario.Utenti_Partite_idSquadraAToUtenti?.presidente
-                : calendario.Utenti_Partite_idSquadraHToUtenti?.presidente
+              idSquadra === calendario.UtentiSquadraH?.idUtente
+                ? calendario.UtentiSquadraA?.presidente
+                : calendario.UtentiSquadraH?.presidente
             Logger.warn(
               `Impossibile inviare notifica, mail non configurata per il presidente: ${presidenteWithoutMail}`,
             )
