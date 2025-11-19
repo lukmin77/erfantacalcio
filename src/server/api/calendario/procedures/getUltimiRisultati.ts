@@ -1,13 +1,13 @@
 import { publicProcedure } from '~/server/api/trpc'
 import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { getProssimaGiornataSerieA, mapCalendario } from '../../../utils/common'
+import { Calendario } from '~/server/db/entities'
 
 export const getUltimiRisultatiProcedure = publicProcedure.query(
   async () => {
     try {
       const giornataSerieA = await getProssimaGiornataSerieA(true, 'desc')
-      const result = await prisma.calendario.findMany({
+      const result = await Calendario.find({
         select: {
           idCalendario: true,
           giornata: true,
@@ -19,9 +19,8 @@ export const getUltimiRisultatiProcedure = publicProcedure.query(
           girone: true,
           hasGiocata: true,
           hasDaRecuperare: true,
-          Tornei: { select: { idTorneo: true, nome: true, gruppoFase: true } },
+          Tornei: { idTorneo: true, nome: true, gruppoFase: true } ,
           Partite: {
-            select: {
               idPartita: true,
               idSquadraH: true,
               idSquadraA: true,
@@ -30,13 +29,19 @@ export const getUltimiRisultatiProcedure = publicProcedure.query(
               golH: true,
               golA: true,
               fattoreCasalingo: true,
-              Utenti_Partite_idSquadraHToUtenti: { select: { nomeSquadra: true, foto: true, maglia: true } },
-              Utenti_Partite_idSquadraAToUtenti: { select: { nomeSquadra: true, foto: true, maglia: true } },
-            },
+              UtentiSquadraH: { nomeSquadra: true, foto: true, maglia: true },
+              UtentiSquadraA: { nomeSquadra: true, foto: true, maglia: true },
+          },
+        },
+        relations: {
+          Tornei: true,
+          Partite: {
+            UtentiSquadraH: true,
+            UtentiSquadraA: true,
           },
         },
         where: { giornataSerieA },
-        orderBy: [{ ordine: 'asc' }, { idTorneo: 'asc' }],
+        order: { ordine: 'asc' , idTorneo: 'asc' },
       })
       return await mapCalendario(result)
     } catch (error) {

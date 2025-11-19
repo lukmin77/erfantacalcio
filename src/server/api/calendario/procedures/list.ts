@@ -1,14 +1,13 @@
 import { adminProcedure } from '~/server/api/trpc'
 import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { calendarioSchema } from '~/schemas/calendario'
 import { z } from 'zod'
-
+import { Calendario } from '~/server/db/entities'
 
 
 export const listCalendarioProcedure = adminProcedure.query(async () => {
   try {
-    const result = await prisma.calendario.findMany({
+    const result = await Calendario.find({
       select: {
         idCalendario: true,
         giornata: true,
@@ -20,9 +19,10 @@ export const listCalendarioProcedure = adminProcedure.query(async () => {
         girone: true,
         hasGiocata: true,
         hasDaRecuperare: true,
-        Tornei: { select: { idTorneo: true, nome: true, gruppoFase: true } },
+        Tornei: { idTorneo: true, nome: true, gruppoFase: true },
       },
-      orderBy: [{ ordine: 'asc' }, { idTorneo: 'asc' }],
+      relations: { Tornei: true },
+      order: { ordine: 'asc' , idTorneo: 'asc' },
     })
 
     const indexSelected = result.findIndex((item) => !item.hasGiocata)

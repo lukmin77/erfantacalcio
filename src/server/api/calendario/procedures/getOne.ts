@@ -1,8 +1,8 @@
 import { adminProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
 import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { calendarioSchema } from '~/schemas/calendario'
+import { Calendario } from '~/server/db/entities'
 
 function mapCalendarioResult(result: any): z.infer<typeof calendarioSchema> {
   return {
@@ -26,7 +26,7 @@ export const getOneCalendarioProcedure = adminProcedure
   .input(z.object({ idCalendario: z.number() }))
   .query(async (opts) => {
     try {
-      const result = await prisma.calendario.findUnique({
+      const result = await Calendario.findOne({
         select: {
           idCalendario: true,
           giornata: true,
@@ -38,8 +38,9 @@ export const getOneCalendarioProcedure = adminProcedure
           girone: true,
           hasGiocata: true,
           hasDaRecuperare: true,
-          Tornei: { select: { idTorneo: true, nome: true, gruppoFase: true } },
+          Tornei: { idTorneo: true, nome: true, gruppoFase: true },
         },
+        relations: { Tornei: true },
         where: { idCalendario: opts.input.idCalendario },
       })
       if (result) {

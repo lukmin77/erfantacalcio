@@ -1,15 +1,15 @@
 import { publicProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
 import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { mapCalendario } from '../../../utils/common'
+import { Calendario } from '~/server/db/entities'
 
 export const listByGironeProcedure = publicProcedure
   .input(z.number())
   .query(async (opts) => {
     try {
       const girone = opts.input
-      const result = await prisma.calendario.findMany({
+      const result = await Calendario.find({
         select: {
           idCalendario: true,
           giornata: true,
@@ -21,9 +21,8 @@ export const listByGironeProcedure = publicProcedure
           girone: true,
           hasGiocata: true,
           hasDaRecuperare: true,
-          Tornei: { select: { idTorneo: true, nome: true, gruppoFase: true } },
+          Tornei: { idTorneo: true, nome: true, gruppoFase: true },
           Partite: {
-            select: {
               idPartita: true,
               idSquadraH: true,
               idSquadraA: true,
@@ -32,13 +31,13 @@ export const listByGironeProcedure = publicProcedure
               golH: true,
               golA: true,
               fattoreCasalingo: true,
-              Utenti_Partite_idSquadraHToUtenti: { select: { nomeSquadra: true, foto: true, maglia: true } },
-              Utenti_Partite_idSquadraAToUtenti: { select: { nomeSquadra: true, foto: true, maglia: true } },
-            },
+              UtentiSquadraH: { nomeSquadra: true, foto: true, maglia: true },
+              UtentiSquadraA: { nomeSquadra: true, foto: true, maglia: true },
           },
         },
-        where: { girone },
-        orderBy: [{ ordine: 'asc' }, { idTorneo: 'asc' }],
+        relations: { Tornei: true, Partite: { UtentiSquadraH: true, UtentiSquadraA: true } },
+        where: { girone: girone },
+        order: { ordine: 'asc', idTorneo: 'asc' },
       })
       return await mapCalendario(result)
     } catch (error) {

@@ -5,13 +5,11 @@ import { toLocaleDateTime } from '~/utils/dateUtils'
 import { toNumberWithPrecision } from '~/utils/numberUtils'
 import { type GiocatoreType } from '~/types/squadre'
 import { type Decimal } from '@prisma/client/runtime/library'
-
 import prisma from '~/utils/db'
 import { z } from 'zod'
 import { giornataSchema, serieASchema } from '~/schemas/calendario'
-import { partitaSchema } from "~/schemas/calendario"
 import { calendarioPartiteSchema } from '~/schemas/calendario'
-import { Giocatori, Tornei, Trasferimenti, Voti } from '../db/entities'
+import { Calendario, Giocatori, Partite, Tornei, Trasferimenti, Voti } from '../db/entities'
 import { IsNull, Not } from 'typeorm'
 
 type CalendarioFilter =
@@ -378,7 +376,7 @@ export async function deleteGiocatore(idGiocatore: number) {
 }
 
 export async function mapCalendario(
-  result: z.infer<typeof calendarioPartiteSchema>[],
+  result: Calendario[],
 ): Promise<z.infer<typeof giornataSchema>[]> {
   return result.map((c) => ({
     idCalendario: c.idCalendario,
@@ -437,19 +435,19 @@ export async function mapCalendarioWithSerieA(
   }))
 }
 
-export function mapPartite(partite: z.infer<typeof partitaSchema>[]) {
+export function mapPartite(partite: Partite[]) {
   return partite.map((p) => ({
     idPartita: p.idPartita,
     idHome: p.idSquadraH,
-    squadraHome: p.Utenti_Partite_idSquadraHToUtenti?.nomeSquadra,
-    fotoHome: p.Utenti_Partite_idSquadraHToUtenti?.foto,
-    magliaHome: p.Utenti_Partite_idSquadraHToUtenti?.maglia,
+    squadraHome: p.UtentiSquadraH?.nomeSquadra,
+    fotoHome: p.UtentiSquadraH?.foto,
+    magliaHome: p.UtentiSquadraH?.maglia,
     multaHome: p.hasMultaH,
     golHome: p.golH,
     idAway: p.idSquadraA,
-    squadraAway: p.Utenti_Partite_idSquadraAToUtenti?.nomeSquadra,
-    fotoAway: p.Utenti_Partite_idSquadraAToUtenti?.foto,
-    magliaAway: p.Utenti_Partite_idSquadraAToUtenti?.maglia,
+    squadraAway: p.UtentiSquadraA?.nomeSquadra,
+    fotoAway: p.UtentiSquadraA?.foto,
+    magliaAway: p.UtentiSquadraA?.maglia,
     multaAway: p.hasMultaA,
     golAway: p.golA,
     isFattoreHome: p.fattoreCasalingo,
