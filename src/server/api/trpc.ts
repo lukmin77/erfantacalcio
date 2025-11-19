@@ -14,7 +14,6 @@ import { ZodError } from 'zod'
 
 import { getServerAuthSession } from '~/server/auth'
 import { RuoloUtente } from '~/utils/enums'
-import { getDataSource } from '~/data-source'
 
 /**
  * 1. CONTEXT
@@ -60,11 +59,8 @@ export const createTRPCContext = async ({
 
   // Ensure DataSource is initialized once per server lifetime (reuses global promise)
   // This avoids having to call `getDataSource()` in every procedure.
-  const dataSource = await getDataSource()
-
   return createInnerTRPCContext({
     session,
-    dataSource,
   })
 }
 
