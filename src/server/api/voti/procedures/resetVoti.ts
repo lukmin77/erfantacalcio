@@ -1,30 +1,30 @@
 import Logger from '~/lib/logger.server'
 import { adminProcedure } from '../../trpc'
 import { z } from 'zod'
-import prisma from '~/utils/db'
+import { Voti } from '~/server/db/entities'
 
 export const resetVotiProcedure = adminProcedure
-    .input(
-      z.object({
-        idCalendario: z.number(),
-      }),
-    )
-    .mutation(async (opts) => {
-      try {
-        await resetVoti(opts.input.idCalendario)
-      } catch (error) {
-        Logger.error('Si è verificato un errore', error)
-        throw error
-      }
-    })
+  .input(
+    z.object({
+      idCalendario: z.number(),
+    }),
+  )
+  .mutation(async (opts) => {
+    try {
+      await resetVoti(opts.input.idCalendario)
+    } catch (error) {
+      Logger.error('Si è verificato un errore', error)
+      throw error
+    }
+  })
 
 async function resetVoti(idCalendario: number) {
   try {
-    await prisma.voti.updateMany({
-      where: {
+    await Voti.update(
+      {
         idCalendario: idCalendario,
       },
-      data: {
+      {
         voto: 0,
         ammonizione: 0,
         espulsione: 0,
@@ -33,7 +33,7 @@ async function resetVoti(idCalendario: number) {
         autogol: 0,
         altriBonus: 0,
       },
-    })
+    )
   } catch (error) {
     Logger.error('Si è verificato un errore', error)
     throw error

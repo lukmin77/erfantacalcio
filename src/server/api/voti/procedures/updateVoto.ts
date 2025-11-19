@@ -1,8 +1,8 @@
 import Logger from '~/lib/logger.server'
 import { adminProcedure } from '../../trpc'
 import { z } from 'zod'
-import prisma from '~/utils/db'
 import { Configurazione } from '~/config'
+import { Voti } from '~/server/db/entities'
 
 export const updateVotoProcedure = adminProcedure
   .input(
@@ -20,11 +20,10 @@ export const updateVotoProcedure = adminProcedure
   )
   .mutation(async (opts) => {
     try {
-      const voto = await prisma.voti.update({
-        where: {
+      await Voti.update({
           idVoto: opts.input.idVoto,
         },
-        data: {
+        {
           voto: opts.input.voto,
           ammonizione: opts.input.ammonizione,
           espulsione: opts.input.espulsione,
@@ -35,9 +34,8 @@ export const updateVotoProcedure = adminProcedure
           assist: opts.input.assist * Configurazione.bonusAssist,
           autogol: opts.input.autogol * Configurazione.bonusAutogol,
           altriBonus: opts.input.altriBonus,
-        },
-      })
-      return voto.idVoto
+        })
+      return opts.input.idVoto
     } catch (error) {
       Logger.error('Si è verificato un errore', error)
       throw error
