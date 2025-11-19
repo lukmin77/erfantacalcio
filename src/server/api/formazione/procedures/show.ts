@@ -6,9 +6,9 @@ import {
   getProssimaGiornataSerieA,
   getRosaDisponibile,
 } from '~/server/utils/common'
-import prisma from '~/utils/db'
 import { GiocatoreFormazioneType } from '~/types/squadre'
 import { moduloDefault } from '~/utils/helper'
+import { Formazioni, Voti } from '~/server/db/entities'
 
 export const show = protectedProcedure
   .input(
@@ -30,26 +30,23 @@ export const show = protectedProcedure
       if (!prossimaPartita || !prossimoCalendario) {
         return null
       } else {
-        const giocatoriSchierati = await prisma.voti.findMany({
+        const giocatoriSchierati = await Voti.find({
           select: {
             idGiocatore: true,
             titolare: true,
             riserva: true,
           },
+          relations: { Formazioni: true },
           where: {
-            AND: [
-              { idCalendario: prossimoCalendario.idCalendario },
-              { Formazioni: { idSquadra: idSquadraUtente } },
-            ],
+            idCalendario: prossimoCalendario.idCalendario,
+            Formazioni: { idSquadra: idSquadraUtente },
           },
         })
-        const datiFormazione = await prisma.formazioni.findFirst({
+        const datiFormazione = await Formazioni.findOne({
           select: { modulo: true },
           where: {
-            AND: [
-              { idPartita: prossimaPartita.idPartita },
-              { idSquadra: idSquadraUtente },
-            ],
+            idPartita: prossimaPartita.idPartita,
+            idSquadra: idSquadraUtente,
           },
         })
         const rosa = await getRosaDisponibile(idSquadraUtente)
