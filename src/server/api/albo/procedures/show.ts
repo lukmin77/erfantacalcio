@@ -1,5 +1,4 @@
 import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { publicProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
 import { Utenti } from '~/server/db/entities'
