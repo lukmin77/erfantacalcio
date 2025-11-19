@@ -11,6 +11,7 @@ import { type CreateNextContextOptions } from '@trpc/server/adapters/next'
 import { type Session } from 'next-auth'
 import superjson from 'superjson'
 import { ZodError } from 'zod'
+import { initializeDBConnection } from '~/data-source'
 
 import { getServerAuthSession } from '~/server/auth'
 import { RuoloUtente } from '~/utils/enums'
@@ -56,11 +57,12 @@ export const createTRPCContext = async ({
 }: CreateNextContextOptions) => {
   // Get the session from the server using the getServerSession wrapper function
   const session = await getServerAuthSession({ req, res })
-
+  const datasource = await initializeDBConnection()
   // Ensure DataSource is initialized once per server lifetime (reuses global promise)
   // This avoids having to call `getDataSource()` in every procedure.
   return createInnerTRPCContext({
     session,
+    dataSource: datasource,
   })
 }
 
