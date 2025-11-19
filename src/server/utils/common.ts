@@ -9,8 +9,15 @@ import prisma from '~/utils/db'
 import { z } from 'zod'
 import { giornataSchema, serieASchema } from '~/schemas/calendario'
 import { calendarioPartiteSchema } from '~/schemas/calendario'
-import { Calendario, Giocatori, Partite, Tornei, Trasferimenti, Voti } from '../db/entities'
-import { IsNull, Not } from 'typeorm'
+import {
+  Calendario,
+  Giocatori,
+  Partite,
+  Tornei,
+  Trasferimenti,
+  Voti,
+} from '../db/entities'
+import { EntityManager, FindOptionsWhere, IsNull, Not } from 'typeorm'
 
 type CalendarioFilter =
   | { idTorneo: number }
@@ -177,7 +184,7 @@ export async function getProssimaGiornata(
   giornataSerieA: number,
   withSerieA?: boolean,
 ) {
-  const result = await prisma.calendario.findMany({
+  const result = await Calendario.find({
     select: {
       idCalendario: true,
       giornata: true,
@@ -190,31 +197,25 @@ export async function getProssimaGiornata(
       hasGiocata: true,
       hasDaRecuperare: true,
       Tornei: {
-        select: { idTorneo: true, nome: true, gruppoFase: true },
+        idTorneo: true,
+        nome: true,
+        gruppoFase: true,
       },
       Partite: {
-        select: {
-          idPartita: true,
-          idSquadraH: true,
-          idSquadraA: true,
-          hasMultaH: true,
-          hasMultaA: true,
-          golH: true,
-          golA: true,
-          fattoreCasalingo: true,
-          Utenti_Partite_idSquadraHToUtenti: {
-            select: { nomeSquadra: true, foto: true, maglia: true },
-          },
-          Utenti_Partite_idSquadraAToUtenti: {
-            select: { nomeSquadra: true, foto: true, maglia: true },
-          },
-        },
+        idPartita: true,
+        idSquadraH: true,
+        idSquadraA: true,
+        hasMultaH: true,
+        hasMultaA: true,
+        golH: true,
+        golA: true,
+        fattoreCasalingo: true,
+        UtentiSquadraH: { nomeSquadra: true, foto: true, maglia: true },
+        UtentiSquadraA: { nomeSquadra: true, foto: true, maglia: true },
       },
     },
-    where: {
-      AND: [{ giornataSerieA: giornataSerieA }, { hasGiocata: false }],
-    },
-    orderBy: [{ ordine: 'asc' }, { idTorneo: 'asc' }],
+    where: [{ giornataSerieA: giornataSerieA }, { hasGiocata: false }],
+    order: { ordine: 'asc', idTorneo: 'asc' },
   })
 
   if (withSerieA && withSerieA === true) {
@@ -304,10 +305,13 @@ export async function getGiocatoriVenduti(idSquadra: number) {
       idGiocatore: true,
       costo: true,
       Giocatori: {
-        nome: true, nomeFantaGazzetta: true, ruolo: true,
+        nome: true,
+        nomeFantaGazzetta: true,
+        ruolo: true,
       },
       SquadreSerieA: {
-         nome: true, maglia: true ,
+        nome: true,
+        maglia: true,
       },
     },
     relations: {
@@ -315,12 +319,12 @@ export async function getGiocatoriVenduti(idSquadra: number) {
       SquadreSerieA: true,
     },
     where: {
-        idSquadra: idSquadra,
-        stagione: Configurazione.stagione,
-        hasRitirato: false,
-        dataCessione: Not(IsNull()),
+      idSquadra: idSquadra,
+      stagione: Configurazione.stagione,
+      hasRitirato: false,
+      dataCessione: Not(IsNull()),
     },
-    order: { 
+    order: {
       Giocatori: { ruolo: 'desc' },
       costo: 'desc',
     },
@@ -349,26 +353,25 @@ export async function getGiocatoriVenduti(idSquadra: number) {
   }))
 }
 
-export async function deleteVotiGiocatore(idGiocatore: number) {
+export async function deleteVotiGiocatore(
+  trx: EntityManager,
+  idGiocatore: number,
+) {
   try {
-    await Voti.delete(
-     {
-        idGiocatore: idGiocatore,
-      },
-    )
+    await trx.delete(Voti, {
+      idGiocatore: idGiocatore,
+    })
   } catch (error) {
     Logger.error('Si è verificato un errore', error)
     throw error
   }
 }
 
-export async function deleteGiocatore(idGiocatore: number) {
+export async function deleteGiocatore(trx: EntityManager, idGiocatore: number) {
   try {
-    await Giocatori.delete(
-      {
-        idGiocatore: idGiocatore,
-      },
-    )
+    await trx.delete(Giocatori, {
+      idGiocatore: idGiocatore,
+    })
   } catch (error) {
     Logger.error('Si è verificato un errore', error)
     throw error
@@ -403,7 +406,7 @@ export async function mapCalendario(
 }
 
 export async function mapCalendarioWithSerieA(
-  result: z.infer<typeof calendarioPartiteSchema>[],
+  result: Calendario[],
   serieAData: z.infer<typeof serieASchema>[],
 ): Promise<z.infer<typeof giornataSchema>[]> {
   return result.map((c) => ({
@@ -459,7 +462,7 @@ export async function getCalendarioByTorneo(idtorneo: number) {
 }
 
 export async function getCalendarioChampions() {
-  return await getCalendario({ Tornei: { gruppoFase: { not: null } } })
+  return await getCalendario({ Tornei: { gruppoFase: Not(IsNull()) } })
 }
 
 export async function getTornei() {
@@ -746,8 +749,8 @@ export function getVotoBonus(voto: {
   return bonus
 }
 
-async function getCalendario(filter: CalendarioFilter) {
-  return await prisma.calendario.findMany({
+async function getCalendario(filter: FindOptionsWhere<Calendario>) {
+  return await Calendario.find({
     select: {
       idCalendario: true,
       giornata: true,
@@ -759,29 +762,28 @@ async function getCalendario(filter: CalendarioFilter) {
       girone: true,
       hasGiocata: true,
       hasDaRecuperare: true,
-      Tornei: {
-        select: { idTorneo: true, nome: true, gruppoFase: true },
-      },
+      Tornei: { idTorneo: true, nome: true, gruppoFase: true },
       Partite: {
-        select: {
-          idPartita: true,
-          idSquadraH: true,
-          idSquadraA: true,
-          hasMultaH: true,
-          hasMultaA: true,
-          golH: true,
-          golA: true,
-          fattoreCasalingo: true,
-          Utenti_Partite_idSquadraHToUtenti: {
-            select: { nomeSquadra: true, foto: true, maglia: true },
-          },
-          Utenti_Partite_idSquadraAToUtenti: {
-            select: { nomeSquadra: true, foto: true, maglia: true },
-          },
-        },
+        idPartita: true,
+        idSquadraH: true,
+        idSquadraA: true,
+        hasMultaH: true,
+        hasMultaA: true,
+        golH: true,
+        golA: true,
+        fattoreCasalingo: true,
+        UtentiSquadraH: { nomeSquadra: true, foto: true, maglia: true },
+        UtentiSquadraA: { nomeSquadra: true, foto: true, maglia: true },
+      },
+    },
+    relations: {
+      Tornei: true,
+      Partite: {
+        UtentiSquadraH: true,
+        UtentiSquadraA: true,
       },
     },
     where: filter,
-    orderBy: [{ ordine: 'asc' }, { idTorneo: 'asc' }],
+    order: { ordine: 'asc', idTorneo: 'asc' },
   })
 }

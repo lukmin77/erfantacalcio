@@ -6,6 +6,7 @@ import { mapCalendario } from '../../../utils/common'
 import { toLocaleDateTime } from '~/utils/dateUtils'
 import { getBonusModulo, getBonusSenzaVoto, getGiocatoriVotoInfluente, getGolSegnati, getTabellino } from '../../../utils/common'
 import { Configurazione } from '~/config'
+import { Calendario } from '~/server/db/entities'
 
 export const getTabelliniProcedure = publicProcedure
   .input(z.object({ idPartita: z.number() }))
@@ -20,7 +21,7 @@ export const getTabelliniProcedure = publicProcedure
       )?.Calendario.idCalendario
 
       if (idCalendario) {
-        const calendarioQry = await prisma.calendario.findUnique({
+        const calendarioQry = await Calendario.findOne({
           select: {
             idCalendario: true,
             giornata: true,
@@ -32,9 +33,8 @@ export const getTabelliniProcedure = publicProcedure
             girone: true,
             hasGiocata: true,
             hasDaRecuperare: true,
-            Tornei: { select: { idTorneo: true, nome: true, gruppoFase: true } },
+            Tornei: { idTorneo: true, nome: true, gruppoFase: true },
             Partite: {
-              select: {
                 idPartita: true,
                 idSquadraH: true,
                 idSquadraA: true,
@@ -43,13 +43,15 @@ export const getTabelliniProcedure = publicProcedure
                 golH: true,
                 golA: true,
                 fattoreCasalingo: true,
-                Utenti_Partite_idSquadraHToUtenti: { select: { nomeSquadra: true, foto: true, maglia: true } },
-                Utenti_Partite_idSquadraAToUtenti: { select: { nomeSquadra: true, foto: true, maglia: true } },
-              },
-              where: { idPartita },
+                UtentiSquadraH: { nomeSquadra: true, foto: true, maglia: true },
+                UtentiSquadraA: { nomeSquadra: true, foto: true, maglia: true },
             },
           },
-          where: { idCalendario },
+          relations: {
+            Partite: { UtentiSquadraH: true, UtentiSquadraA: true },
+            Tornei: true,
+          },
+          where: { idCalendario: idCalendario, Partite: { idPartita: idPartita } },
         })
 
         if (calendarioQry) {

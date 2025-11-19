@@ -2,7 +2,9 @@ import Logger from '~/lib/logger.server'
 import { deleteGiocatore, deleteVotiGiocatore } from '~/server/utils/common'
 import { adminProcedure } from '../../trpc'
 import { z } from 'zod'
-import prisma from '~/utils/db'
+import { Trasferimenti } from '~/server/db/entities'
+import { AppDataSource } from '~/data-source'
+import { EntityManager } from 'typeorm'
 
 export const removeGiocatore = adminProcedure
   .input(z.number())
@@ -10,21 +12,24 @@ export const removeGiocatore = adminProcedure
     const idGiocatore = +opts.input
 
     try {
-      await deleteVotiGiocatore(idGiocatore)
-      await deleteTrasferimentiGiocatore(idGiocatore)
-      await deleteGiocatore(idGiocatore)
+      AppDataSource.transaction(async (trx) => {
+        await deleteVotiGiocatore(trx, idGiocatore)
+        await deleteTrasferimentiGiocatore(trx, idGiocatore)
+        await deleteGiocatore(trx, idGiocatore)
+      })
     } catch (error) {
       Logger.error('Si è verificato un errore', error)
       throw error
     }
   })
 
-async function deleteTrasferimentiGiocatore(idGiocatore: number) {
+async function deleteTrasferimentiGiocatore(
+  trx: EntityManager,
+  idGiocatore: number,
+) {
   try {
-    await prisma.trasferimenti.deleteMany({
-      where: {
-        idGiocatore: idGiocatore,
-      },
+    await trx.delete(Trasferimenti, {
+      idGiocatore: idGiocatore,
     })
   } catch (error) {
     Logger.error('Si è verificato un errore', error)

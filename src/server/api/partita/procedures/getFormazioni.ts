@@ -4,6 +4,7 @@ import { publicProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
 import { mapCalendario } from '../../../utils/common'
 import { toLocaleDateTime } from '~/utils/dateUtils'
+import { Calendario } from '~/server/db/entities'
 
 export const getFormazioniProcedure = publicProcedure
   .input(z.object({ idPartita: z.number() }))
@@ -18,7 +19,7 @@ export const getFormazioniProcedure = publicProcedure
       )?.Calendario.idCalendario
 
       if (idCalendario) {
-        const calendarioQry = await prisma.calendario.findUnique({
+        const calendarioQry = await Calendario.findOne({
           select: {
             idCalendario: true,
             giornata: true,
@@ -30,24 +31,28 @@ export const getFormazioniProcedure = publicProcedure
             girone: true,
             hasGiocata: true,
             hasDaRecuperare: true,
-            Tornei: { select: { idTorneo: true, nome: true, gruppoFase: true } },
+            Tornei: { idTorneo: true, nome: true, gruppoFase: true },
             Partite: {
-              select: {
-                idPartita: true,
-                idSquadraH: true,
-                idSquadraA: true,
-                hasMultaH: true,
-                hasMultaA: true,
-                golH: true,
-                golA: true,
-                fattoreCasalingo: true,
-                Utenti_Partite_idSquadraHToUtenti: { select: { nomeSquadra: true, foto: true, maglia: true } },
-                Utenti_Partite_idSquadraAToUtenti: { select: { nomeSquadra: true, foto: true, maglia: true } },
-              },
-              where: { idPartita },
+              idPartita: true,
+              idSquadraH: true,
+              idSquadraA: true,
+              hasMultaH: true,
+              hasMultaA: true,
+              golH: true,
+              golA: true,
+              fattoreCasalingo: true,
+              UtentiSquadraH: { nomeSquadra: true, foto: true, maglia: true },
+              UtentiSquadraA: { nomeSquadra: true, foto: true, maglia: true },
             },
           },
-          where: { idCalendario },
+          relations: {
+            Partite: { UtentiSquadraH: true, UtentiSquadraA: true },
+            Tornei: true,
+          },
+          where: {
+            idCalendario: idCalendario,
+            Partite: { idPartita: idPartita },
+          },
         })
 
         if (calendarioQry) {
