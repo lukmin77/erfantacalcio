@@ -11,6 +11,8 @@ import { z } from 'zod'
 import { giornataSchema, serieASchema } from '~/schemas/calendario'
 import { partitaSchema } from "~/schemas/calendario"
 import { calendarioPartiteSchema } from '~/schemas/calendario'
+import { Giocatori, Tornei, Trasferimenti, Voti } from '../db/entities'
+import { IsNull, Not } from 'typeorm'
 
 type CalendarioFilter =
   | { idTorneo: number }
@@ -299,30 +301,31 @@ export async function getRosaDisponibile(idSquadra: number) {
 }
 
 export async function getGiocatoriVenduti(idSquadra: number) {
-  const query = await prisma.trasferimenti.findMany({
+  const query = await Trasferimenti.find({
     select: {
       idGiocatore: true,
       costo: true,
       Giocatori: {
-        select: { nome: true, nomeFantaGazzetta: true, ruolo: true },
+        nome: true, nomeFantaGazzetta: true, ruolo: true,
       },
       SquadreSerieA: {
-        select: { nome: true, maglia: true },
+         nome: true, maglia: true ,
       },
     },
-    where: {
-      AND: [
-        { idSquadra: idSquadra },
-        { stagione: Configurazione.stagione },
-        { hasRitirato: false },
-        { NOT: { dataCessione: null } },
-      ],
+    relations: {
+      Giocatori: true,
+      SquadreSerieA: true,
     },
-    orderBy: [
-      { Giocatori: { ruolo: 'desc' } },
-      { costo: 'desc' },
-      { Giocatori: { nome: 'asc' } },
-    ],
+    where: {
+        idSquadra: idSquadra,
+        stagione: Configurazione.stagione,
+        hasRitirato: false,
+        dataCessione: Not(IsNull()),
+    },
+    order: { 
+      Giocatori: { ruolo: 'desc' },
+      costo: 'desc',
+    },
   })
 
   return query.map<GiocatoreType>((giocatore) => ({
@@ -350,11 +353,11 @@ export async function getGiocatoriVenduti(idSquadra: number) {
 
 export async function deleteVotiGiocatore(idGiocatore: number) {
   try {
-    await prisma.voti.deleteMany({
-      where: {
+    await Voti.delete(
+     {
         idGiocatore: idGiocatore,
       },
-    })
+    )
   } catch (error) {
     Logger.error('Si è verificato un errore', error)
     throw error
@@ -363,11 +366,11 @@ export async function deleteVotiGiocatore(idGiocatore: number) {
 
 export async function deleteGiocatore(idGiocatore: number) {
   try {
-    await prisma.giocatori.delete({
-      where: {
+    await Giocatori.delete(
+      {
         idGiocatore: idGiocatore,
       },
-    })
+    )
   } catch (error) {
     Logger.error('Si è verificato un errore', error)
     throw error
@@ -462,7 +465,7 @@ export async function getCalendarioChampions() {
 }
 
 export async function getTornei() {
-  return await prisma.tornei.findMany({
+  return await Tornei.find({
     select: {
       idTorneo: true,
       nome: true,
@@ -473,7 +476,7 @@ export async function getTornei() {
 }
 
 export async function getGiocatoreById(idGiocatore: number) {
-  const giocatore = await prisma.giocatori.findUnique({
+  const giocatore = await Giocatori.findOne({
     where: {
       idGiocatore: idGiocatore,
     },
