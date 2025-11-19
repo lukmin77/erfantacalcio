@@ -10,7 +10,7 @@ import {
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { computeMD5Hash } from '~/utils/hashPassword'
 import { RuoloUtente } from '~/utils/enums'
-import prisma from '~/utils/db'
+import { Utenti } from './db/entities'
 
 declare module 'next-auth' {
   interface IUser extends DefaultUser {
@@ -132,12 +132,10 @@ async function authenticate(input: { username: string; password: string }) {
   Logger.info('authenticate: ' + input.username)
   try {
     const hashedPassword = computeMD5Hash(input.password)
-    return await prisma.utenti.findUnique({
+    return await Utenti.findOne({
       where: {
-        username_pwd: {
-          username: input.username.toLowerCase(),
-          pwd: hashedPassword,
-        },
+        username: input.username.toLowerCase(),
+        pwd: hashedPassword,
       },
     })
   } catch (error) {

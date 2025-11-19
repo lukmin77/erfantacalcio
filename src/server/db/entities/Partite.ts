@@ -36,10 +36,10 @@ export class Partite extends BaseEntity {
   hasMultaA!: boolean
 
   @Column({ name: 'punteggioH', type: 'decimal', precision: 9, scale: 2, nullable: true })
-  punteggioH!: string | null
+  punteggioH!: number | null
 
   @Column({ name: 'punteggioA', type: 'decimal', precision: 9, scale: 2, nullable: true })
-  punteggioA!: string | null
+  punteggioA!: number | null
 
   @Column({ name: 'fattoreCasalingo', type: 'boolean', default: false })
   fattoreCasalingo!: boolean

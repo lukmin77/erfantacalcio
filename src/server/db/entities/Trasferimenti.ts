@@ -50,7 +50,7 @@ export class Trasferimenti extends BaseEntity {
     scale: 2,
     nullable: true,
   })
-  media!: string | null
+  media!: number | null
 
   @Column({ name: 'gol', type: 'smallint', nullable: true })
   gol!: number | null

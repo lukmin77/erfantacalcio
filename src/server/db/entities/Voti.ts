@@ -27,7 +27,7 @@ export class Voti extends BaseEntity {
     scale: 2,
     nullable: true,
   })
-  voto!: string | null
+  voto!: number | null
 
   @Column({
     name: 'ammonizione',
@@ -36,7 +36,7 @@ export class Voti extends BaseEntity {
     scale: 1,
     default: 0,
   })
-  ammonizione!: string
+  ammonizione!: number
 
   @Column({
     name: 'espulsione',
@@ -45,7 +45,7 @@ export class Voti extends BaseEntity {
     scale: 1,
     default: 0,
   })
-  espulsione!: string
+  espulsione!: number
 
   @Column({
     name: 'gol',
@@ -55,7 +55,7 @@ export class Voti extends BaseEntity {
     default: 0,
     nullable: true,
   })
-  gol!: string | null
+  gol!: number | null
 
   @Column({
     name: 'assist',
@@ -65,7 +65,7 @@ export class Voti extends BaseEntity {
     default: 0,
     nullable: true,
   })
-  assist!: string | null
+  assist!: number | null
 
   @Column({
     name: 'autogol',
@@ -75,7 +75,7 @@ export class Voti extends BaseEntity {
     default: 0,
     nullable: true,
   })
-  autogol!: string | null
+  autogol!: number | null
 
   @Column({
     name: 'altriBonus',
@@ -85,7 +85,7 @@ export class Voti extends BaseEntity {
     default: 0,
     nullable: true,
   })
-  altriBonus!: string | null
+  altriBonus!: number | null
 
   @Column({ name: 'titolare', type: 'boolean', default: false })
   titolare!: boolean

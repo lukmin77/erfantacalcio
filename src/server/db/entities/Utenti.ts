@@ -31,16 +31,16 @@ export class Utenti extends BaseEntity {
   foto!: string | null
 
   @Column({ name: 'importoBase', type: 'decimal', precision: 9, scale: 2, default: 100 })
-  importoBase!: string
+  importoBase!: number
 
   @Column({ name: 'importoMulte', type: 'decimal', precision: 9, scale: 2, default: 0 })
-  importoMulte!: string
+  importoMulte!: number
 
   @Column({ name: 'importoMercato', type: 'decimal', precision: 9, scale: 2, default: 0 })
-  importoMercato!: string
+  importoMercato!: number
 
   @Column({ name: 'fantaMilioni', type: 'decimal', precision: 9, scale: 2, default: 600 })
-  fantaMilioni!: string
+  fantaMilioni!: number
 
   @Column({ name: 'Campionato', type: 'smallint', default: 0 })
   Campionato!: number
