@@ -10,6 +10,7 @@ import {
   getCalendario,
 } from '../../../utils/common'
 import { mapPartite } from '../services/partiteMapping'
+import _ from 'lodash'
 
 export const getGiornataPartiteProcedure = publicProcedure
   .input(
@@ -21,10 +22,11 @@ export const getGiornataPartiteProcedure = publicProcedure
   )
   .query(async (opts) => {
     try {
-      const result = await getCalendario({ idCalendario: opts.input.idCalendario })
-
-      if (result.length === 1) {
-        const calendario = result[0]
+      const result = await getCalendario({
+        idCalendario: opts.input.idCalendario,
+      })
+      const calendario = result.pop()
+      if (calendario) {
         return {
           idCalendario: calendario.idCalendario,
           idTorneo: calendario.Tornei.idTorneo,
@@ -42,7 +44,10 @@ export const getGiornataPartiteProcedure = publicProcedure
               ? false
               : opts.input.backOfficeMode,
           ),
-          Torneo: getTorneo(calendario.Tornei.nome, calendario.Tornei.gruppoFase),
+          Torneo: getTorneo(
+            calendario.Tornei.nome,
+            calendario.Tornei.gruppoFase,
+          ),
           Descrizione: getDescrizioneTorneo(
             calendario.Tornei.nome,
             calendario.giornata,
@@ -56,6 +61,7 @@ export const getGiornataPartiteProcedure = publicProcedure
           ),
           SubTitle: getTorneoSubTitle(calendario.giornataSerieA),
         }
+      }
     } catch (error) {
       Logger.error('Si è verificato un errore', error)
       throw error
