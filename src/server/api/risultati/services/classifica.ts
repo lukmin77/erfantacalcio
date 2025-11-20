@@ -1,5 +1,6 @@
 import prisma from '~/utils/db'
 import { Configurazione } from '~/config'
+import { Utenti } from '~/server/db/entities'
 
 export async function UpdateClassifica(idSquadra: number, idTorneo: number) {
   const puntiH =
@@ -137,10 +138,10 @@ export async function UpdateClassifica(idSquadra: number, idTorneo: number) {
     },
     where: { idSquadra, idTorneo },
   })
-  await prisma.utenti.update({
-    data: { importoMulte: (multeH + multeA) * Configurazione.importoMulta },
-    where: { idUtente: idSquadra },
-  })
+  await Utenti.update(
+    { idUtente: idSquadra },
+    { importoMulte: (multeH + multeA) * Configurazione.importoMulta },
+  )
 }
 
 export function getPunti(

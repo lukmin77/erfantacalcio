@@ -1,11 +1,13 @@
 import { adminProcedure } from '~/server/api/trpc'
 import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { Configurazione } from '~/config'
 import { chiudiTrasferimentoGiocatore } from '../../../utils/common'
 import { messageSchema } from '~/schemas/messageSchema'
 import { checkVotiUltimaGiornata, updateFase } from '../services/helpers'
 import { z } from 'zod'
+import { Trasferimenti } from '~/server/db/entities'
+import { IsNull } from 'typeorm'
+import _ from 'lodash'
 
 export const chiudiStagioneProcedure = adminProcedure.mutation<z.infer<typeof messageSchema>>(async () => {
   try {
@@ -15,14 +17,15 @@ export const chiudiStagioneProcedure = adminProcedure.mutation<z.infer<typeof me
       Logger.warn('Impossibile chiudere la stagione, calendario non completato')
       return { isError: true, isComplete: true, message: 'Impossibile chiudere la stagione, calendario non completato' }
     } else {
-      const giocatoritrasferimenti = await prisma.trasferimenti.findMany({
+      let giocatoritrasferimenti = await Trasferimenti.find({
         select: { idGiocatore: true },
-        distinct: ['idGiocatore'],
-        where: { AND: [{ dataCessione: null }, { stagione: Configurazione.stagione }] },
+        where: { dataCessione: IsNull(), stagione: Configurazione.stagione },
         take: takeNum,
       })
-      const countTrasferimenti = await prisma.trasferimenti.count({
-        where: { AND: [{ dataCessione: null }, { stagione: Configurazione.stagione }] },
+      giocatoritrasferimenti = _.uniqBy(giocatoritrasferimenti, 'idGiocatore')
+      
+      const countTrasferimenti = await Trasferimenti.count({
+        where: { dataCessione: IsNull(), stagione: Configurazione.stagione },
       })
       Logger.info(`Trovati ${giocatoritrasferimenti.length} giocatori in trasferimento da chiudere`)
       const promises = giocatoritrasferimenti.map(async (c) => {
