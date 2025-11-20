@@ -214,7 +214,14 @@ export async function getProssimaGiornata(
         UtentiSquadraA: { nomeSquadra: true, foto: true, maglia: true },
       },
     },
-    where: [{ giornataSerieA: giornataSerieA }, { hasGiocata: false }],
+    relations: {
+      Tornei: true,
+      Partite: {
+        UtentiSquadraH: true,
+        UtentiSquadraA: true,
+      },
+    },
+    where: { giornataSerieA: giornataSerieA, hasGiocata: false },
     order: { ordine: 'asc', idTorneo: 'asc' },
   })
 

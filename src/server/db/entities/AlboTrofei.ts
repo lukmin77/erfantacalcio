@@ -1,6 +1,6 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity("albo_trofei", { schema: "public" })
+@Entity("AlboTrofei_new", { schema: "public" })
 export class AlboTrofei extends BaseEntity {
   @PrimaryGeneratedColumn({ type: "integer", name: "id", primaryKeyConstraintName: "PK_AlboTrofei_new" })
   id!: number;
