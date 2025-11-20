@@ -51,7 +51,7 @@ export const processVotiProcedure = adminProcedure
 
         // Calcola i valori del voto in un oggetto separato
         const votoData = {
-          voto: voto.Voto,
+          voto: voto.Voto ?? 0,
           ammonizione:
             voto.Ammonizione === 1 ? Configurazione.bonusAmmonizione : 0,
           espulsione:

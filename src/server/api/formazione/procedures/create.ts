@@ -93,6 +93,7 @@ export const create = protectedProcedure
               idFormazione: idFormazione,
               titolare: c.titolare,
               riserva: c.riserva,
+              voto: 0,
             })
           }),
         )
