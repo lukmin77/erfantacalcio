@@ -41,12 +41,3 @@ export interface iVotoGiocatore {
   Squadra: string
   Voto: number | null
 }
-
-export type VotiDistinctItem = {
-  voto: number | null
-  ammonizione: number | null
-  espulsione: number | null
-  gol: number | null
-  assist: number | null
-  giornataSerieA: string
-}

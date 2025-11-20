@@ -8,7 +8,6 @@ import { type Decimal } from '@prisma/client/runtime/library'
 import prisma from '~/utils/db'
 import { z } from 'zod'
 import { giornataSchema, serieASchema } from '~/schemas/calendario'
-import { calendarioPartiteSchema } from '~/schemas/calendario'
 import {
   Calendario,
   Giocatori,
@@ -18,10 +17,6 @@ import {
   Voti,
 } from '../db/entities'
 import { EntityManager, FindOptionsWhere, IsNull, Not } from 'typeorm'
-
-type CalendarioFilter =
-  | { idTorneo: number }
-  | { Tornei: { gruppoFase: { not: null } } }
 
 export async function chiudiTrasferimentoGiocatore(
   idGiocatore: number,
