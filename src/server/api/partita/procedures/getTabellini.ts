@@ -2,7 +2,7 @@ import Logger from '~/lib/logger.server'
 import prisma from '~/utils/db'
 import { publicProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
-import { mapCalendario } from '../../../utils/common'
+import { getCalendario, mapCalendario } from '../../../utils/common'
 import { toLocaleDateTime } from '~/utils/dateUtils'
 import { getBonusModulo, getBonusSenzaVoto, getGiocatoriVotoInfluente, getGolSegnati, getTabellino } from '../../../utils/common'
 import { Configurazione } from '~/config'
@@ -21,43 +21,15 @@ export const getTabelliniProcedure = publicProcedure
       )?.Calendario.idCalendario
 
       if (idCalendario) {
-        const calendarioQry = await Calendario.findOne({
-          select: {
-            idCalendario: true,
-            giornata: true,
-            giornataSerieA: true,
-            ordine: true,
-            data: true,
-            dataFine: true,
-            hasSovrapposta: true,
-            girone: true,
-            hasGiocata: true,
-            hasDaRecuperare: true,
-            Tornei: { idTorneo: true, nome: true, gruppoFase: true },
-            Partite: {
-                idPartita: true,
-                idSquadraH: true,
-                idSquadraA: true,
-                hasMultaH: true,
-                hasMultaA: true,
-                golH: true,
-                golA: true,
-                fattoreCasalingo: true,
-                UtentiSquadraH: { nomeSquadra: true, foto: true, maglia: true },
-                UtentiSquadraA: { nomeSquadra: true, foto: true, maglia: true },
-            },
-          },
-          relations: {
-            Partite: { UtentiSquadraH: true, UtentiSquadraA: true },
-            Tornei: true,
-          },
-          where: { idCalendario: idCalendario, Partite: { idPartita: idPartita } },
+        const calendario = await getCalendario({
+          idCalendario: idCalendario,
+          Partite: { idPartita: idPartita },
         })
 
-        if (calendarioQry) {
-          const calendario = (await mapCalendario([calendarioQry]))[0]
-          if (calendario && calendario.partite.length === 1) {
-            const partita = calendario.partite[0]
+        if (calendario) {
+          const result = (await mapCalendario(calendario))[0]
+          if (result && result.partite.length === 1) {
+            const partita = result.partite[0]
             const formazioni = await prisma.formazioni.findMany({
               select: {
                 idFormazione: true,
@@ -121,7 +93,7 @@ export const getTabelliniProcedure = publicProcedure
             })
 
             return {
-              Calendario: calendario,
+              Calendario: result,
               AltrePartite: altrePartite,
               TabellinoHome: datiHome && {
                 dataOra: datiHome?.dataOra,

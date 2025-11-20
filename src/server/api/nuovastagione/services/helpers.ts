@@ -2,7 +2,7 @@ import Logger from '~/lib/logger.server'
 import prisma from '~/utils/db'
 import { toLocaleDateTime } from '~/utils/dateUtils'
 import { Configurazione } from '~/config'
-import { getCalendarioByTorneo } from '../../../utils/common'
+import { getCalendario } from '../../../utils/common'
 import { type Partita, RoundRobin4, RoundRobin8 } from '~/utils/bergerTables'
 
 export async function updateFase(idFase: number) {
@@ -31,7 +31,7 @@ export async function creaPartite(
     throw new Error('Numero di squadre non supportato')
   }
 
-  const calendario = await getCalendarioByTorneo(idTorneo)
+  const calendario = await getCalendario({ idTorneo: idTorneo })
   if (calendario && roundRobin) {
     let index = 1
     let previousGirone = calendario[0]?.girone
@@ -105,7 +105,7 @@ export async function creaClassifica(idTorneo: number, from: number, to: number)
 }
 
 export async function creaPartiteEmpty(partite: number, idTorneo: number, fattoreCasalingo: boolean) {
-  const calendario = await getCalendarioByTorneo(idTorneo)
+  const calendario = await getCalendario({ idTorneo: idTorneo })
   if (calendario?.[0]) {
     for (let i = 0; i < partite; i++) {
       await prisma.partite.createMany({

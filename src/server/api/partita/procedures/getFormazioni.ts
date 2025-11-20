@@ -2,9 +2,8 @@ import Logger from '~/lib/logger.server'
 import prisma from '~/utils/db'
 import { publicProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
-import { mapCalendario } from '../../../utils/common'
+import { getCalendario, mapCalendario } from '../../../utils/common'
 import { toLocaleDateTime } from '~/utils/dateUtils'
-import { Calendario } from '~/server/db/entities'
 
 export const getFormazioniProcedure = publicProcedure
   .input(z.object({ idPartita: z.number() }))
@@ -19,44 +18,13 @@ export const getFormazioniProcedure = publicProcedure
       )?.Calendario.idCalendario
 
       if (idCalendario) {
-        const calendarioQry = await Calendario.findOne({
-          select: {
-            idCalendario: true,
-            giornata: true,
-            giornataSerieA: true,
-            ordine: true,
-            data: true,
-            dataFine: true,
-            hasSovrapposta: true,
-            girone: true,
-            hasGiocata: true,
-            hasDaRecuperare: true,
-            Tornei: { idTorneo: true, nome: true, gruppoFase: true },
-            Partite: {
-              idPartita: true,
-              idSquadraH: true,
-              idSquadraA: true,
-              hasMultaH: true,
-              hasMultaA: true,
-              golH: true,
-              golA: true,
-              fattoreCasalingo: true,
-              UtentiSquadraH: { nomeSquadra: true, foto: true, maglia: true },
-              UtentiSquadraA: { nomeSquadra: true, foto: true, maglia: true },
-            },
-          },
-          relations: {
-            Partite: { UtentiSquadraH: true, UtentiSquadraA: true },
-            Tornei: true,
-          },
-          where: {
-            idCalendario: idCalendario,
-            Partite: { idPartita: idPartita },
-          },
+        const calendarioQry = await getCalendario({
+          idCalendario: idCalendario,
+          Partite: { idPartita: idPartita },
         })
 
         if (calendarioQry) {
-          const calendario = (await mapCalendario([calendarioQry]))[0]
+          const calendario = (await mapCalendario(calendarioQry))[0]
           if (calendario && calendario.partite.length === 1) {
             const partita = calendario.partite[0]
             const formazioni = await prisma.formazioni.findMany({
@@ -76,31 +44,68 @@ export const getFormazioniProcedure = publicProcedure
                         nomeFantaGazzetta: true,
                         ruolo: true,
                         Trasferimenti: {
-                          select: { SquadreSerieA: { select: { maglia: true, nome: true } } },
+                          select: {
+                            SquadreSerieA: {
+                              select: { maglia: true, nome: true },
+                            },
+                          },
                           where: {
                             OR: [
-                              { AND: [{ dataCessione: null }, { dataAcquisto: { lt: toLocaleDateTime(new Date()) } }] },
-                              { AND: [ { NOT: { dataCessione: null } }, { dataAcquisto: { lt: toLocaleDateTime(new Date()) } }, { dataCessione: { gt: toLocaleDateTime(new Date()) } } ] },
+                              {
+                                AND: [
+                                  { dataCessione: null },
+                                  {
+                                    dataAcquisto: {
+                                      lt: toLocaleDateTime(new Date()),
+                                    },
+                                  },
+                                ],
+                              },
+                              {
+                                AND: [
+                                  { NOT: { dataCessione: null } },
+                                  {
+                                    dataAcquisto: {
+                                      lt: toLocaleDateTime(new Date()),
+                                    },
+                                  },
+                                  {
+                                    dataCessione: {
+                                      gt: toLocaleDateTime(new Date()),
+                                    },
+                                  },
+                                ],
+                              },
                             ],
                           },
                         },
                       },
                     },
                   },
-                  orderBy: [ { Giocatori: { ruolo: 'desc' } }, { riserva: 'asc' } ],
+                  orderBy: [
+                    { Giocatori: { ruolo: 'desc' } },
+                    { riserva: 'asc' },
+                  ],
                 },
               },
               where: {
                 idPartita,
-                OR: [ { idSquadra: partita?.idHome ?? 0 }, { idSquadra: partita?.idAway ?? 0 } ],
+                OR: [
+                  { idSquadra: partita?.idHome ?? 0 },
+                  { idSquadra: partita?.idAway ?? 0 },
+                ],
               },
             })
 
             const altrePartite = await prisma.partite.findMany({
               select: {
                 idPartita: true,
-                Utenti_Partite_idSquadraHToUtenti: { select: { nomeSquadra: true, foto: true, maglia: true } },
-                Utenti_Partite_idSquadraAToUtenti: { select: { nomeSquadra: true, foto: true, maglia: true } },
+                Utenti_Partite_idSquadraHToUtenti: {
+                  select: { nomeSquadra: true, foto: true, maglia: true },
+                },
+                Utenti_Partite_idSquadraAToUtenti: {
+                  select: { nomeSquadra: true, foto: true, maglia: true },
+                },
               },
               where: { idCalendario },
             })
@@ -108,8 +113,12 @@ export const getFormazioniProcedure = publicProcedure
             return {
               Calendario: calendario,
               AltrePartite: altrePartite,
-              FormazioneHome: formazioni.find((c) => c.idSquadra === partita?.idHome),
-              FormazioneAway: formazioni.find((c) => c.idSquadra === partita?.idAway),
+              FormazioneHome: formazioni.find(
+                (c) => c.idSquadra === partita?.idHome,
+              ),
+              FormazioneAway: formazioni.find(
+                (c) => c.idSquadra === partita?.idAway,
+              ),
             }
           }
         }

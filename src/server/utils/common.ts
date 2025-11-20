@@ -459,14 +459,6 @@ export function mapPartite(partite: Partite[]) {
   }))
 }
 
-export async function getCalendarioByTorneo(idtorneo: number) {
-  return await getCalendario({ idTorneo: idtorneo })
-}
-
-export async function getCalendarioChampions() {
-  return await getCalendario({ Tornei: { gruppoFase: Not(IsNull()) } })
-}
-
 export async function getTornei() {
   return await Tornei.find({
     select: {
@@ -751,7 +743,7 @@ export function getVotoBonus(voto: {
   return bonus
 }
 
-async function getCalendario(filter: FindOptionsWhere<Calendario>) {
+export async function getCalendario<T>(filter: FindOptionsWhere<T> | FindOptionsWhere<T>[]) {
   return await Calendario.find({
     select: {
       idCalendario: true,
