@@ -1,15 +1,16 @@
 import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { publicProcedure } from '~/server/api/trpc'
 import { number, z } from 'zod'
 import { Configurazione } from '~/config'
+import { Trasferimenti } from '~/server/db/entities'
+import { Not } from 'typeorm'
 
 export const statsStagioniProcedure = publicProcedure
   .input(z.object({ idGiocatore: number() }))
   .query(async (opts) => {
     const idGiocatore = +opts.input.idGiocatore
     try {
-      const query = await prisma.trasferimenti.findMany({
+      const query = await Trasferimenti.find({
         select: {
           idTrasferimento: true,
           idGiocatore: false,
@@ -23,18 +24,13 @@ export const statsStagioniProcedure = publicProcedure
           stagione: true,
           nomeSquadra: true,
           nomeSquadraSerieA: true,
-          Utenti: { select: { nomeSquadra: true } },
-          Giocatori: { select: { nome: true, ruolo: true } },
-          SquadreSerieA: { select: { nome: true } },
+          Utenti: { idUtente: true, nomeSquadra: true },
+          Giocatori: { idGiocatore: true, nome: true, ruolo: true },
+          SquadreSerieA: { idSquadraSerieA: true, nome: true },
         },
-        where: {
-          AND: [
-            { idGiocatore: idGiocatore },
-            { stagione: { not: Configurazione.stagione } },
-            { hasRitirato: false },
-          ],
-        },
-        orderBy: [{ stagione: 'desc' }, { dataAcquisto: 'desc' }],
+        relations: { Utenti: true, Giocatori: true, SquadreSerieA: true },
+        where: { idGiocatore: idGiocatore , stagione: Not(Configurazione.stagione), hasRitirato: false },
+        order: { stagione: 'desc' , dataAcquisto: 'desc' },
       })
 
       const aggregatedStats: Record<string, { media: number; gol: number; assist: number; giocate: number }> = {}
@@ -46,7 +42,7 @@ export const statsStagioniProcedure = publicProcedure
         const currentStats = aggregatedStats[stagione]
         const gamesPlayed = giocate ?? 0
         if (currentStats && media) {
-          currentStats.media += gamesPlayed * media?.toNumber()
+          currentStats.media += gamesPlayed * media
           currentStats.gol += gol ?? 0
           currentStats.assist += assist ?? 0
           currentStats.giocate += gamesPlayed
