@@ -1,10 +1,10 @@
 import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { publicProcedure } from '~/server/api/trpc'
+import { SquadreSerieA } from '~/server/db/entities'
 
 export const listSquadreSerieAProcedure = publicProcedure.query(async () => {
   try {
-    return await prisma.squadreSerieA.findMany({
+    return await SquadreSerieA.find({
       select: { idSquadraSerieA: true, nome: true, maglia: true },
     })
   } catch (error) {

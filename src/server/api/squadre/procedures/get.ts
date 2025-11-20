@@ -1,15 +1,28 @@
 import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { publicProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
+import { Utenti } from '~/server/db/entities'
 
 export const getSquadraProcedure = publicProcedure
   .input(z.object({ idSquadra: z.number() }))
   .query(async (opts) => {
-    const idUtente = +opts.input.idSquadra
     try {
-      const utente = await prisma.utenti.findUnique({
-        where: { idUtente },
+      const utente = await Utenti.findOne({
+        select: {
+          idUtente: true,
+          adminLevel: true,
+          lockLevel: true,
+          presidente: true,
+          mail: true,
+          nomeSquadra: true,
+          maglia: true,
+          foto: true,
+          importoBase: true,
+          importoMulte: true,
+          importoMercato: true,
+          fantaMilioni: true,
+        },
+        where: { idUtente: opts.input.idSquadra },
       })
       if (utente) {
         return {

@@ -1,15 +1,15 @@
 import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { publicProcedure } from '~/server/api/trpc'
 import { number, z } from 'zod'
 import { Configurazione } from '~/config'
+import { Trasferimenti } from '~/server/db/entities'
 
 export const listTrasferimentiProcedure = publicProcedure
   .input(z.object({ idGiocatore: number() }))
   .query(async (opts) => {
     const idGiocatore = +opts.input.idGiocatore
     try {
-      const query = await prisma.trasferimenti.findMany({
+      const query = await Trasferimenti.find({
         select: {
           idTrasferimento: true,
           idGiocatore: false,
@@ -23,17 +23,17 @@ export const listTrasferimentiProcedure = publicProcedure
           stagione: true,
           nomeSquadra: true,
           nomeSquadraSerieA: true,
-          Utenti: { select: { nomeSquadra: true } },
-          Giocatori: { select: { nome: true, ruolo: true, id_pf: true } },
-          SquadreSerieA: { select: { nome: true, maglia: true } },
+          Utenti: { nomeSquadra: true },
+          Giocatori: { nome: true, ruolo: true, id_pf: true },
+          SquadreSerieA: { nome: true, maglia: true },
         },
-        where: {
-          AND: [
-            { idGiocatore: idGiocatore },
-            { hasRitirato: false },
-          ],
+        relations: {
+          Utenti: true,
+          Giocatori: true,
+          SquadreSerieA: true,
         },
-        orderBy: [{ stagione: 'desc' }, { dataAcquisto: 'desc' }],
+        where: { idGiocatore: idGiocatore, hasRitirato: false },
+        order: { stagione: 'desc', dataAcquisto: 'desc' },
       })
 
       return query.map((t) => ({

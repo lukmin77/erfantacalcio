@@ -6,7 +6,6 @@ import { getCalendario, mapCalendario } from '../../../utils/common'
 import { toLocaleDateTime } from '~/utils/dateUtils'
 import { getBonusModulo, getBonusSenzaVoto, getGiocatoriVotoInfluente, getGolSegnati, getTabellino } from '../../../utils/common'
 import { Configurazione } from '~/config'
-import { Calendario } from '~/server/db/entities'
 
 export const getTabelliniProcedure = publicProcedure
   .input(z.object({ idPartita: z.number() }))

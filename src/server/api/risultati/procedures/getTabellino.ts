@@ -1,6 +1,5 @@
 import Logger from '~/lib/logger.server'
 import { z } from 'zod'
-import prisma from '~/utils/db'
 import { adminProcedure } from '~/server/api/trpc'
 import {
   getTabellino,
@@ -10,13 +9,8 @@ import {
   getGolSegnati,
 } from '../../../utils/common'
 import { Configurazione } from '~/config'
+import { getFormazione } from '../services/partiteMapping'
 
-async function getFormazione(idPartita: number, idSquadra: number) {
-  return await prisma.formazioni.findFirst({
-    select: { idFormazione: true, modulo: true },
-    where: { idPartita, idSquadra },
-  })
-}
 
 export const getTabellinoProcedure = adminProcedure
   .input(z.object({ idPartita: z.number(), idSquadra: z.number().nullable() }))

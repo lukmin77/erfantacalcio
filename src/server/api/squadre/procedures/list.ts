@@ -1,11 +1,24 @@
 import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { publicProcedure } from '~/server/api/trpc'
+import { Utenti } from '~/server/db/entities'
 
 export const listSquadreProcedure = publicProcedure.query(async (opts) => {
   try {
-    let utenti = await prisma.utenti.findMany({
-      orderBy: { nomeSquadra: 'asc' },
+    let utenti = await Utenti.find({
+      select: {
+        idUtente: true,
+        adminLevel: true,
+        lockLevel: true,
+        presidente: true,
+        mail: true,
+        nomeSquadra: true,
+        foto: true,
+        importoBase: true,
+        importoMulte: true,
+        importoMercato: true,
+        fantaMilioni: true,
+      },
+      order: { nomeSquadra: 'asc' },
     })
 
     const idSquadraUtenteConnesso = opts.ctx.session?.user?.idSquadra

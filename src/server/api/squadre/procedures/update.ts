@@ -1,7 +1,7 @@
 import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { adminProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
+import { Utenti } from '~/server/db/entities'
 
 export const updateSquadraProcedure = adminProcedure
   .input(
@@ -20,9 +20,9 @@ export const updateSquadraProcedure = adminProcedure
   )
   .mutation(async (opts) => {
     try {
-      await prisma.utenti.updateMany({
-        where: { idUtente: opts.input.id },
-        data: {
+      await Utenti.update(
+        { idUtente: opts.input.id },
+        {
           presidente: opts.input.presidente,
           mail: opts.input.email,
           nomeSquadra: opts.input.squadra,
@@ -32,7 +32,7 @@ export const updateSquadraProcedure = adminProcedure
           fantaMilioni: opts.input.fantamilioni,
           adminLevel: opts.input.isLockLevel ? true : opts.input.isAdmin,
         },
-      })
+      )
     } catch (error) {
       Logger.error('Si è verificato un errore', error)
       throw error

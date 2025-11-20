@@ -4,12 +4,13 @@ import { toLocaleDateTime } from '~/utils/dateUtils'
 import { Configurazione } from '~/config'
 import { getCalendario } from '../../../utils/common'
 import { type Partita, RoundRobin4, RoundRobin8 } from '~/utils/bergerTables'
+import { FlowNewSeason } from '~/server/db/entities'
 
 export async function updateFase(idFase: number) {
-  await prisma.flowNewSeasosn.updateMany({
-    where: { idFase },
-    data: { active: true, data: toLocaleDateTime(new Date()) },
-  })
+  await FlowNewSeason.update(
+    { idFase },
+    { active: true, data: toLocaleDateTime(new Date()) },
+  )
 }
 
 export async function creaPartite(

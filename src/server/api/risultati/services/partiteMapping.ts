@@ -1,5 +1,4 @@
 import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { Configurazione } from '~/config'
 import {
   getBonusModulo,
@@ -8,18 +7,18 @@ import {
   getGolSegnati,
   getTabellino,
 } from '../../../utils/common'
-import { z } from 'zod'
-import { partitaSchema } from "~/schemas/calendario"
+import { Formazioni, Partite } from '~/server/db/entities'
 
-async function getFormazione(idPartita: number, idSquadra: number) {
-  return await prisma.formazioni.findFirst({
+export async function getFormazione(idPartita: number, idSquadra: number) {
+  const formazioni = await Formazioni.find({
     select: { idFormazione: true, modulo: true },
     where: { idPartita, idSquadra },
   })
+  return formazioni.length > 0 ? formazioni[0] : null
 }
 
 export function mapPartite(
-  partite: z.infer<typeof partitaSchema>[],
+  partite: Partite[],
   includeTabellini: boolean,
   backOfficeMode: boolean,
 ) {
@@ -94,8 +93,8 @@ export function mapPartite(
         idHome: p.idSquadraH,
         isFattoreHome: p.fattoreCasalingo,
         fattoreCasalingo: Configurazione.bonusFattoreCasalingo,
-        squadraHome: p.Utenti_Partite_idSquadraHToUtenti?.nomeSquadra,
-        fotoHome: p.Utenti_Partite_idSquadraHToUtenti?.foto,
+        squadraHome: p.UtentiSquadraH?.nomeSquadra,
+        fotoHome: p.UtentiSquadraH?.foto,
         multaHome: p.hasMultaH,
         golHome: p.golH,
         tabellinoHome: tabellinoHome,
@@ -106,8 +105,8 @@ export function mapPartite(
         totaleFantapuntiHome,
         idFormazioneAway: formazioneAway?.idFormazione,
         idAway: p.idSquadraA,
-        squadraAway: p.Utenti_Partite_idSquadraAToUtenti?.nomeSquadra,
-        fotoAway: p.Utenti_Partite_idSquadraAToUtenti?.foto,
+        squadraAway: p.UtentiSquadraA?.nomeSquadra,
+        fotoAway: p.UtentiSquadraA?.foto,
         multaAway: p.hasMultaA,
         golAway: p.golA,
         tabellinoAway: tabellinoAway,
