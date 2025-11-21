@@ -181,7 +181,7 @@ export default function UploadVoti() {
       const progressVoti = (i * 60) / voti.length + 30
       await processVoti.mutateAsync({
         idCalendario: idCalendario,
-        voti: chunk,
+        votiGiocatori: chunk,
       })
       setProgress(progressVoti)
     }
