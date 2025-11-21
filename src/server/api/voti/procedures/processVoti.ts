@@ -166,7 +166,7 @@ async function findAndCreateGiocatori(
   }
 }
 
-async function createGiocatori(trx: EntityManager, giocatori: Giocatori[]) {
+async function createGiocatori(trx: EntityManager, giocatori: { id_pf: number | null; nome: string; ruolo: string }[]) {
   try {
     const result = await trx.insert(
       Giocatori,
