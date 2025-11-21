@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { adminProcedure } from '../../trpc'
 import { normalizeNomeGiocatore } from '~/utils/helper'
 import { Configurazione } from '~/config'
-import _, { forEach } from 'lodash'
+import _ from 'lodash'
 import { uploadVotoGiocatoreSchema } from '~/schemas/giocatore'
 import { EntityManager, In } from 'typeorm'
 import {
@@ -37,89 +37,88 @@ export const processVotiProcedure = adminProcedure
 
         await Promise.all(
           opts.input.votiGiocatori.map(async (votoGiocatore) => {
-          console.log(
-            `Processing voto for player: ${votoGiocatore.Nome} ${votoGiocatore.Squadra}`,
-          )
-          const idGiocatore =
-            giocatori.find(
-              (g) =>
-                g !== null &&
-                (g.id_pf === votoGiocatore.id_pf ||
-                  g.nome.toLowerCase() === votoGiocatore.Nome.toLowerCase()),
-            )?.idGiocatore ?? 0
-
-          if ((await findLastTrasferimento(trx, idGiocatore)) === null) {
-            console.log(`No trasferimento found for player id: ${idGiocatore}, creating one...`)
-            const squadraSerieA = await findSquadraSerieA(
-              trx,
-              votoGiocatore.Squadra,
+            console.log(
+              `Processing voto for player: ${votoGiocatore.Nome} ${votoGiocatore.Squadra}`,
             )
-            if (squadraSerieA !== null) {
+            const idGiocatore =
+              giocatori.find(
+                (g) =>
+                  g !== null &&
+                  (g.id_pf === votoGiocatore.id_pf ||
+                    g.nome.toLowerCase() === votoGiocatore.Nome.toLowerCase()),
+              )?.idGiocatore ?? 0
+
+            if ((await findLastTrasferimento(trx, idGiocatore)) === null) {
               console.log(
-                `processing idgiocatore: ${idGiocatore}, nome: ${votoGiocatore.Nome}, squadra: ${squadraSerieA.idSquadraSerieA} ${squadraSerieA.nome}`,
+                `No trasferimento found for player id: ${idGiocatore}, creating one...`,
               )
-              await createTrasferimento(
+              const squadraSerieA = await findSquadraSerieA(
                 trx,
-                idGiocatore,
-                squadraSerieA.idSquadraSerieA,
-                squadraSerieA.nome,
+                votoGiocatore.Squadra,
               )
+              if (squadraSerieA !== null) {
+                await createTrasferimento(
+                  trx,
+                  idGiocatore,
+                  squadraSerieA.idSquadraSerieA,
+                  squadraSerieA.nome,
+                )
+              }
             }
-          }
 
-          console.log(`Voto data preparing for idCalendario ${opts.input.idCalendario}, idGiocatore ${idGiocatore}`)
-          const votoData = {
-            voto: votoGiocatore.Voto ?? 0,
-            ammonizione:
-              votoGiocatore.Ammonizione === 1
-                ? Configurazione.bonusAmmonizione
-                : 0,
-            espulsione:
-              votoGiocatore.Espulsione === 1
-                ? Configurazione.bonusEspulsione
-                : 0,
-            gol:
-              votoGiocatore.Ruolo === 'P'
-                ? votoGiocatore.GolSubiti * Configurazione.bonusGolSubito
-                : votoGiocatore.GolSegnati * Configurazione.bonusGol,
-            assist: votoGiocatore.Assist * Configurazione.bonusAssist,
-            autogol: votoGiocatore.Autogol * Configurazione.bonusAutogol,
-            altriBonus:
-              (votoGiocatore.RigoriParati ?? 0) *
-                Configurazione.bonusRigoreParato +
-              (votoGiocatore.RigoriErrati ?? 0) *
-                Configurazione.bonusRigoreSbagliato,
-          }
-          console.log(`Voto data prepared for idCalendario ${opts.input.idCalendario}, idGiocatore ${idGiocatore}:`, votoData)
-
-          // Upsert con update e create uguali
-          try {
-            await prisma.voti.upsert({
-              where: {
-                UQ_Voti_Calendario_Giocatore: {
-                  idCalendario: opts.input.idCalendario,
-                  idGiocatore: idGiocatore,
-                },
-              },
-              update: votoData,
-              create: {
-                idCalendario: opts.input.idCalendario,
-                idGiocatore: idGiocatore,
-                ...votoData,
-              },
-            })
-          } catch (error) {
-            console.error("Errore durante l'upsert del voto:", {
+            const votoData = {
+              voto: votoGiocatore.Voto ?? 0,
+              ammonizione:
+                votoGiocatore.Ammonizione === 1
+                  ? Configurazione.bonusAmmonizione
+                  : 0,
+              espulsione:
+                votoGiocatore.Espulsione === 1
+                  ? Configurazione.bonusEspulsione
+                  : 0,
+              gol:
+                votoGiocatore.Ruolo === 'P'
+                  ? votoGiocatore.GolSubiti * Configurazione.bonusGolSubito
+                  : votoGiocatore.GolSegnati * Configurazione.bonusGol,
+              assist: votoGiocatore.Assist * Configurazione.bonusAssist,
+              autogol: votoGiocatore.Autogol * Configurazione.bonusAutogol,
+              altriBonus:
+                (votoGiocatore.RigoriParati ?? 0) *
+                  Configurazione.bonusRigoreParato +
+                (votoGiocatore.RigoriErrati ?? 0) *
+                  Configurazione.bonusRigoreSbagliato,
+            }
+            // Upsert con update e create uguali
+            const votoSave = Voti.create({
               idCalendario: opts.input.idCalendario,
               idGiocatore: idGiocatore,
-              votoData: votoData,
-              error: error,
+              voto: votoGiocatore.Voto ?? 0,
+              ammonizione:
+                votoGiocatore.Ammonizione === 1
+                  ? Configurazione.bonusAmmonizione
+                  : 0,
+              espulsione:
+                votoGiocatore.Espulsione === 1
+                  ? Configurazione.bonusEspulsione
+                  : 0,
+              gol:
+                votoGiocatore.Ruolo === 'P'
+                  ? votoGiocatore.GolSubiti * Configurazione.bonusGolSubito
+                  : votoGiocatore.GolSegnati * Configurazione.bonusGol,
+              assist: votoGiocatore.Assist * Configurazione.bonusAssist,
+              autogol: votoGiocatore.Autogol * Configurazione.bonusAutogol,
+              altriBonus:
+                (votoGiocatore.RigoriParati ?? 0) *
+                  Configurazione.bonusRigoreParato +
+                (votoGiocatore.RigoriErrati ?? 0) *
+                  Configurazione.bonusRigoreSbagliato,
             })
-            throw error
-          }
 
-          console.log(`Processed voto for player: ${votoGiocatore.Nome}`)
-        }))
+            await trx.save(Voti, votoSave)
+
+            console.log(`Processed voto for player: ${votoGiocatore.Nome}`)
+          }),
+        )
 
         console.log(`Process voti successfull completed`)
       })
