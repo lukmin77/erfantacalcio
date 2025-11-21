@@ -1,5 +1,4 @@
 import { adminProcedure } from '~/server/api/trpc'
-import Logger from '~/lib/logger.server'
 import { Configurazione } from '~/config'
 import { messageSchema } from '~/schemas/messageSchema'
 import { checkVotiUltimaGiornata, checkVerificaPartiteGiocate, updateFase } from '../services/helpers'
@@ -10,12 +9,13 @@ import { Classifiche, Formazioni, Partite, Voti } from '~/server/db/entities'
 import Calendario from '~/components/home/Calendario'
 
 export const preparaStagioneProcedure = adminProcedure.mutation<z.infer<typeof messageSchema>>(async () => {
+  let message = { isError: false, isComplete: true, message: `Azzeramento dati della scorsa stagione ${Configurazione.stagione}` }
   try {
     if ((await checkVotiUltimaGiornata()) === false) {
-      Logger.warn('Impossibile preparare la nuova stagione, calendario non completato')
+      console.warn('Impossibile preparare la nuova stagione, calendario non completato')
       return { isError: true, isComplete: true, message: 'Impossibile preparare la nuova stagione, calendario non completato' }
     } else if ((await checkVerificaPartiteGiocate()) === false) {
-      Logger.warn('Impossibile preparare la nuova stagione: ci sono ancora partite da giocare')
+      console.warn('Impossibile preparare la nuova stagione: ci sono ancora partite da giocare')
       return { isError: true, isComplete: true, message: 'Impossibile preparare la nuova stagione: ci sono ancora partite da giocare' }
     } else {
 
@@ -29,15 +29,15 @@ export const preparaStagioneProcedure = adminProcedure.mutation<z.infer<typeof m
           data: toLocaleDateTime(new Date()),
           dataFine: toLocaleDateTime(new Date()),
         })
+
+        await updateFase(trx, 2)
       })
 
-      await updateFase(2)
-
-      Logger.info(`Azzeramento dati della scorsa stagione ${Configurazione.stagione}`)
-      return { isError: false, isComplete: true, message: `Azzeramento dati della scorsa stagione ${Configurazione.stagione}` }
+      console.info(`Azzeramento dati della scorsa stagione ${Configurazione.stagione}`)
+      return message
     }
   } catch (error) {
-    Logger.error('Si è verificato un errore', error)
+    console.error('Si è verificato un errore', error)
     throw error
   }
 })
