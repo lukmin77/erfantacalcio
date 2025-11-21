@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { protectedProcedure } from '../../trpc'
 import { z } from 'zod'
 import { toLocaleDateTime } from '~/utils/dateUtils'
@@ -46,9 +45,10 @@ export const create = protectedProcedure
           `Eliminazione voti e formazioni idPartita: ${idPartita} e idSquadra: ${idSquadra}`,
         )
 
-        const calendario = await trx.findOne(Partite,{
+        const partita = await trx.findOne(Partite,{
           select: {
             idCalendario: true,
+            idPartita: true,
             UtentiSquadraH: {
               nomeSquadra: true,
               presidente: true,
@@ -69,7 +69,7 @@ export const create = protectedProcedure
           where: { idPartita: idPartita },
         })
         console.log(
-          `recupero idCalendario:${calendario?.idCalendario} per idPartita: ${idPartita}`,
+          `recupero idCalendario:${partita?.idCalendario} per idPartita: ${idPartita}`,
         )
 
         const formazione = await trx.insert(Formazioni,{
@@ -85,12 +85,12 @@ export const create = protectedProcedure
         )
         const idFormazione = formazione.identifiers[0].idFormazione
 
-        if (calendario) {
+        if (partita) {
           await Promise.all(
             giocatori.map(async (c) => {
               await trx.insert(Voti,{
                 idGiocatore: c.idGiocatore,
-                idCalendario: calendario.idCalendario,
+                idCalendario: partita.idCalendario,
                 idFormazione: idFormazione,
                 titolare: c.titolare,
                 riserva: c.riserva,
@@ -104,19 +104,19 @@ export const create = protectedProcedure
 
           //invio mail
           if (env.MAIL_ENABLED) {
-            const subject = `ErFantacalcio: Formazione partita ${calendario.UtentiSquadraH?.nomeSquadra} - ${calendario.UtentiSquadraA?.nomeSquadra}`
+            const subject = `ErFantacalcio: Formazione partita ${partita.UtentiSquadraH?.nomeSquadra} - ${partita.UtentiSquadraA?.nomeSquadra}`
             const avversario =
-              idSquadra === calendario.UtentiSquadraH?.idUtente
-                ? calendario.UtentiSquadraH?.presidente
-                : calendario.UtentiSquadraA?.presidente
+              idSquadra === partita.UtentiSquadraH?.idUtente
+                ? partita.UtentiSquadraH?.presidente
+                : partita.UtentiSquadraA?.presidente
             const to =
-              idSquadra === calendario.UtentiSquadraH?.idUtente
-                ? calendario.UtentiSquadraA?.mail
-                : calendario.UtentiSquadraH?.mail
+              idSquadra === partita.UtentiSquadraH?.idUtente
+                ? partita.UtentiSquadraA?.mail
+                : partita.UtentiSquadraH?.mail
             const cc =
-              idSquadra === calendario.UtentiSquadraH?.idUtente
-                ? calendario.UtentiSquadraH?.mail
-                : calendario.UtentiSquadraA?.mail
+              idSquadra === partita.UtentiSquadraH?.idUtente
+                ? partita.UtentiSquadraH?.mail
+                : partita.UtentiSquadraA?.mail
             const htmlMessage = `Notifica automatica da erFantacalcio.com<br><br>
               Il tuo avversario ${avversario} ha inserito la formazione per la prossima partita<br>
               https://www.erfantacalcio.com<br><br>
@@ -125,9 +125,9 @@ export const create = protectedProcedure
             if (to && cc) await ReSendMailAsync(to, cc, subject, htmlMessage)
             else {
               const presidenteWithoutMail =
-                idSquadra === calendario.UtentiSquadraH?.idUtente
-                  ? calendario.UtentiSquadraA?.presidente
-                  : calendario.UtentiSquadraH?.presidente
+                idSquadra === partita.UtentiSquadraH?.idUtente
+                  ? partita.UtentiSquadraA?.presidente
+                  : partita.UtentiSquadraH?.presidente
               console.warn(
                 `Impossibile inviare notifica, mail non configurata per il presidente: ${presidenteWithoutMail}`,
               )

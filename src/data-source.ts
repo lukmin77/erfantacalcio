@@ -59,8 +59,8 @@ export const AppDataSource = new DataSource({
   ],
   ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
   synchronize: false,
-  // logging: ['migration'],
-  // logger: 'file',
+  logging: ['migration', 'error', 'warn'],
+  logger: 'formatted-console',
 })
 
 // Persist DataSource and initialization promise across module reloads (Next.js HMR)
