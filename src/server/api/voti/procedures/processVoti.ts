@@ -90,9 +90,9 @@ export const processVotiProcedure = adminProcedure
             })
 
             const criteria = {
-                idGiocatore: idGiocatore,
-                idCalendario: opts.input.idCalendario,
-              }
+              idGiocatore: idGiocatore,
+              idCalendario: opts.input.idCalendario,
+            }
             const isExists = await trx.exists(Voti, {
               where: criteria,
             })
@@ -102,12 +102,11 @@ export const processVotiProcedure = adminProcedure
 
             if (isExists) {
               await trx.update(Voti, criteria, votoData)
-            }
-            else {
+            } else {
               await trx.insert(Voti, {
                 idCalendario: opts.input.idCalendario,
                 idGiocatore: idGiocatore,
-                ...votoData
+                ...votoData,
               })
             }
 
