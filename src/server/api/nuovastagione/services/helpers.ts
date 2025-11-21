@@ -5,9 +5,11 @@ import { Configurazione } from '~/config'
 import { getCalendario } from '../../../utils/common'
 import { type Partita, RoundRobin4, RoundRobin8 } from '~/utils/bergerTables'
 import { FlowNewSeason } from '~/server/db/entities'
+import { EntityManager } from 'typeorm'
 
-export async function updateFase(idFase: number) {
-  await FlowNewSeason.update(
+export async function updateFase(trx: EntityManager, idFase: number) {
+  await trx.update(
+    FlowNewSeason,
     { idFase },
     { active: true, data: toLocaleDateTime(new Date()) },
   )
