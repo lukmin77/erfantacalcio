@@ -114,7 +114,7 @@ export const processVotiProcedure = adminProcedure
                   Configurazione.bonusRigoreSbagliato,
             })
 
-            await trx.save(Voti, votoSave)
+            //await trx.save(Voti, votoSave)
 
             console.log(`Processed voto for player: ${votoGiocatore.Nome}`)
           }),
