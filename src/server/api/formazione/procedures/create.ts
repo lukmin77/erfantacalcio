@@ -6,6 +6,7 @@ import { env } from 'process'
 import { Formazioni, Partite, Voti } from '~/server/db/entities'
 import { AppDataSource } from '~/data-source'
 import { In } from 'typeorm'
+import { getDescrizioneGiornata } from '~/utils/helper'
 
 export const create = protectedProcedure
   .input(
@@ -45,7 +46,7 @@ export const create = protectedProcedure
           `Eliminazione voti e formazioni idPartita: ${idPartita} e idSquadra: ${idSquadra}`,
         )
 
-        const partita = await trx.findOne(Partite,{
+        const partita = await trx.findOne(Partite, {
           select: {
             idCalendario: true,
             idPartita: true,
@@ -61,8 +62,21 @@ export const create = protectedProcedure
               idUtente: true,
               mail: true,
             },
+            Calendario: {
+              idCalendario: true,
+              giornata: true,
+              giornataSerieA: true,
+              data: true,
+              girone: true,
+              Tornei: {
+                idTorneo: true,
+                nome: true,
+                gruppoFase: true,
+              },
+            },
           },
           relations: {
+            Calendario: { Tornei: true },
             UtentiSquadraH: true,
             UtentiSquadraA: true,
           },
@@ -72,11 +86,12 @@ export const create = protectedProcedure
           `recupero idCalendario:${partita?.idCalendario} per idPartita: ${idPartita}`,
         )
 
-        const formazione = await trx.insert(Formazioni,{
+        const dataInserimentoFormazione = toLocaleDateTime(new Date())
+        const formazione = await trx.insert(Formazioni, {
           idPartita: idPartita,
           idSquadra: idSquadra,
           modulo: modulo,
-          dataOra: toLocaleDateTime(new Date()),
+          dataOra: dataInserimentoFormazione,
           hasBloccata: false,
         })
         console.log(
@@ -88,7 +103,7 @@ export const create = protectedProcedure
         if (partita) {
           await Promise.all(
             giocatori.map(async (c) => {
-              await trx.insert(Voti,{
+              await trx.insert(Voti, {
                 idGiocatore: c.idGiocatore,
                 idCalendario: partita.idCalendario,
                 idFormazione: idFormazione,
@@ -117,8 +132,19 @@ export const create = protectedProcedure
               idSquadra === partita.UtentiSquadraH?.idUtente
                 ? partita.UtentiSquadraH?.mail
                 : partita.UtentiSquadraA?.mail
+
+            const descrizioneGiornata = getDescrizioneGiornata(
+              partita.Calendario.giornataSerieA,
+              partita.Calendario.Tornei.nome,
+              partita.Calendario.giornata,
+              partita.Calendario.Tornei.gruppoFase,
+            )
             const htmlMessage = `Notifica automatica da erFantacalcio.com<br><br>
-              Il tuo avversario ${avversario} ha inserito la formazione per la prossima partita<br>
+              Il tuo avversario, l'infame ${avversario} ha inserito la formazione per la prossima partita</br></br>
+              <b>Dettagli partita:</b><br>
+              Giornata: ${descrizioneGiornata})<br>
+              Data inserimento formazione: ${dataInserimentoFormazione}</br>
+              Calcio d'inizio: ${toLocaleDateTime(partita.Calendario.data!)}</br></br>
               https://www.erfantacalcio.com<br><br>
               Saluti dal Vostro immenso Presidente`
 
@@ -134,7 +160,9 @@ export const create = protectedProcedure
             }
           }
         } else {
-          console.warn(`Calendario non trovato, impossibile procedere con l'inserimento della formazione`)
+          console.warn(
+            `Calendario non trovato, impossibile procedere con l'inserimento della formazione`,
+          )
         }
       })
     } catch (error) {

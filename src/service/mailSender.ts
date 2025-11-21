@@ -1,5 +1,4 @@
 import { env } from 'process'
-import Logger from '~/lib/logger.server'
 import { Resend } from 'resend'
 
 const resend = new Resend(env.MAIL_API_KEY)
@@ -19,8 +18,7 @@ export async function ReSendMailAsync(
   })
 
   if (error) {
-    return Logger.error({ error })
+    return console.error('Errore invio mail:', error)
   }
-
-  Logger.info({ data })
+  console.info('Mail inviata con successo:', data)
 }
