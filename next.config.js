@@ -8,7 +8,7 @@ await import('./src/env.js')
 const config = {
   reactStrictMode: true,
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    // removeConsole: process.env.NODE_ENV === 'production',
   },
   /**
    * If you are using `appDir` then you must comment the below `i18n` config out.
