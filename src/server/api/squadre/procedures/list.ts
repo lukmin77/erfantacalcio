@@ -41,10 +41,10 @@ export const listSquadreProcedure = publicProcedure.query(async (opts) => {
       email: squadra.mail,
       squadra: squadra.nomeSquadra,
       foto: squadra.foto,
-      importoAnnuale: squadra.importoBase.toFixed(2),
-      importoMulte: squadra.importoMulte.toFixed(2),
-      importoMercato: squadra.importoMercato.toFixed(2),
-      fantamilioni: squadra.fantaMilioni.toFixed(2),
+      importoAnnuale: squadra.importoBase,
+      importoMulte: squadra.importoMulte,
+      importoMercato: squadra.importoMercato,
+      fantamilioni: squadra.fantaMilioni,
     }))
   } catch (error) {
     Logger.error('Si è verificato un errore', error)
