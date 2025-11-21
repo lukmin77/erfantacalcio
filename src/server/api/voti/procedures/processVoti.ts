@@ -66,7 +66,7 @@ export const processVotiProcedure = adminProcedure
             }
 
             // Upsert con update e create uguali
-            const votoSave = Voti.create({
+            const votoSave = trx.create(Voti, {
               idGiocatore: idGiocatore,
               idCalendario: opts.input.idCalendario,
               voto: votoGiocatore.Voto ?? 0,
