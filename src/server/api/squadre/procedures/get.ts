@@ -34,10 +34,10 @@ export const getSquadraProcedure = publicProcedure
           squadra: utente.nomeSquadra,
           maglia: utente.maglia,
           foto: utente.foto,
-          importoAnnuale: parseFloat(utente.importoBase.toFixed(2)),
-          importoMulte: parseFloat(utente.importoMulte.toFixed(2)),
-          importoMercato: parseFloat(utente.importoMercato.toFixed(2)),
-          fantamilioni: parseFloat(utente.fantaMilioni.toFixed(2)),
+          importoAnnuale: utente.importoBase.toFixed(2),
+          importoMulte: utente.importoMulte.toFixed(2),
+          importoMercato: utente.importoMercato.toFixed(2),
+          fantamilioni: utente.fantaMilioni.toFixed(2),
         }
       }
       return null

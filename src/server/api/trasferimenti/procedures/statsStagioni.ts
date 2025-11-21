@@ -58,7 +58,7 @@ export const statsStagioniProcedure = publicProcedure
 
       return Object.entries(aggregatedStats).map(([stagione, stats]) => ({
         stagione,
-        media: parseFloat(stats.media.toFixed(2)),
+        media: stats.media.toFixed(2),
         gol: stats.gol,
         assist: stats.assist,
         giocate: stats.giocate,
