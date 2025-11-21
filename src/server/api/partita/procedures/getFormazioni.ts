@@ -1,9 +1,8 @@
-import prisma from '~/utils/db'
 import { publicProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
 import { getCalendario, mapCalendario } from '../../../utils/common'
 import { toLocaleDateTime } from '~/utils/dateUtils'
-import { Partite } from '~/server/db/entities'
+import { Formazioni, Partite } from '~/server/db/entities'
 
 export const getFormazioniProcedure = publicProcedure
   .input(z.object({ idPartita: z.number() }))
@@ -18,72 +17,28 @@ export const getFormazioniProcedure = publicProcedure
         const calendario = (await mapCalendario(calendarioQry)).pop()
         if (calendario) {
           const partita = calendario.partite[0]
-          const formazioni = await prisma.formazioni.findMany({
-            select: {
-              idFormazione: true,
-              modulo: true,
-              dataOra: true,
-              idSquadra: true,
-              Voti: {
-                select: {
-                  titolare: true,
-                  riserva: true,
-                  Giocatori: {
-                    select: {
-                      idGiocatore: true,
-                      nome: true,
-                      nomeFantaGazzetta: true,
-                      ruolo: true,
-                      Trasferimenti: {
-                        select: {
-                          SquadreSerieA: {
-                            select: { maglia: true, nome: true },
-                          },
-                        },
-                        where: {
-                          OR: [
-                            {
-                              AND: [
-                                { dataCessione: null },
-                                {
-                                  dataAcquisto: {
-                                    lt: toLocaleDateTime(new Date()),
-                                  },
-                                },
-                              ],
-                            },
-                            {
-                              AND: [
-                                { NOT: { dataCessione: null } },
-                                {
-                                  dataAcquisto: {
-                                    lt: toLocaleDateTime(new Date()),
-                                  },
-                                },
-                                {
-                                  dataCessione: {
-                                    gt: toLocaleDateTime(new Date()),
-                                  },
-                                },
-                              ],
-                            },
-                          ],
-                        },
-                      },
-                    },
-                  },
-                },
-                orderBy: [{ Giocatori: { ruolo: 'desc' } }, { riserva: 'asc' }],
-              },
-            },
-            where: {
-              idPartita,
-              OR: [
-                { idSquadra: partita?.idHome ?? 0 },
-                { idSquadra: partita?.idAway ?? 0 },
-              ],
-            },
-          })
+          
+            const formazioni = await Formazioni.createQueryBuilder('formazione')
+              .leftJoinAndSelect('formazione.Voti', 'voti')
+              .leftJoinAndSelect('voti.Giocatori', 'giocatore')
+              .leftJoinAndSelect('giocatore.Trasferimenti', 'trasf')
+              .leftJoinAndSelect('trasf.SquadreSerieA', 'squadra')
+              .where('formazione.idPartita = :idPartita', { idPartita })
+              .andWhere('formazione.idSquadra IN (:...ids)', {
+                ids: [partita?.idHome ?? 0, partita?.idAway ?? 0],
+              })
+              // replicate the commented complex where (filtering transfers by date)
+              .andWhere(
+                `(
+              (trasf.dataCessione IS NULL AND trasf.dataAcquisto < :now)
+              OR
+              (trasf.dataCessione IS NOT NULL AND trasf.dataAcquisto < :now AND trasf.dataCessione > :now)
+              )`,
+                { now: toLocaleDateTime(new Date()) },
+              )
+              .orderBy('giocatore.ruolo', 'DESC')
+              .addOrderBy('voti.riserva', 'ASC')
+              .getMany()
 
           const altrePartite = await Partite.find({
             select: {
@@ -100,7 +55,7 @@ export const getFormazioniProcedure = publicProcedure
               },
             },
             relations: { UtentiSquadraH: true, UtentiSquadraA: true },
-            where: { idCalendario },
+            where: { idCalendario: calendario.idCalendario },
           })
 
           return {

@@ -21,7 +21,6 @@ type StatisticaProps = {
 
 
 function Statistica({ idSquadra }: StatisticaProps) {
-  console.log('Statistica render: ', idSquadra)
   const theme = useTheme()
   const isXs = useMediaQuery(theme.breakpoints.down('md'))
 

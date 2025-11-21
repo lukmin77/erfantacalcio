@@ -116,14 +116,7 @@ function ViewFormazioni() {
                     titleTypographyProps={{ variant: 'h4' }}
                     subheader={
                       formazioneHome
-                        ? `${formatDateFromIso(
-                            formazioneHome?.dataOra.toISOString(),
-                            'DD/MM',
-                          )} alle
-                                        ${formatDateFromIso(
-                                          formazioneHome?.dataOra.toISOString(),
-                                          'HH:mm',
-                                        )}`
+                        ? formatDateFromIso(formazioneHome?.dataOra.toString(), 'DD-MM-YYYY HH:mm')
                         : `Formazione non rilasciata, multa di ${Configurazione.importoMulta} €`
                     }
                     avatar={
@@ -290,14 +283,7 @@ function ViewFormazioni() {
                     titleTypographyProps={{ variant: 'h4' }}
                     subheader={
                       formazioneAway
-                        ? `${formatDateFromIso(
-                            formazioneAway?.dataOra.toISOString(),
-                            'DD/MM',
-                          )} alle
-                                        ${formatDateFromIso(
-                                          formazioneAway?.dataOra.toISOString(),
-                                          'HH:mm',
-                                        )}`
+                        ? formatDateFromIso(formazioneAway?.dataOra.toString(), 'DD-MM-YYYY HH:mm')
                         : `Formazione non rilasciata, prevista multa di ${Configurazione.importoMulta} €`
                     }
                     avatar={
@@ -478,7 +464,7 @@ function ViewFormazioni() {
                     value={p.idPartita}
                     key={`giornata_${p.idPartita}`}
                     selected={index === 0}
-                  >{`${p.Utenti_Partite_idSquadraHToUtenti?.nomeSquadra} - ${p.Utenti_Partite_idSquadraAToUtenti?.nomeSquadra}`}</MenuItem>
+                  >{`${p.UtentiSquadraH?.nomeSquadra} - ${p.UtentiSquadraA?.nomeSquadra}`}</MenuItem>
                 ))}
               </Select>
             </Typography>
