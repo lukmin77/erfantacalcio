@@ -6,6 +6,7 @@ import { ReSendMailAsync } from '~/service/mailSender'
 import { env } from 'process'
 import { Formazioni, Partite, Voti } from '~/server/db/entities'
 import { AppDataSource } from '~/data-source'
+import { In } from 'typeorm'
 
 export const create = protectedProcedure
   .input(
@@ -29,11 +30,12 @@ export const create = protectedProcedure
 
     try {
       await AppDataSource.transaction(async (trx) => {
+        const formazioniIds = await  trx.find(Formazioni, {
+          select: { idFormazione: true },
+          where: { idPartita: idPartita, idSquadra: idSquadra },
+        })
         await trx.delete(Voti, {
-          Formazioni: {
-            idPartita: idPartita,
-            idSquadra: idSquadra,
-          },
+          idFormazione: In(formazioniIds.map((f) => f.idFormazione)),
         })
         await trx.delete(Formazioni, {
           idPartita: idPartita,

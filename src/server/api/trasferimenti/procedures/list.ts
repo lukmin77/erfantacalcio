@@ -7,7 +7,6 @@ import { Trasferimenti } from '~/server/db/entities'
 export const listTrasferimentiProcedure = publicProcedure
   .input(z.object({ idGiocatore: number() }))
   .query(async (opts) => {
-    const idGiocatore = +opts.input.idGiocatore
     try {
       const query = await Trasferimenti.find({
         select: {
@@ -32,7 +31,7 @@ export const listTrasferimentiProcedure = publicProcedure
           Giocatori: true,
           SquadreSerieA: true,
         },
-        where: { idGiocatore: idGiocatore, hasRitirato: false },
+        where: { idGiocatore: opts.input.idGiocatore, hasRitirato: false },
         order: { stagione: 'desc', dataAcquisto: 'desc' },
       })
 
@@ -54,7 +53,7 @@ export const listTrasferimentiProcedure = publicProcedure
             ? t.nomeSquadraSerieA
             : t.SquadreSerieA.nome,
         costo: t.costo,
-        media: t.media ? parseFloat(t.media.toFixed(2)) : 0,
+        media: t.media ?? 0,
         gol: t.gol,
         assist: t.assist,
         giocate: t.giocate,
