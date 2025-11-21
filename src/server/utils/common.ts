@@ -26,12 +26,13 @@ import {
 import _ from 'lodash'
 
 export async function chiudiTrasferimentoGiocatore(
+  trx: EntityManager,
   idGiocatore: number,
   chiusuraStagione: boolean,
 ) {
   try {
     //cerca il trasferimento ancora in corso per quel giocatore (datacessione is null)
-    const oldTrasferimento = await Trasferimenti.findOne({
+    const oldTrasferimento = await trx.findOne(Trasferimenti, {
       select: {
         dataAcquisto: true,
         idTrasferimento: true,
@@ -53,7 +54,7 @@ export async function chiudiTrasferimentoGiocatore(
         oldTrasferimento,
       )
       //cerca i voti nel periodo dall'ultima data di acuisto ad oggi
-      let voti = await Voti.find({
+      let voti = await trx.find(Voti, {
         select: {
           voto: true,
           gol: true,
@@ -111,7 +112,7 @@ export async function chiudiTrasferimentoGiocatore(
 
         Logger.debug('updating ultimo trasferimento (completo): ' + idGiocatore)
         //eseguo update del trasferimento con datacessione odierna
-        await Trasferimenti.update(
+        await trx.update(Trasferimenti,
           {
             idTrasferimento: oldTrasferimento.idTrasferimento,
           },
@@ -132,7 +133,7 @@ export async function chiudiTrasferimentoGiocatore(
       } else {
         Logger.debug('updating ultimo trasferimento (parziale): ' + idGiocatore)
         //eseguo update del trasferimento con datacessione odierna
-        await Trasferimenti.update(
+        await trx.update(Trasferimenti,
           {
             idTrasferimento: oldTrasferimento.idTrasferimento,
           },
@@ -150,7 +151,7 @@ export async function chiudiTrasferimentoGiocatore(
     } else {
       Logger.debug('updating ultimo trasferimento (base): ' + idGiocatore)
       //eseguo update del trasferimento con datacessione odierna
-      await Trasferimenti.update(
+      await trx.update(Trasferimenti,
         { idGiocatore: idGiocatore, dataCessione: IsNull() },
         {
           dataCessione: new Date(),

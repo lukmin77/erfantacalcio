@@ -1,11 +1,9 @@
-import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { toLocaleDateTime } from '~/utils/dateUtils'
 import { Configurazione } from '~/config'
 import { getCalendario } from '../../../utils/common'
 import { type Partita, RoundRobin4, RoundRobin8 } from '~/utils/bergerTables'
-import { FlowNewSeason } from '~/server/db/entities'
-import { EntityManager } from 'typeorm'
+import { Calendario, Classifiche, FlowNewSeason, Partite, Voti } from '~/server/db/entities'
+import { EntityManager, LessThanOrEqual } from 'typeorm'
 
 export async function updateFase(trx: EntityManager, idFase: number) {
   await trx.update(
@@ -16,6 +14,7 @@ export async function updateFase(trx: EntityManager, idFase: number) {
 }
 
 export async function creaPartite(
+  trx: EntityManager,
   squadre: number,
   idTorneo: number,
   evaluateLastGirone: boolean,
@@ -25,12 +24,12 @@ export async function creaPartite(
 
   if (squadre === 8) {
     roundRobin = RoundRobin8()
-    Logger.info('creato roundrobin 8 squadre')
+    console.info('creato roundrobin 8 squadre')
   } else if (squadre === 4) {
     roundRobin = RoundRobin4()
-    Logger.info('creato roundrobin 4 squadre')
+    console.info('creato roundrobin 4 squadre')
   } else {
-    Logger.error('Numero di squadre non supportato')
+    console.error('Numero di squadre non supportato')
     throw new Error('Numero di squadre non supportato')
   }
 
@@ -39,7 +38,9 @@ export async function creaPartite(
     let index = 1
     let previousGirone = calendario[0]?.girone
     const lastGirone = calendario[calendario.length - 1]?.girone
-    Logger.info(`lastGirone: ${lastGirone}, evaluateLastGirone: ${evaluateLastGirone}`)
+    console.info(
+      `lastGirone: ${lastGirone}, evaluateLastGirone: ${evaluateLastGirone}`,
+    )
 
     for (const c of calendario) {
       if (c.girone !== previousGirone) {
@@ -48,46 +49,54 @@ export async function creaPartite(
       }
 
       const matches = roundRobin.filter((x) => x.giornata === index)
-      Logger.info(`Matches for girone ${c.girone}:`, matches)
+      console.info(`Matches for girone ${c.girone}:`, matches)
 
       for (const p of matches) {
         let fattoreCasalingo = Configurazione.bonusFattoreCasalingo > 0
         if (evaluateLastGirone && lastGirone === c.girone && fattoreCasalingo) {
-          fattoreCasalingo = (calendario[calendario.length - 1]?.girone ?? 0) % 2 === 0
-          Logger.info(`Fattore casalingo per l'ultima giornata: ${fattoreCasalingo}`)
+          fattoreCasalingo =
+            (calendario[calendario.length - 1]?.girone ?? 0) % 2 === 0
+          console.info(
+            `Fattore casalingo per l'ultima giornata: ${fattoreCasalingo}`,
+          )
         }
-
-        await prisma.partite.createMany({
-          data: [
-            {
-              idCalendario: c.idCalendario,
-              idSquadraH: c.girone! % 2 === 0 ? p.squadraHome + idAccumulate : p.squadraAway + idAccumulate,
-              idSquadraA: c.girone! % 2 === 0 ? p.squadraAway + idAccumulate : p.squadraHome + idAccumulate,
-              fattoreCasalingo,
-              golH: null,
-              golA: null,
-              hasMultaH: false,
-              hasMultaA: false,
-              punteggioH: null,
-              punteggioA: null,
-              puntiH: null,
-              puntiA: null,
-            },
-          ],
+        await trx.insert(Partite, {
+          idCalendario: c.idCalendario,
+          idSquadraH:
+            c.girone! % 2 === 0
+              ? p.squadraHome + idAccumulate
+              : p.squadraAway + idAccumulate,
+          idSquadraA:
+            c.girone! % 2 === 0
+              ? p.squadraAway + idAccumulate
+              : p.squadraHome + idAccumulate,
+          fattoreCasalingo,
+          golH: null,
+          golA: null,
+          hasMultaH: false,
+          hasMultaA: false,
+          punteggioH: null,
+          punteggioA: null,
+          puntiH: null,
+          puntiA: null,
         })
       }
 
       index++
     }
 
-    Logger.info(`create partite calendario per idTorneo: ${idTorneo}`)
+    console.info(`create partite calendario per idTorneo: ${idTorneo}`)
   }
 }
 
-export async function creaClassifica(idTorneo: number, from: number, to: number) {
-  const squadreData = []
+export async function creaClassifica(
+  trx: EntityManager,
+  idTorneo: number,
+  from: number,
+  to: number,
+) {
   for (let i = from; i <= to; i++) {
-    squadreData.push({
+    await trx.insert(Classifiche, {
       idSquadra: i,
       idTorneo,
       differenzaReti: 0,
@@ -103,57 +112,61 @@ export async function creaClassifica(idTorneo: number, from: number, to: number)
       vinteTrasferta: 0,
     })
   }
-  await prisma.classifiche.createMany({ data: squadreData })
-  Logger.info(`create classifiche per idTorneo: ${idTorneo}`)
+
+  console.info(`create classifiche per idTorneo: ${idTorneo}`)
 }
 
-export async function creaPartiteEmpty(partite: number, idTorneo: number, fattoreCasalingo: boolean) {
+export async function creaPartiteEmpty(
+  trx: EntityManager,
+  partite: number,
+  idTorneo: number,
+  fattoreCasalingo: boolean,
+) {
   const calendario = await getCalendario({ idTorneo: idTorneo })
-  if (calendario?.[0]) {
-    for (let i = 0; i < partite; i++) {
-      await prisma.partite.createMany({
-        data: [
-          {
-            idCalendario: calendario[0]?.idCalendario,
-            idSquadraH: null,
-            idSquadraA: null,
-            fattoreCasalingo,
-            golH: null,
-            golA: null,
-            hasMultaH: false,
-            hasMultaA: false,
-            punteggioH: null,
-            punteggioA: null,
-            puntiH: null,
-            puntiA: null,
-          },
-        ],
-      })
-    }
-    Logger.info(`create partite calendario per idTorneo: ${idTorneo}`)
+  if (calendario.length === 0) {
+    console.error('Impossibile creare partite vuote, calendario non trovato')
+    throw new Error('Impossibile creare partite vuote, calendario non trovato')
   }
+  for (let i = 0; i < partite; i++) {
+    await trx.insert(Partite, {
+      idCalendario: calendario.pop()?.idCalendario!,
+      idSquadraH: null,
+      idSquadraA: null,
+      fattoreCasalingo,
+      golH: null,
+      golA: null,
+      hasMultaH: false,
+      hasMultaA: false,
+      punteggioH: null,
+      punteggioA: null,
+      puntiH: null,
+      puntiA: null,
+    })
+  }
+  console.info(`create partite calendario per idTorneo: ${idTorneo}`)
 }
 
 export async function checkVotiUltimaGiornata() {
   return (
-    (await prisma.voti.count({
+    (await Voti.count({
       where: { Calendario: { giornataSerieA: 38 } },
+      relations: { Calendario: true },
     })) > 0
   )
 }
 
 export async function checkCountPartite() {
-  return (await prisma.partite.count()) === 0
+  return (await Partite.count()) === 0
 }
 
 export async function checkCountClassifiche() {
-  return (await prisma.classifiche.count()) === 0
+  return (await Classifiche.count()) === 0
 }
 
 export async function checkVerificaPartiteGiocate() {
   return (
-    (await prisma.calendario.count({
-      where: { AND: [{ hasGiocata: false }, { idTorneo: { lte: 6 } }] },
+    (await Calendario.count({
+      where: { hasGiocata: false, idTorneo: LessThanOrEqual(6) },
     })) === 0
   )
 }

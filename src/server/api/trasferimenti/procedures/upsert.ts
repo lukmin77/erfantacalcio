@@ -1,10 +1,10 @@
-import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { adminProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
 import { chiudiTrasferimentoGiocatore } from '../../../utils/common'
 import { Configurazione } from '~/config'
 import { toLocaleDateTime } from '~/utils/dateUtils'
+import { AppDataSource } from '~/data-source'
+import { SquadreSerieA, Trasferimenti, Utenti } from '~/server/db/entities'
 
 export const upsertTrasferimentoProcedure = adminProcedure
   .input(
@@ -20,47 +20,60 @@ export const upsertTrasferimentoProcedure = adminProcedure
   )
   .mutation(async (opts) => {
     try {
-      const squadra = await prisma.utenti.findUnique({
-        select: { nomeSquadra: true },
-        where: { idUtente: opts.input.idSquadra ?? -1 },
-      })
-      const squadraSerieA = await prisma.squadreSerieA.findUnique({
-        select: { nome: true },
-        where: { idSquadraSerieA: opts.input.idSquadraSerieA ?? -1 },
-      })
+      let idTrasferimento = opts.input.idTrasferimento
 
-      if (opts.input.idTrasferimento === 0) {
-        await chiudiTrasferimentoGiocatore(opts.input.idGiocatore, false)
-      }
+      await AppDataSource.transaction(async (trx) => {
+        const squadra = await trx.findOne(Utenti, {
+          select: { nomeSquadra: true },
+          where: { idUtente: opts.input.idSquadra ?? -1 },
+        })
+        const squadraSerieA = await trx.findOne(SquadreSerieA, {
+          select: { nome: true },
+          where: { idSquadraSerieA: opts.input.idSquadraSerieA ?? -1 },
+        })
 
-      const trasferimento = await prisma.trasferimenti.upsert({
-        where: { idTrasferimento: opts.input.idTrasferimento },
-        update: {
-          idSquadraSerieA: opts.input.idSquadraSerieA ?? null,
-          idSquadra: opts.input.idSquadra ?? null,
-          nomeSquadra: squadra?.nomeSquadra,
-          nomeSquadraSerieA: squadraSerieA?.nome,
-          costo: opts.input.costo,
-          dataAcquisto: opts.input.dataAcquisto,
-          dataCessione: opts.input.dataCessione,
-          stagione: Configurazione.stagione,
-          hasRitirato: false,
-        },
-        create: {
-          idGiocatore: opts.input.idGiocatore,
-          idSquadraSerieA: opts.input.idSquadraSerieA,
-          idSquadra: opts.input.idSquadra,
-          costo: opts.input.costo,
-          dataAcquisto: toLocaleDateTime(new Date()),
-          dataCessione: null,
-          stagione: Configurazione.stagione,
-          hasRitirato: false,
-        },
+        if (opts.input.idTrasferimento === 0) {
+          await chiudiTrasferimentoGiocatore(trx, opts.input.idGiocatore, false)
+        }
+
+        const isExists = await trx.exists(Trasferimenti, {
+          where: { idTrasferimento: opts.input.idTrasferimento },
+        })
+        
+        if (isExists) {
+          await trx.update(
+            Trasferimenti,
+            { idTrasferimento: idTrasferimento },
+            {
+              idSquadraSerieA: opts.input.idSquadraSerieA ?? null,
+              idSquadra: opts.input.idSquadra ?? null,
+              costo: opts.input.costo,
+              dataAcquisto: opts.input.dataAcquisto,
+              stagione: Configurazione.stagione,
+              hasRitirato: false,
+              nomeSquadra: squadra?.nomeSquadra,
+              nomeSquadraSerieA: squadraSerieA?.nome,
+              dataCessione: opts.input.dataCessione,
+            },
+          )
+        } else {
+          idTrasferimento = (
+            await trx.insert(Trasferimenti, {
+              idGiocatore: opts.input.idGiocatore,
+              idSquadraSerieA: opts.input.idSquadraSerieA ?? null,
+              idSquadra: opts.input.idSquadra ?? null,
+              costo: opts.input.costo,
+              dataAcquisto: toLocaleDateTime(new Date()),
+              dataCessione: null,
+              stagione: Configurazione.stagione,
+              hasRitirato: false,
+            })
+          ).identifiers[0].idTrasferimento
+        }
       })
-
-      return trasferimento.idTrasferimento ?? null
+      return idTrasferimento
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })
