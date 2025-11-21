@@ -17,9 +17,9 @@ export const processVotiProcedure = adminProcedure
   )
   .mutation(async (opts) => {
     try {
-      AppDataSource.transaction(async (trx) => {
-        console.info(`Processing ${opts.input.votiGiocatori.length} voti`)
+      console.log(`Processing ${opts.input.votiGiocatori.length} giocatori`)
 
+      AppDataSource.transaction(async (trx) => {
         const giocatori = await findAndCreateGiocatori(trx,
           opts.input.votiGiocatori.map((v) => ({
             id_pf: v.id_pf,
@@ -28,59 +28,70 @@ export const processVotiProcedure = adminProcedure
           })),
         )
 
-        for (const votoGiocatore of opts.input.votiGiocatori) {
-          console.log(
-            `Processing voto for player: ${votoGiocatore.Nome} ${votoGiocatore.Squadra}`,
-          )
-          const idGiocatore =
-            giocatori.find(
-              (g) =>
-                g !== null &&
-                (g.id_pf === votoGiocatore.id_pf ||
-                  g.nome.toLowerCase() === votoGiocatore.Nome.toLowerCase()),
-            )?.idGiocatore ?? 0
+        await Promise.all(
+          opts.input.votiGiocatori.map(async (votoGiocatore) => {
+            console.log(
+              `Processing voto for player: ${votoGiocatore.Nome} ${votoGiocatore.Squadra}`,
+            )
+            const idGiocatore =
+              giocatori.find(
+                (g) =>
+                  g !== null &&
+                  (g.id_pf === votoGiocatore.id_pf ||
+                    g.nome.toLowerCase() === votoGiocatore.Nome.toLowerCase()),
+              )?.idGiocatore ?? 0
 
-          if ((await findLastTrasferimento(trx, idGiocatore)) === null) {
-            const squadraSerieA = await findSquadraSerieA(trx, votoGiocatore.Squadra)
-            if (squadraSerieA !== null) {
-              console.info(
-                `processing idgiocatore: ${idGiocatore}, nome: ${votoGiocatore.Nome}, squadra: ${squadraSerieA.idSquadraSerieA} ${squadraSerieA.nome}`,
-              )
-              await createTrasferimento(
+            if ((await findLastTrasferimento(trx, idGiocatore)) === null) {
+              const squadraSerieA = await findSquadraSerieA(
                 trx,
-                idGiocatore,
-                squadraSerieA.idSquadraSerieA,
-                squadraSerieA.nome,
+                votoGiocatore.Squadra,
               )
+              if (squadraSerieA !== null) {
+                console.log(
+                  `processing idgiocatore: ${idGiocatore}, nome: ${votoGiocatore.Nome}, squadra: ${squadraSerieA.idSquadraSerieA} ${squadraSerieA.nome}`,
+                )
+                await createTrasferimento(
+                  trx,
+                  idGiocatore,
+                  squadraSerieA.idSquadraSerieA,
+                  squadraSerieA.nome,
+                )
+              }
             }
-          }
 
-          // Upsert con update e create uguali
-          const votoSave = Voti.create({
-            idCalendario: opts.input.idCalendario,
-            idGiocatore: idGiocatore,
-            voto: votoGiocatore.Voto ?? 0,
-            ammonizione:
-              votoGiocatore.Ammonizione === 1 ? Configurazione.bonusAmmonizione : 0,
-            espulsione:
-              votoGiocatore.Espulsione === 1 ? Configurazione.bonusEspulsione : 0,
-            gol:
-              votoGiocatore.Ruolo === 'P'
-                ? votoGiocatore.GolSubiti * Configurazione.bonusGolSubito
-                : votoGiocatore.GolSegnati * Configurazione.bonusGol,
-            assist: votoGiocatore.Assist * Configurazione.bonusAssist,
-            autogol: votoGiocatore.Autogol * Configurazione.bonusAutogol,
-            altriBonus:
-              (votoGiocatore.RigoriParati ?? 0) * Configurazione.bonusRigoreParato +
-              (votoGiocatore.RigoriErrati ?? 0) * Configurazione.bonusRigoreSbagliato,
-          })
+            // Upsert con update e create uguali
+            const votoSave = Voti.create({
+              idCalendario: opts.input.idCalendario,
+              idGiocatore: idGiocatore,
+              voto: votoGiocatore.Voto ?? 0,
+              ammonizione:
+                votoGiocatore.Ammonizione === 1
+                  ? Configurazione.bonusAmmonizione
+                  : 0,
+              espulsione:
+                votoGiocatore.Espulsione === 1
+                  ? Configurazione.bonusEspulsione
+                  : 0,
+              gol:
+                votoGiocatore.Ruolo === 'P'
+                  ? votoGiocatore.GolSubiti * Configurazione.bonusGolSubito
+                  : votoGiocatore.GolSegnati * Configurazione.bonusGol,
+              assist: votoGiocatore.Assist * Configurazione.bonusAssist,
+              autogol: votoGiocatore.Autogol * Configurazione.bonusAutogol,
+              altriBonus:
+                (votoGiocatore.RigoriParati ?? 0) *
+                  Configurazione.bonusRigoreParato +
+                (votoGiocatore.RigoriErrati ?? 0) *
+                  Configurazione.bonusRigoreSbagliato,
+            })
 
-          await trx.save(Voti, votoSave)
+            await trx.save(Voti, votoSave)
 
-          console.info(`Processed voto for player: ${votoGiocatore.Nome}`)
-        }
-
-        console.info(`Process voti successfull completed`)
+            console.log(`Processed voto for player: ${votoGiocatore.Nome}`)
+          }),
+        )
+        
+        console.log(`Process voti successfull completed`)
       })
     } catch (error) {
       console.error('Si è verificato un errore', error)
@@ -151,7 +162,7 @@ async function findAndCreateGiocatori(
       return !match
     })
 
-    console.info('Nuovi giocatori da creare:', newPlayers)
+    console.log('Nuovi giocatori da creare:', newPlayers)
 
     // 6️⃣ Crea i nuovi giocatori
     if (newPlayers.length > 0) {
@@ -244,7 +255,7 @@ async function createTrasferimento(
       stagione: Configurazione.stagione,
       nomeSquadraSerieA: nomeSquadraSerieA,
     })
-    console.info('Inserito Trasferimento:', trasferimento.identifiers[0])
+    console.log('Inserito Trasferimento:', trasferimento.identifiers[0])
   } catch (error) {
     console.error('Si è verificato un errore in createTrasferimento:', {
       idGiocatore: idGiocatore,
