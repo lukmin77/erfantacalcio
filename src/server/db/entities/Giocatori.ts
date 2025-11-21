@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, type Relation, BaseEntity } from 'typeorm'
-import * as VotiEntity from './Voti'
 import { Trasferimenti } from './Trasferimenti'
+import { Voti } from './Voti'
 
 @Entity({ name: 'Giocatori' })
 export class Giocatori extends BaseEntity {
@@ -22,6 +22,6 @@ export class Giocatori extends BaseEntity {
   @OneToMany(() => Trasferimenti, (t: Trasferimenti) => t.Giocatori)
   Trasferimenti!: Relation<Trasferimenti[]>
 
-  @OneToMany(() => VotiEntity.Voti, (v: VotiEntity.Voti) => v.Giocatori)
-  Voti!: Relation<VotiEntity.Voti[]>
+  @OneToMany(() => Voti, (v: Voti) => v.Giocatori)
+  Voti!: Relation<Voti[]>
 }

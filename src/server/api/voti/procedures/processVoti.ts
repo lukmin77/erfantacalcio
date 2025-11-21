@@ -66,28 +66,6 @@ export const processVotiProcedure = adminProcedure
               }
             }
 
-            const votoData = {
-              voto: votoGiocatore.Voto ?? 0,
-              ammonizione:
-                votoGiocatore.Ammonizione === 1
-                  ? Configurazione.bonusAmmonizione
-                  : 0,
-              espulsione:
-                votoGiocatore.Espulsione === 1
-                  ? Configurazione.bonusEspulsione
-                  : 0,
-              gol:
-                votoGiocatore.Ruolo === 'P'
-                  ? votoGiocatore.GolSubiti * Configurazione.bonusGolSubito
-                  : votoGiocatore.GolSegnati * Configurazione.bonusGol,
-              assist: votoGiocatore.Assist * Configurazione.bonusAssist,
-              autogol: votoGiocatore.Autogol * Configurazione.bonusAutogol,
-              altriBonus:
-                (votoGiocatore.RigoriParati ?? 0) *
-                  Configurazione.bonusRigoreParato +
-                (votoGiocatore.RigoriErrati ?? 0) *
-                  Configurazione.bonusRigoreSbagliato,
-            }
             // Upsert con update e create uguali
             const votoSave = Voti.create({
               idCalendario: opts.input.idCalendario,
@@ -114,7 +92,7 @@ export const processVotiProcedure = adminProcedure
                   Configurazione.bonusRigoreSbagliato,
             })
 
-            //await trx.save(Voti, votoSave)
+            await trx.save(Voti, votoSave)
 
             console.log(`Processed voto for player: ${votoGiocatore.Nome}`)
           }),
