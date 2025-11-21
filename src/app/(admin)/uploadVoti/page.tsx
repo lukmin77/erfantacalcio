@@ -135,7 +135,10 @@ export default function UploadVoti() {
                 const voti = await readVoti.mutateAsync({
                   fileUrl: serverPathfilename,
                 })
-                await processRecords(voti)
+                 await processVoti.mutateAsync({
+                   idCalendario: selectedIdCalendario ?? 0,
+                   votiGiocatori: voti,
+                 })
                 setProgress(90)
                 await refreshStats.mutateAsync({ ruolo: 'P' })
                 setProgress(92)
