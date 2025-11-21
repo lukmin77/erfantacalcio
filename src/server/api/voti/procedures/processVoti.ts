@@ -7,6 +7,7 @@ import { uploadVotoGiocatoreSchema } from '~/schemas/giocatore'
 import { EntityManager, In } from 'typeorm'
 import { Giocatori, SquadreSerieA, Trasferimenti, Voti } from '~/server/db/entities'
 import { AppDataSource } from '~/data-source'
+import prisma from '~/utils/db'
 
 export const processVotiProcedure = adminProcedure
   .input(
@@ -59,10 +60,7 @@ export const processVotiProcedure = adminProcedure
               }
             }
 
-            // Upsert con update e create uguali
-            const votoSave = Voti.create({
-              idCalendario: opts.input.idCalendario,
-              idGiocatore: idGiocatore,
+            const votoData = {
               voto: votoGiocatore.Voto ?? 0,
               ammonizione:
                 votoGiocatore.Ammonizione === 1
@@ -83,14 +81,28 @@ export const processVotiProcedure = adminProcedure
                   Configurazione.bonusRigoreParato +
                 (votoGiocatore.RigoriErrati ?? 0) *
                   Configurazione.bonusRigoreSbagliato,
-            })
+            }
 
-            await trx.save(Voti, votoSave)
+            // Upsert con update e create uguali
+            await prisma.voti.upsert({
+              where: {
+                UQ_Voti_Calendario_Giocatore: {
+                  idCalendario: opts.input.idCalendario,
+                  idGiocatore: idGiocatore,
+                },
+              },
+              update: votoData,
+              create: {
+                idCalendario: opts.input.idCalendario,
+                idGiocatore: idGiocatore,
+                ...votoData,
+              },
+            })
 
             console.log(`Processed voto for player: ${votoGiocatore.Nome}`)
           }),
         )
-        
+
         console.log(`Process voti successfull completed`)
       })
     } catch (error) {
