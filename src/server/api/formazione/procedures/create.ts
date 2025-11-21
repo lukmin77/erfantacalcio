@@ -30,7 +30,7 @@ export const create = protectedProcedure
 
     try {
       await AppDataSource.transaction(async (trx) => {
-        const formazioniIds = await  trx.find(Formazioni, {
+        const formazioniIds = await trx.find(Formazioni, {
           select: { idFormazione: true },
           where: { idPartita: idPartita, idSquadra: idSquadra },
         })
@@ -43,7 +43,7 @@ export const create = protectedProcedure
         })
       })
 
-      Logger.info(
+      console.log(
         `Eliminazione voti e formazioni idPartita: ${idPartita} e idSquadra: ${idSquadra}`,
       )
 
@@ -69,7 +69,7 @@ export const create = protectedProcedure
         },
         where: { idPartita: idPartita },
       })
-      Logger.info(
+      console.log(
         `recupero idCalendario:${calendario?.idCalendario} per idPartita: ${idPartita}`,
       )
 
@@ -80,7 +80,7 @@ export const create = protectedProcedure
         dataOra: toLocaleDateTime(new Date()),
         hasBloccata: false,
       })
-      Logger.info(
+      console.log(
         `Creazione nuova formazione`,
         formazione.identifiers[0].idFormazione,
       )
@@ -99,7 +99,7 @@ export const create = protectedProcedure
             })
           }),
         )
-        Logger.info(
+        console.log(
           `Inseriti giocatori in tabella voti con idFormazione: ${idFormazione}`,
         )
 
@@ -114,28 +114,32 @@ export const create = protectedProcedure
             idSquadra === calendario.UtentiSquadraH?.idUtente
               ? calendario.UtentiSquadraA?.mail
               : calendario.UtentiSquadraH?.mail
+          const cc =
+            idSquadra === calendario.UtentiSquadraH?.idUtente
+              ? calendario.UtentiSquadraH?.mail
+              : calendario.UtentiSquadraA?.mail
           const htmlMessage = `Notifica automatica da erFantacalcio.com<br><br>
               Il tuo avversario ${avversario} ha inserito la formazione per la prossima partita<br>
               https://www.erfantacalcio.com<br><br>
               Saluti dal Vostro immenso Presidente`
 
-          if (to) await ReSendMailAsync(to, subject, htmlMessage)
+          if (to && cc) await ReSendMailAsync(to, cc, subject, htmlMessage)
           else {
             const presidenteWithoutMail =
               idSquadra === calendario.UtentiSquadraH?.idUtente
                 ? calendario.UtentiSquadraA?.presidente
                 : calendario.UtentiSquadraH?.presidente
-            Logger.warn(
+            console.warn(
               `Impossibile inviare notifica, mail non configurata per il presidente: ${presidenteWithoutMail}`,
             )
           }
         }
       } else
-        Logger.warn(
+        console.warn(
           `Calendario non trovato, impossibile procedere con l'inserimento della formazione`,
         )
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })
