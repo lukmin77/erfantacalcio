@@ -368,7 +368,7 @@ export async function mapCalendario(
     girone: c.girone,
     partite: mapPartite(c.Partite),
     Torneo: c.Tornei.nome,
-    Descrizione: getDescrizioneTorneo(
+    Descrizione: getDescrizioneGiornata(
       c.Tornei.nome,
       c.giornata,
       c.giornataSerieA,
@@ -396,7 +396,7 @@ export async function mapCalendarioWithSerieA(
     girone: c.girone,
     partite: mapPartite(c.Partite),
     Torneo: c.Tornei.nome,
-    Descrizione: getDescrizioneTorneo(
+    Descrizione: getDescrizioneGiornata(
       c.Tornei.nome,
       c.giornata,
       c.giornataSerieA,
@@ -460,7 +460,7 @@ export async function getGiocatoreById(idGiocatore: number) {
   }
 }
 
-export function getDescrizioneTorneo(
+export function getDescrizioneGiornata(
   nome: string,
   giornata: number,
   giornataSerieA: number,

@@ -4,7 +4,7 @@ import { publicProcedure } from '~/server/api/trpc'
 import { RuoloUtente } from '~/utils/enums'
 import {
   getTorneo,
-  getDescrizioneTorneo,
+  getDescrizioneGiornata,
   getTorneoTitle,
   getTorneoSubTitle,
   getCalendario,
@@ -48,7 +48,7 @@ export const getGiornataPartiteProcedure = publicProcedure
             calendario.Tornei.nome,
             calendario.Tornei.gruppoFase,
           ),
-          Descrizione: getDescrizioneTorneo(
+          Descrizione: getDescrizioneGiornata(
             calendario.Tornei.nome,
             calendario.giornata,
             calendario.giornataSerieA,
