@@ -67,6 +67,8 @@ export const processVotiProcedure = adminProcedure
 
             // Upsert con update e create uguali
             const votoSave = Voti.create({
+              idGiocatore: idGiocatore,
+              idCalendario: opts.input.idCalendario,
               voto: votoGiocatore.Voto ?? 0,
               ammonizione:
                 votoGiocatore.Ammonizione === 1
@@ -89,31 +91,29 @@ export const processVotiProcedure = adminProcedure
                   Configurazione.bonusRigoreSbagliato,
             })
 
-            const criteria = {
-                idGiocatore: idGiocatore,
-                idCalendario: opts.input.idCalendario,
-              }
-            const count = await trx.count(Voti, {
-              where: criteria,
-            })
+            await trx.save(Voti, votoSave)
 
-            // remove id fields from the data to avoid specifying them twice when spreading
-            const votoData = _.omit(votoSave, ['idCalendario', 'idGiocatore'])
+            // const criteria = {
+            //     idGiocatore: idGiocatore,
+            //     idCalendario: opts.input.idCalendario,
+            //   }
+            // const count = await trx.count(Voti, {
+            //   where: criteria,
+            // })
 
-            if (count > 0) {
-              await trx.update(Voti, criteria, {
-                idCalendario: opts.input.idCalendario,
-                idGiocatore: idGiocatore,
-                ...votoData
-              })
-            }
-            else {
-              await trx.insert(Voti, {
-                idCalendario: opts.input.idCalendario,
-                idGiocatore: idGiocatore,
-                ...votoData
-              })
-            }
+            // // remove id fields from the data to avoid specifying them twice when spreading
+            // const votoData = _.omit(votoSave, ['idCalendario', 'idGiocatore'])
+
+            // if (count > 0) {
+            //   await trx.update(Voti, criteria, votoData)
+            // }
+            // else {
+            //   await trx.insert(Voti, {
+            //     idCalendario: opts.input.idCalendario,
+            //     idGiocatore: idGiocatore,
+            //     ...votoData
+            //   })
+            // }
 
             console.log(`Processed voto for player: ${votoGiocatore.Nome}`)
           }),
