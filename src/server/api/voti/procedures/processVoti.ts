@@ -12,7 +12,6 @@ import {
   Voti,
 } from '~/server/db/entities'
 import { AppDataSource } from '~/data-source'
-import prisma from '~/utils/db'
 
 export const processVotiProcedure = adminProcedure
   .input(
@@ -102,7 +101,11 @@ export const processVotiProcedure = adminProcedure
             const votoData = _.omit(votoSave, ['idCalendario', 'idGiocatore'])
 
             if (count > 0) {
-              await trx.update(Voti, criteria, votoData)
+              await trx.update(Voti, criteria, {
+                idCalendario: opts.input.idCalendario,
+                idGiocatore: idGiocatore,
+                ...votoData
+              })
             }
             else {
               await trx.insert(Voti, {
