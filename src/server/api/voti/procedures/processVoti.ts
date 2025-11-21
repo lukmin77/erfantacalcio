@@ -25,7 +25,7 @@ export const processVotiProcedure = adminProcedure
     try {
       console.log(`Processing ${opts.input.votiGiocatori.length} giocatori`)
 
-      AppDataSource.transaction(async (trx) => {
+      await AppDataSource.transaction(async (trx) => {
         const giocatori = await findAndCreateGiocatori(
           trx,
           opts.input.votiGiocatori.map((v) => ({
@@ -35,7 +35,8 @@ export const processVotiProcedure = adminProcedure
           })),
         )
 
-        for (const votoGiocatore of opts.input.votiGiocatori) {
+        await Promise.all(
+          opts.input.votiGiocatori.map(async (votoGiocatore) => {
           console.log(
             `Processing voto for player: ${votoGiocatore.Nome} ${votoGiocatore.Squadra}`,
           )
@@ -118,7 +119,7 @@ export const processVotiProcedure = adminProcedure
           }
 
           console.log(`Processed voto for player: ${votoGiocatore.Nome}`)
-        }
+        }))
 
         console.log(`Process voti successfull completed`)
       })
