@@ -1,8 +1,7 @@
 import { publicProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
 import { getCalendario, mapCalendario } from '../../../utils/common'
-import { toLocaleDateTime } from '~/utils/dateUtils'
-import { Formazioni, Partite } from '~/server/db/entities'
+import { getAltrePartite, getFormazioni } from './getTabellini'
 
 export const getFormazioniProcedure = publicProcedure
   .input(z.object({ idPartita: z.number() }))
@@ -18,44 +17,9 @@ export const getFormazioniProcedure = publicProcedure
         if (calendario) {
           const partita = calendario.partite[0]
           
-            const formazioni = await Formazioni.createQueryBuilder('formazione')
-              .leftJoinAndSelect('formazione.Voti', 'voti')
-              .leftJoinAndSelect('voti.Giocatori', 'giocatore')
-              .leftJoinAndSelect('giocatore.Trasferimenti', 'trasf')
-              .leftJoinAndSelect('trasf.SquadreSerieA', 'squadra')
-              .where('formazione.idPartita = :idPartita', { idPartita })
-              .andWhere('formazione.idSquadra IN (:...ids)', {
-                ids: [partita?.idHome ?? 0, partita?.idAway ?? 0],
-              })
-              .andWhere(
-                `(
-              (trasf.dataCessione IS NULL AND trasf.dataAcquisto < :now)
-              OR
-              (trasf.dataCessione IS NOT NULL AND trasf.dataAcquisto < :now AND trasf.dataCessione > :now)
-              )`,
-                { now: toLocaleDateTime(new Date()) },
-              )
-              .orderBy('giocatore.ruolo', 'DESC')
-              .addOrderBy('voti.riserva', 'ASC')
-              .getMany()
+          const formazioni = await getFormazioni(idPartita, partita)
 
-          const altrePartite = await Partite.find({
-            select: {
-              idPartita: true,
-              UtentiSquadraH: {
-                nomeSquadra: true,
-                foto: true,
-                maglia: true,
-              },
-              UtentiSquadraA: {
-                nomeSquadra: true,
-                foto: true,
-                maglia: true,
-              },
-            },
-            relations: { UtentiSquadraH: true, UtentiSquadraA: true },
-            where: { idCalendario: calendario.idCalendario },
-          })
+          const altrePartite = await getAltrePartite(calendario?.idCalendario)
 
           return {
             Calendario: calendario,
@@ -74,3 +38,4 @@ export const getFormazioniProcedure = publicProcedure
       throw error
     }
   })
+

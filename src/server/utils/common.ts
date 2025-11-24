@@ -597,6 +597,7 @@ export async function getTabellino(idFormazione: number) {
   const giocatoriFormazione = (
     await Voti.find({
       select: { Giocatori: { ruolo: true } },
+      relations: { Giocatori: true },
       where: {
         idFormazione: idFormazione,
       },
@@ -618,15 +619,17 @@ export async function getTabellino(idFormazione: number) {
     isSostituito: false,
     isVotoInfluente: v.titolare && v.voto && v.voto > 0 ? true : false,
   }))
-
   const countRiserve = getCountRiserve(
     getGiocatoriVotoInfluente(giocatoriFormazione).length,
   )
 
+  console.info(
+    `Titolari influenti: ${getGiocatoriVotoInfluente(giocatoriFormazione).length}, Count Riserve: ${countRiserve}`,
+  )
   if (getGiocatoriVotoInfluente(giocatoriFormazione).length < 11) {
     let iRiserve = 0
     const titolariSenzaVoto = giocatoriFormazione.filter(
-      (c) => c.titolare && c.voto && c.voto === 0,
+      (c) => c.titolare && c.voto == 0,
     )
     const riserveConVoto = giocatoriFormazione
       .filter((c) => c.riserva !== null && c.voto && c.voto > 0)
@@ -636,44 +639,51 @@ export async function getTabellino(idFormazione: number) {
         if (a.riserva !== b.riserva) return a.riserva - b.riserva
         return b.votoBonus - a.votoBonus
       })
+    console.info(
+      `Titolari senza voto: ${titolariSenzaVoto.length}, Riserve con voto: ${riserveConVoto.length}, Count Riserve: ${countRiserve}`,
+    )
 
-    for (const riserva of riserveConVoto) {
-      const giocatoreRuolo = titolariSenzaVoto.find(
-        (c) => c.ruolo === riserva.ruolo,
-      )
-      if (giocatoreRuolo) {
-        titolariSenzaVoto.splice(
-          titolariSenzaVoto.findIndex(
-            (r) => r.idVoto === giocatoreRuolo.idVoto,
-          ),
-          1,
+    if (titolariSenzaVoto.length > 0) {
+      for (const riserva of riserveConVoto) {
+        const giocatoreRuolo = titolariSenzaVoto.find(
+          (c) => c.ruolo === riserva.ruolo,
         )
-        if (
-          riserveConVoto.find(
-            (c) => c.ruolo === giocatoreRuolo.ruolo && !c.isVotoInfluente,
+        if (giocatoreRuolo) {
+          titolariSenzaVoto.splice(
+            titolariSenzaVoto.findIndex(
+              (r) => r.idVoto === giocatoreRuolo.idVoto,
+            ),
+            1,
           )
-        ) {
-          // Imposta il titolare che va sostituito
-          giocatoriFormazione
-            .filter((c) => c.idVoto === giocatoreRuolo.idVoto)
-            .forEach((c) => (c.isSostituito = true))
-          // Imposta la riserva il cui voto diventa influente
-          giocatoriFormazione
-            .filter((c) => c.idVoto === riserva.idVoto)
-            .forEach((c) => (c.isVotoInfluente = true))
-          // Imposta dalla lista riserve il voto influente per non ripescarlo una seconda volta
-          riserveConVoto
-            .filter((c) => c.idVoto === riserva.idVoto)
-            .forEach((c) => (c.isVotoInfluente = true))
-          iRiserve++
+          if (
+            riserveConVoto.find(
+              (c) => c.ruolo === giocatoreRuolo.ruolo && !c.isVotoInfluente,
+            )
+          ) {
+            // Imposta il titolare che va sostituito
+            giocatoriFormazione
+              .filter((c) => c.idVoto === giocatoreRuolo.idVoto)
+              .forEach((c) => (c.isSostituito = true))
+            // Imposta la riserva il cui voto diventa influente
+            giocatoriFormazione
+              .filter((c) => c.idVoto === riserva.idVoto)
+              .forEach((c) => (c.isVotoInfluente = true))
+            // Imposta dalla lista riserve il voto influente per non ripescarlo una seconda volta
+            riserveConVoto
+              .filter((c) => c.idVoto === riserva.idVoto)
+              .forEach((c) => (c.isVotoInfluente = true))
+            iRiserve++
+          }
         }
+        if (iRiserve === countRiserve) break
       }
-      if (iRiserve === countRiserve) break
     }
   }
-  /* for (const g of giocatoriFormazione.filter(c => c.isVotoInfluente)) {
-      console.info(`idgiocatore ${g.idGiocatore} ${g.votoBonus}`)
-    } */
+  for (const g of giocatoriFormazione.filter((c) => c.isVotoInfluente)) {
+    console.info(
+      `idgiocatore ${g.idGiocatore} ${g.votoBonus} - sostituito: ${g.isSostituito}`,
+    )
+  }
   return giocatoriFormazione
 }
 
