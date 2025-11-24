@@ -2,7 +2,6 @@ import { Configurazione } from '~/config'
 import { getRuoloEsteso, normalizeCampioncinoUrl } from '~/utils/helper'
 import { toLocaleDateTime } from '~/utils/dateUtils'
 import { type GiocatoreType } from '~/types/squadre'
-import prisma from '~/utils/db'
 
 import {
   Calendario,
@@ -20,6 +19,7 @@ import {
   Not,
   Between,
   MoreThan,
+  LessThan,
 } from 'typeorm'
 import _ from 'lodash'
 
@@ -108,9 +108,12 @@ export async function chiudiTrasferimentoGiocatore(
           oldStatistica,
         )
 
-        console.debug('updating ultimo trasferimento (completo): ' + idGiocatore)
+        console.debug(
+          'updating ultimo trasferimento (completo): ' + idGiocatore,
+        )
         //eseguo update del trasferimento con datacessione odierna
-        await trx.update(Trasferimenti,
+        await trx.update(
+          Trasferimenti,
           {
             idTrasferimento: oldTrasferimento.idTrasferimento,
           },
@@ -129,9 +132,12 @@ export async function chiudiTrasferimentoGiocatore(
         )
         console.debug('updated ultimo trasferimento (completo): ' + idGiocatore)
       } else {
-        console.debug('updating ultimo trasferimento (parziale): ' + idGiocatore)
+        console.debug(
+          'updating ultimo trasferimento (parziale): ' + idGiocatore,
+        )
         //eseguo update del trasferimento con datacessione odierna
-        await trx.update(Trasferimenti,
+        await trx.update(
+          Trasferimenti,
           {
             idTrasferimento: oldTrasferimento.idTrasferimento,
           },
@@ -149,7 +155,8 @@ export async function chiudiTrasferimentoGiocatore(
     } else {
       console.debug('updating ultimo trasferimento (base): ' + idGiocatore)
       //eseguo update del trasferimento con datacessione odierna
-      await trx.update(Trasferimenti,
+      await trx.update(
+        Trasferimenti,
         { idGiocatore: idGiocatore, dataCessione: IsNull() },
         {
           dataCessione: new Date(),
@@ -189,7 +196,10 @@ export async function getProssimaGiornata(
   giornataSerieA: number,
   withSerieA?: boolean,
 ) {
-  const result = await getCalendario({ giornataSerieA: giornataSerieA, hasGiocata: false })
+  const result = await getCalendario({
+    giornataSerieA: giornataSerieA,
+    hasGiocata: false,
+  })
 
   if (withSerieA && withSerieA === true) {
     const serieAData = await SerieA.find({
@@ -207,46 +217,38 @@ export async function getProssimaGiornata(
 }
 
 export async function getRosaDisponibile(idSquadra: number) {
-  const query = await prisma.trasferimenti.findMany({
+  const now = toLocaleDateTime(new Date())
+  const query = await Trasferimenti.find({
     select: {
       idGiocatore: true,
       costo: true,
-      Giocatori: {
-        select: { nome: true, nomeFantaGazzetta: true, ruolo: true },
-      },
-      SquadreSerieA: {
-        select: { nome: true, maglia: true },
-      },
+      Giocatori: { nome: true, nomeFantaGazzetta: true, ruolo: true },
+      SquadreSerieA: { nome: true, maglia: true },
     },
-    where: {
-      AND: [
-        { idSquadra: idSquadra },
-        { stagione: Configurazione.stagione },
-        { hasRitirato: false },
-        {
-          OR: [
-            {
-              AND: [
-                { dataCessione: null },
-                { dataAcquisto: { lt: toLocaleDateTime(new Date()) } },
-              ],
-            },
-            {
-              AND: [
-                { dataCessione: null },
-                { dataAcquisto: { lt: toLocaleDateTime(new Date()) } },
-                { dataCessione: { gt: toLocaleDateTime(new Date()) } },
-              ],
-            },
-          ],
-        },
-      ],
+    relations: {
+      Giocatori: true,
+      SquadreSerieA: true,
     },
-    orderBy: [
-      { Giocatori: { ruolo: 'desc' } },
-      { costo: 'desc' },
-      { Giocatori: { nome: 'asc' } },
+    where: [
+      {
+        idSquadra: idSquadra,
+        stagione: Configurazione.stagione,
+        hasRitirato: false,
+        dataCessione: IsNull(),
+        dataAcquisto: LessThan(now),
+      },
+      {
+        idSquadra: idSquadra,
+        stagione: Configurazione.stagione,
+        hasRitirato: false,
+        dataCessione: MoreThan(now),
+        dataAcquisto: LessThan(now),
+      },
     ],
+    order: {
+      Giocatori: { ruolo: 'desc' },
+      costo: 'desc',
+    },
   })
 
   return query.map<GiocatoreType>((giocatore) => ({
@@ -351,9 +353,7 @@ export async function deleteGiocatore(trx: EntityManager, idGiocatore: number) {
   }
 }
 
-export async function mapCalendario(
-  result: Calendario[],
-) {
+export async function mapCalendario(result: Calendario[]) {
   return result.map((c) => ({
     idCalendario: c.idCalendario,
     idTorneo: c.Tornei.idTorneo,
@@ -616,8 +616,7 @@ export async function getTabellino(idFormazione: number) {
     idGiocatore: v.idGiocatore,
     votoBonus: getVotoBonus(v),
     isSostituito: false,
-    isVotoInfluente:
-      v.titolare && v.voto && v.voto > 0 ? true : false,
+    isVotoInfluente: v.titolare && v.voto && v.voto > 0 ? true : false,
   }))
 
   const countRiserve = getCountRiserve(
