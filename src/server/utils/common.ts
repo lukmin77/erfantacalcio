@@ -1,9 +1,7 @@
 import { Configurazione } from '~/config'
-import Logger from '~/lib/logger.server'
 import { getRuoloEsteso, normalizeCampioncinoUrl } from '~/utils/helper'
 import { toLocaleDateTime } from '~/utils/dateUtils'
 import { type GiocatoreType } from '~/types/squadre'
-import { type Decimal } from '@prisma/client/runtime/library'
 import prisma from '~/utils/db'
 
 import {
@@ -49,7 +47,7 @@ export async function chiudiTrasferimentoGiocatore(
     })
 
     if (oldTrasferimento) {
-      Logger.debug(
+      console.debug(
         'dati ultimo trasferimento idgiocatore: ' + idGiocatore,
         oldTrasferimento,
       )
@@ -84,7 +82,7 @@ export async function chiudiTrasferimentoGiocatore(
       voti = _.uniqBy(voti, (v) => ['voto', 'gol', 'assist'])
 
       if (voti.length > 0) {
-        Logger.debug(
+        console.debug(
           'voti ultimo trasferimento idgiocatore: ' + idGiocatore,
           voti,
         )
@@ -105,12 +103,12 @@ export async function chiudiTrasferimentoGiocatore(
             ? oldStatistica.golTotali
             : oldStatistica.golTotali / 3
 
-        Logger.debug(
+        console.debug(
           'statistica ultimo trasferimento idgiocatore: ' + idGiocatore,
           oldStatistica,
         )
 
-        Logger.debug('updating ultimo trasferimento (completo): ' + idGiocatore)
+        console.debug('updating ultimo trasferimento (completo): ' + idGiocatore)
         //eseguo update del trasferimento con datacessione odierna
         await trx.update(Trasferimenti,
           {
@@ -129,9 +127,9 @@ export async function chiudiTrasferimentoGiocatore(
               : oldTrasferimento.Utenti?.idUtente,
           },
         )
-        Logger.debug('updated ultimo trasferimento (completo): ' + idGiocatore)
+        console.debug('updated ultimo trasferimento (completo): ' + idGiocatore)
       } else {
-        Logger.debug('updating ultimo trasferimento (parziale): ' + idGiocatore)
+        console.debug('updating ultimo trasferimento (parziale): ' + idGiocatore)
         //eseguo update del trasferimento con datacessione odierna
         await trx.update(Trasferimenti,
           {
@@ -146,10 +144,10 @@ export async function chiudiTrasferimentoGiocatore(
               : oldTrasferimento.Utenti?.idUtente,
           },
         )
-        Logger.debug('updated ultimo trasferimento (parziale): ' + idGiocatore)
+        console.debug('updated ultimo trasferimento (parziale): ' + idGiocatore)
       }
     } else {
-      Logger.debug('updating ultimo trasferimento (base): ' + idGiocatore)
+      console.debug('updating ultimo trasferimento (base): ' + idGiocatore)
       //eseguo update del trasferimento con datacessione odierna
       await trx.update(Trasferimenti,
         { idGiocatore: idGiocatore, dataCessione: IsNull() },
@@ -159,10 +157,10 @@ export async function chiudiTrasferimentoGiocatore(
           nomeSquadraSerieA: '',
         },
       )
-      Logger.debug('updated ultimo trasferimento (base): ' + idGiocatore)
+      console.debug('updated ultimo trasferimento (base): ' + idGiocatore)
     }
   } catch (error) {
-    Logger.error('Si è verificato un errore', error)
+    console.error('Si è verificato un errore', error)
     throw error
   }
 }
@@ -337,7 +335,7 @@ export async function deleteVotiGiocatore(
       idGiocatore: idGiocatore,
     })
   } catch (error) {
-    Logger.error('Si è verificato un errore', error)
+    console.error('Si è verificato un errore', error)
     throw error
   }
 }
@@ -348,7 +346,7 @@ export async function deleteGiocatore(trx: EntityManager, idGiocatore: number) {
       idGiocatore: idGiocatore,
     })
   } catch (error) {
-    Logger.error('Si è verificato un errore', error)
+    console.error('Si è verificato un errore', error)
     throw error
   }
 }
@@ -517,13 +515,13 @@ export function getGiocatoriVotoInfluente(
   giocatoriFormazione: {
     ruolo: string
     idVoto: number
-    voto: Decimal | null
-    ammonizione: Decimal
-    espulsione: Decimal
-    gol: Decimal | null
-    assist: Decimal | null
-    altriBonus: Decimal | null
-    autogol: Decimal | null
+    voto: number | null
+    ammonizione: number
+    espulsione: number
+    gol: number | null
+    assist: number | null
+    altriBonus: number | null
+    autogol: number | null
     titolare: boolean
     idGiocatore: number
     votoBonus: number
@@ -597,14 +595,8 @@ export function getGolSegnati(fantapunti: number): number {
 
 export async function getTabellino(idFormazione: number) {
   const giocatoriFormazione = (
-    await prisma.voti.findMany({
-      include: {
-        Giocatori: {
-          select: {
-            ruolo: true,
-          },
-        },
-      },
+    await Voti.find({
+      select: { Giocatori: { ruolo: true } },
       where: {
         idFormazione: idFormazione,
       },
@@ -625,7 +617,7 @@ export async function getTabellino(idFormazione: number) {
     votoBonus: getVotoBonus(v),
     isSostituito: false,
     isVotoInfluente:
-      v.titolare && v.voto && v.voto.toNumber() > 0 ? true : false,
+      v.titolare && v.voto && v.voto > 0 ? true : false,
   }))
 
   const countRiserve = getCountRiserve(
@@ -635,10 +627,10 @@ export async function getTabellino(idFormazione: number) {
   if (getGiocatoriVotoInfluente(giocatoriFormazione).length < 11) {
     let iRiserve = 0
     const titolariSenzaVoto = giocatoriFormazione.filter(
-      (c) => c.titolare && c.voto && c.voto.toNumber() === 0,
+      (c) => c.titolare && c.voto && c.voto === 0,
     )
     const riserveConVoto = giocatoriFormazione
-      .filter((c) => c.riserva !== null && c.voto && c.voto.toNumber() > 0)
+      .filter((c) => c.riserva !== null && c.voto && c.voto > 0)
       .sort((a, b) => {
         if (a.riserva === null) return -1
         if (b.riserva === null) return 1
@@ -681,7 +673,7 @@ export async function getTabellino(idFormazione: number) {
     }
   }
   /* for (const g of giocatoriFormazione.filter(c => c.isVotoInfluente)) {
-      Logger.info(`idgiocatore ${g.idGiocatore} ${g.votoBonus}`)
+      console.info(`idgiocatore ${g.idGiocatore} ${g.votoBonus}`)
     } */
   return giocatoriFormazione
 }
@@ -692,27 +684,17 @@ export function getCountRiserve(titolariInfluenti: number) {
     : 11 - titolariInfluenti
 }
 
-export function getVotoBonus(voto: {
-  voto: Decimal | null
-  ammonizione: Decimal
-  espulsione: Decimal
-  gol: Decimal | null
-  assist: Decimal | null
-  autogol: Decimal | null
-  altriBonus: Decimal | null
-}): number {
+export function getVotoBonus(voto: Voti): number {
   let bonus = 0
 
   // Aggiungi gli altri valori al bonus, gestendo i Decimal e i valori null
-  bonus += voto.voto?.toNumber() ?? 0
-  bonus += voto.ammonizione?.toNumber() ?? 0
-  bonus += voto.espulsione?.toNumber() ?? 0
-  bonus += voto.gol?.toNumber() ?? 0
-  bonus += voto.assist?.toNumber() ?? 0
-  bonus += voto.autogol?.toNumber() ?? 0
-  bonus += voto.altriBonus?.toNumber() ?? 0
-
-  //Logger.info(`bonus: ${bonus}`);
+  bonus += voto.voto ?? 0
+  bonus += voto.ammonizione ?? 0
+  bonus += voto.espulsione ?? 0
+  bonus += voto.gol ?? 0
+  bonus += voto.assist ?? 0
+  bonus += voto.autogol ?? 0
+  bonus += voto.altriBonus ?? 0
   return bonus
 }
 

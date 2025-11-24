@@ -1,8 +1,7 @@
-import Logger from '~/lib/logger.server'
 import { publicProcedure } from '../../trpc'
 import { z } from 'zod'
-import prisma from '~/utils/db'
 import { Configurazione } from '~/config'
+import { Voti } from '~/server/db/entities'
 
 export const listVotiProcedure = publicProcedure
   .input(
@@ -13,7 +12,7 @@ export const listVotiProcedure = publicProcedure
   )
   .query(async (opts) => {
     try {
-      const result = await prisma.voti.findMany({
+      const result = await Voti.find({
         where: {
           idGiocatore: opts.input.idGiocatore,
         },
@@ -28,17 +27,13 @@ export const listVotiProcedure = publicProcedure
           altriBonus: true,
           titolare: true,
           riserva: true,
-          Giocatori: {
-            select: { nome: true, ruolo: true },
-          },
+          Giocatori: { nome: true, ruolo: true },
           Calendario: {
-            select: {
-              giornataSerieA: true,
-              Tornei: { select: { nome: true, gruppoFase: true } },
-            },
+            giornataSerieA: true,
+            Tornei: { nome: true, gruppoFase: true },
           },
         },
-        orderBy: {
+        order: {
           Calendario: {
             giornataSerieA: 'desc',
           },
@@ -51,23 +46,23 @@ export const listVotiProcedure = publicProcedure
           id: c.idVoto,
           nome: c.Giocatori.nome,
           ruolo: c.Giocatori.ruolo,
-          voto: c.voto?.toNumber() ?? null,
-          ammonizione: c.ammonizione.toNumber() ?? null,
-          espulsione: c.espulsione.toNumber() ?? null,
+          voto: c.voto,
+          ammonizione: c.ammonizione,
+          espulsione: c.espulsione,
           gol:
             c.Giocatori.ruolo === 'P'
-              ? (c.gol?.toNumber() ?? 0) / Configurazione.bonusGolSubito
-              : (c.gol?.toNumber() ?? 0) / Configurazione.bonusGol,
-          assist: (c.assist?.toNumber() ?? 0) / Configurazione.bonusAssist,
-          autogol: (c.autogol?.toNumber() ?? 0) / Configurazione.bonusAutogol,
-          altriBonus: c.altriBonus?.toNumber() ?? null,
+              ? (c.gol ?? 0) / Configurazione.bonusGolSubito
+              : (c.gol ?? 0) / Configurazione.bonusGol,
+          assist: (c.assist ?? 0) / Configurazione.bonusAssist,
+          autogol: (c.autogol ?? 0) / Configurazione.bonusAutogol,
+          altriBonus: c.altriBonus,
           torneo: c.Calendario.Tornei.nome,
           gruppoFase: c.Calendario.Tornei.gruppoFase,
           giornataSerieA: c.Calendario.giornataSerieA,
         }))
       } else return null
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })
