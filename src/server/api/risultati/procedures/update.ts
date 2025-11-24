@@ -1,8 +1,8 @@
-import Logger from '~/lib/logger.server'
 import { z } from 'zod'
-import prisma from '~/utils/db'
 import { adminProcedure } from '~/server/api/trpc'
-import { UpdateClassifica, getPunti } from '../services/classifica'
+import { UpdateClassifica } from '../services/classifica'
+import { Calendario, Formazioni, Partite } from '~/server/db/entities'
+import { AppDataSource } from '~/data-source'
 
 export const updateRisultatiProcedure = adminProcedure
   .input(
@@ -19,37 +19,38 @@ export const updateRisultatiProcedure = adminProcedure
   )
   .mutation(async (opts) => {
     try {
-      const partita = await prisma.partite.findUnique({
+      const partita = await Partite.findOne({
         select: { idSquadraH: true, idSquadraA: true, idCalendario: true },
         where: { idPartita: opts.input.idPartita },
       })
 
       if (partita?.idSquadraH && partita?.idSquadraA) {
-        const infoCalendario = await prisma.partite.findUnique({
+        const infoCalendario = await Partite.findOne({
           select: {
             idCalendario: true,
-            Calendario: {
-              select: {
-                Tornei: { select: { idTorneo: true, hasClassifica: true } },
-              },
-            },
+            Calendario: { Tornei: { idTorneo: true, hasClassifica: true } },
           },
+          relations: { Calendario: { Tornei: true } },
           where: { idPartita: opts.input.idPartita },
         })
         const idSquadraHome = partita.idSquadraH
         const idSquadraAway = partita.idSquadraA
 
-        await prisma.$transaction([
-          prisma.formazioni.updateMany({
-            data: { hasBloccata: true },
-            where: { idPartita: opts.input.idPartita },
-          }),
-          prisma.calendario.update({
-            data: { hasGiocata: true },
-            where: { idCalendario: partita?.idCalendario },
-          }),
-          prisma.partite.update({
-            data: {
+        await AppDataSource.transaction(async (trx) => {
+          await trx.update(
+            Formazioni,
+            { idPartita: opts.input.idPartita },
+            { hasBloccata: true },
+          )
+          await trx.update(
+            Calendario,
+            { idCalendario: partita?.idCalendario },
+            { hasGiocata: true },
+          )
+          await trx.update(
+            Partite,
+            { idPartita: opts.input.idPartita },
+            {
               puntiH: getPunti(
                 infoCalendario?.Calendario.Tornei.hasClassifica ?? false,
                 opts.input.multaHome,
@@ -69,32 +70,51 @@ export const updateRisultatiProcedure = adminProcedure
               punteggioH: opts.input.fantapuntiHome,
               punteggioA: opts.input.fantapuntiAway,
             },
-            where: { idPartita: opts.input.idPartita },
-          }),
-        ])
-        Logger.info(
-          `Aggiornate formazioni, calendario e partite per idpartita: ${opts.input.idPartita}`,
-        )
+          )
 
-        if (infoCalendario?.Calendario.Tornei.hasClassifica) {
-          await UpdateClassifica(
-            idSquadraHome,
-            infoCalendario.Calendario.Tornei.idTorneo,
+          console.info(
+            `Aggiornate formazioni, calendario e partite per idpartita: ${opts.input.idPartita}`,
           )
-          Logger.info(
-            `Aggiornate classifica e utenti (multe) per idsquadraHome: ${idSquadraHome} e idTorneo: ${infoCalendario.Calendario.Tornei.idTorneo}`,
-          )
-          await UpdateClassifica(
-            idSquadraAway,
-            infoCalendario.Calendario.Tornei.idTorneo,
-          )
-          Logger.info(
-            `Aggiornate classifica e utenti (multe) per idsquadraAway: ${idSquadraAway} e idTorneo: ${infoCalendario.Calendario.Tornei.idTorneo}`,
-          )
-        }
+
+          if (infoCalendario?.Calendario.Tornei.hasClassifica) {
+            await UpdateClassifica(
+              trx,
+              idSquadraHome,
+              infoCalendario.Calendario.Tornei.idTorneo,
+            )
+            console.info(
+              `Aggiornate classifica e utenti (multe) per idsquadraHome: ${idSquadraHome} e idTorneo: ${infoCalendario.Calendario.Tornei.idTorneo}`,
+            )
+            await UpdateClassifica(
+              trx,
+              idSquadraAway,
+              infoCalendario.Calendario.Tornei.idTorneo,
+            )
+            console.info(
+              `Aggiornate classifica e utenti (multe) per idsquadraAway: ${idSquadraAway} e idTorneo: ${infoCalendario.Calendario.Tornei.idTorneo}`,
+            )
+          }
+        })
       }
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })
+
+function getPunti(
+  hasClassifica: boolean,
+  multa: boolean,
+  gol1: number,
+  gol2: number,
+): number {
+  return hasClassifica
+    ? multa
+      ? 0
+      : gol1 > gol2
+        ? 3
+        : gol1 === gol2
+          ? 1
+          : 0
+    : 0
+}

@@ -1,129 +1,36 @@
-import prisma from '~/utils/db'
 import { Configurazione } from '~/config'
-import { Utenti } from '~/server/db/entities'
+import { Classifiche, Partite, Utenti } from '~/server/db/entities'
+import { EntityManager } from 'typeorm'
 
-export async function UpdateClassifica(idSquadra: number, idTorneo: number) {
-  const puntiH =
-    (
-      await prisma.partite.aggregate({
-        _sum: { puntiH: true },
-        where: {
-          AND: [
-            { Calendario: { idTorneo } },
-            { idSquadraH: idSquadra },
-            { hasMultaH: false },
-          ],
-        },
-      })
-    )._sum.puntiH ?? 0
-  const vinteH = await prisma.partite.count({
-    where: {
-      idSquadraH: idSquadra,
-      golH: { gt: prisma.partite.fields.golA },
-      Calendario: { idTorneo },
-    },
+export async function UpdateClassifica(trx: EntityManager, idSquadra: number, idTorneo: number) {
+  const partite = await trx.find(Partite, {
+    where: [
+      { idSquadraH: idSquadra, Calendario: { idTorneo } },
+      { idSquadraA: idSquadra, Calendario: { idTorneo } },
+    ],
   })
-  const nulleH = await prisma.partite.count({
-    where: {
-      idSquadraH: idSquadra,
-      golH: { equals: prisma.partite.fields.golA },
-      Calendario: { idTorneo },
-    },
-  })
-  const perseH = await prisma.partite.count({
-    where: {
-      idSquadraH: idSquadra,
-      golH: { lt: prisma.partite.fields.golA },
-      Calendario: { idTorneo },
-    },
-  })
-  const puntiA =
-    (
-      await prisma.partite.aggregate({
-        _sum: { puntiA: true },
-        where: {
-          AND: [
-            { Calendario: { idTorneo } },
-            { idSquadraA: idSquadra },
-            { hasMultaA: false },
-          ],
-        },
-      })
-    )._sum.puntiA ?? 0
-  const vinteA = await prisma.partite.count({
-    where: {
-      idSquadraA: idSquadra,
-      golA: { gt: prisma.partite.fields.golH },
-      Calendario: { idTorneo },
-    },
-  })
-  const nulleA = await prisma.partite.count({
-    where: {
-      idSquadraA: idSquadra,
-      golH: { equals: prisma.partite.fields.golA },
-      Calendario: { idTorneo },
-    },
-  })
-  const perseA = await prisma.partite.count({
-    where: {
-      idSquadraA: idSquadra,
-      golA: { lt: prisma.partite.fields.golH },
-      Calendario: { idTorneo },
-    },
-  })
+  const puntiH = partite.filter((p) => p.idSquadraH === idSquadra).reduce((sum, p) => sum + (p.hasMultaH ? 0 : p.puntiH ?? 0), 0)
+  const vinteH = partite.filter((p) => p.idSquadraH === idSquadra && (p.golH ?? 0) > (p.golA ?? 0)).length
+  const nulleH = partite.filter((p) => p.idSquadraH === idSquadra && (p.golH ?? 0) === (p.golA ?? 0)).length
+  const perseH = partite.filter((p) => p.idSquadraH === idSquadra && (p.golH ?? 0) < (p.golA ?? 0)).length
+  const golFattiH = partite.filter((p) => p.idSquadraH === idSquadra).reduce((sum, p) => sum + (p.golH ?? 0), 0)
+  const golSubitiH = partite.filter((p) => p.idSquadraH === idSquadra).reduce((sum, p) => sum + (p.golA ?? 0), 0)
+  const multeH = partite.filter((p) => p.idSquadraH === idSquadra && p.hasMultaH).length
+  
+  const puntiA = partite.filter((p) => p.idSquadraA === idSquadra).reduce((sum, p) => sum + (p.hasMultaA ? 0 : p.puntiA ?? 0), 0)
+  const vinteA = partite.filter((p) => p.idSquadraA === idSquadra && (p.golA ?? 0) > (p.golH ?? 0)).length
+  const nulleA = partite.filter((p) => p.idSquadraA === idSquadra && (p.golA ?? 0) === (p.golH ?? 0)).length
+  const perseA = partite.filter((p) => p.idSquadraA === idSquadra && (p.golA ?? 0) < (p.golH ?? 0)).length
+  const golFattiA = partite.filter((p) => p.idSquadraA === idSquadra).reduce((sum, p) => sum + (p.golA ?? 0), 0)
+  const golSubitiA = partite.filter((p) => p.idSquadraA === idSquadra).reduce((sum, p) => sum + (p.golH ?? 0), 0)
+  const multeA = partite.filter((p) => p.idSquadraA === idSquadra && p.hasMultaA).length
+  
+  const giocate = vinteH + nulleH + perseH + vinteA + nulleA + perseA 
 
-  const golFattiH =
-    (
-      await prisma.partite.aggregate({
-        _sum: { golH: true },
-        where: {
-          AND: [{ Calendario: { idTorneo } }, { idSquadraH: idSquadra }],
-        },
-      })
-    )._sum.golH ?? 0
-  const golSubitiH =
-    (
-      await prisma.partite.aggregate({
-        _sum: { golA: true },
-        where: {
-          AND: [{ Calendario: { idTorneo } }, { idSquadraH: idSquadra }],
-        },
-      })
-    )._sum.golA ?? 0
-  const golFattiA =
-    (
-      await prisma.partite.aggregate({
-        _sum: { golA: true },
-        where: {
-          AND: [{ Calendario: { idTorneo } }, { idSquadraA: idSquadra }],
-        },
-      })
-    )._sum.golA ?? 0
-  const golSubitiA =
-    (
-      await prisma.partite.aggregate({
-        _sum: { golH: true },
-        where: {
-          AND: [{ Calendario: { idTorneo } }, { idSquadraA: idSquadra }],
-        },
-      })
-    )._sum.golH ?? 0
-
-  const giocate = await prisma.partite.count({
-    where: {
-      Calendario: { AND: [{ idTorneo }, { hasGiocata: true }] },
-      OR: [{ idSquadraA: idSquadra }, { idSquadraH: idSquadra }],
-    },
-  })
-  const multeH = await prisma.partite.count({
-    where: { idSquadraH: idSquadra, hasMultaH: true, Calendario: { idTorneo } },
-  })
-  const multeA = await prisma.partite.count({
-    where: { idSquadraA: idSquadra, hasMultaA: true, Calendario: { idTorneo } },
-  })
-
-  await prisma.classifiche.updateMany({
-    data: {
+  await trx.update(
+    Classifiche,
+    { idSquadra, idTorneo },
+    {
       punti: puntiH + puntiA,
       vinteCasa: vinteH,
       pareggiCasa: nulleH,
@@ -136,27 +43,11 @@ export async function UpdateClassifica(idSquadra: number, idTorneo: number) {
       differenzaReti: golFattiH + golFattiA - (golSubitiH + golSubitiA),
       giocate,
     },
-    where: { idSquadra, idTorneo },
-  })
-  await Utenti.update(
+  )
+  await trx.update(
+    Utenti,
     { idUtente: idSquadra },
     { importoMulte: (multeH + multeA) * Configurazione.importoMulta },
   )
 }
 
-export function getPunti(
-  hasClassifica: boolean,
-  multa: boolean,
-  gol1: number,
-  gol2: number,
-): number {
-  return hasClassifica
-    ? multa
-      ? 0
-      : gol1 > gol2
-        ? 3
-        : gol1 === gol2
-          ? 1
-          : 0
-    : 0
-}

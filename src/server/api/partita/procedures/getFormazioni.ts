@@ -27,7 +27,6 @@ export const getFormazioniProcedure = publicProcedure
               .andWhere('formazione.idSquadra IN (:...ids)', {
                 ids: [partita?.idHome ?? 0, partita?.idAway ?? 0],
               })
-              // replicate the commented complex where (filtering transfers by date)
               .andWhere(
                 `(
               (trasf.dataCessione IS NULL AND trasf.dataAcquisto < :now)
