@@ -1,5 +1,3 @@
-import { type Decimal } from '@prisma/client/runtime/library'
-
 export type GiocatoreType = {
   idGiocatore: number
   nome: string
@@ -8,13 +6,13 @@ export type GiocatoreType = {
 }
 
 export interface iGiocatoreStats {
-  media: Decimal | null
-  mediabonus: Decimal | null
-  golfatti: Decimal | null
-  golsubiti: Decimal | null
-  assist: Decimal | null
-  ammonizioni: Decimal | null
-  espulsioni: Decimal | null
+  media: Number | null
+  mediabonus: Number | null
+  golfatti: Number | null
+  golsubiti: Number | null
+  assist: Number | null
+  ammonizioni: Number | null
+  espulsioni: Number | null
   giocate: number | null
   ruolo: string | null
   nome: string
