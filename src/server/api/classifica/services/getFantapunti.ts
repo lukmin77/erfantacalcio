@@ -6,10 +6,10 @@ export async function getFantapunti(idTorneo: number) {
     return (
       await AppDataSource.getRepository(Partite)
         .createQueryBuilder('p')
-        .select(`p.${idCol}`, 'idSquadra')
+        .select(`p.${idCol}`, 'id_squadra')
         .addSelect(`SUM(p.${scoreCol})`, 'fantapunti')
-        .innerJoin('p.Calendario', 'cal')
-        .where('cal.idTorneo = :idTorneo', { idTorneo })
+        .innerJoin('p.calendario', 'cal')
+        .where('cal.id_torneo = :idTorneo', { idTorneo })
         .groupBy(`p.${idCol}`)
         .getRawMany()
     ).map((r) => ({
@@ -18,8 +18,8 @@ export async function getFantapunti(idTorneo: number) {
     }))
   }
 
-  const puntiHome = await loadPunti('idSquadraH', 'punteggioH')
-  const puntiAway = await loadPunti('idSquadraA', 'punteggioA')
+  const puntiHome = await loadPunti('id_squadra_home', 'punteggio_home')
+  const puntiAway = await loadPunti('id_squadra_away', 'punteggio_away')
 
   return puntiHome.concat(puntiAway).reduce(
     (acc, curr) => {

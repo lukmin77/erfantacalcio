@@ -33,18 +33,18 @@ export const showStatistica = publicProcedure
       })
 
       if (giocatore) {
-        const raw = await Voti.createQueryBuilder('voti')
-          .select('AVG(voti.voto)', 'avgVoto')
-          .addSelect('SUM(voti.ammonizione)', 'sumAmmonizione')
-          .addSelect('SUM(voti.espulsione)', 'sumEspulsione')
-          .addSelect('SUM(voti.gol)', 'sumGol')
-          .addSelect('SUM(voti.assist)', 'sumAssist')
-          .addSelect('COUNT(voti.idCalendario)', 'countCalendario')
-          .leftJoin('voti.Calendario', 'calendario')
-          .where('voti.idGiocatore = :idGiocatore', { idGiocatore })
-          .andWhere('voti.voto > 0')
+        const raw = await Voti.createQueryBuilder('voto')
+          .select('AVG(voto.voto)', 'avgVoto')
+          .addSelect('SUM(voto.ammonizione)', 'sumAmmonizione')
+          .addSelect('SUM(voto.espulsione)', 'sumEspulsione')
+          .addSelect('SUM(voto.gol)', 'sumGol')
+          .addSelect('SUM(voto.assist)', 'sumAssist')
+          .addSelect('COUNT(voto.id_calendario)', 'countCalendario')
+          .leftJoin('voto.calendario', 'calendario')
+          .where('voto.id_giocatore = :idGiocatore', { idGiocatore })
+          .andWhere('voto.voto > 0')
           .andWhere(
-            '(calendario.hasSovrapposta = false OR (calendario.hasSovrapposta = true AND calendario.idTorneo = :idTorneo))',
+            '(calendario.has_sovrapposta = false OR (calendario.has_sovrapposta = true AND calendario.id_torneo = :idTorneo))',
             { idTorneo: 1 },
           )
           .getRawOne()

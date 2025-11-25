@@ -218,23 +218,23 @@ export async function getFormazioni(
   },
 ) {
   return await Formazioni.createQueryBuilder('formazione')
-    .leftJoinAndSelect('formazione.Voti', 'voti')
-    .leftJoinAndSelect('voti.Giocatori', 'giocatore')
-    .leftJoinAndSelect('giocatore.Trasferimenti', 'trasf')
-    .leftJoinAndSelect('trasf.SquadreSerieA', 'squadra')
-    .where('formazione.idPartita = :idPartita', { idPartita })
-    .andWhere('formazione.idSquadra IN (:...ids)', {
+    .leftJoinAndSelect('formazione.voto', 'voti')
+    .leftJoinAndSelect('voti.giocatore', 'giocatore')
+    .leftJoinAndSelect('giocatore.trasferimento', 'trasf')
+    .leftJoinAndSelect('trasf.squadra_serie_a', 'squadra')
+    .where('formazione.id_partita = :idPartita', { idPartita })
+    .andWhere('formazione.id_squadra IN (:...ids)', {
       ids: [partita?.idHome ?? 0, partita?.idAway ?? 0],
     })
     .andWhere(
       `(
-              (trasf.dataCessione IS NULL AND trasf.dataAcquisto < :now)
+              (trasf.data_cessione IS NULL AND trasf.data_acquisto < :now)
               OR
-              (trasf.dataCessione IS NOT NULL AND trasf.dataAcquisto < :now AND trasf.dataCessione > :now)
+              (trasf.data_cessione IS NOT NULL AND trasf.data_acquisto < :now AND trasf.data_cessione > :now)
               )`,
       { now: toLocaleDateTime(new Date()) },
     )
     .orderBy('giocatore.ruolo', 'DESC')
-    .addOrderBy('voti.riserva', 'ASC')
+    .addOrderBy('voto.riserva', 'ASC')
     .getMany()
 }
