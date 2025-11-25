@@ -78,6 +78,12 @@ export class RenameAllDb1764079170654 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "trasferimento" RENAME COLUMN "nomeSquadraSerieA" TO "nome_squadra_serie_a"`);
         await queryRunner.query(`ALTER TABLE "trasferimento" RENAME COLUMN "nomeSquadra" TO "nome_squadra"`);
 
+        //serie a
+        await queryRunner.query(`ALTER TABLE "SerieA" RENAME TO "serie_a"`);
+        await queryRunner.query(`ALTER TABLE "serie_a" RENAME COLUMN "idSerieA" TO "id_serie_a"`);
+        await queryRunner.query(`ALTER TABLE "serie_a" RENAME COLUMN "squadraHome" TO "squadra_home"`);
+        await queryRunner.query(`ALTER TABLE "serie_a" RENAME COLUMN "squadraAway" TO "squadra_away"`);
+
         //squadre serie a
         await queryRunner.query(`ALTER TABLE "SquadreSerieA" RENAME TO "squadra_serie_a"`);
         await queryRunner.query(`ALTER TABLE "squadra_serie_a" RENAME COLUMN "idSquadraSerieA" TO "id_squadra_serie_a"`);
@@ -211,19 +217,18 @@ export class RenameAllDb1764079170654 implements MigrationInterface {
 
         //utente
         await queryRunner.query(`ALTER TABLE "utente" RENAME TO "Utenti"`);
-        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "idUtente" TO "id_utente"`);
-        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "adminLevel" TO "admin_level"`);
-        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "nomeSquadra" TO "nome_squadra"`);
-        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "importoBase" TO "importo_base"`);
-        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "importoMulte" TO "importo_multe"`);
-        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "importoMercato" TO "importo_mercato"`);
-        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "fantaMilioni" TO "fanta_milioni"`);
-        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "Campionato" TO "campionato"`);
-        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "Champions" TO "champions"`);
-        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "Secondo" TO "secondo"`);
-        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "Terzo" TO "terzo"`);
-        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "lockLevel" TO "lock_level"`);
-
+        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "id_utente" TO "idUtente"`);
+        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "admin_level" TO "adminLevel"`);
+        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "nome_squadra" TO "nomeSquadra"`);
+        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "importo_base" TO "importoBase"`);
+        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "importo_multe" TO "importoMulte"`);
+        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "importo_mercato" TO "importoMercato"`);
+        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "fanta_milioni" TO "fantaMilioni"`);
+        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "campionato" TO "Campionato"`);
+        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "champions" TO "Champions"`);
+        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "secondo" TO "Secondo"`);
+        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "terzo" TO "Terzo"`);
+        await queryRunner.query(`ALTER TABLE "Utenti" RENAME COLUMN "lock_level" TO "lockLevel"`);
         //trasferimento
         await queryRunner.query(`ALTER TABLE "trasferimento" RENAME TO "Trasferimenti"`);
         await queryRunner.query(`ALTER TABLE "Trasferimenti" RENAME COLUMN "id_trasferimento" TO "idTrasferimento"`);
@@ -236,6 +241,12 @@ export class RenameAllDb1764079170654 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "Trasferimenti" RENAME COLUMN "nome_squadra_serie_a" TO "nomeSquadraSerieA"`);
         await queryRunner.query(`ALTER TABLE "Trasferimenti" RENAME COLUMN "nome_squadra" TO "nomeSquadra"`);
 
+        //serie a
+        await queryRunner.query(`ALTER TABLE "SerieA" RENAME TO "SerieA"`);
+        await queryRunner.query(`ALTER TABLE "SerieA" RENAME COLUMN "id_serie_a" TO "idSerieA"`);
+        await queryRunner.query(`ALTER TABLE "SerieA" RENAME COLUMN "squadra_home" TO "squadraHome"`);
+        await queryRunner.query(`ALTER TABLE "SerieA" RENAME COLUMN "squadra_away" TO "squadraAway"`);
+
         //squadre serie a
         await queryRunner.query(`ALTER TABLE "squadra_serie_a" RENAME TO "SquadreSerieA"`);
         await queryRunner.query(`ALTER TABLE "SquadreSerieA" RENAME COLUMN "id_squadra_serie_a" TO "idSquadraSerieA"`);
@@ -246,7 +257,7 @@ export class RenameAllDb1764079170654 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "Giocatori" RENAME COLUMN "nome_fanta_gazzetta" TO "nomeFantaGazzetta"`);
 
         //voto
-        await queryRunner.query(`ALTER TABLE "voti" RENAME TO "Voti"`);
+        await queryRunner.query(`ALTER TABLE "voto" RENAME TO "Voti"`);
         await queryRunner.query(`ALTER TABLE "Voti" RENAME COLUMN "id_voto" TO "idVoto"`);
         await queryRunner.query(`ALTER TABLE "Voti" RENAME COLUMN "id_giocatore" TO "idGiocatore"`);
         await queryRunner.query(`ALTER TABLE "Voti" RENAME COLUMN "id_calendario" TO "idCalendario"`);
@@ -262,7 +273,7 @@ export class RenameAllDb1764079170654 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "Formazioni" RENAME COLUMN "has_bloccata" TO "hasBloccata"`);
 
         //partita
-        await queryRunner.query(`ALTER TABLE "partite" RENAME TO "Partite"`);
+        await queryRunner.query(`ALTER TABLE "partita" RENAME TO "Partite"`);
         await queryRunner.query(`ALTER TABLE "Partite" RENAME COLUMN "id_partita" TO "idPartita"`);
         await queryRunner.query(`ALTER TABLE "Partite" RENAME COLUMN "id_calendario" TO "idCalendario"`);
         await queryRunner.query(`ALTER TABLE "Partite" RENAME COLUMN "id_squadra_home" TO "idSquadraH"`);
@@ -288,20 +299,20 @@ export class RenameAllDb1764079170654 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "calendario" RENAME TO "Calendario"`);
 
         //drop foreign key
-        await queryRunner.query(`ALTER TABLE "calendario" DROP CONSTRAINT "FK_Calendario_Tornei"`);
-        await queryRunner.query(`ALTER TABLE "voto" DROP CONSTRAINT "FK_Voti_Calendario"`);
-        await queryRunner.query(`ALTER TABLE "partita" DROP CONSTRAINT "FK_Partite_Calendario"`);
-        await queryRunner.query(`ALTER TABLE "partita" DROP CONSTRAINT "FK_Partite_SquadreCasa"`);
-        await queryRunner.query(`ALTER TABLE "partita" DROP CONSTRAINT "FK_Partite_SquadreTrasferta"`);
-        await queryRunner.query(`ALTER TABLE "formazione" DROP CONSTRAINT "FK_Formazioni_Partite"`);
-        await queryRunner.query(`ALTER TABLE "formazione" DROP CONSTRAINT "FK_Formazioni_Utenti"`);
-        await queryRunner.query(`ALTER TABLE "voto" DROP CONSTRAINT "FK_Formazione_Giocatori"`);
-        await queryRunner.query(`ALTER TABLE "voto" DROP CONSTRAINT "FK_Voti_Giocatori"`);
-        await queryRunner.query(`ALTER TABLE "trasferimento" DROP CONSTRAINT "FK_Trasferimenti_Giocatori"`);
-        await queryRunner.query(`ALTER TABLE "trasferimento" DROP CONSTRAINT "FK_Trasferimenti_SquadreSerieA"`);
-        await queryRunner.query(`ALTER TABLE "trasferimento" DROP CONSTRAINT "FK_Trasferimenti_Utenti"`);
-        await queryRunner.query(`ALTER TABLE "classifica" DROP CONSTRAINT "FK_Classifiche_Tornei"`);
-        await queryRunner.query(`ALTER TABLE "classifica" DROP CONSTRAINT "FK_Classifiche_Utenti"`);
+        await queryRunner.query(`ALTER TABLE "Calendario" DROP CONSTRAINT "FK_Calendario_Tornei"`);
+        await queryRunner.query(`ALTER TABLE "Voti" DROP CONSTRAINT "FK_Voti_Calendario"`);
+        await queryRunner.query(`ALTER TABLE "Partite" DROP CONSTRAINT "FK_Partite_Calendario"`);
+        await queryRunner.query(`ALTER TABLE "Partite" DROP CONSTRAINT "FK_Partite_SquadreCasa"`);
+        await queryRunner.query(`ALTER TABLE "Partite" DROP CONSTRAINT "FK_Partite_SquadreTrasferta"`);
+        await queryRunner.query(`ALTER TABLE "Formazioni" DROP CONSTRAINT "FK_Formazioni_Partite"`);
+        await queryRunner.query(`ALTER TABLE "Formazioni" DROP CONSTRAINT "FK_Formazioni_Utenti"`);
+        await queryRunner.query(`ALTER TABLE "Voti" DROP CONSTRAINT "FK_Formazione_Giocatori"`);
+        await queryRunner.query(`ALTER TABLE "Voti" DROP CONSTRAINT "FK_Voti_Giocatori"`);
+        await queryRunner.query(`ALTER TABLE "Trasferimenti" DROP CONSTRAINT "FK_Trasferimenti_Giocatori"`);
+        await queryRunner.query(`ALTER TABLE "Trasferimenti" DROP CONSTRAINT "FK_Trasferimenti_SquadreSerieA"`);
+        await queryRunner.query(`ALTER TABLE "Trasferimenti" DROP CONSTRAINT "FK_Trasferimenti_Utenti"`);
+        await queryRunner.query(`ALTER TABLE "Classifiche" DROP CONSTRAINT "FK_Classifiche_Tornei"`);
+        await queryRunner.query(`ALTER TABLE "Classifiche" DROP CONSTRAINT "FK_Classifiche_Utenti"`);
 
         //add foreign key
         await queryRunner.query(`ALTER TABLE "Voti" ADD CONSTRAINT "FK_Voti_Calendario" FOREIGN KEY ("idCalendario") REFERENCES "Calendario"("idCalendario") ON DELETE RESTRICT ON UPDATE NO ACTION`);
