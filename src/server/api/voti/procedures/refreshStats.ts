@@ -1,8 +1,8 @@
 import Logger from '~/lib/logger.server'
 import { adminProcedure } from '../../trpc'
 import { z } from 'zod'
-import prisma from '~/utils/db'
 import { Configurazione } from '~/config'
+import { AppDataSource } from '~/data-source'
 
 export const refreshStatsProcedure = adminProcedure
   .input(
@@ -19,12 +19,21 @@ async function refreshStats(ruolo: string) {
     Logger.info(
       `Function sp_RefreshStats${ruolo} for stagione ${Configurazione.stagione} executing`,
     )
-    await prisma.$executeRawUnsafe(`
-      DO $$
-      BEGIN
-        PERFORM public.sp_RefreshStats_${ruolo}('${ruolo}', '${Configurazione.stagione}');
-      END $$;
-    `)
+    const queryRunner = AppDataSource.createQueryRunner()
+    await queryRunner.connect()
+    try {
+      await queryRunner.query(
+        `
+        DO $$
+        BEGIN
+          PERFORM public.sp_RefreshStats_${ruolo}($1, $2);
+        END $$;
+        `,
+        [ruolo, Configurazione.stagione],
+      )
+    } finally {
+      await queryRunner.release()
+    }
     Logger.info(
       `Function sp_RefreshStats${ruolo} for stagione ${Configurazione.stagione} executed successfully`,
     )

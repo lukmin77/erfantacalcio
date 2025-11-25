@@ -21,6 +21,7 @@ export const showStatistica = publicProcedure
 
       const trasferimento = await Trasferimenti.findOne({
         select: {
+          idTrasferimento: true,
           costo: true,
           dataAcquisto: true,
           SquadreSerieA: { nome: true, maglia: true },

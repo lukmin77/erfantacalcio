@@ -11,6 +11,7 @@
     "start": "next start -p 8080",
     "postinstall": "prisma generate",
     "format": "prettier --write .",
+    "migration:create:local": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:create",
     "migration:generate:local": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d dist/data-source.js",
     "migration:run:local": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d dist/data-source.js",
     "migration:revert:local": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d dist/data-source.js",

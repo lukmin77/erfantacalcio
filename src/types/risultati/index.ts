@@ -1,5 +1,3 @@
-import { type Decimal } from '@prisma/client/runtime/library'
-
 export type GiornataAdminType = {
   idCalendario: number
   idTorneo: number
@@ -19,14 +17,14 @@ export type GiornataAdminType = {
 
 export type votoGiocatoreType = {
   idVoto: number
-  voto: Decimal | null
+  voto: Number | null
   ruolo: string
-  ammonizione: Decimal | null
-  espulsione: Decimal | null
-  gol: Decimal | null
-  assist: Decimal | null
-  altriBonus: Decimal | null
-  autogol: Decimal | null
+  ammonizione: Number | null
+  espulsione: Number | null
+  gol: Number | null
+  assist: Number | null
+  altriBonus: Number | null
+  autogol: Number | null
   titolare: boolean
   riserva: number | null
   idGiocatore: number
