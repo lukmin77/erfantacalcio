@@ -12,6 +12,6 @@ export class SquadreSerieA extends BaseEntity {
   @Column({ name: 'maglia', type: 'varchar', length: 50 })
   maglia!: string
 
-  @OneToMany(() => Trasferimenti, (t: Trasferimenti) => t.SquadreSerieA)
+  @OneToMany(() => Trasferimenti, (t: Trasferimenti) => t.SquadraSerieA)
   Trasferimenti!: Relation<Trasferimenti[]>
 }

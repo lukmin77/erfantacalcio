@@ -19,9 +19,9 @@ export class Giocatori extends BaseEntity {
   @Column({ name: 'id_pf', type: 'int', nullable: true })
   id_pf!: number | null
 
-  @OneToMany(() => Trasferimenti, (t: Trasferimenti) => t.Giocatori)
+  @OneToMany(() => Trasferimenti, (t: Trasferimenti) => t.Giocatore)
   Trasferimenti!: Relation<Trasferimenti[]>
 
-  @OneToMany(() => Voti, (v: Voti) => v.Giocatori)
+  @OneToMany(() => Voti, (v: Voti) => v.Giocatore)
   Voti!: Relation<Voti[]>
 }

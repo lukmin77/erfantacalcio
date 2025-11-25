@@ -34,14 +34,14 @@ export async function chiudiTrasferimentoGiocatore(
       select: {
         dataAcquisto: true,
         idTrasferimento: true,
-        Utenti: { nomeSquadra: true, idUtente: true },
-        SquadreSerieA: { nome: true },
-        Giocatori: { ruolo: true },
+        Utente: { nomeSquadra: true, idUtente: true },
+        SquadraSerieA: { nome: true },
+        Giocatore: { ruolo: true },
       },
       relations: {
-        Utenti: true,
-        SquadreSerieA: true,
-        Giocatori: true,
+        Utente: true,
+        SquadraSerieA: true,
+        Giocatore: true,
       },
       where: { idGiocatore: idGiocatore, dataCessione: IsNull() },
     })
@@ -63,7 +63,7 @@ export async function chiudiTrasferimentoGiocatore(
         },
         relations: {
           Calendario: true,
-          Giocatori: { Trasferimenti: true },
+          Giocatore: { Trasferimenti: true },
         },
         // distinct: ['voto', 'gol', 'assist'],
         where: {
@@ -75,7 +75,7 @@ export async function chiudiTrasferimentoGiocatore(
             ),
           },
           voto: MoreThan(0),
-          Giocatori: { Trasferimenti: { dataCessione: IsNull() } },
+          Giocatore: { Trasferimenti: { dataCessione: IsNull() } },
         },
       })
 
@@ -99,7 +99,7 @@ export async function chiudiTrasferimentoGiocatore(
         )
         oldStatistica.mediaVoto = oldStatistica.mediaVoto / voti.length
         oldStatistica.golTotali =
-          oldTrasferimento.Giocatori.ruolo === 'P'
+          oldTrasferimento.Giocatore.ruolo === 'P'
             ? oldStatistica.golTotali
             : oldStatistica.golTotali / 3
 
@@ -119,15 +119,15 @@ export async function chiudiTrasferimentoGiocatore(
           },
           {
             dataCessione: new Date(),
-            nomeSquadraSerieA: oldTrasferimento.SquadreSerieA?.nome,
-            nomeSquadra: oldTrasferimento.Utenti?.nomeSquadra,
+            nomeSquadraSerieA: oldTrasferimento.SquadraSerieA?.nome,
+            nomeSquadra: oldTrasferimento.Utente?.nomeSquadra,
             media: oldStatistica.mediaVoto,
             gol: oldStatistica.golTotali,
             assist: oldStatistica.assistTotali,
             giocate: oldStatistica.giocate,
             idSquadra: chiusuraStagione
               ? null
-              : oldTrasferimento.Utenti?.idUtente,
+              : oldTrasferimento.Utente?.idUtente,
           },
         )
         console.debug('updated ultimo trasferimento (completo): ' + idGiocatore)
@@ -143,11 +143,11 @@ export async function chiudiTrasferimentoGiocatore(
           },
           {
             dataCessione: new Date(),
-            nomeSquadraSerieA: oldTrasferimento.SquadreSerieA?.nome,
-            nomeSquadra: oldTrasferimento.Utenti?.nomeSquadra,
+            nomeSquadraSerieA: oldTrasferimento.SquadraSerieA?.nome,
+            nomeSquadra: oldTrasferimento.Utente?.nomeSquadra,
             idSquadra: chiusuraStagione
               ? null
-              : oldTrasferimento.Utenti?.idUtente,
+              : oldTrasferimento.Utente?.idUtente,
           },
         )
         console.debug('updated ultimo trasferimento (parziale): ' + idGiocatore)
@@ -222,12 +222,12 @@ export async function getRosaDisponibile(idSquadra: number) {
     select: {
       idGiocatore: true,
       costo: true,
-      Giocatori: { nome: true, nomeFantaGazzetta: true, ruolo: true },
-      SquadreSerieA: { nome: true, maglia: true },
+      Giocatore: { nome: true, nomeFantaGazzetta: true, ruolo: true },
+      SquadraSerieA: { nome: true, maglia: true },
     },
     relations: {
-      Giocatori: true,
-      SquadreSerieA: true,
+      Giocatore: true,
+      SquadraSerieA: true,
     },
     where: [
       {
@@ -246,31 +246,31 @@ export async function getRosaDisponibile(idSquadra: number) {
       },
     ],
     order: {
-      Giocatori: { ruolo: 'desc' },
+      Giocatore: { ruolo: 'desc' },
       costo: 'desc',
     },
   })
 
   return query.map<GiocatoreType>((giocatore) => ({
     idGiocatore: giocatore.idGiocatore,
-    nome: giocatore.Giocatori.nome,
-    nomeFantagazzetta: giocatore.Giocatori.nomeFantaGazzetta,
-    ruolo: giocatore.Giocatori.ruolo,
-    ruoloEsteso: getRuoloEsteso(giocatore.Giocatori.ruolo),
+    nome: giocatore.Giocatore.nome,
+    nomeFantagazzetta: giocatore.Giocatore.nomeFantaGazzetta,
+    ruolo: giocatore.Giocatore.ruolo,
+    ruoloEsteso: getRuoloEsteso(giocatore.Giocatore.ruolo),
     costo: giocatore.costo,
     isVenduto: false,
     urlCampioncino: normalizeCampioncinoUrl(
       Configurazione.urlCampioncino,
-      giocatore.Giocatori.nome,
-      giocatore.Giocatori.nomeFantaGazzetta,
+      giocatore.Giocatore.nome,
+      giocatore.Giocatore.nomeFantaGazzetta,
     ),
     urlCampioncinoSmall: normalizeCampioncinoUrl(
       Configurazione.urlCampioncinoSmall,
-      giocatore.Giocatori.nome,
-      giocatore.Giocatori.nomeFantaGazzetta,
+      giocatore.Giocatore.nome,
+      giocatore.Giocatore.nomeFantaGazzetta,
     ),
-    nomeSquadraSerieA: giocatore.SquadreSerieA?.nome,
-    magliaSquadraSerieA: giocatore.SquadreSerieA?.maglia,
+    nomeSquadraSerieA: giocatore.SquadraSerieA?.nome,
+    magliaSquadraSerieA: giocatore.SquadraSerieA?.maglia,
   }))
 }
 
@@ -279,19 +279,19 @@ export async function getGiocatoriVenduti(idSquadra: number) {
     select: {
       idGiocatore: true,
       costo: true,
-      Giocatori: {
+      Giocatore: {
         nome: true,
         nomeFantaGazzetta: true,
         ruolo: true,
       },
-      SquadreSerieA: {
+      SquadraSerieA: {
         nome: true,
         maglia: true,
       },
     },
     relations: {
-      Giocatori: true,
-      SquadreSerieA: true,
+      Giocatore: true,
+      SquadraSerieA: true,
     },
     where: {
       idSquadra: idSquadra,
@@ -300,31 +300,31 @@ export async function getGiocatoriVenduti(idSquadra: number) {
       dataCessione: Not(IsNull()),
     },
     order: {
-      Giocatori: { ruolo: 'desc' },
+      Giocatore: { ruolo: 'desc' },
       costo: 'desc',
     },
   })
 
   return query.map<GiocatoreType>((giocatore) => ({
     idGiocatore: giocatore.idGiocatore,
-    nome: giocatore.Giocatori.nome,
-    nomeFantagazzetta: giocatore.Giocatori.nomeFantaGazzetta,
-    ruolo: giocatore.Giocatori.ruolo,
-    ruoloEsteso: getRuoloEsteso(giocatore.Giocatori.ruolo),
+    nome: giocatore.Giocatore.nome,
+    nomeFantagazzetta: giocatore.Giocatore.nomeFantaGazzetta,
+    ruolo: giocatore.Giocatore.ruolo,
+    ruoloEsteso: getRuoloEsteso(giocatore.Giocatore.ruolo),
     costo: giocatore.costo,
     isVenduto: true,
     urlCampioncino: normalizeCampioncinoUrl(
       Configurazione.urlCampioncino,
-      giocatore.Giocatori.nome,
-      giocatore.Giocatori.nomeFantaGazzetta,
+      giocatore.Giocatore.nome,
+      giocatore.Giocatore.nomeFantaGazzetta,
     ),
     urlCampioncinoSmall: normalizeCampioncinoUrl(
       Configurazione.urlCampioncinoSmall,
-      giocatore.Giocatori.nome,
-      giocatore.Giocatori.nomeFantaGazzetta,
+      giocatore.Giocatore.nome,
+      giocatore.Giocatore.nomeFantaGazzetta,
     ),
-    nomeSquadraSerieA: giocatore.SquadreSerieA?.nome,
-    magliaSquadraSerieA: giocatore.SquadreSerieA?.maglia,
+    nomeSquadraSerieA: giocatore.SquadraSerieA?.nome,
+    magliaSquadraSerieA: giocatore.SquadraSerieA?.maglia,
   }))
 }
 
@@ -356,7 +356,7 @@ export async function deleteGiocatore(trx: EntityManager, idGiocatore: number) {
 export async function mapCalendario(result: Calendario[]) {
   return result.map((c) => ({
     idCalendario: c.idCalendario,
-    idTorneo: c.Tornei.idTorneo,
+    idTorneo: c.Torneo.idTorneo,
     giornata: c.giornata,
     giornataSerieA: c.giornataSerieA,
     isGiocata: c.hasGiocata,
@@ -366,14 +366,14 @@ export async function mapCalendario(result: Calendario[]) {
     dataFine: c.dataFine?.toISOString(),
     girone: c.girone,
     partite: mapPartite(c.Partite),
-    Torneo: c.Tornei.nome,
+    Torneo: c.Torneo.nome,
     Descrizione: getDescrizioneGiornata(
-      c.Tornei.nome,
+      c.Torneo.nome,
       c.giornata,
       c.giornataSerieA,
-      c.Tornei.gruppoFase,
+      c.Torneo.gruppoFase,
     ),
-    Title: getTorneoTitle(c.Tornei.nome, c.giornata, c.Tornei.gruppoFase),
+    Title: getTorneoTitle(c.Torneo.nome, c.giornata, c.Torneo.gruppoFase),
     SubTitle: getTorneoSubTitle(c.giornataSerieA),
   }))
 }
@@ -384,7 +384,7 @@ export async function mapCalendarioWithSerieA(
 ) {
   return result.map((c) => ({
     idCalendario: c.idCalendario,
-    idTorneo: c.Tornei.idTorneo,
+    idTorneo: c.Torneo.idTorneo,
     giornata: c.giornata,
     giornataSerieA: c.giornataSerieA,
     isGiocata: c.hasGiocata,
@@ -394,14 +394,14 @@ export async function mapCalendarioWithSerieA(
     dataFine: c.dataFine?.toISOString(),
     girone: c.girone,
     partite: mapPartite(c.Partite),
-    Torneo: c.Tornei.nome,
+    Torneo: c.Torneo.nome,
     Descrizione: getDescrizioneGiornata(
-      c.Tornei.nome,
+      c.Torneo.nome,
       c.giornata,
       c.giornataSerieA,
-      c.Tornei.gruppoFase,
+      c.Torneo.gruppoFase,
     ),
-    Title: getTorneoTitle(c.Tornei.nome, c.giornata, c.Tornei.gruppoFase),
+    Title: getTorneoTitle(c.Torneo.nome, c.giornata, c.Torneo.gruppoFase),
     SubTitle: getTorneoSubTitle(c.giornataSerieA),
     SerieA: serieAData.map((s) => ({
       giornata: s.giornata,
@@ -415,15 +415,15 @@ export function mapPartite(partite: Partite[]) {
   return partite.map((p) => ({
     idPartita: p.idPartita,
     idHome: p.idSquadraH,
-    squadraHome: p.UtentiSquadraH?.nomeSquadra,
-    fotoHome: p.UtentiSquadraH?.foto,
-    magliaHome: p.UtentiSquadraH?.maglia,
+    squadraHome: p.SquadraHome?.nomeSquadra,
+    fotoHome: p.SquadraHome?.foto,
+    magliaHome: p.SquadraHome?.maglia,
     multaHome: p.hasMultaH,
     golHome: p.golH,
     idAway: p.idSquadraA,
-    squadraAway: p.UtentiSquadraA?.nomeSquadra,
-    fotoAway: p.UtentiSquadraA?.foto,
-    magliaAway: p.UtentiSquadraA?.maglia,
+    squadraAway: p.SquadraAway?.nomeSquadra,
+    fotoAway: p.SquadraAway?.foto,
+    magliaAway: p.SquadraAway?.maglia,
     multaAway: p.hasMultaA,
     golAway: p.golA,
     isFattoreHome: p.fattoreCasalingo,
@@ -596,14 +596,14 @@ export function getGolSegnati(fantapunti: number): number {
 export async function getTabellino(idFormazione: number) {
   const giocatoriFormazione = (
     await Voti.find({
-      select: { Giocatori: { ruolo: true } },
-      relations: { Giocatori: true },
+      select: { Giocatore: { ruolo: true } },
+      relations: { Giocatore: true },
       where: {
         idFormazione: idFormazione,
       },
     })
   ).map((v) => ({
-    ruolo: v.Giocatori.ruolo,
+    ruolo: v.Giocatore.ruolo,
     idVoto: v.idVoto,
     voto: v.voto,
     ammonizione: v.ammonizione,
@@ -722,7 +722,7 @@ export async function getCalendario<T>(
       girone: true,
       hasGiocata: true,
       hasDaRecuperare: true,
-      Tornei: { idTorneo: true, nome: true, gruppoFase: true },
+      Torneo: { idTorneo: true, nome: true, gruppoFase: true },
       Partite: {
         idPartita: true,
         idSquadraH: true,
@@ -732,15 +732,15 @@ export async function getCalendario<T>(
         golH: true,
         golA: true,
         fattoreCasalingo: true,
-        UtentiSquadraH: { nomeSquadra: true, foto: true, maglia: true },
-        UtentiSquadraA: { nomeSquadra: true, foto: true, maglia: true },
+        SquadraHome: { nomeSquadra: true, foto: true, maglia: true },
+        SquadraAway: { nomeSquadra: true, foto: true, maglia: true },
       },
     },
     relations: {
-      Tornei: true,
+      Torneo: true,
       Partite: {
-        UtentiSquadraH: true,
-        UtentiSquadraA: true,
+        SquadraHome: true,
+        SquadraAway: true,
       },
     },
     where: filter,

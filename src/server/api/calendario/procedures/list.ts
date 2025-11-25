@@ -11,9 +11,9 @@ export const listCalendarioProcedure = adminProcedure.query(async () => {
     const indexSelected = result.findIndex((item) => !item.hasGiocata)
     const mapped = result.map((c, index) => ({
         id: c.idCalendario,
-        idTorneo: c.Tornei.idTorneo,
-        nome: c.Tornei.nome,
-        gruppoFase: c.Tornei.gruppoFase,
+        idTorneo: c.Torneo.idTorneo,
+        nome: c.Torneo.nome,
+        gruppoFase: c.Torneo.gruppoFase,
         giornata: c.giornata,
         giornataSerieA: c.giornataSerieA,
         isGiocata: c.hasGiocata,

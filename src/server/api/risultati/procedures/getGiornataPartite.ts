@@ -28,7 +28,7 @@ export const getGiornataPartiteProcedure = publicProcedure
       if (calendario) {
         return {
           idCalendario: calendario.idCalendario,
-          idTorneo: calendario.Tornei.idTorneo,
+          idTorneo: calendario.Torneo.idTorneo,
           giornata: calendario.giornata,
           giornataSerieA: calendario.giornataSerieA,
           isGiocata: calendario.hasGiocata,
@@ -44,19 +44,19 @@ export const getGiornataPartiteProcedure = publicProcedure
               : opts.input.backOfficeMode,
           ),
           Torneo: getTorneo(
-            calendario.Tornei.nome,
-            calendario.Tornei.gruppoFase,
+            calendario.Torneo.nome,
+            calendario.Torneo.gruppoFase,
           ),
           Descrizione: getDescrizioneGiornata(
-            calendario.Tornei.nome,
+            calendario.Torneo.nome,
             calendario.giornata,
             calendario.giornataSerieA,
-            calendario.Tornei.gruppoFase,
+            calendario.Torneo.gruppoFase,
           ),
           Title: getTorneoTitle(
-            calendario.Tornei.nome,
+            calendario.Torneo.nome,
             calendario.giornata,
-            calendario.Tornei.gruppoFase,
+            calendario.Torneo.gruppoFase,
           ),
           SubTitle: getTorneoSubTitle(calendario.giornataSerieA),
         }

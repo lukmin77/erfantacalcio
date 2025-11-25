@@ -47,7 +47,7 @@ export class Calendario extends BaseEntity {
   @Column({ name: 'dataFine', type: 'timestamptz', nullable: true })
   dataFine!: Date | null
 
-  @ManyToOne(() => Tornei, (t: Tornei) => t.Calendario, {
+  @ManyToOne(() => Tornei, (t: Tornei) => t.Calendari, {
     onUpdate: 'NO ACTION',
     onDelete: 'RESTRICT',
   })
@@ -55,7 +55,7 @@ export class Calendario extends BaseEntity {
     name: 'idTorneo',
     foreignKeyConstraintName: 'FK_Calendario_Tornei',
   })
-  Tornei!: Relation<Tornei>
+  Torneo!: Relation<Tornei>
 
   @OneToMany(() => Partite, (p: Partite) => p.Calendario)
   Partite!: Relation<Partite[]>

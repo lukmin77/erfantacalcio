@@ -62,7 +62,7 @@ export class Classifiche extends BaseEntity {
     name: 'idTorneo',
     foreignKeyConstraintName: 'FK_Classifiche_Tornei',
   })
-  Tornei!: Relation<Tornei>
+  Torneo!: Relation<Tornei>
 
   @ManyToOne(() => Utenti, (u: Utenti) => u.Classifiche, {
     onDelete: 'RESTRICT',
@@ -72,5 +72,5 @@ export class Classifiche extends BaseEntity {
     name: 'idSquadra',
     foreignKeyConstraintName: 'FK_Classifiche_Utenti',
   })
-  Utenti!: Relation<Utenti>
+  Utente!: Relation<Utenti>
 }

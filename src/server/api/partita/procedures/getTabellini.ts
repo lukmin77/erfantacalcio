@@ -97,15 +97,15 @@ export const getTabelliniProcedure = publicProcedure
                     ? Configurazione.bonusFattoreCasalingo
                     : 0),
                 Voti: datiHome.Voti.map((voto) => ({
-                  nome: voto.Giocatori.nome,
-                  idGiocatore: voto.Giocatori.idGiocatore,
+                  nome: voto.Giocatore.nome,
+                  idGiocatore: voto.Giocatore.idGiocatore,
                   titolare: voto.titolare,
                   riserva: voto.riserva,
                   nomeSquadraSerieA:
-                    voto.Giocatori.Trasferimenti[0]?.SquadreSerieA?.nome,
+                    voto.Giocatore.Trasferimenti[0]?.SquadraSerieA?.nome,
                   magliaSquadraSerieA:
-                    voto.Giocatori.Trasferimenti[0]?.SquadreSerieA?.maglia,
-                  ruolo: voto.Giocatori.ruolo,
+                    voto.Giocatore.Trasferimenti[0]?.SquadraSerieA?.maglia,
+                  ruolo: voto.Giocatore.ruolo,
                   voto: voto.voto ?? 0,
                   ammonizione: voto.ammonizione ?? 0,
                   espulsione: voto.espulsione ?? 0,
@@ -148,15 +148,15 @@ export const getTabelliniProcedure = publicProcedure
                     getGiocatoriVotoInfluente(giocatoriInfluentiAway).length,
                   ),
                 Voti: datiAway.Voti.map((c) => ({
-                  nome: c.Giocatori.nome,
-                  idGiocatore: c.Giocatori.idGiocatore,
+                  nome: c.Giocatore.nome,
+                  idGiocatore: c.Giocatore.idGiocatore,
                   titolare: c.titolare,
                   riserva: c.riserva,
                   nomeSquadraSerieA:
-                    c.Giocatori.Trasferimenti[0]?.SquadreSerieA?.nome,
+                    c.Giocatore.Trasferimenti[0]?.SquadraSerieA?.nome,
                   magliaSquadraSerieA:
-                    c.Giocatori.Trasferimenti[0]?.SquadreSerieA?.maglia,
-                  ruolo: c.Giocatori.ruolo,
+                    c.Giocatore.Trasferimenti[0]?.SquadraSerieA?.maglia,
+                  ruolo: c.Giocatore.ruolo,
                   voto: c.voto ?? 0,
                   ammonizione: c.ammonizione ?? 0,
                   espulsione: c.espulsione ?? 0,
@@ -190,10 +190,10 @@ export async function getAltrePartite(idCalendario: number | undefined) {
   return await Partite.find({
     select: {
       idPartita: true,
-      UtentiSquadraH: { nomeSquadra: true, foto: true, maglia: true },
-      UtentiSquadraA: { nomeSquadra: true, foto: true, maglia: true },
+      SquadraHome: { nomeSquadra: true, foto: true, maglia: true },
+      SquadraAway: { nomeSquadra: true, foto: true, maglia: true },
     },
-    relations: { UtentiSquadraH: true, UtentiSquadraA: true },
+    relations: { SquadraHome: true, SquadraAway: true },
     where: { idCalendario },
   })
 }

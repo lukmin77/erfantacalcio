@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, type Relation, BaseEntity } from 'typeorm'
-import * as FormazioniEntity from './Formazioni'
+import { Formazioni } from './Formazioni'
 import { Calendario } from './Calendario'
 import { Utenti } from './Utenti'
 
@@ -44,18 +44,18 @@ export class Partite extends BaseEntity {
   @Column({ name: 'fattoreCasalingo', type: 'boolean', default: false })
   fattoreCasalingo!: boolean
 
-  @OneToMany(() => FormazioniEntity.Formazioni, (f: FormazioniEntity.Formazioni) => f.Partite)
-  Formazioni!: Relation<FormazioniEntity.Formazioni[]>
+  @OneToMany(() => Formazioni, (f: Formazioni) => f.Partita)
+  Formazioni!: Relation<Formazioni[]>
 
   @ManyToOne(() => Calendario, (c: Calendario) => c.Partite, { onUpdate: 'NO ACTION', onDelete: 'RESTRICT' })
   @JoinColumn({ name: 'idCalendario', foreignKeyConstraintName: 'FK_Partite_Calendario' })
   Calendario!: Relation<Calendario>
 
-  @ManyToOne(() => Utenti, (u: Utenti) => u.Partite_Partite_idSquadraHToUtenti, { onUpdate: 'NO ACTION', onDelete: 'NO ACTION' })
+  @ManyToOne(() => Utenti, (u: Utenti) => u.PartiteHome, { onUpdate: 'NO ACTION', onDelete: 'NO ACTION' })
   @JoinColumn({ name: 'idSquadraH', foreignKeyConstraintName: 'FK_Partite_SquadreCasa' })
-  UtentiSquadraH!: Relation<Utenti | null>
+  SquadraHome!: Relation<Utenti | null>
 
-  @ManyToOne(() => Utenti, (u: Utenti) => u.Partite_Partite_idSquadraAToUtenti, { onUpdate: 'NO ACTION', onDelete: 'NO ACTION' })
+  @ManyToOne(() => Utenti, (u: Utenti) => u.PartiteAway, { onUpdate: 'NO ACTION', onDelete: 'NO ACTION' })
   @JoinColumn({ name: 'idSquadraA', foreignKeyConstraintName: 'FK_Partite_SquadreTrasferta' })
-  UtentiSquadraA!: Relation<Utenti | null>
+  SquadraAway!: Relation<Utenti | null>
 }

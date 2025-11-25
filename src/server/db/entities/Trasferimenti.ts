@@ -69,7 +69,7 @@ export class Trasferimenti extends BaseEntity {
     name: 'idGiocatore',
     foreignKeyConstraintName: 'FK_Trasferimenti_Giocatori',
   })
-  Giocatori!: Relation<Giocatori>
+  Giocatore!: Relation<Giocatori>
 
   @ManyToOne(() => SquadreSerieA, (s: SquadreSerieA) => s.Trasferimenti, {
     onDelete: 'NO ACTION',
@@ -80,7 +80,7 @@ export class Trasferimenti extends BaseEntity {
     name: 'idSquadraSerieA',
     foreignKeyConstraintName: 'FK_Trasferimenti_SquadreSerieA',
   })
-  SquadreSerieA?: Relation<SquadreSerieA | null>
+  SquadraSerieA?: Relation<SquadreSerieA | null>
 
   @ManyToOne(() => Utenti, (u: Utenti) => u.Trasferimenti, {
     onDelete: 'NO ACTION',
@@ -91,5 +91,5 @@ export class Trasferimenti extends BaseEntity {
     name: 'idSquadra',
     foreignKeyConstraintName: 'FK_Trasferimenti_Utenti',
   })
-  Utenti?: Relation<Utenti | null>
+  Utente?: Relation<Utenti | null>
 }

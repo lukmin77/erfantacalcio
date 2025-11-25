@@ -102,7 +102,7 @@ export class Voti extends BaseEntity {
     name: 'idFormazione',
     foreignKeyConstraintName: 'FK_Formazione_Giocatori',
   })
-  Formazioni?: Relation<Formazioni | null>
+  Formazione?: Relation<Formazioni | null>
 
   @ManyToOne(() => Calendario, (c: Calendario) => c.Voti, {
     onUpdate: 'NO ACTION',
@@ -122,5 +122,5 @@ export class Voti extends BaseEntity {
     name: 'idGiocatore',
     foreignKeyConstraintName: 'FK_Voti_Giocatori',
   })
-  Giocatori!: Relation<Giocatori>
+  Giocatore!: Relation<Giocatori>
 }

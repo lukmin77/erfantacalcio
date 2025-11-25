@@ -35,10 +35,10 @@ export const show = protectedProcedure
             titolare: true,
             riserva: true,
           },
-          relations: { Formazioni: true },
+          relations: { Formazione: true },
           where: {
             idCalendario: prossimoCalendario.idCalendario,
-            Formazioni: { idSquadra: idSquadraUtente },
+            Formazione: { idSquadra: idSquadraUtente },
           },
         })
         const datiFormazione = await Formazioni.findOne({

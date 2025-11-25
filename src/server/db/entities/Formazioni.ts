@@ -42,7 +42,7 @@ export class Formazioni extends BaseEntity {
     name: 'idPartita',
     foreignKeyConstraintName: 'FK_Formazioni_Partite',
   })
-  Partite!: Relation<Partite>
+  Partita!: Relation<Partite>
 
   @ManyToOne(() => Utenti, (u: Utenti) => u.Formazioni, {
     onUpdate: 'NO ACTION',
@@ -52,8 +52,8 @@ export class Formazioni extends BaseEntity {
     name: 'idSquadra',
     foreignKeyConstraintName: 'FK_Formazioni_Utenti',
   })
-  Utenti!: Relation<Utenti>
+  Utente!: Relation<Utenti>
 
-  @OneToMany(() => Voti, (v: Voti) => v.Formazioni)
+  @OneToMany(() => Voti, (v: Voti) => v.Formazione)
   Voti!: Relation<Voti[]>
 }

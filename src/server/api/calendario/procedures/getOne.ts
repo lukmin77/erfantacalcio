@@ -37,9 +37,9 @@ export const getOneCalendarioProcedure = adminProcedure
           girone: true,
           hasGiocata: true,
           hasDaRecuperare: true,
-          Tornei: { idTorneo: true, nome: true, gruppoFase: true },
+          Torneo: { idTorneo: true, nome: true, gruppoFase: true },
         },
-        relations: { Tornei: true },
+        relations: { Torneo: true },
         where: { idCalendario: opts.input.idCalendario },
       })
       if (result) {

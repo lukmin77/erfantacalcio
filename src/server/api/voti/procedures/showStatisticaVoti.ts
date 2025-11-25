@@ -29,16 +29,16 @@ export const showStatisticaVotiProcedure = adminProcedure
           altriBonus: true,
           titolare: true,
           riserva: true,
-          Giocatori: { nome: true, ruolo: true },
+          Giocatore: { nome: true, ruolo: true },
           Calendario: {
             giornataSerieA: true,
-            Tornei: { nome: true, gruppoFase: true },
+            Torneo: { nome: true, gruppoFase: true },
           },
         },
         relations: {
-          Giocatori: true,
+          Giocatore: true,
           Calendario: {
-            Tornei: true,
+            Torneo: true,
           },
         },
         order: {
@@ -58,7 +58,7 @@ export const showStatisticaVotiProcedure = adminProcedure
               ammonizione: Number(c.ammonizione),
               espulsione: Number(c.espulsione),
               gol:
-                c.Giocatori.ruolo === 'P'
+                c.Giocatore.ruolo === 'P'
                   ? (c.gol ?? 0) / Configurazione.bonusGolSubito
                   : (c.gol ?? 0) / Configurazione.bonusGol,
               assist: (c.assist ?? 0) / Configurazione.bonusAssist,

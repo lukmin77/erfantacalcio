@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, type Relation, BaseEntity } from 'typeorm'
-import * as ClassificheEntity from './Classifiche'
-import * as FormazioniEntity from './Formazioni'
-import * as PartiteEntity from './Partite'
 import { Trasferimenti } from './Trasferimenti'
+import { Classifiche } from './Classifiche'
+import { Formazioni } from './Formazioni'
+import { Partite } from './Partite'
 
 @Entity({ name: 'Utenti' })
 export class Utenti extends BaseEntity {
@@ -60,18 +60,18 @@ export class Utenti extends BaseEntity {
   @Column({ name: 'maglia', type: 'varchar', length: 500, nullable: true })
   maglia!: string | null
 
-  @OneToMany(() => ClassificheEntity.Classifiche, (c: ClassificheEntity.Classifiche) => c.Utenti)
-  Classifiche!: Relation<ClassificheEntity.Classifiche[]>
+  @OneToMany(() => Classifiche, (c: Classifiche) => c.Utente)
+  Classifiche!: Relation<Classifiche[]>
 
-  @OneToMany(() => FormazioniEntity.Formazioni, (f: FormazioniEntity.Formazioni) => f.Utenti)
-  Formazioni!: Relation<FormazioniEntity.Formazioni[]>
+  @OneToMany(() => Formazioni, (f: Formazioni) => f.Utente)
+  Formazioni!: Relation<Formazioni[]>
 
-  @OneToMany(() => PartiteEntity.Partite, (p: PartiteEntity.Partite) => p.UtentiSquadraH)
-  Partite_Partite_idSquadraHToUtenti!: Relation<PartiteEntity.Partite[]>
+  @OneToMany(() => Partite, (p: Partite) => p.SquadraHome)
+  PartiteHome!: Relation<Partite[]>
 
-  @OneToMany(() => PartiteEntity.Partite, (p: PartiteEntity.Partite) => p.UtentiSquadraA)
-  Partite_Partite_idSquadraAToUtenti!: Relation<PartiteEntity.Partite[]>
-
-  @OneToMany(() => Trasferimenti, (t: Trasferimenti) => t.Utenti)
+  @OneToMany(() => Partite, (p: Partite) => p.SquadraAway)
+  PartiteAway!: Relation<Partite[]>
+  
+  @OneToMany(() => Trasferimenti, (t: Trasferimenti) => t.Utente)
   Trasferimenti!: Relation<Trasferimenti[]>
 }

@@ -50,13 +50,13 @@ export const create = protectedProcedure
           select: {
             idCalendario: true,
             idPartita: true,
-            UtentiSquadraH: {
+            SquadraHome: {
               nomeSquadra: true,
               presidente: true,
               idUtente: true,
               mail: true,
             },
-            UtentiSquadraA: {
+            SquadraAway: {
               nomeSquadra: true,
               presidente: true,
               idUtente: true,
@@ -68,7 +68,7 @@ export const create = protectedProcedure
               giornataSerieA: true,
               data: true,
               girone: true,
-              Tornei: {
+              Torneo: {
                 idTorneo: true,
                 nome: true,
                 gruppoFase: true,
@@ -76,9 +76,9 @@ export const create = protectedProcedure
             },
           },
           relations: {
-            Calendario: { Tornei: true },
-            UtentiSquadraH: true,
-            UtentiSquadraA: true,
+            Calendario: { Torneo: true },
+            SquadraHome: true,
+            SquadraAway: true,
           },
           where: { idPartita: idPartita },
         })
@@ -119,25 +119,25 @@ export const create = protectedProcedure
 
           //invio mail
           if (env.MAIL_ENABLED) {
-            const subject = `ErFantacalcio: Formazione partita ${partita.UtentiSquadraH?.nomeSquadra} - ${partita.UtentiSquadraA?.nomeSquadra}`
+            const subject = `ErFantacalcio: Formazione partita ${partita.SquadraHome?.nomeSquadra} - ${partita.SquadraAway?.nomeSquadra}`
             const avversario =
-              idSquadra === partita.UtentiSquadraH?.idUtente
-                ? partita.UtentiSquadraH?.presidente
-                : partita.UtentiSquadraA?.presidente
+              idSquadra === partita.SquadraHome?.idUtente
+                ? partita.SquadraHome?.presidente
+                : partita.SquadraAway?.presidente
             const to =
-              idSquadra === partita.UtentiSquadraH?.idUtente
-                ? partita.UtentiSquadraA?.mail
-                : partita.UtentiSquadraH?.mail
+              idSquadra === partita.SquadraHome?.idUtente
+                ? partita.SquadraAway?.mail
+                : partita.SquadraHome?.mail
             const cc =
-              idSquadra === partita.UtentiSquadraH?.idUtente
-                ? partita.UtentiSquadraH?.mail
-                : partita.UtentiSquadraA?.mail
+              idSquadra === partita.SquadraHome?.idUtente
+                ? partita.SquadraHome?.mail
+                : partita.SquadraAway?.mail
 
             const descrizioneGiornata = getDescrizioneGiornata(
               partita.Calendario.giornataSerieA,
-              partita.Calendario.Tornei.nome,
+              partita.Calendario.Torneo.nome,
               partita.Calendario.giornata,
-              partita.Calendario.Tornei.gruppoFase,
+              partita.Calendario.Torneo.gruppoFase,
             )
             const htmlMessage = `Notifica automatica da erFantacalcio.com<br><br>
               Il tuo avversario, l'infame ${avversario} ha inserito la formazione per la prossima partita</br></br>
@@ -151,9 +151,9 @@ export const create = protectedProcedure
             if (to && cc) await ReSendMailAsync(to, cc, subject, htmlMessage)
             else {
               const presidenteWithoutMail =
-                idSquadra === partita.UtentiSquadraH?.idUtente
-                  ? partita.UtentiSquadraA?.presidente
-                  : partita.UtentiSquadraH?.presidente
+                idSquadra === partita.SquadraHome?.idUtente
+                  ? partita.SquadraAway?.presidente
+                  : partita.SquadraHome?.presidente
               console.warn(
                 `Impossibile inviare notifica, mail non configurata per il presidente: ${presidenteWithoutMail}`,
               )

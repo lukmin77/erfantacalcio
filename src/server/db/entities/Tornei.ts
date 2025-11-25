@@ -16,9 +16,9 @@ export class Tornei extends BaseEntity {
   @Column({ name: 'hasClassifica', type: 'boolean' })
   hasClassifica!: boolean
 
-  @OneToMany(() => Calendario, (c: Calendario) => c.Tornei)
-  Calendario!: Relation<Calendario[]>
+  @OneToMany(() => Calendario, (c: Calendario) => c.Torneo)
+  Calendari!: Relation<Calendario[]>
 
-  @OneToMany(() => Classifiche, (c: Classifiche) => c.Tornei)
+  @OneToMany(() => Classifiche, (c: Classifiche) => c.Torneo)
   Classifiche!: Relation<Classifiche[]>
 }

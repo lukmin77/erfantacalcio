@@ -21,14 +21,14 @@ export const listTrasferimentiProcedure = publicProcedure
           stagione: true,
           nomeSquadra: true,
           nomeSquadraSerieA: true,
-          Utenti: { nomeSquadra: true },
-          Giocatori: { nome: true, ruolo: true, id_pf: true },
-          SquadreSerieA: { nome: true, maglia: true },
+          Utente: { nomeSquadra: true },
+          Giocatore: { nome: true, ruolo: true, id_pf: true },
+          SquadraSerieA: { nome: true, maglia: true },
         },
         relations: {
-          Utenti: true,
-          Giocatori: true,
-          SquadreSerieA: true,
+          Utente: true,
+          Giocatore: true,
+          SquadraSerieA: true,
         },
         where: { idGiocatore: opts.input.idGiocatore, hasRitirato: false },
         order: { stagione: 'desc', dataAcquisto: 'desc' },
@@ -36,21 +36,21 @@ export const listTrasferimentiProcedure = publicProcedure
 
       return query.map((t) => ({
         id: t.idTrasferimento,
-        id_pf: t.Giocatori.id_pf,
+        id_pf: t.Giocatore.id_pf,
         idTrasferimento: t.idTrasferimento,
-        nome: t.Giocatori.nome,
-        ruolo: t.Giocatori.ruolo,
+        nome: t.Giocatore.nome,
+        ruolo: t.Giocatore.ruolo,
         squadra:
-          t.Utenti?.nomeSquadra === undefined
+          t.Utente?.nomeSquadra === undefined
             ? t.nomeSquadra
-            : t.Utenti.nomeSquadra,
-        maglia: t.SquadreSerieA?.maglia
-          ? `/images/maglie/${t.SquadreSerieA.maglia}`
+            : t.Utente.nomeSquadra,
+        maglia: t.SquadraSerieA?.maglia
+          ? `/images/maglie/${t.SquadraSerieA.maglia}`
           : `/images/maglie/${t.nomeSquadraSerieA?.toLowerCase()}.gif`,
         squadraSerieA:
-          t.SquadreSerieA?.nome === undefined
+          t.SquadraSerieA?.nome === undefined
             ? t.nomeSquadraSerieA
-            : t.SquadreSerieA.nome,
+            : t.SquadraSerieA.nome,
         costo: t.costo,
         media: t.media ?? 0,
         gol: t.gol,

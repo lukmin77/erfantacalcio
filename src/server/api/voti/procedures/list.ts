@@ -27,10 +27,10 @@ export const listVotiProcedure = publicProcedure
           altriBonus: true,
           titolare: true,
           riserva: true,
-          Giocatori: { nome: true, ruolo: true },
+          Giocatore: { nome: true, ruolo: true },
           Calendario: {
             giornataSerieA: true,
-            Tornei: { nome: true, gruppoFase: true },
+            Torneo: { nome: true, gruppoFase: true },
           },
         },
         order: {
@@ -44,20 +44,20 @@ export const listVotiProcedure = publicProcedure
       if (result !== null) {
         return result.map((c) => ({
           id: c.idVoto,
-          nome: c.Giocatori.nome,
-          ruolo: c.Giocatori.ruolo,
+          nome: c.Giocatore.nome,
+          ruolo: c.Giocatore.ruolo,
           voto: c.voto,
           ammonizione: c.ammonizione,
           espulsione: c.espulsione,
           gol:
-            c.Giocatori.ruolo === 'P'
+            c.Giocatore.ruolo === 'P'
               ? (c.gol ?? 0) / Configurazione.bonusGolSubito
               : (c.gol ?? 0) / Configurazione.bonusGol,
           assist: (c.assist ?? 0) / Configurazione.bonusAssist,
           autogol: (c.autogol ?? 0) / Configurazione.bonusAutogol,
           altriBonus: c.altriBonus,
-          torneo: c.Calendario.Tornei.nome,
-          gruppoFase: c.Calendario.Tornei.gruppoFase,
+          torneo: c.Calendario.Torneo.nome,
+          gruppoFase: c.Calendario.Torneo.gruppoFase,
           giornataSerieA: c.Calendario.giornataSerieA,
         }))
       } else return null
