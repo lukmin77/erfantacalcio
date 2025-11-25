@@ -6,6 +6,7 @@ import _ from 'lodash'
 import { uploadVotoGiocatoreSchema } from '~/schemas/giocatore'
 import { EntityManager, In } from 'typeorm'
 import {
+  Calendario,
   Giocatori,
   SquadreSerieA,
   Trasferimenti,
@@ -24,6 +25,28 @@ export const processVotiProcedure = adminProcedure
     try {
       console.log(`Processing ${opts.input.votiGiocatori.length} giocatori`)
 
+      const calendario = await Calendario.findOneOrFail(
+        { select: {
+          idCalendario: true,
+          Partite: {
+            idPartita: true,
+            Formazioni: {
+              idFormazione: true,
+            },
+          }
+        },
+        relations: {
+          Partite: {
+            Formazioni: true,
+          },
+        },
+        where: { idCalendario: opts.input.idCalendario },
+      })
+      if (calendario.Partite.length !== calendario.Partite.filter(p => p.Formazioni.length > 0).length){
+        console.warn(`Attenzione: non tutte le partite della giornata ${opts.input.idCalendario} hanno formazioni inserite.`)
+        throw new Error('Non tutte le partite della giornata hanno formazioni inserite.')
+      }
+      
       await AppDataSource.transaction(async (trx) => {
         const giocatori = await findAndCreateGiocatori(
           trx,

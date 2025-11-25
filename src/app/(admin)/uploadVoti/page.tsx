@@ -135,7 +135,17 @@ export default function UploadVoti() {
                 const voti = await readVoti.mutateAsync({
                   fileUrl: serverPathfilename,
                 })
-                await processRecords(voti)
+                try {
+                  await processRecords(voti)
+                } catch (error) {
+                  setProgress(0)
+                  setAlert({
+                    severity: 'error',
+                    message: error instanceof Error ? error.message : 'Errore sconosciuto durante il processamento dei voti',
+                    title: 'Errore',
+                  })
+                  return
+                }
                 setProgress(90)
                 await refreshStats.mutateAsync({ ruolo: 'P' })
                 setProgress(92)
