@@ -9,9 +9,6 @@
 # testing
 /coverage
 
-# database
-/prisma/db.sqlite
-/prisma/db.sqlite-journal
 WIP.md
 
 # next.js

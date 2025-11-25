@@ -9,7 +9,6 @@
     "dev": "next dev -p 8080",
     "lint": "next lint",
     "start": "next start -p 8080",
-    "postinstall": "prisma generate",
     "format": "prettier --write .",
     "migration:create:local": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:create",
     "migration:generate:local": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d dist/data-source.js",
@@ -57,7 +56,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.23.0",
-    "@prisma/client": "^5.13.0",
     "@types/crypto-js": "^4.2.2",
     "@types/lodash": "^4.14.202",
     "@types/node": "^18.17.0",
@@ -70,7 +68,6 @@
     "eslint": "^9.23.0",
     "eslint-config-next": "^15.2.4",
     "prettier": "^3.5.3",
-    "prisma": "^5.13.0",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typeorm-model-generator": "^0.4.6",
