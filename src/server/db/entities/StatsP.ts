@@ -1,6 +1,6 @@
 import { BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity("StatsP", { schema: "public" })
+@Entity("stats_p", { schema: "public" })
 export class StatsP extends BaseEntity {
   @PrimaryGeneratedColumn({ type: "integer", name: "id", primaryKeyConstraintName: "PK_StatsP" })
   id!: number;

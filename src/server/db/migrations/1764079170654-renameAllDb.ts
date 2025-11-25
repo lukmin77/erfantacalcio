@@ -242,7 +242,7 @@ export class RenameAllDb1764079170654 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "Trasferimenti" RENAME COLUMN "nome_squadra" TO "nomeSquadra"`);
 
         //serie a
-        await queryRunner.query(`ALTER TABLE "SerieA" RENAME TO "SerieA"`);
+        await queryRunner.query(`ALTER TABLE "serie_a" RENAME TO "SerieA"`);
         await queryRunner.query(`ALTER TABLE "SerieA" RENAME COLUMN "id_serie_a" TO "idSerieA"`);
         await queryRunner.query(`ALTER TABLE "SerieA" RENAME COLUMN "squadra_home" TO "squadraHome"`);
         await queryRunner.query(`ALTER TABLE "SerieA" RENAME COLUMN "squadra_away" TO "squadraAway"`);

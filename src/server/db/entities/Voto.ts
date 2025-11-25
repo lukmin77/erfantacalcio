@@ -4,7 +4,7 @@ import { Calendario } from './Calendario'
 import { Giocatore } from './Giocatore'
 
 @Entity({ name: 'voto' })
-// @Unique('UQ_Voti_Calendario_Giocatore', ['id_calendario', 'id_giocatore'])
+@Unique('UQ_Voti_Calendario_Giocatore', ['idCalendario', 'idGiocatore'])
 export class Voto extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'id_voto' })
   idVoto!: number

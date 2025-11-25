@@ -1,6 +1,6 @@
 import { BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity("Flow_new_season", { schema: "public" })
+@Entity("flow_new_season", { schema: "public" })
 export class FlowNewSeason extends BaseEntity {
   @PrimaryGeneratedColumn({ type: "integer", name: "id", primaryKeyConstraintName: "PK_FlowNewSeason" })
   id!: number;

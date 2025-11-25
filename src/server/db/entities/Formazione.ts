@@ -14,7 +14,7 @@ import { Utente } from './Utente'
 import { Voto } from './Voto'
 
 @Entity({ name: 'formazione' })
-// @Unique('UNIQUE_Formazioni_ids', ['id_squadra', 'id_partita'])
+@Unique('UNIQUE_Formazioni_ids', ['idSquadra', 'idPartita'])
 export class Formazione extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'id_formazione' })
   idFormazione!: number
