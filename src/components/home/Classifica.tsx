@@ -8,12 +8,17 @@ import { autosizeOptions } from '~/utils/datatable'
 import { z } from 'zod'
 import { classificaSchema } from '~/schemas/classifica'
 
+interface ClassificaProps {
+  nomeTorneo: string
+  idTorneo: number | undefined
+  gruppo: string | null
+}
 
 export default function Classifica({
   nomeTorneo = '',
   idTorneo = undefined,
   gruppo = null,
-}) {
+}: ClassificaProps) {
   const theme = useTheme()
   const isXs = useMediaQuery(theme.breakpoints.down('md'))
 
