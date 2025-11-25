@@ -25,9 +25,8 @@ export class Voti extends BaseEntity {
     type: 'decimal',
     precision: 5,
     scale: 2,
-    nullable: true,
   })
-  voto!: number | null
+  voto!: number
 
   @Column({
     name: 'ammonizione',
