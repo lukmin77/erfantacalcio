@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { publicProcedure } from '~/server/api/trpc'
 import { AlboTrofei } from '~/server/db/entities'
 
@@ -22,7 +21,7 @@ export const listAlboProcedure = publicProcedure.query(async () => {
       terzo: c.terzo,
     }))
   } catch (error) {
-    Logger.error('Si è verificato un errore', error)
+    console.error('Si è verificato un errore', error)
     throw error
   }
 })

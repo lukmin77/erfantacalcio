@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { adminProcedure } from '../../trpc'
 import { z } from 'zod'
 import { Configurazione } from '~/config'
@@ -37,7 +36,7 @@ export const updateVotoProcedure = adminProcedure
         })
       return opts.input.idVoto
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

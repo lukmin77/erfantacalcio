@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { z } from 'zod'
 import { publicProcedure } from '~/server/api/trpc'
 import { RuoloUtente } from '~/utils/enums'
@@ -63,7 +62,7 @@ export const getGiornataPartiteProcedure = publicProcedure
         }
       }
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

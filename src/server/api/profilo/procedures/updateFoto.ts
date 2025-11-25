@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { z } from 'zod'
 import { protectedProcedure } from '~/server/api/trpc'
 import { Utenti } from '~/server/db/entities'
@@ -12,10 +11,10 @@ export const updateFotoProcedure = protectedProcedure
         { idUtente: opts.ctx.session.user.idSquadra },
         { foto: filePath },
       )
-      Logger.info(`Foto profilo utente aggiornata: ${filePath}`)
+      console.info(`Foto profilo utente aggiornata: ${filePath}`)
       return filePath
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

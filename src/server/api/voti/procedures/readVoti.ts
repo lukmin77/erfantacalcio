@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { adminProcedure } from '../../trpc'
 import { z } from 'zod'
 import { parse } from 'csv-parse'
@@ -17,7 +16,7 @@ export const readVotiProcedure = adminProcedure
     try {
       return await readFileVotiVercel(opts.input.fileUrl)
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })
@@ -30,7 +29,7 @@ async function readFileVotiVercel(fileUrl: string): Promise<iVotoGiocatore[]> {
   }
 
   try {
-    Logger.info('fileUrl:', { fileUrl: fileUrl })
+    console.info('fileUrl:', { fileUrl: fileUrl })
     const response = await fetch(fileUrl)
     if (!response.ok) {
       throw new Error(`Failed to fetch file: ${response.statusText}`)
@@ -94,7 +93,7 @@ async function readFileVotiVercel(fileUrl: string): Promise<iVotoGiocatore[]> {
                   line[`Col${Configurazione.pfColumnRigParato}`] ?? '0',
                 ),
               })
-              //Logger.info('voti:', { voti: voti });
+              //console.info('voti:', { voti: voti });
             }
           },
         },

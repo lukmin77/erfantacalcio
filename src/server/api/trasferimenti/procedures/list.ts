@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { publicProcedure } from '~/server/api/trpc'
 import { number, z } from 'zod'
 import { Configurazione } from '~/config'
@@ -63,7 +62,7 @@ export const listTrasferimentiProcedure = publicProcedure
         isEditVisible: t.stagione === Configurazione.stagione,
       }))
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

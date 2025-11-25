@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { publicProcedure } from '../../trpc'
 import { z } from 'zod'
 import { StatsA, StatsC, StatsD, StatsP } from '~/server/db/entities'
@@ -59,7 +58,7 @@ export const listStatisticheSquadra = publicProcedure
           }))
         : []
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

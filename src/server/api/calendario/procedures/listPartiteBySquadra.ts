@@ -1,6 +1,5 @@
 import { publicProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
-import Logger from '~/lib/logger.server'
 import { getCalendario, mapCalendario } from '../../../utils/common'
 
 export const listPartiteBySquadraProcedure = publicProcedure
@@ -14,7 +13,7 @@ export const listPartiteBySquadraProcedure = publicProcedure
       ])
       return await mapCalendario(result)
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

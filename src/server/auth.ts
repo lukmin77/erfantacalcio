@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { type GetServerSidePropsContext } from 'next'
 import {
   getServerSession,
@@ -103,7 +102,7 @@ export const authOptions: NextAuthOptions = {
             email: apiResponse.mail,
             image: apiResponse.foto,
           }
-          Logger.info(`autenticato:${apiResponse.presidente}`)
+          console.info(`autenticato:${apiResponse.presidente}`)
           return { ...user }
         } else {
           return null
@@ -129,7 +128,7 @@ export const getServerAuthSession = (ctx: {
 }
 
 async function authenticate(input: { username: string; password: string }) {
-  Logger.info('authenticate: ' + input.username)
+  console.info('authenticate: ' + input.username)
   try {
     const hashedPassword = computeMD5Hash(input.password)
     return await Utenti.findOne({
@@ -139,7 +138,7 @@ async function authenticate(input: { username: string; password: string }) {
       },
     })
   } catch (error) {
-    Logger.error('Si è verificato un errore', error)
+    console.error('Si è verificato un errore', error)
     return null
   }
 }

@@ -1,5 +1,4 @@
 import { adminProcedure } from '~/server/api/trpc'
-import Logger from '~/lib/logger.server'
 import { FlowNewSeason } from '~/server/db/entities'
 
 export const getFaseAvvioProcedure = adminProcedure.query(async () => {
@@ -10,7 +9,7 @@ export const getFaseAvvioProcedure = adminProcedure.query(async () => {
     })
     return fase ? fase.idFase : 6
   } catch (error) {
-    Logger.error('Si è verificato un errore', error)
+    console.error('Si è verificato un errore', error)
     throw error
   }
 })

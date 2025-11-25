@@ -1,5 +1,4 @@
 import { adminProcedure } from '~/server/api/trpc'
-import Logger from '~/lib/logger.server'
 import { calendarioSchema } from '~/schemas/calendario'
 import { z } from 'zod'
 import { getCalendario } from '~/server/utils/common'
@@ -28,7 +27,7 @@ export const listCalendarioProcedure = adminProcedure.query(async () => {
     const parsed = z.array(calendarioSchema).parse(mapped)
     return parsed
   } catch (error) {
-    Logger.error('Si è verificato un errore', error)
+    console.error('Si è verificato un errore', error)
     throw error
   }
 })

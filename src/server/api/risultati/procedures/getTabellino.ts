@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { z } from 'zod'
 import { adminProcedure } from '~/server/api/trpc'
 import {
@@ -45,16 +44,16 @@ export const getTabellinoProcedure = adminProcedure
           }
         } else {
           const msg = `Nessuna formazione per la partita: ${opts.input.idPartita} e l'idsquadra: ${opts.input.idSquadra}`
-          Logger.info(msg)
+          console.info(msg)
           return msg
         }
       } else {
         const msg = `Nessuna squadra assegnata alla partita: ${opts.input.idPartita}`
-        Logger.warn(msg)
+        console.warn(msg)
         return msg
       }
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

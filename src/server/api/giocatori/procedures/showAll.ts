@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { publicProcedure } from '../../trpc'
 import { getRuoloEsteso } from '~/utils/helper'
 import { Giocatori } from '~/server/db/entities'
@@ -21,7 +20,7 @@ export const showAll = publicProcedure.query(async () => {
       }))
     }
   } catch (error) {
-    Logger.error('Si è verificato un errore', error)
+    console.error('Si è verificato un errore', error)
     throw error
   }
 })

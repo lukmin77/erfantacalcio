@@ -1,6 +1,5 @@
 import { publicProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
-import Logger from '~/lib/logger.server'
 import { getFantapunti } from '../services/getFantapunti'
 import { Classifiche } from '~/server/db/entities'
 
@@ -46,7 +45,7 @@ export const listClassificaProcedure = publicProcedure
         fantapunti: fantaPunti[c.idSquadra] ?? 0,
       }))
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

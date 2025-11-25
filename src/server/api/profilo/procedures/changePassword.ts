@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { z } from 'zod'
 import { computeMD5Hash } from '~/utils/hashPassword'
 import { protectedProcedure } from '~/server/api/trpc'
@@ -29,7 +28,7 @@ export const changePasswordProcedure = protectedProcedure
         { pwd: computeMD5Hash(opts.input.newPassword) },
       )
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

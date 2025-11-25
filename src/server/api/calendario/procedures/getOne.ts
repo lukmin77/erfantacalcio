@@ -1,6 +1,5 @@
 import { adminProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
-import Logger from '~/lib/logger.server'
 import { calendarioSchema } from '~/schemas/calendario'
 import { Calendario } from '~/server/db/entities'
 
@@ -48,7 +47,7 @@ export const getOneCalendarioProcedure = adminProcedure
       }
       return null
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

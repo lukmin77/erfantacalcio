@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { Configurazione } from '~/config'
 import {
   getBonusModulo,
@@ -24,7 +23,7 @@ export function mapPartite(
 ) {
   return Promise.all(
     partite.map(async (p) => {
-      Logger.info(`IdPartita: ${p.idPartita}`)
+      console.info(`IdPartita: ${p.idPartita}`)
 
       const formazioneHome = await getFormazione(p.idPartita, p.idSquadraH ?? 0)
       const formazioneAway = await getFormazione(p.idPartita, p.idSquadraA ?? 0)

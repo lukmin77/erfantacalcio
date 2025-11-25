@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { adminProcedure } from '../../trpc'
 import { z } from 'zod'
 import { Configurazione } from '~/config'
@@ -16,7 +15,7 @@ export const refreshStatsProcedure = adminProcedure
 
 async function refreshStats(ruolo: string) {
   try {
-    Logger.info(
+    console.info(
       `Function sp_RefreshStats${ruolo} for stagione ${Configurazione.stagione} executing`,
     )
     const queryRunner = AppDataSource.createQueryRunner()
@@ -34,10 +33,10 @@ async function refreshStats(ruolo: string) {
     } finally {
       await queryRunner.release()
     }
-    Logger.info(
+    console.info(
       `Function sp_RefreshStats${ruolo} for stagione ${Configurazione.stagione} executed successfully`,
     )
   } catch (error) {
-    Logger.error('Si è verificato un errore', error)
+    console.error('Si è verificato un errore', error)
   }
 }

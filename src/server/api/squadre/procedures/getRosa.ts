@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { z } from 'zod'
 import { publicProcedure } from '~/server/api/trpc'
 import { getGiocatoriVenduti, getRosaDisponibile } from '../../../utils/common'
@@ -23,7 +22,7 @@ export const getRosaProcedure = publicProcedure
       }
       return rosaDisponibile
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

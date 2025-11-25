@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { z } from 'zod'
 import { adminProcedure } from '../../trpc'
 import { normalizeNomeGiocatore } from '~/utils/helper'
@@ -25,7 +24,7 @@ export const createOrUpdatePlayer = adminProcedure
       })
       return giocatore.idGiocatore
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { publicProcedure } from '~/server/api/trpc'
 import { number, z } from 'zod'
 import { Trasferimenti } from '~/server/db/entities'
@@ -32,10 +31,10 @@ export const getTrasferimentoProcedure = publicProcedure
           dataCessione: result.dataCessione,
         }
       }
-      Logger.warn(`Trasferimento giocatore ${idTrasferimento} non trovato`)
+      console.warn(`Trasferimento giocatore ${idTrasferimento} non trovato`)
       return null
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

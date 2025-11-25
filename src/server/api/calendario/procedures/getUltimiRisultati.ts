@@ -1,5 +1,4 @@
 import { publicProcedure } from '~/server/api/trpc'
-import Logger from '~/lib/logger.server'
 import { getCalendario, getProssimaGiornataSerieA, mapCalendario } from '../../../utils/common'
 
 export const getUltimiRisultatiProcedure = publicProcedure.query(
@@ -9,7 +8,7 @@ export const getUltimiRisultatiProcedure = publicProcedure.query(
       const result = await getCalendario({ giornataSerieA })
       return await mapCalendario(result)
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   },

@@ -1,5 +1,4 @@
 import { publicProcedure } from '~/server/api/trpc'
-import Logger from '~/lib/logger.server'
 import { getCalendario, mapCalendario } from '../../../utils/common'
 import { Between, MoreThan } from 'typeorm'
 
@@ -16,7 +15,7 @@ export const listAttualeProcedure = publicProcedure.query(async () => {
     })
     return await mapCalendario(result)
   } catch (error) {
-    Logger.error('Si è verificato un errore', error)
+    console.error('Si è verificato un errore', error)
     throw error
   }
 })

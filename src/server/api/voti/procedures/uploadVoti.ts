@@ -1,5 +1,4 @@
 import fs from 'fs'
-import Logger from '~/lib/logger.server'
 import { adminProcedure } from '../../trpc'
 import { z } from 'zod'
 import path from 'path'
@@ -23,10 +22,10 @@ export const uploadVotiProcedure = adminProcedure
       })
 
       if (fs.statSync(filePath).size >= fileSize) {
-        Logger.info(`Il file ${fileName} è stato completamente salvato.`)
+        console.info(`Il file ${fileName} è stato completamente salvato.`)
       }
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

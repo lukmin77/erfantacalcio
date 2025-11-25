@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { protectedProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
 import { Utenti } from '~/server/db/entities'
@@ -21,7 +20,7 @@ export const updateMagliaProcedure = protectedProcedure
         { maglia: JSON.stringify(opts.input) },
       )
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

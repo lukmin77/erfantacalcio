@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { protectedProcedure } from '../../trpc'
 import { z } from 'zod'
 import {
@@ -80,7 +79,7 @@ export const show = protectedProcedure
         return dati
       }
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { adminProcedure } from '../../trpc'
 import { z } from 'zod'
 import { Voti } from '~/server/db/entities'
@@ -13,7 +12,7 @@ export const resetVotiProcedure = adminProcedure
     try {
       await resetVoti(opts.input.idCalendario)
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })
@@ -35,7 +34,7 @@ async function resetVoti(idCalendario: number) {
       },
     )
   } catch (error) {
-    Logger.error('Si è verificato un errore', error)
+    console.error('Si è verificato un errore', error)
     throw error
   }
 }
