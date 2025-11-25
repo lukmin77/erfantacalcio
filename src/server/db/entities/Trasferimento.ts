@@ -1,26 +1,26 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, type Relation, JoinColumn, BaseEntity } from 'typeorm'
-import { Giocatori } from './Giocatori'
-import { SquadreSerieA } from './SquadreSerieA'
-import { Utenti } from './Utenti'
+import { Giocatore } from './Giocatore'
+import { SquadraSerieA } from './SquadraSerieA'
+import { Utente } from './Utente'
 
-@Entity({ name: 'Trasferimenti' })
-export class Trasferimenti extends BaseEntity {
-  @PrimaryGeneratedColumn({ name: 'idTrasferimento' })
+@Entity({ name: 'trasferimento' })
+export class Trasferimento extends BaseEntity {
+  @PrimaryGeneratedColumn({ name: 'id_trasferimento' })
   idTrasferimento!: number
 
-  @Column({ name: 'idGiocatore', type: 'int' })
+  @Column({ name: 'id_giocatore', type: 'int' })
   idGiocatore!: number
 
-  @Column({ name: 'idSquadraSerieA', type: 'int', nullable: true })
+  @Column({ name: 'id_squadra_serie_a', type: 'int', nullable: true })
   idSquadraSerieA!: number | null
 
-  @Column({ name: 'dataAcquisto', type: 'timestamptz', default: () => "CURRENT_TIMESTAMP" })
+  @Column({ name: 'data_acquisto', type: 'timestamptz', default: () => "CURRENT_TIMESTAMP" })
   dataAcquisto!: Date
 
-  @Column({ name: 'dataCessione', type: 'timestamptz', nullable: true })
+  @Column({ name: 'data_cessione', type: 'timestamptz', nullable: true })
   dataCessione!: Date | null
 
-  @Column({ name: 'idSquadra', type: 'int', nullable: true })
+  @Column({ name: 'id_squadra', type: 'int', nullable: true })
   idSquadra!: number | null
 
   @Column({ name: 'costo', type: 'smallint' })
@@ -29,18 +29,18 @@ export class Trasferimenti extends BaseEntity {
   @Column({ name: 'stagione', type: 'varchar', length: 9 })
   stagione!: string
 
-  @Column({ name: 'hasRitirato', type: 'boolean', default: false })
+  @Column({ name: 'has_ritirato', type: 'boolean', default: false })
   hasRitirato!: boolean
 
   @Column({
-    name: 'nomeSquadraSerieA',
+    name: 'nome_squadra_serie_a',
     type: 'varchar',
     length: 50,
     nullable: true,
   })
   nomeSquadraSerieA!: string | null
 
-  @Column({ name: 'nomeSquadra', type: 'varchar', length: 50, nullable: true })
+  @Column({ name: 'nome_squadra', type: 'varchar', length: 50, nullable: true })
   nomeSquadra!: string | null
 
   @Column({
@@ -61,35 +61,35 @@ export class Trasferimenti extends BaseEntity {
   @Column({ name: 'giocate', type: 'smallint', nullable: true })
   giocate!: number | null
 
-  @ManyToOne(() => Giocatori, (g: Giocatori) => g.Trasferimenti, {
+  @ManyToOne(() => Giocatore, (g: Giocatore) => g.Trasferimenti, {
     onDelete: 'RESTRICT',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn({
-    name: 'idGiocatore',
+    name: 'id_giocatore',
     foreignKeyConstraintName: 'FK_Trasferimenti_Giocatori',
   })
-  Giocatore!: Relation<Giocatori>
+  Giocatore!: Relation<Giocatore>
 
-  @ManyToOne(() => SquadreSerieA, (s: SquadreSerieA) => s.Trasferimenti, {
+  @ManyToOne(() => SquadraSerieA, (s: SquadraSerieA) => s.Trasferimenti, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
     nullable: true,
   })
   @JoinColumn({
-    name: 'idSquadraSerieA',
+    name: 'id_squadra_serie_a',
     foreignKeyConstraintName: 'FK_Trasferimenti_SquadreSerieA',
   })
-  SquadraSerieA?: Relation<SquadreSerieA | null>
+  SquadraSerieA?: Relation<SquadraSerieA | null>
 
-  @ManyToOne(() => Utenti, (u: Utenti) => u.Trasferimenti, {
+  @ManyToOne(() => Utente, (u: Utente) => u.Trasferimenti, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
     nullable: true,
   })
   @JoinColumn({
-    name: 'idSquadra',
+    name: 'id_squadra',
     foreignKeyConstraintName: 'FK_Trasferimenti_Utenti',
   })
-  Utente?: Relation<Utenti | null>
+  Utente?: Relation<Utente | null>
 }

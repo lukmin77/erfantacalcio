@@ -8,34 +8,34 @@ import {
   JoinColumn,
   BaseEntity,
 } from 'typeorm'
-import { Tornei } from './Tornei'
-import { Partite } from './Partite'
-import { Voti } from './Voti'
+import { Torneo } from './Torneo'
+import { Partita } from './Partita'
+import { Voto } from './Voto'
 
-@Entity({ name: 'Calendario' })
+@Entity({ name: 'calendario' })
 export class Calendario extends BaseEntity {
-  @PrimaryGeneratedColumn({ name: 'idCalendario' })
+  @PrimaryGeneratedColumn({ name: 'id_calendario' })
   idCalendario!: number
 
   @Column({ name: 'giornata', type: 'smallint' })
   giornata!: number
 
-  @Column({ name: 'idTorneo', type: 'int' })
+  @Column({ name: 'id_torneo', type: 'int' })
   idTorneo!: number
 
-  @Column({ name: 'giornataSerieA', type: 'smallint' })
+  @Column({ name: 'giornata_serie_a', type: 'smallint' })
   giornataSerieA!: number
 
   @Column({ name: 'ordine', type: 'smallint' })
   ordine!: number
 
-  @Column({ name: 'hasSovrapposta', type: 'boolean', default: false })
+  @Column({ name: 'has_sovrapposta', type: 'boolean', default: false })
   hasSovrapposta!: boolean
 
-  @Column({ name: 'hasGiocata', type: 'boolean', default: false })
+  @Column({ name: 'has_giocata', type: 'boolean', default: false })
   hasGiocata!: boolean
 
-  @Column({ name: 'hasDaRecuperare', type: 'boolean', default: false })
+  @Column({ name: 'has_da_recuperare', type: 'boolean', default: false })
   hasDaRecuperare!: boolean
 
   @Column({ name: 'data', type: 'timestamptz', default: () => "CURRENT_TIMESTAMP", nullable: true })
@@ -44,22 +44,22 @@ export class Calendario extends BaseEntity {
   @Column({ name: 'girone', type: 'smallint', nullable: true })
   girone!: number | null
 
-  @Column({ name: 'dataFine', type: 'timestamptz', nullable: true })
+  @Column({ name: 'data_fine', type: 'timestamptz', nullable: true })
   dataFine!: Date | null
 
-  @ManyToOne(() => Tornei, (t: Tornei) => t.Calendari, {
+  @ManyToOne(() => Torneo, (t: Torneo) => t.Calendari, {
     onUpdate: 'NO ACTION',
     onDelete: 'RESTRICT',
   })
   @JoinColumn({
-    name: 'idTorneo',
+    name: 'id_torneo',
     foreignKeyConstraintName: 'FK_Calendario_Tornei',
   })
-  Torneo!: Relation<Tornei>
+  Torneo!: Relation<Torneo>
 
-  @OneToMany(() => Partite, (p: Partite) => p.Calendario)
-  Partite!: Relation<Partite[]>
+  @OneToMany(() => Partita, (p: Partita) => p.Calendario)
+  Partite!: Relation<Partita[]>
 
-  @OneToMany(() => Voti, (v: Voti) => v.Calendario)
-  Voti!: Relation<Voti[]>
+  @OneToMany(() => Voto, (v: Voto) => v.Calendario)
+  Voti!: Relation<Voto[]>
 }

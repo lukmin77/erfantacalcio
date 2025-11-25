@@ -1,23 +1,21 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, Index, type Relation, JoinColumn, BaseEntity } from 'typeorm'
-import { Formazioni } from './Formazioni'
+import { Formazione } from './Formazione'
 import { Calendario } from './Calendario'
-import { Giocatori } from './Giocatori'
+import { Giocatore } from './Giocatore'
 
-@Entity({ name: 'Voti' })
-@Unique('UQ_Voti_Calendario_Giocatore', ['idCalendario', 'idGiocatore'])
-@Index('IX_Voti_StatsGiocatori', ['voto'])
-@Index('IX_Voti_StatsGiocatori2', ['idGiocatore'])
-export class Voti extends BaseEntity {
-  @PrimaryGeneratedColumn({ name: 'idVoto' })
+@Entity({ name: 'voto' })
+// @Unique('UQ_Voti_Calendario_Giocatore', ['id_calendario', 'id_giocatore'])
+export class Voto extends BaseEntity {
+  @PrimaryGeneratedColumn({ name: 'id_voto' })
   idVoto!: number
 
-  @Column({ name: 'idGiocatore', type: 'int' })
+  @Column({ name: 'id_giocatore', type: 'int' })
   idGiocatore!: number
 
-  @Column({ name: 'idCalendario', type: 'int' })
+  @Column({ name: 'id_calendario', type: 'int' })
   idCalendario!: number
 
-  @Column({ name: 'idFormazione', type: 'int', nullable: true })
+  @Column({ name: 'id_formazione', type: 'int', nullable: true })
   idFormazione!: number | null
 
   @Column({
@@ -77,7 +75,7 @@ export class Voti extends BaseEntity {
   autogol!: number | null
 
   @Column({
-    name: 'altriBonus',
+    name: 'altri_bonus',
     type: 'decimal',
     precision: 5,
     scale: 1,
@@ -92,34 +90,34 @@ export class Voti extends BaseEntity {
   @Column({ name: 'riserva', type: 'smallint', nullable: true })
   riserva!: number | null
 
-  @ManyToOne(() => Formazioni, (f: Formazioni) => f.Voti, {
+  @ManyToOne(() => Formazione, (f: Formazione) => f.Voti, {
     nullable: true,
     onUpdate: 'NO ACTION',
     onDelete: 'NO ACTION',
   })
   @JoinColumn({
-    name: 'idFormazione',
+    name: 'id_formazione',
     foreignKeyConstraintName: 'FK_Formazione_Giocatori',
   })
-  Formazione?: Relation<Formazioni | null>
+  Formazione?: Relation<Formazione | null>
 
   @ManyToOne(() => Calendario, (c: Calendario) => c.Voti, {
     onUpdate: 'NO ACTION',
     onDelete: 'RESTRICT',
   })
   @JoinColumn({
-    name: 'idCalendario',
+    name: 'id_calendario',
     foreignKeyConstraintName: 'FK_Voti_Calendario',
   })
   Calendario!: Relation<Calendario>
 
-  @ManyToOne(() => Giocatori, (g: Giocatori) => g.Voti, {
+  @ManyToOne(() => Giocatore, (g: Giocatore) => g.Voti, {
     onUpdate: 'NO ACTION',
     onDelete: 'RESTRICT',
   })
   @JoinColumn({
-    name: 'idGiocatore',
+    name: 'id_giocatore',
     foreignKeyConstraintName: 'FK_Voti_Giocatori',
   })
-  Giocatore!: Relation<Giocatori>
+  Giocatore!: Relation<Giocatore>
 }

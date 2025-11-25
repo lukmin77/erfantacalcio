@@ -78,12 +78,12 @@ export class StatsP extends BaseEntity {
   @Column("character varying", { name: "maglia", length: 50 })
   maglia!: string;
 
-  @Column("character varying", { name: "squadraSerieA", length: 50 })
+  @Column("character varying", { name: "squadra_serie_a", length: 50 })
   squadraSerieA!: string;
 
   @Column("character varying", { name: "squadra", nullable: true, length: 50 })
   squadra?: string | null;
 
-  @Column("integer", { name: "idSquadra", nullable: true })
+  @Column("integer", { name: "id_squadra", nullable: true })
   idSquadra?: number | null;
 }

@@ -1,6 +1,6 @@
-import { BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity("StatsC", { schema: "public" })
+@Entity("stats_c", { schema: "public" })
 export class StatsC extends BaseEntity {
   @PrimaryGeneratedColumn({ type: "integer", name: "id", primaryKeyConstraintName: "PK_StatsC" })
   id!: number;
@@ -78,12 +78,12 @@ export class StatsC extends BaseEntity {
   @Column("character varying", { name: "maglia", length: 50 })
   maglia!: string;
 
-  @Column("character varying", { name: "squadraSerieA", length: 50 })
+  @Column("character varying", { name: "squadra_serie_a", length: 50 })
   squadraSerieA!: string;
 
   @Column("character varying", { name: "squadra", nullable: true, length: 50 })
   squadra?: string | null;
 
-  @Column("integer", { name: "idSquadra", nullable: true })
+  @Column("integer", { name: "id_squadra", nullable: true })
   idSquadra?: number | null;
 }

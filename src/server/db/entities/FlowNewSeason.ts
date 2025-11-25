@@ -1,11 +1,11 @@
 import { BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity("FlowNewSeasosn", { schema: "public" })
+@Entity("Flow_new_season", { schema: "public" })
 export class FlowNewSeason extends BaseEntity {
   @PrimaryGeneratedColumn({ type: "integer", name: "id", primaryKeyConstraintName: "PK_FlowNewSeason" })
   id!: number;
 
-  @Column("integer", { name: "idFase" })
+  @Column("integer", { name: "id_fase" })
   idFase!: number;
 
   @Column("boolean", { name: "active", default: () => "false" })
