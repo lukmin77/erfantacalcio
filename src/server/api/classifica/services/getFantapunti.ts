@@ -8,7 +8,7 @@ export async function getFantapunti(idTorneo: number) {
         .createQueryBuilder('p')
         .select(`p.${idCol}`, 'id_squadra')
         .addSelect(`SUM(p.${scoreCol})`, 'fantapunti')
-        .innerJoin('p.calendario', 'cal')
+        .innerJoin('calendario', 'cal', 'cal.id_calendario = p.id_calendario')
         .where('cal.id_torneo = :idTorneo', { idTorneo })
         .groupBy(`p.${idCol}`)
         .getRawMany()
