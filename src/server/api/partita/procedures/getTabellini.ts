@@ -11,6 +11,7 @@ import {
 } from '../../../utils/common'
 import { Configurazione } from '~/config'
 import { Formazioni, Partite } from '~/server/db/entities'
+import { IsNull, LessThan, MoreThan, Not } from 'typeorm'
 
 export const getTabelliniProcedure = publicProcedure
   .input(z.object({ idPartita: z.number() }))
@@ -35,8 +36,8 @@ export const getTabelliniProcedure = publicProcedure
           if (result && result.partite.length === 1) {
             const partita = result.partite[0]
 
-            const formazioni = await getFormazioni(idPartita, partita)
-            
+            const formazioni = await getFormazioni(idPartita)
+
             const datiHome = formazioni.find(
               (c) => c.idSquadra === partita?.idHome,
             )
@@ -47,11 +48,11 @@ export const getTabelliniProcedure = publicProcedure
             const giocatoriInfluentiHome = await getTabellino(
               datiHome?.idFormazione ?? 0,
             )
-            
+
             const fantapuntiHome = getGiocatoriVotoInfluente(
               giocatoriInfluentiHome,
             ).reduce((acc, cur) => acc + (cur.votoBonus ?? 0), 0)
-            
+
             const giocatoriInfluentiAway = await getTabellino(
               datiAway?.idFormazione ?? 0,
             )
@@ -114,14 +115,17 @@ export const getTabelliniProcedure = publicProcedure
                   autogol: voto.autogol ?? 0,
                   altriBonus: voto.altriBonus ?? 0,
                   votoBonus:
-                    giocatoriInfluentiHome.find((gi) => gi.idVoto === voto.idVoto)
-                      ?.votoBonus ?? 0,
+                    giocatoriInfluentiHome.find(
+                      (gi) => gi.idVoto === voto.idVoto,
+                    )?.votoBonus ?? 0,
                   isSostituito:
-                    giocatoriInfluentiHome.find((gi) => gi.idVoto === voto.idVoto)
-                      ?.isSostituito ?? false,
+                    giocatoriInfluentiHome.find(
+                      (gi) => gi.idVoto === voto.idVoto,
+                    )?.isSostituito ?? false,
                   isVotoInfluente:
-                    giocatoriInfluentiHome.find((gi) => gi.idVoto === voto.idVoto)
-                      ?.isVotoInfluente ?? false,
+                    giocatoriInfluentiHome.find(
+                      (gi) => gi.idVoto === voto.idVoto,
+                    )?.isVotoInfluente ?? false,
                 })),
               },
               TabellinoAway: datiAway && {
@@ -185,7 +189,6 @@ export const getTabelliniProcedure = publicProcedure
     }
   })
 
-
 export async function getAltrePartite(idCalendario: number | undefined) {
   return await Partite.find({
     select: {
@@ -199,42 +202,88 @@ export async function getAltrePartite(idCalendario: number | undefined) {
 }
 
 export async function getFormazioni(
-  idPartita: number,
-  partita: {
-    idPartita: number
-    idHome: number | null
-    squadraHome: string | undefined
-    fotoHome: string | null | undefined
-    magliaHome: string | null | undefined
-    multaHome: boolean
-    golHome: number | null
-    idAway: number | null
-    squadraAway: string | undefined
-    fotoAway: string | null | undefined
-    magliaAway: string | null | undefined
-    multaAway: boolean
-    golAway: number | null
-    isFattoreHome: boolean
-  },
+  idPartita: number
 ) {
-  return await Formazioni.createQueryBuilder('formazione')
-    .leftJoinAndSelect('formazione.voto', 'voti')
-    .leftJoinAndSelect('voti.giocatore', 'giocatore')
-    .leftJoinAndSelect('giocatore.trasferimento', 'trasf')
-    .leftJoinAndSelect('trasf.squadra_serie_a', 'squadra')
-    .where('formazione.id_partita = :idPartita', { idPartita })
-    .andWhere('formazione.id_squadra IN (:...ids)', {
-      ids: [partita?.idHome ?? 0, partita?.idAway ?? 0],
-    })
-    .andWhere(
-      `(
-              (trasf.data_cessione IS NULL AND trasf.data_acquisto < :now)
-              OR
-              (trasf.data_cessione IS NOT NULL AND trasf.data_acquisto < :now AND trasf.data_cessione > :now)
-              )`,
-      { now: toLocaleDateTime(new Date()) },
-    )
-    .orderBy('giocatore.ruolo', 'DESC')
-    .addOrderBy('voto.riserva', 'ASC')
-    .getMany()
+  const formazioni = await Formazioni.find({
+    select: {
+      idFormazione: true,
+      idSquadra: true,
+      idPartita: true,
+      dataOra: true,
+      modulo: true,
+      hasBloccata: true,
+      Voti: {
+        idVoto: true,
+        idGiocatore: true,
+        idCalendario: true,
+        idFormazione: true,
+        voto: true,
+        ammonizione: true,
+        espulsione: true,
+        gol: true,
+        assist: true,
+        autogol: true,
+        altriBonus: true,
+        titolare: true,
+        riserva: true,
+        Giocatore: {
+          idGiocatore: true,
+          ruolo: true,
+          nome: true,
+          nomeFantaGazzetta: true,
+          id_pf: true,
+          Trasferimenti: {
+            idTrasferimento: true,
+            idGiocatore: true,
+            idSquadraSerieA: true,
+            dataAcquisto: true,
+            dataCessione: true,
+            idSquadra: true,
+            costo: true,
+            stagione: true,
+            hasRitirato: true,
+            nomeSquadraSerieA: true,
+            nomeSquadra: true,
+            media: true,
+            gol: true,
+            assist: true,
+            giocate: true,
+            SquadraSerieA: {
+              idSquadraSerieA: true,
+              nome: true,
+              maglia: true,
+            },
+          },
+        },
+      },
+    },
+    relations: {
+      Voti: { Giocatore: { Trasferimenti: { SquadraSerieA: true } } },
+    },
+    where: {
+      idPartita: idPartita,
+      Voti: {
+        Giocatore: {
+          Trasferimenti: [
+            {
+              dataCessione: IsNull(),
+              dataAcquisto: LessThan(new Date()),
+            },
+            {
+              dataAcquisto: LessThan(new Date()),
+              dataCessione: MoreThan(new Date()),
+            },
+          ],
+        },
+      },
+    },
+    order: {
+      Voti: {
+        Giocatore: { ruolo: 'DESC' },
+        riserva: 'ASC',
+      },
+    },
+  })
+
+  return formazioni
 }

@@ -17,7 +17,7 @@ export const getFormazioniProcedure = publicProcedure
         if (calendario) {
           const partita = calendario.partite[0]
           
-          const formazioni = await getFormazioni(idPartita, partita)
+          const formazioni = await getFormazioni(idPartita)
 
           const altrePartite = await getAltrePartite(calendario?.idCalendario)
 
