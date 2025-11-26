@@ -6,7 +6,7 @@ export async function getFantapunti(idTorneo: number) {
     return (
       await AppDataSource.getRepository(Partite)
         .createQueryBuilder('p')
-        .select(`p.${idCol}`, 'id_squadra')
+        .select(`p.${idCol}`, 'idSquadra')
         .addSelect(`SUM(p.${scoreCol})`, 'fantapunti')
         .innerJoin('calendario', 'cal', 'cal.id_calendario = p.id_calendario')
         .where('cal.id_torneo = :idTorneo', { idTorneo })

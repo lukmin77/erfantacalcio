@@ -5,8 +5,8 @@ import { EntityManager } from 'typeorm'
 export async function UpdateClassifica(trx: EntityManager, idSquadra: number, idTorneo: number) {
   const partite = await trx.find(Partite, {
     where: [
-      { idSquadraH: idSquadra, Calendario: { idTorneo } },
-      { idSquadraA: idSquadra, Calendario: { idTorneo } },
+      { idSquadraH: idSquadra, Calendario: { idTorneo: idTorneo, hasGiocata: true } },
+      { idSquadraA: idSquadra, Calendario: { idTorneo: idTorneo, hasGiocata: true } },
     ],
   })
   const puntiH = partite.filter((p) => p.idSquadraH === idSquadra).reduce((sum, p) => sum + (p.hasMultaH ? 0 : p.puntiH ?? 0), 0)

@@ -20,19 +20,18 @@ export const updateRisultatiProcedure = adminProcedure
   .mutation(async (opts) => {
     try {
       const partita = await Partite.findOne({
-        select: { idSquadraH: true, idSquadraA: true, idCalendario: true },
+        select: {
+          idPartita: true,
+          idSquadraH: true,
+          idSquadraA: true,
+          idCalendario: true,
+          Calendario: { idCalendario: true, Torneo: { idTorneo: true, hasClassifica: true } },
+        },
+        relations: { Calendario: { Torneo: true } },
         where: { idPartita: opts.input.idPartita },
       })
-
+      
       if (partita?.idSquadraH && partita?.idSquadraA) {
-        const infoCalendario = await Partite.findOne({
-          select: {
-            idCalendario: true,
-            Calendario: { Torneo: { idTorneo: true, hasClassifica: true } },
-          },
-          relations: { Calendario: { Torneo: true } },
-          where: { idPartita: opts.input.idPartita },
-        })
         const idSquadraHome = partita.idSquadraH
         const idSquadraAway = partita.idSquadraA
 
@@ -52,13 +51,13 @@ export const updateRisultatiProcedure = adminProcedure
             { idPartita: opts.input.idPartita },
             {
               puntiH: getPunti(
-                infoCalendario?.Calendario.Torneo.hasClassifica ?? false,
+                partita?.Calendario.Torneo.hasClassifica ?? false,
                 opts.input.multaHome,
                 opts.input.golHome,
                 opts.input.golAway,
               ),
               puntiA: getPunti(
-                infoCalendario?.Calendario.Torneo.hasClassifica ?? false,
+                partita?.Calendario.Torneo.hasClassifica ?? false,
                 opts.input.multaAway,
                 opts.input.golAway,
                 opts.input.golHome,
@@ -76,22 +75,22 @@ export const updateRisultatiProcedure = adminProcedure
             `Aggiornate formazioni, calendario e partite per idpartita: ${opts.input.idPartita}`,
           )
 
-          if (infoCalendario?.Calendario.Torneo.hasClassifica) {
+          if (partita?.Calendario.Torneo.hasClassifica) {
             await UpdateClassifica(
               trx,
               idSquadraHome,
-              infoCalendario.Calendario.Torneo.idTorneo,
+              partita.Calendario.Torneo.idTorneo,
             )
             console.info(
-              `Aggiornate classifica e utenti (multe) per idsquadraHome: ${idSquadraHome} e idTorneo: ${infoCalendario.Calendario.Torneo.idTorneo}`,
+              `Aggiornate classifica e utenti (multe) per idsquadraHome: ${idSquadraHome} e idTorneo: ${partita.Calendario.Torneo.idTorneo}`,
             )
             await UpdateClassifica(
               trx,
               idSquadraAway,
-              infoCalendario.Calendario.Torneo.idTorneo,
+              partita.Calendario.Torneo.idTorneo,
             )
             console.info(
-              `Aggiornate classifica e utenti (multe) per idsquadraAway: ${idSquadraAway} e idTorneo: ${infoCalendario.Calendario.Torneo.idTorneo}`,
+              `Aggiornate classifica e utenti (multe) per idsquadraAway: ${idSquadraAway} e idTorneo: ${partita.Calendario.Torneo.idTorneo}`,
             )
           }
         })

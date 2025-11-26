@@ -33,6 +33,7 @@ export const listVotiProcedure = publicProcedure
             Torneo: { nome: true, gruppoFase: true },
           },
         },
+        relations: { Giocatore: true, Calendario: { Torneo: true } },
         order: {
           Calendario: {
             giornataSerieA: 'desc',

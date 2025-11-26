@@ -40,7 +40,7 @@ export const showStatistica = publicProcedure
           .addSelect('SUM(voto.gol)', 'sumGol')
           .addSelect('SUM(voto.assist)', 'sumAssist')
           .addSelect('COUNT(voto.id_calendario)', 'countCalendario')
-          .leftJoin('voto.calendario', 'calendario')
+          .leftJoin('calendario', 'calendario', 'voto.id_calendario = calendario.id_calendario')
           .where('voto.id_giocatore = :idGiocatore', { idGiocatore })
           .andWhere('voto.voto > 0')
           .andWhere(

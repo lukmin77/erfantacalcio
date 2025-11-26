@@ -3,19 +3,19 @@ import { z } from 'zod'
 import { calendarioSchema } from '~/schemas/calendario'
 import { Calendario } from '~/server/db/entities'
 
-function mapCalendarioResult(result: any): z.infer<typeof calendarioSchema> {
+function mapCalendarioResult(result: Calendario): z.infer<typeof calendarioSchema> {
   return {
     id: result.idCalendario,
-    idTorneo: result.Tornei.idTorneo,
-    nome: result.Tornei.nome,
-    gruppoFase: result.Tornei.gruppoFase,
+    idTorneo: result.Torneo.idTorneo,
+    nome: result.Torneo.nome,
+    gruppoFase: result.Torneo.gruppoFase,
     giornata: result.giornata,
     giornataSerieA: result.giornataSerieA,
     isGiocata: result.hasGiocata,
     isSovrapposta: result.hasSovrapposta,
     isRecupero: result.hasDaRecuperare,
-    data: result.data?.toISOString(),
-    dataFine: result.dataFine?.toISOString(),
+    data: (result.data ?? new Date())?.toISOString(),
+    dataFine: (result.dataFine ?? new Date())?.toISOString(),
     girone: result.girone,
     isSelected: false,
   }
@@ -37,6 +37,7 @@ export const getOneCalendarioProcedure = adminProcedure
           girone: true,
           hasGiocata: true,
           hasDaRecuperare: true,
+          idTorneo: true,
           Torneo: { idTorneo: true, nome: true, gruppoFase: true },
         },
         relations: { Torneo: true },
