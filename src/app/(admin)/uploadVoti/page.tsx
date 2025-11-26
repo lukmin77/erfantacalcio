@@ -125,12 +125,12 @@ export default function UploadVoti() {
                   fileName: filename,
                   fileData: fileData,
                 })
-                setProgress(20)
+                setProgress(5)
 
                 await resetVoti.mutateAsync({
                   idCalendario: selectedIdCalendario ?? 0,
                 })
-                setProgress(30)
+                setProgress(10)
 
                 const voti = await readVoti.mutateAsync({
                   fileUrl: serverPathfilename,
@@ -188,7 +188,7 @@ export default function UploadVoti() {
     // Itera su ciascun blocco e chiama mutateAsync
     for (let i = 0; i < voti.length; i += chunkSize) {
       const chunk = voti.slice(i, i + chunkSize)
-      const progressVoti = (i * 60) / voti.length + 30
+      const progressVoti = (i * 90) / voti.length + 10
       await processVoti.mutateAsync({
         idCalendario: idCalendario,
         votiGiocatori: chunk,
