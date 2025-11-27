@@ -1,17 +1,16 @@
-import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { publicProcedure } from '~/server/api/trpc'
+import { AlboTrofei } from '~/server/db/entities'
 
 export const listAlboProcedure = publicProcedure.query(async () => {
   try {
-    const records = await prisma.alboTrofei_new.findMany({
-      orderBy: [
-        { stagione: 'desc' },
-        { campionato: 'desc' },
-        { champions: 'desc' },
-        { secondo: 'desc' },
-        { terzo: 'desc' },
-      ],
+    const records = await AlboTrofei.find({
+      order: {
+        stagione: 'DESC',
+        campionato: 'DESC',
+        champions: 'DESC',
+        secondo: 'DESC',
+        terzo: 'DESC',
+      },
     })
     return records.map((c) => ({
       id: c.id,
@@ -22,7 +21,7 @@ export const listAlboProcedure = publicProcedure.query(async () => {
       terzo: c.terzo,
     }))
   } catch (error) {
-    Logger.error('Si è verificato un errore', error)
+    console.error('Si è verificato un errore', error)
     throw error
   }
 })

@@ -125,17 +125,27 @@ export default function UploadVoti() {
                   fileName: filename,
                   fileData: fileData,
                 })
-                setProgress(20)
+                setProgress(5)
 
                 await resetVoti.mutateAsync({
                   idCalendario: selectedIdCalendario ?? 0,
                 })
-                setProgress(30)
+                setProgress(10)
 
                 const voti = await readVoti.mutateAsync({
                   fileUrl: serverPathfilename,
                 })
-                await processRecords(voti)
+                try {
+                  await processRecords(voti)
+                } catch (error) {
+                  setProgress(0)
+                  setAlert({
+                    severity: 'error',
+                    message: error instanceof Error ? error.message : 'Errore sconosciuto durante il processamento dei voti',
+                    title: 'Errore',
+                  })
+                  return
+                }
                 setProgress(90)
                 await refreshStats.mutateAsync({ ruolo: 'P' })
                 setProgress(92)
@@ -149,7 +159,7 @@ export default function UploadVoti() {
                 setUploading(false)
                 setAlert({
                   severity: 'success',
-                  message: `File caricato correttamente: ${serverPathfilename}`,
+                  message: `File processato correttamente: ${serverPathfilename}`,
                   title: 'File inviato',
                 })
               } catch (error) {
@@ -178,10 +188,10 @@ export default function UploadVoti() {
     // Itera su ciascun blocco e chiama mutateAsync
     for (let i = 0; i < voti.length; i += chunkSize) {
       const chunk = voti.slice(i, i + chunkSize)
-      const progressVoti = (i * 60) / voti.length + 30
+      const progressVoti = (i * 90) / voti.length + 10
       await processVoti.mutateAsync({
         idCalendario: idCalendario,
-        voti: chunk,
+        votiGiocatori: chunk,
       })
       setProgress(progressVoti)
     }

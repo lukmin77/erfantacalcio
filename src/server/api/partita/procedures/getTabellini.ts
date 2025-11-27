@@ -1,11 +1,17 @@
-import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { publicProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
-import { mapCalendario } from '../../../utils/common'
+import { getCalendario, mapCalendario } from '../../../utils/common'
 import { toLocaleDateTime } from '~/utils/dateUtils'
-import { getBonusModulo, getBonusSenzaVoto, getGiocatoriVotoInfluente, getGolSegnati, getTabellino } from '../../../utils/common'
+import {
+  getBonusModulo,
+  getBonusSenzaVoto,
+  getGiocatoriVotoInfluente,
+  getGolSegnati,
+  getTabellino,
+} from '../../../utils/common'
 import { Configurazione } from '~/config'
+import { Formazioni, Partite } from '~/server/db/entities'
+import { IsNull, LessThan, MoreThan, Not } from 'typeorm'
 
 export const getTabelliniProcedure = publicProcedure
   .input(z.object({ idPartita: z.number() }))
@@ -13,151 +19,113 @@ export const getTabelliniProcedure = publicProcedure
     const idPartita = +opts.input.idPartita
     try {
       const idCalendario = (
-        await prisma.partite.findUnique({
-          select: { Calendario: { select: { idCalendario: true } } },
+        await Partite.findOne({
+          select: { idCalendario: true },
           where: { idPartita },
         })
-      )?.Calendario.idCalendario
+      )?.idCalendario
 
       if (idCalendario) {
-        const calendarioQry = await prisma.calendario.findUnique({
-          select: {
-            idCalendario: true,
-            giornata: true,
-            giornataSerieA: true,
-            ordine: true,
-            data: true,
-            dataFine: true,
-            hasSovrapposta: true,
-            girone: true,
-            hasGiocata: true,
-            hasDaRecuperare: true,
-            Tornei: { select: { idTorneo: true, nome: true, gruppoFase: true } },
-            Partite: {
-              select: {
-                idPartita: true,
-                idSquadraH: true,
-                idSquadraA: true,
-                hasMultaH: true,
-                hasMultaA: true,
-                golH: true,
-                golA: true,
-                fattoreCasalingo: true,
-                Utenti_Partite_idSquadraHToUtenti: { select: { nomeSquadra: true, foto: true, maglia: true } },
-                Utenti_Partite_idSquadraAToUtenti: { select: { nomeSquadra: true, foto: true, maglia: true } },
-              },
-              where: { idPartita },
-            },
-          },
-          where: { idCalendario },
+        const calendario = await getCalendario({
+          idCalendario: idCalendario,
+          Partite: { idPartita: idPartita },
         })
 
-        if (calendarioQry) {
-          const calendario = (await mapCalendario([calendarioQry]))[0]
-          if (calendario && calendario.partite.length === 1) {
-            const partita = calendario.partite[0]
-            const formazioni = await prisma.formazioni.findMany({
-              select: {
-                idFormazione: true,
-                modulo: true,
-                dataOra: true,
-                idSquadra: true,
-                Voti: {
-                  select: {
-                    idVoto: true,
-                    titolare: true,
-                    riserva: true,
-                    voto: true,
-                    ammonizione: true,
-                    espulsione: true,
-                    gol: true,
-                    assist: true,
-                    autogol: true,
-                    altriBonus: true,
-                    Giocatori: {
-                      select: {
-                        idGiocatore: true,
-                        nome: true,
-                        nomeFantaGazzetta: true,
-                        ruolo: true,
-                        Trasferimenti: {
-                          select: { SquadreSerieA: { select: { maglia: true, nome: true } } },
-                          where: {
-                            OR: [
-                              { AND: [{ dataCessione: null }, { dataAcquisto: { lt: toLocaleDateTime(new Date()) } }] },
-                              { AND: [ { NOT: { dataCessione: null } }, { dataAcquisto: { lt: toLocaleDateTime(new Date()) } }, { dataCessione: { gt: toLocaleDateTime(new Date()) } } ] },
-                            ],
-                          },
-                        },
-                      },
-                    },
-                  },
-                  orderBy: [ { Giocatori: { ruolo: 'desc' } }, { riserva: 'asc' } ],
-                },
-              },
-              where: {
-                idPartita,
-                OR: [ { idSquadra: partita?.idHome ?? 0 }, { idSquadra: partita?.idAway ?? 0 } ],
-              },
-            })
+        if (calendario) {
+          const result = (await mapCalendario(calendario))[0]
+          if (result && result.partite.length === 1) {
+            const partita = result.partite[0]
 
-            const datiHome = formazioni.find((c) => c.idSquadra === partita?.idHome)
-            const datiAway = formazioni.find((c) => c.idSquadra === partita?.idAway)
+            const formazioni = await getFormazioni(idPartita)
 
-            const giocatoriInfluentiHome = await getTabellino(datiHome?.idFormazione ?? 0)
-            const fantapuntiHome = getGiocatoriVotoInfluente(giocatoriInfluentiHome).reduce((acc, cur) => acc + (cur.votoBonus ?? 0), 0)
-            const giocatoriInfluentiAway = await getTabellino(datiAway?.idFormazione ?? 0)
-            const fantapuntiAway = getGiocatoriVotoInfluente(giocatoriInfluentiAway).reduce((acc, cur) => acc + (cur.votoBonus ?? 0), 0)
+            const datiHome = formazioni.find(
+              (c) => c.idSquadra === partita?.idHome,
+            )
+            const datiAway = formazioni.find(
+              (c) => c.idSquadra === partita?.idAway,
+            )
 
-            const altrePartite = await prisma.partite.findMany({
-              select: {
-                idPartita: true,
-                Utenti_Partite_idSquadraHToUtenti: { select: { nomeSquadra: true, foto: true, maglia: true } },
-                Utenti_Partite_idSquadraAToUtenti: { select: { nomeSquadra: true, foto: true, maglia: true } },
-              },
-              where: { idCalendario },
-            })
+            const giocatoriInfluentiHome = await getTabellino(
+              datiHome?.idFormazione ?? 0,
+            )
+
+            const fantapuntiHome = getGiocatoriVotoInfluente(
+              giocatoriInfluentiHome,
+            ).reduce((acc, cur) => acc + (cur.votoBonus ?? 0), 0)
+
+            const giocatoriInfluentiAway = await getTabellino(
+              datiAway?.idFormazione ?? 0,
+            )
+            const fantapuntiAway = getGiocatoriVotoInfluente(
+              giocatoriInfluentiAway,
+            ).reduce((acc, cur) => acc + (cur.votoBonus ?? 0), 0)
+
+            const altrePartite = await getAltrePartite(idCalendario)
 
             return {
-              Calendario: calendario,
+              Calendario: result,
               AltrePartite: altrePartite,
               TabellinoHome: datiHome && {
                 dataOra: datiHome?.dataOra,
                 modulo: datiHome?.modulo,
                 idSquadra: datiHome?.idSquadra,
-                fattoreCasalingo: partita?.isFattoreHome === true ? Configurazione.bonusFattoreCasalingo : 0,
+                fattoreCasalingo:
+                  partita?.isFattoreHome === true
+                    ? Configurazione.bonusFattoreCasalingo
+                    : 0,
                 bonusModulo: getBonusModulo(datiHome.modulo),
-                bonusSenzaVoto: getBonusSenzaVoto(getGiocatoriVotoInfluente(giocatoriInfluentiHome).length),
+                bonusSenzaVoto: getBonusSenzaVoto(
+                  getGiocatoriVotoInfluente(giocatoriInfluentiHome).length,
+                ),
                 fantapunti: fantapuntiHome,
                 golSegnati: getGolSegnati(
                   fantapuntiHome +
                     getBonusModulo(datiHome.modulo) +
-                    getBonusSenzaVoto(getGiocatoriVotoInfluente(giocatoriInfluentiHome).length) +
-                    (partita?.isFattoreHome === true ? Configurazione.bonusFattoreCasalingo : 0),
+                    getBonusSenzaVoto(
+                      getGiocatoriVotoInfluente(giocatoriInfluentiHome).length,
+                    ) +
+                    (partita?.isFattoreHome === true
+                      ? Configurazione.bonusFattoreCasalingo
+                      : 0),
                 ),
                 fantapuntiTotale:
                   fantapuntiHome +
                   getBonusModulo(datiHome.modulo) +
-                  getBonusSenzaVoto(getGiocatoriVotoInfluente(giocatoriInfluentiHome).length) +
-                  (partita?.isFattoreHome === true ? Configurazione.bonusFattoreCasalingo : 0),
-                Voti: datiHome.Voti.map((c) => ({
-                  nome: c.Giocatori.nome,
-                  idGiocatore: c.Giocatori.idGiocatore,
-                  titolare: c.titolare,
-                  riserva: c.riserva,
-                  nomeSquadraSerieA: c.Giocatori.Trasferimenti[0]?.SquadreSerieA?.nome,
-                  magliaSquadraSerieA: c.Giocatori.Trasferimenti[0]?.SquadreSerieA?.maglia,
-                  ruolo: c.Giocatori.ruolo,
-                  voto: c.voto?.toNumber() ?? 0,
-                  ammonizione: c.ammonizione.toNumber() ?? 0,
-                  espulsione: c.espulsione.toNumber() ?? 0,
-                  gol: c.gol?.toNumber() ?? 0,
-                  assist: c.assist?.toNumber() ?? 0,
-                  autogol: c.autogol?.toNumber() ?? 0,
-                  altriBonus: c.altriBonus?.toNumber() ?? 0,
-                  votoBonus: giocatoriInfluentiHome.find((gi) => gi.idVoto === c.idVoto)?.votoBonus ?? 0,
-                  isSostituito: giocatoriInfluentiHome.find((gi) => gi.idVoto === c.idVoto)?.isSostituito ?? false,
-                  isVotoInfluente: giocatoriInfluentiHome.find((gi) => gi.idVoto === c.idVoto)?.isVotoInfluente ?? false,
+                  getBonusSenzaVoto(
+                    getGiocatoriVotoInfluente(giocatoriInfluentiHome).length,
+                  ) +
+                  (partita?.isFattoreHome === true
+                    ? Configurazione.bonusFattoreCasalingo
+                    : 0),
+                Voti: datiHome.Voti.map((voto) => ({
+                  nome: voto.Giocatore.nome,
+                  idGiocatore: voto.Giocatore.idGiocatore,
+                  titolare: voto.titolare,
+                  riserva: voto.riserva,
+                  nomeSquadraSerieA:
+                    voto.Giocatore.Trasferimenti[0]?.SquadraSerieA?.nome,
+                  magliaSquadraSerieA:
+                    voto.Giocatore.Trasferimenti[0]?.SquadraSerieA?.maglia,
+                  ruolo: voto.Giocatore.ruolo,
+                  voto: voto.voto ?? 0,
+                  ammonizione: voto.ammonizione ?? 0,
+                  espulsione: voto.espulsione ?? 0,
+                  gol: voto.gol ?? 0,
+                  assist: voto.assist ?? 0,
+                  autogol: voto.autogol ?? 0,
+                  altriBonus: voto.altriBonus ?? 0,
+                  votoBonus:
+                    giocatoriInfluentiHome.find(
+                      (gi) => gi.idVoto === voto.idVoto,
+                    )?.votoBonus ?? 0,
+                  isSostituito:
+                    giocatoriInfluentiHome.find(
+                      (gi) => gi.idVoto === voto.idVoto,
+                    )?.isSostituito ?? false,
+                  isVotoInfluente:
+                    giocatoriInfluentiHome.find(
+                      (gi) => gi.idVoto === voto.idVoto,
+                    )?.isVotoInfluente ?? false,
                 })),
               },
               TabellinoAway: datiAway && {
@@ -166,35 +134,49 @@ export const getTabelliniProcedure = publicProcedure
                 idSquadra: datiAway?.idSquadra,
                 fattoreCasalingo: 0,
                 bonusModulo: getBonusModulo(datiAway.modulo),
-                bonusSenzaVoto: getBonusSenzaVoto(getGiocatoriVotoInfluente(giocatoriInfluentiAway).length),
+                bonusSenzaVoto: getBonusSenzaVoto(
+                  getGiocatoriVotoInfluente(giocatoriInfluentiAway).length,
+                ),
                 fantapunti: fantapuntiAway,
                 golSegnati: getGolSegnati(
                   fantapuntiAway +
                     getBonusModulo(datiAway.modulo) +
-                    getBonusSenzaVoto(getGiocatoriVotoInfluente(giocatoriInfluentiAway).length),
+                    getBonusSenzaVoto(
+                      getGiocatoriVotoInfluente(giocatoriInfluentiAway).length,
+                    ),
                 ),
                 fantapuntiTotale:
                   fantapuntiAway +
                   getBonusModulo(datiAway.modulo) +
-                  getBonusSenzaVoto(getGiocatoriVotoInfluente(giocatoriInfluentiAway).length),
+                  getBonusSenzaVoto(
+                    getGiocatoriVotoInfluente(giocatoriInfluentiAway).length,
+                  ),
                 Voti: datiAway.Voti.map((c) => ({
-                  nome: c.Giocatori.nome,
-                  idGiocatore: c.Giocatori.idGiocatore,
+                  nome: c.Giocatore.nome,
+                  idGiocatore: c.Giocatore.idGiocatore,
                   titolare: c.titolare,
                   riserva: c.riserva,
-                  nomeSquadraSerieA: c.Giocatori.Trasferimenti[0]?.SquadreSerieA?.nome,
-                  magliaSquadraSerieA: c.Giocatori.Trasferimenti[0]?.SquadreSerieA?.maglia,
-                  ruolo: c.Giocatori.ruolo,
-                  voto: c.voto?.toNumber() ?? 0,
-                  ammonizione: c.ammonizione.toNumber() ?? 0,
-                  espulsione: c.espulsione.toNumber() ?? 0,
-                  gol: c.gol?.toNumber() ?? 0,
-                  assist: c.assist?.toNumber() ?? 0,
-                  autogol: c.autogol?.toNumber() ?? 0,
-                  altriBonus: c.altriBonus?.toNumber() ?? 0,
-                  votoBonus: giocatoriInfluentiAway.find((gi) => gi.idVoto === c.idVoto)?.votoBonus ?? 0,
-                  isSostituito: giocatoriInfluentiAway.find((gi) => gi.idVoto === c.idVoto)?.isSostituito ?? false,
-                  isVotoInfluente: giocatoriInfluentiAway.find((gi) => gi.idVoto === c.idVoto)?.isVotoInfluente ?? false,
+                  nomeSquadraSerieA:
+                    c.Giocatore.Trasferimenti[0]?.SquadraSerieA?.nome,
+                  magliaSquadraSerieA:
+                    c.Giocatore.Trasferimenti[0]?.SquadraSerieA?.maglia,
+                  ruolo: c.Giocatore.ruolo,
+                  voto: c.voto ?? 0,
+                  ammonizione: c.ammonizione ?? 0,
+                  espulsione: c.espulsione ?? 0,
+                  gol: c.gol ?? 0,
+                  assist: c.assist ?? 0,
+                  autogol: c.autogol ?? 0,
+                  altriBonus: c.altriBonus ?? 0,
+                  votoBonus:
+                    giocatoriInfluentiAway.find((gi) => gi.idVoto === c.idVoto)
+                      ?.votoBonus ?? 0,
+                  isSostituito:
+                    giocatoriInfluentiAway.find((gi) => gi.idVoto === c.idVoto)
+                      ?.isSostituito ?? false,
+                  isVotoInfluente:
+                    giocatoriInfluentiAway.find((gi) => gi.idVoto === c.idVoto)
+                      ?.isVotoInfluente ?? false,
                 })),
               },
             }
@@ -202,7 +184,106 @@ export const getTabelliniProcedure = publicProcedure
         }
       }
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })
+
+export async function getAltrePartite(idCalendario: number | undefined) {
+  return await Partite.find({
+    select: {
+      idPartita: true,
+      SquadraHome: { nomeSquadra: true, foto: true, maglia: true },
+      SquadraAway: { nomeSquadra: true, foto: true, maglia: true },
+    },
+    relations: { SquadraHome: true, SquadraAway: true },
+    where: { idCalendario },
+  })
+}
+
+export async function getFormazioni(
+  idPartita: number
+) {
+  const formazioni = await Formazioni.find({
+    select: {
+      idFormazione: true,
+      idSquadra: true,
+      idPartita: true,
+      dataOra: true,
+      modulo: true,
+      hasBloccata: true,
+      Voti: {
+        idVoto: true,
+        idGiocatore: true,
+        idCalendario: true,
+        idFormazione: true,
+        voto: true,
+        ammonizione: true,
+        espulsione: true,
+        gol: true,
+        assist: true,
+        autogol: true,
+        altriBonus: true,
+        titolare: true,
+        riserva: true,
+        Giocatore: {
+          idGiocatore: true,
+          ruolo: true,
+          nome: true,
+          nomeFantaGazzetta: true,
+          id_pf: true,
+          Trasferimenti: {
+            idTrasferimento: true,
+            idGiocatore: true,
+            idSquadraSerieA: true,
+            dataAcquisto: true,
+            dataCessione: true,
+            idSquadra: true,
+            costo: true,
+            stagione: true,
+            hasRitirato: true,
+            nomeSquadraSerieA: true,
+            nomeSquadra: true,
+            media: true,
+            gol: true,
+            assist: true,
+            giocate: true,
+            SquadraSerieA: {
+              idSquadraSerieA: true,
+              nome: true,
+              maglia: true,
+            },
+          },
+        },
+      },
+    },
+    relations: {
+      Voti: { Giocatore: { Trasferimenti: { SquadraSerieA: true } } },
+    },
+    where: {
+      idPartita: idPartita,
+      Voti: {
+        Giocatore: {
+          Trasferimenti: [
+            {
+              dataCessione: IsNull(),
+              dataAcquisto: LessThan(new Date()),
+            },
+            {
+              dataAcquisto: LessThan(new Date()),
+              dataCessione: MoreThan(new Date()),
+            },
+          ],
+        },
+      },
+    },
+    order: {
+      Voti: {
+        Giocatore: { ruolo: 'DESC' },
+        riserva: 'ASC',
+      },
+    },
+  })
+
+  return formazioni
+}

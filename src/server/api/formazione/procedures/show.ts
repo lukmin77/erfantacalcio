@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { protectedProcedure } from '../../trpc'
 import { z } from 'zod'
 import {
@@ -6,9 +5,9 @@ import {
   getProssimaGiornataSerieA,
   getRosaDisponibile,
 } from '~/server/utils/common'
-import prisma from '~/utils/db'
 import { GiocatoreFormazioneType } from '~/types/squadre'
 import { moduloDefault } from '~/utils/helper'
+import { Formazioni, Voti } from '~/server/db/entities'
 
 export const show = protectedProcedure
   .input(
@@ -30,26 +29,23 @@ export const show = protectedProcedure
       if (!prossimaPartita || !prossimoCalendario) {
         return null
       } else {
-        const giocatoriSchierati = await prisma.voti.findMany({
+        const giocatoriSchierati = await Voti.find({
           select: {
             idGiocatore: true,
             titolare: true,
             riserva: true,
           },
+          relations: { Formazione: true },
           where: {
-            AND: [
-              { idCalendario: prossimoCalendario.idCalendario },
-              { Formazioni: { idSquadra: idSquadraUtente } },
-            ],
+            idCalendario: prossimoCalendario.idCalendario,
+            Formazione: { idSquadra: idSquadraUtente },
           },
         })
-        const datiFormazione = await prisma.formazioni.findFirst({
+        const datiFormazione = await Formazioni.findOne({
           select: { modulo: true },
           where: {
-            AND: [
-              { idPartita: prossimaPartita.idPartita },
-              { idSquadra: idSquadraUtente },
-            ],
+            idPartita: prossimaPartita.idPartita,
+            idSquadra: idSquadraUtente,
           },
         })
         const rosa = await getRosaDisponibile(idSquadraUtente)
@@ -83,7 +79,7 @@ export const show = protectedProcedure
         return dati
       }
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

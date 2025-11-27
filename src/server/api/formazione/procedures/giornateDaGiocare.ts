@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import {
   getProssimaGiornata,
   getProssimaGiornataSerieA,
@@ -19,7 +18,7 @@ export const giornateDaGiocare = protectedProcedure.query(async (opts) => {
     )
     return giornateFiltrate
   } catch (error) {
-    Logger.error('Si è verificato un errore', error)
+    console.error('Si è verificato un errore', error)
     throw error
   }
 })

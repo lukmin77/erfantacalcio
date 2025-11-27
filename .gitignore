@@ -2,15 +2,14 @@
 
 # dependencies
 /node_modules
+/dist
 /.pnp
 .pnp.js
 
 # testing
 /coverage
 
-# database
-/prisma/db.sqlite
-/prisma/db.sqlite-journal
+WIP.md
 
 # next.js
 /.next/

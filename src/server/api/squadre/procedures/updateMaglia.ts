@@ -1,7 +1,6 @@
-import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { protectedProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
+import { Utenti } from '~/server/db/entities'
 
 export const updateMagliaProcedure = protectedProcedure
   .input(
@@ -16,12 +15,12 @@ export const updateMagliaProcedure = protectedProcedure
   )
   .mutation(async (opts) => {
     try {
-      await prisma.utenti.updateMany({
-        where: { idUtente: opts.ctx.session.user.idSquadra },
-        data: { maglia: JSON.stringify(opts.input) },
-      })
+      await Utenti.update(
+        { idUtente: opts.ctx.session.user.idSquadra },
+        { maglia: JSON.stringify(opts.input) },
+      )
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

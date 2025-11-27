@@ -1,8 +1,7 @@
 import { publicProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
-import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { getFantapunti } from '../services/getFantapunti'
+import { Classifiche } from '~/server/db/entities'
 
 export const listClassificaProcedure = publicProcedure
   .input(z.object({ idTorneo: z.number() }))
@@ -10,7 +9,7 @@ export const listClassificaProcedure = publicProcedure
     const idTorneo = +opts.input.idTorneo
     try {
       const fantaPunti = await getFantapunti(idTorneo)
-      const result = await prisma.classifiche.findMany({
+      const result = await Classifiche.find({
         select: {
           idSquadra: true,
           punti: true,
@@ -24,20 +23,17 @@ export const listClassificaProcedure = publicProcedure
           golSubiti: true,
           differenzaReti: true,
           giocate: true,
-          Utenti: { select: { nomeSquadra: true, foto: true, maglia: true } },
+          Utente: { nomeSquadra: true, foto: true, maglia: true },
         },
         where: { idTorneo },
-        orderBy: [
-          { punti: 'desc' },
-          { golFatti: 'desc' },
-          { golSubiti: 'asc' },
-        ],
+        relations: { Utente: true },
+        order: { punti: 'desc', golFatti: 'desc', golSubiti: 'asc' },
       })
       return result.map((c) => ({
         id: c.idSquadra,
         idSquadra: c.idSquadra,
-        squadra: c.Utenti.nomeSquadra,
-        foto: c.Utenti.foto,
+        squadra: c.Utente.nomeSquadra,
+        foto: c.Utente.foto,
         punti: c.punti,
         vinte: c.vinteCasa + c.vinteTrasferta,
         pareggi: c.pareggiCasa + c.pareggiTrasferta,
@@ -49,7 +45,7 @@ export const listClassificaProcedure = publicProcedure
         fantapunti: fantaPunti[c.idSquadra] ?? 0,
       }))
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

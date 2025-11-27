@@ -1,81 +1,97 @@
 import { Configurazione } from '~/config'
-import Logger from '~/lib/logger.server'
 import { getRuoloEsteso, normalizeCampioncinoUrl } from '~/utils/helper'
 import { toLocaleDateTime } from '~/utils/dateUtils'
-import { toNumberWithPrecision } from '~/utils/numberUtils'
 import { type GiocatoreType } from '~/types/squadre'
-import { type Decimal } from '@prisma/client/runtime/library'
 
-import prisma from '~/utils/db'
-import { z } from 'zod'
-import { giornataSchema, serieASchema } from '~/schemas/calendario'
-import { partitaSchema } from "~/schemas/calendario"
-import { calendarioPartiteSchema } from '~/schemas/calendario'
-
-type CalendarioFilter =
-  | { idTorneo: number }
-  | { Tornei: { gruppoFase: { not: null } } }
+import {
+  Calendario,
+  Giocatori,
+  Partite,
+  SerieA,
+  Tornei,
+  Trasferimenti,
+  Voti,
+} from '../db/entities'
+import {
+  EntityManager,
+  FindOptionsWhere,
+  IsNull,
+  Not,
+  Between,
+  MoreThan,
+  LessThan,
+} from 'typeorm'
+import _ from 'lodash'
 
 export async function chiudiTrasferimentoGiocatore(
+  trx: EntityManager,
   idGiocatore: number,
   chiusuraStagione: boolean,
 ) {
   try {
     //cerca il trasferimento ancora in corso per quel giocatore (datacessione is null)
-    const oldTrasferimento = await prisma.trasferimenti.findFirst({
+    const oldTrasferimento = await trx.findOne(Trasferimenti, {
       select: {
         dataAcquisto: true,
         idTrasferimento: true,
-        Utenti: { select: { nomeSquadra: true, idUtente: true } },
-        SquadreSerieA: { select: { nome: true } },
-        Giocatori: { select: { ruolo: true } },
+        Utente: { nomeSquadra: true, idUtente: true },
+        SquadraSerieA: { nome: true },
+        Giocatore: { ruolo: true },
       },
-      where: {
-        AND: [{ idGiocatore: idGiocatore }, { dataCessione: null }],
+      relations: {
+        Utente: true,
+        SquadraSerieA: true,
+        Giocatore: true,
       },
+      where: { idGiocatore: idGiocatore, dataCessione: IsNull() },
     })
 
     if (oldTrasferimento) {
-      Logger.debug(
+      console.debug(
         'dati ultimo trasferimento idgiocatore: ' + idGiocatore,
         oldTrasferimento,
       )
       //cerca i voti nel periodo dall'ultima data di acuisto ad oggi
-      const voti = await prisma.voti.findMany({
+      let voti = await trx.find(Voti, {
         select: {
           voto: true,
           gol: true,
-          assist: true, //idVoto: true,
+          assist: true,
           Calendario: {
-            select: {
-              giornataSerieA: true, //, giornata: true, idTorneo: true
-            },
+            giornataSerieA: true,
           },
         },
-        distinct: ['voto', 'gol', 'assist'],
+        relations: {
+          Calendario: true,
+          Giocatore: { Trasferimenti: true },
+        },
+        // distinct: ['voto', 'gol', 'assist'],
         where: {
-          AND: [
-            { idGiocatore: idGiocatore },
-            { Calendario: { data: { lte: toLocaleDateTime(new Date()) } } },
-            { Calendario: { data: { gte: oldTrasferimento.dataAcquisto } } },
-            { Giocatori: { Trasferimenti: { some: { dataCessione: null } } } },
-            { voto: { not: 0 } },
-            { voto: { not: null } },
-          ],
+          idGiocatore: idGiocatore,
+          Calendario: {
+            data: Between(
+              toLocaleDateTime(new Date()),
+              oldTrasferimento.dataAcquisto,
+            ),
+          },
+          voto: MoreThan(0),
+          Giocatore: { Trasferimenti: { dataCessione: IsNull() } },
         },
       })
 
+      voti = _.uniqBy(voti, (v) => ['voto', 'gol', 'assist'])
+
       if (voti.length > 0) {
-        Logger.debug(
+        console.debug(
           'voti ultimo trasferimento idgiocatore: ' + idGiocatore,
           voti,
         )
         //sui voti precedentemente trovati calcolo media, gol, assist e giocate
         const oldStatistica = voti.reduce(
           (acc, curr) => {
-            acc.mediaVoto += toNumberWithPrecision(curr.voto, 2)
-            acc.golTotali += curr.gol?.toNumber() ?? 0
-            acc.assistTotali += curr.assist?.toNumber() ?? 0
+            acc.mediaVoto += curr.voto ?? 0
+            acc.golTotali += curr.gol ?? 0
+            acc.assistTotali += curr.assist ?? 0
             acc.giocate = voti.length
             return acc
           },
@@ -83,70 +99,75 @@ export async function chiudiTrasferimentoGiocatore(
         )
         oldStatistica.mediaVoto = oldStatistica.mediaVoto / voti.length
         oldStatistica.golTotali =
-          oldTrasferimento.Giocatori.ruolo === 'P'
+          oldTrasferimento.Giocatore.ruolo === 'P'
             ? oldStatistica.golTotali
             : oldStatistica.golTotali / 3
 
-        Logger.debug(
+        console.debug(
           'statistica ultimo trasferimento idgiocatore: ' + idGiocatore,
           oldStatistica,
         )
 
-        Logger.debug('updating ultimo trasferimento (completo): ' + idGiocatore)
+        console.debug(
+          'updating ultimo trasferimento (completo): ' + idGiocatore,
+        )
         //eseguo update del trasferimento con datacessione odierna
-        await prisma.trasferimenti.update({
-          data: {
+        await trx.update(
+          Trasferimenti,
+          {
+            idTrasferimento: oldTrasferimento.idTrasferimento,
+          },
+          {
             dataCessione: new Date(),
-            nomeSquadraSerieA: oldTrasferimento.SquadreSerieA?.nome,
-            nomeSquadra: oldTrasferimento.Utenti?.nomeSquadra,
+            nomeSquadraSerieA: oldTrasferimento.SquadraSerieA?.nome,
+            nomeSquadra: oldTrasferimento.Utente?.nomeSquadra,
             media: oldStatistica.mediaVoto,
             gol: oldStatistica.golTotali,
             assist: oldStatistica.assistTotali,
             giocate: oldStatistica.giocate,
             idSquadra: chiusuraStagione
               ? null
-              : oldTrasferimento.Utenti?.idUtente,
+              : oldTrasferimento.Utente?.idUtente,
           },
-          where: {
+        )
+        console.debug('updated ultimo trasferimento (completo): ' + idGiocatore)
+      } else {
+        console.debug(
+          'updating ultimo trasferimento (parziale): ' + idGiocatore,
+        )
+        //eseguo update del trasferimento con datacessione odierna
+        await trx.update(
+          Trasferimenti,
+          {
             idTrasferimento: oldTrasferimento.idTrasferimento,
           },
-        })
-        Logger.debug('updated ultimo trasferimento (completo): ' + idGiocatore)
-      } else {
-        Logger.debug('updating ultimo trasferimento (parziale): ' + idGiocatore)
-        //eseguo update del trasferimento con datacessione odierna
-        await prisma.trasferimenti.update({
-          data: {
+          {
             dataCessione: new Date(),
-            nomeSquadraSerieA: oldTrasferimento.SquadreSerieA?.nome,
-            nomeSquadra: oldTrasferimento.Utenti?.nomeSquadra,
+            nomeSquadraSerieA: oldTrasferimento.SquadraSerieA?.nome,
+            nomeSquadra: oldTrasferimento.Utente?.nomeSquadra,
             idSquadra: chiusuraStagione
               ? null
-              : oldTrasferimento.Utenti?.idUtente,
+              : oldTrasferimento.Utente?.idUtente,
           },
-          where: {
-            idTrasferimento: oldTrasferimento.idTrasferimento,
-          },
-        })
-        Logger.debug('updated ultimo trasferimento (parziale): ' + idGiocatore)
+        )
+        console.debug('updated ultimo trasferimento (parziale): ' + idGiocatore)
       }
     } else {
-      Logger.debug('updating ultimo trasferimento (base): ' + idGiocatore)
+      console.debug('updating ultimo trasferimento (base): ' + idGiocatore)
       //eseguo update del trasferimento con datacessione odierna
-      await prisma.trasferimenti.updateMany({
-        data: {
+      await trx.update(
+        Trasferimenti,
+        { idGiocatore: idGiocatore, dataCessione: IsNull() },
+        {
           dataCessione: new Date(),
           nomeSquadra: '',
           nomeSquadraSerieA: '',
         },
-        where: {
-          AND: [{ idGiocatore: idGiocatore }, { dataCessione: null }],
-        },
-      })
-      Logger.debug('updated ultimo trasferimento (base): ' + idGiocatore)
+      )
+      console.debug('updated ultimo trasferimento (base): ' + idGiocatore)
     }
   } catch (error) {
-    Logger.error('Si è verificato un errore', error)
+    console.error('Si è verificato un errore', error)
     throw error
   }
 }
@@ -155,18 +176,16 @@ export async function getProssimaGiornataSerieA(
   isGiocata: boolean,
   orderType: 'asc' | 'desc',
 ) {
-  const query = await prisma.calendario.findFirst({
+  const query = await Calendario.findOne({
     select: {
       giornataSerieA: true,
     },
     where: {
-      AND: [
-        { hasGiocata: isGiocata },
-        { giornata: { gt: 0 } },
-        { girone: { gt: 0 } },
-      ],
+      hasGiocata: isGiocata,
+      giornata: MoreThan(0),
+      girone: MoreThan(0),
     },
-    orderBy: {
+    order: {
       ordine: orderType,
     },
   })
@@ -177,48 +196,13 @@ export async function getProssimaGiornata(
   giornataSerieA: number,
   withSerieA?: boolean,
 ) {
-  const result = await prisma.calendario.findMany({
-    select: {
-      idCalendario: true,
-      giornata: true,
-      giornataSerieA: true,
-      ordine: true,
-      data: true,
-      dataFine: true,
-      hasSovrapposta: true,
-      girone: true,
-      hasGiocata: true,
-      hasDaRecuperare: true,
-      Tornei: {
-        select: { idTorneo: true, nome: true, gruppoFase: true },
-      },
-      Partite: {
-        select: {
-          idPartita: true,
-          idSquadraH: true,
-          idSquadraA: true,
-          hasMultaH: true,
-          hasMultaA: true,
-          golH: true,
-          golA: true,
-          fattoreCasalingo: true,
-          Utenti_Partite_idSquadraHToUtenti: {
-            select: { nomeSquadra: true, foto: true, maglia: true },
-          },
-          Utenti_Partite_idSquadraAToUtenti: {
-            select: { nomeSquadra: true, foto: true, maglia: true },
-          },
-        },
-      },
-    },
-    where: {
-      AND: [{ giornataSerieA: giornataSerieA }, { hasGiocata: false }],
-    },
-    orderBy: [{ ordine: 'asc' }, { idTorneo: 'asc' }],
+  const result = await getCalendario({
+    giornataSerieA: giornataSerieA,
+    hasGiocata: false,
   })
 
   if (withSerieA && withSerieA === true) {
-    const serieAData = await prisma.serieA.findMany({
+    const serieAData = await SerieA.find({
       select: {
         giornata: true,
         squadraHome: true,
@@ -233,153 +217,146 @@ export async function getProssimaGiornata(
 }
 
 export async function getRosaDisponibile(idSquadra: number) {
-  const query = await prisma.trasferimenti.findMany({
+  const now = toLocaleDateTime(new Date())
+  const query = await Trasferimenti.find({
     select: {
       idGiocatore: true,
       costo: true,
-      Giocatori: {
-        select: { nome: true, nomeFantaGazzetta: true, ruolo: true },
-      },
-      SquadreSerieA: {
-        select: { nome: true, maglia: true },
-      },
+      Giocatore: { nome: true, nomeFantaGazzetta: true, ruolo: true },
+      SquadraSerieA: { nome: true, maglia: true },
     },
-    where: {
-      AND: [
-        { idSquadra: idSquadra },
-        { stagione: Configurazione.stagione },
-        { hasRitirato: false },
-        {
-          OR: [
-            {
-              AND: [
-                { dataCessione: null },
-                { dataAcquisto: { lt: toLocaleDateTime(new Date()) } },
-              ],
-            },
-            {
-              AND: [
-                { dataCessione: null },
-                { dataAcquisto: { lt: toLocaleDateTime(new Date()) } },
-                { dataCessione: { gt: toLocaleDateTime(new Date()) } },
-              ],
-            },
-          ],
-        },
-      ],
+    relations: {
+      Giocatore: true,
+      SquadraSerieA: true,
     },
-    orderBy: [
-      { Giocatori: { ruolo: 'desc' } },
-      { costo: 'desc' },
-      { Giocatori: { nome: 'asc' } },
+    where: [
+      {
+        idSquadra: idSquadra,
+        stagione: Configurazione.stagione,
+        hasRitirato: false,
+        dataCessione: IsNull(),
+        dataAcquisto: LessThan(now),
+      },
+      {
+        idSquadra: idSquadra,
+        stagione: Configurazione.stagione,
+        hasRitirato: false,
+        dataCessione: MoreThan(now),
+        dataAcquisto: LessThan(now),
+      },
     ],
+    order: {
+      Giocatore: { ruolo: 'desc' },
+      costo: 'desc',
+    },
   })
 
   return query.map<GiocatoreType>((giocatore) => ({
     idGiocatore: giocatore.idGiocatore,
-    nome: giocatore.Giocatori.nome,
-    nomeFantagazzetta: giocatore.Giocatori.nomeFantaGazzetta,
-    ruolo: giocatore.Giocatori.ruolo,
-    ruoloEsteso: getRuoloEsteso(giocatore.Giocatori.ruolo),
+    nome: giocatore.Giocatore.nome,
+    nomeFantagazzetta: giocatore.Giocatore.nomeFantaGazzetta,
+    ruolo: giocatore.Giocatore.ruolo,
+    ruoloEsteso: getRuoloEsteso(giocatore.Giocatore.ruolo),
     costo: giocatore.costo,
     isVenduto: false,
     urlCampioncino: normalizeCampioncinoUrl(
       Configurazione.urlCampioncino,
-      giocatore.Giocatori.nome,
-      giocatore.Giocatori.nomeFantaGazzetta,
+      giocatore.Giocatore.nome,
+      giocatore.Giocatore.nomeFantaGazzetta,
     ),
     urlCampioncinoSmall: normalizeCampioncinoUrl(
       Configurazione.urlCampioncinoSmall,
-      giocatore.Giocatori.nome,
-      giocatore.Giocatori.nomeFantaGazzetta,
+      giocatore.Giocatore.nome,
+      giocatore.Giocatore.nomeFantaGazzetta,
     ),
-    nomeSquadraSerieA: giocatore.SquadreSerieA?.nome,
-    magliaSquadraSerieA: giocatore.SquadreSerieA?.maglia,
+    nomeSquadraSerieA: giocatore.SquadraSerieA?.nome,
+    magliaSquadraSerieA: giocatore.SquadraSerieA?.maglia,
   }))
 }
 
 export async function getGiocatoriVenduti(idSquadra: number) {
-  const query = await prisma.trasferimenti.findMany({
+  const query = await Trasferimenti.find({
     select: {
       idGiocatore: true,
       costo: true,
-      Giocatori: {
-        select: { nome: true, nomeFantaGazzetta: true, ruolo: true },
+      Giocatore: {
+        nome: true,
+        nomeFantaGazzetta: true,
+        ruolo: true,
       },
-      SquadreSerieA: {
-        select: { nome: true, maglia: true },
+      SquadraSerieA: {
+        nome: true,
+        maglia: true,
       },
+    },
+    relations: {
+      Giocatore: true,
+      SquadraSerieA: true,
     },
     where: {
-      AND: [
-        { idSquadra: idSquadra },
-        { stagione: Configurazione.stagione },
-        { hasRitirato: false },
-        { NOT: { dataCessione: null } },
-      ],
+      idSquadra: idSquadra,
+      stagione: Configurazione.stagione,
+      hasRitirato: false,
+      dataCessione: Not(IsNull()),
     },
-    orderBy: [
-      { Giocatori: { ruolo: 'desc' } },
-      { costo: 'desc' },
-      { Giocatori: { nome: 'asc' } },
-    ],
+    order: {
+      Giocatore: { ruolo: 'desc' },
+      costo: 'desc',
+    },
   })
 
   return query.map<GiocatoreType>((giocatore) => ({
     idGiocatore: giocatore.idGiocatore,
-    nome: giocatore.Giocatori.nome,
-    nomeFantagazzetta: giocatore.Giocatori.nomeFantaGazzetta,
-    ruolo: giocatore.Giocatori.ruolo,
-    ruoloEsteso: getRuoloEsteso(giocatore.Giocatori.ruolo),
+    nome: giocatore.Giocatore.nome,
+    nomeFantagazzetta: giocatore.Giocatore.nomeFantaGazzetta,
+    ruolo: giocatore.Giocatore.ruolo,
+    ruoloEsteso: getRuoloEsteso(giocatore.Giocatore.ruolo),
     costo: giocatore.costo,
     isVenduto: true,
     urlCampioncino: normalizeCampioncinoUrl(
       Configurazione.urlCampioncino,
-      giocatore.Giocatori.nome,
-      giocatore.Giocatori.nomeFantaGazzetta,
+      giocatore.Giocatore.nome,
+      giocatore.Giocatore.nomeFantaGazzetta,
     ),
     urlCampioncinoSmall: normalizeCampioncinoUrl(
       Configurazione.urlCampioncinoSmall,
-      giocatore.Giocatori.nome,
-      giocatore.Giocatori.nomeFantaGazzetta,
+      giocatore.Giocatore.nome,
+      giocatore.Giocatore.nomeFantaGazzetta,
     ),
-    nomeSquadraSerieA: giocatore.SquadreSerieA?.nome,
-    magliaSquadraSerieA: giocatore.SquadreSerieA?.maglia,
+    nomeSquadraSerieA: giocatore.SquadraSerieA?.nome,
+    magliaSquadraSerieA: giocatore.SquadraSerieA?.maglia,
   }))
 }
 
-export async function deleteVotiGiocatore(idGiocatore: number) {
+export async function deleteVotiGiocatore(
+  trx: EntityManager,
+  idGiocatore: number,
+) {
   try {
-    await prisma.voti.deleteMany({
-      where: {
-        idGiocatore: idGiocatore,
-      },
+    await trx.delete(Voti, {
+      idGiocatore: idGiocatore,
     })
   } catch (error) {
-    Logger.error('Si è verificato un errore', error)
+    console.error('Si è verificato un errore', error)
     throw error
   }
 }
 
-export async function deleteGiocatore(idGiocatore: number) {
+export async function deleteGiocatore(trx: EntityManager, idGiocatore: number) {
   try {
-    await prisma.giocatori.delete({
-      where: {
-        idGiocatore: idGiocatore,
-      },
+    await trx.delete(Giocatori, {
+      idGiocatore: idGiocatore,
     })
   } catch (error) {
-    Logger.error('Si è verificato un errore', error)
+    console.error('Si è verificato un errore', error)
     throw error
   }
 }
 
-export async function mapCalendario(
-  result: z.infer<typeof calendarioPartiteSchema>[],
-): Promise<z.infer<typeof giornataSchema>[]> {
+export async function mapCalendario(result: Calendario[]) {
   return result.map((c) => ({
     idCalendario: c.idCalendario,
-    idTorneo: c.Tornei.idTorneo,
+    idTorneo: c.Torneo.idTorneo,
     giornata: c.giornata,
     giornataSerieA: c.giornataSerieA,
     isGiocata: c.hasGiocata,
@@ -389,25 +366,25 @@ export async function mapCalendario(
     dataFine: c.dataFine?.toISOString(),
     girone: c.girone,
     partite: mapPartite(c.Partite),
-    Torneo: c.Tornei.nome,
-    Descrizione: getDescrizioneTorneo(
-      c.Tornei.nome,
+    Torneo: c.Torneo.nome,
+    Descrizione: getDescrizioneGiornata(
+      c.Torneo.nome,
       c.giornata,
       c.giornataSerieA,
-      c.Tornei.gruppoFase,
+      c.Torneo.gruppoFase,
     ),
-    Title: getTorneoTitle(c.Tornei.nome, c.giornata, c.Tornei.gruppoFase),
+    Title: getTorneoTitle(c.Torneo.nome, c.giornata, c.Torneo.gruppoFase),
     SubTitle: getTorneoSubTitle(c.giornataSerieA),
   }))
 }
 
 export async function mapCalendarioWithSerieA(
-  result: z.infer<typeof calendarioPartiteSchema>[],
-  serieAData: z.infer<typeof serieASchema>[],
-): Promise<z.infer<typeof giornataSchema>[]> {
+  result: Calendario[],
+  serieAData: SerieA[],
+) {
   return result.map((c) => ({
     idCalendario: c.idCalendario,
-    idTorneo: c.Tornei.idTorneo,
+    idTorneo: c.Torneo.idTorneo,
     giornata: c.giornata,
     giornataSerieA: c.giornataSerieA,
     isGiocata: c.hasGiocata,
@@ -417,14 +394,14 @@ export async function mapCalendarioWithSerieA(
     dataFine: c.dataFine?.toISOString(),
     girone: c.girone,
     partite: mapPartite(c.Partite),
-    Torneo: c.Tornei.nome,
-    Descrizione: getDescrizioneTorneo(
-      c.Tornei.nome,
+    Torneo: c.Torneo.nome,
+    Descrizione: getDescrizioneGiornata(
+      c.Torneo.nome,
       c.giornata,
       c.giornataSerieA,
-      c.Tornei.gruppoFase,
+      c.Torneo.gruppoFase,
     ),
-    Title: getTorneoTitle(c.Tornei.nome, c.giornata, c.Tornei.gruppoFase),
+    Title: getTorneoTitle(c.Torneo.nome, c.giornata, c.Torneo.gruppoFase),
     SubTitle: getTorneoSubTitle(c.giornataSerieA),
     SerieA: serieAData.map((s) => ({
       giornata: s.giornata,
@@ -434,35 +411,27 @@ export async function mapCalendarioWithSerieA(
   }))
 }
 
-export function mapPartite(partite: z.infer<typeof partitaSchema>[]) {
+export function mapPartite(partite: Partite[]) {
   return partite.map((p) => ({
     idPartita: p.idPartita,
     idHome: p.idSquadraH,
-    squadraHome: p.Utenti_Partite_idSquadraHToUtenti?.nomeSquadra,
-    fotoHome: p.Utenti_Partite_idSquadraHToUtenti?.foto,
-    magliaHome: p.Utenti_Partite_idSquadraHToUtenti?.maglia,
+    squadraHome: p.SquadraHome?.nomeSquadra,
+    fotoHome: p.SquadraHome?.foto,
+    magliaHome: p.SquadraHome?.maglia,
     multaHome: p.hasMultaH,
     golHome: p.golH,
     idAway: p.idSquadraA,
-    squadraAway: p.Utenti_Partite_idSquadraAToUtenti?.nomeSquadra,
-    fotoAway: p.Utenti_Partite_idSquadraAToUtenti?.foto,
-    magliaAway: p.Utenti_Partite_idSquadraAToUtenti?.maglia,
+    squadraAway: p.SquadraAway?.nomeSquadra,
+    fotoAway: p.SquadraAway?.foto,
+    magliaAway: p.SquadraAway?.maglia,
     multaAway: p.hasMultaA,
     golAway: p.golA,
     isFattoreHome: p.fattoreCasalingo,
   }))
 }
 
-export async function getCalendarioByTorneo(idtorneo: number) {
-  return await getCalendario({ idTorneo: idtorneo })
-}
-
-export async function getCalendarioChampions() {
-  return await getCalendario({ Tornei: { gruppoFase: { not: null } } })
-}
-
 export async function getTornei() {
-  return await prisma.tornei.findMany({
+  return await Tornei.find({
     select: {
       idTorneo: true,
       nome: true,
@@ -473,7 +442,7 @@ export async function getTornei() {
 }
 
 export async function getGiocatoreById(idGiocatore: number) {
-  const giocatore = await prisma.giocatori.findUnique({
+  const giocatore = await Giocatori.findOne({
     where: {
       idGiocatore: idGiocatore,
     },
@@ -490,7 +459,7 @@ export async function getGiocatoreById(idGiocatore: number) {
   }
 }
 
-export function getDescrizioneTorneo(
+export function getDescrizioneGiornata(
   nome: string,
   giornata: number,
   giornataSerieA: number,
@@ -546,13 +515,13 @@ export function getGiocatoriVotoInfluente(
   giocatoriFormazione: {
     ruolo: string
     idVoto: number
-    voto: Decimal | null
-    ammonizione: Decimal
-    espulsione: Decimal
-    gol: Decimal | null
-    assist: Decimal | null
-    altriBonus: Decimal | null
-    autogol: Decimal | null
+    voto: number | null
+    ammonizione: number
+    espulsione: number
+    gol: number | null
+    assist: number | null
+    altriBonus: number | null
+    autogol: number | null
     titolare: boolean
     idGiocatore: number
     votoBonus: number
@@ -626,20 +595,15 @@ export function getGolSegnati(fantapunti: number): number {
 
 export async function getTabellino(idFormazione: number) {
   const giocatoriFormazione = (
-    await prisma.voti.findMany({
-      include: {
-        Giocatori: {
-          select: {
-            ruolo: true,
-          },
-        },
-      },
+    await Voti.find({
+      select: { Giocatore: { ruolo: true } },
+      relations: { Giocatore: true },
       where: {
         idFormazione: idFormazione,
       },
     })
   ).map((v) => ({
-    ruolo: v.Giocatori.ruolo,
+    ruolo: v.Giocatore.ruolo,
     idVoto: v.idVoto,
     voto: v.voto,
     ammonizione: v.ammonizione,
@@ -653,65 +617,73 @@ export async function getTabellino(idFormazione: number) {
     idGiocatore: v.idGiocatore,
     votoBonus: getVotoBonus(v),
     isSostituito: false,
-    isVotoInfluente:
-      v.titolare && v.voto && v.voto.toNumber() > 0 ? true : false,
+    isVotoInfluente: v.titolare && v.voto && v.voto > 0 ? true : false,
   }))
-
   const countRiserve = getCountRiserve(
     getGiocatoriVotoInfluente(giocatoriFormazione).length,
   )
 
+  console.info(
+    `Titolari influenti: ${getGiocatoriVotoInfluente(giocatoriFormazione).length}, Count Riserve: ${countRiserve}`,
+  )
   if (getGiocatoriVotoInfluente(giocatoriFormazione).length < 11) {
     let iRiserve = 0
     const titolariSenzaVoto = giocatoriFormazione.filter(
-      (c) => c.titolare && c.voto && c.voto.toNumber() === 0,
+      (c) => c.titolare && c.voto == 0,
     )
     const riserveConVoto = giocatoriFormazione
-      .filter((c) => c.riserva !== null && c.voto && c.voto.toNumber() > 0)
+      .filter((c) => c.riserva !== null && c.voto && c.voto > 0)
       .sort((a, b) => {
         if (a.riserva === null) return -1
         if (b.riserva === null) return 1
         if (a.riserva !== b.riserva) return a.riserva - b.riserva
         return b.votoBonus - a.votoBonus
       })
+    console.info(
+      `Titolari senza voto: ${titolariSenzaVoto.length}, Riserve con voto: ${riserveConVoto.length}, Count Riserve: ${countRiserve}`,
+    )
 
-    for (const riserva of riserveConVoto) {
-      const giocatoreRuolo = titolariSenzaVoto.find(
-        (c) => c.ruolo === riserva.ruolo,
-      )
-      if (giocatoreRuolo) {
-        titolariSenzaVoto.splice(
-          titolariSenzaVoto.findIndex(
-            (r) => r.idVoto === giocatoreRuolo.idVoto,
-          ),
-          1,
+    if (titolariSenzaVoto.length > 0) {
+      for (const riserva of riserveConVoto) {
+        const giocatoreRuolo = titolariSenzaVoto.find(
+          (c) => c.ruolo === riserva.ruolo,
         )
-        if (
-          riserveConVoto.find(
-            (c) => c.ruolo === giocatoreRuolo.ruolo && !c.isVotoInfluente,
+        if (giocatoreRuolo) {
+          titolariSenzaVoto.splice(
+            titolariSenzaVoto.findIndex(
+              (r) => r.idVoto === giocatoreRuolo.idVoto,
+            ),
+            1,
           )
-        ) {
-          // Imposta il titolare che va sostituito
-          giocatoriFormazione
-            .filter((c) => c.idVoto === giocatoreRuolo.idVoto)
-            .forEach((c) => (c.isSostituito = true))
-          // Imposta la riserva il cui voto diventa influente
-          giocatoriFormazione
-            .filter((c) => c.idVoto === riserva.idVoto)
-            .forEach((c) => (c.isVotoInfluente = true))
-          // Imposta dalla lista riserve il voto influente per non ripescarlo una seconda volta
-          riserveConVoto
-            .filter((c) => c.idVoto === riserva.idVoto)
-            .forEach((c) => (c.isVotoInfluente = true))
-          iRiserve++
+          if (
+            riserveConVoto.find(
+              (c) => c.ruolo === giocatoreRuolo.ruolo && !c.isVotoInfluente,
+            )
+          ) {
+            // Imposta il titolare che va sostituito
+            giocatoriFormazione
+              .filter((c) => c.idVoto === giocatoreRuolo.idVoto)
+              .forEach((c) => (c.isSostituito = true))
+            // Imposta la riserva il cui voto diventa influente
+            giocatoriFormazione
+              .filter((c) => c.idVoto === riserva.idVoto)
+              .forEach((c) => (c.isVotoInfluente = true))
+            // Imposta dalla lista riserve il voto influente per non ripescarlo una seconda volta
+            riserveConVoto
+              .filter((c) => c.idVoto === riserva.idVoto)
+              .forEach((c) => (c.isVotoInfluente = true))
+            iRiserve++
+          }
         }
+        if (iRiserve === countRiserve) break
       }
-      if (iRiserve === countRiserve) break
     }
   }
-  /* for (const g of giocatoriFormazione.filter(c => c.isVotoInfluente)) {
-      Logger.info(`idgiocatore ${g.idGiocatore} ${g.votoBonus}`)
-    } */
+  for (const g of giocatoriFormazione.filter((c) => c.isVotoInfluente)) {
+    console.info(
+      `idgiocatore ${g.idGiocatore} ${g.votoBonus} - sostituito: ${g.isSostituito}`,
+    )
+  }
   return giocatoriFormazione
 }
 
@@ -721,32 +693,24 @@ export function getCountRiserve(titolariInfluenti: number) {
     : 11 - titolariInfluenti
 }
 
-export function getVotoBonus(voto: {
-  voto: Decimal | null
-  ammonizione: Decimal
-  espulsione: Decimal
-  gol: Decimal | null
-  assist: Decimal | null
-  autogol: Decimal | null
-  altriBonus: Decimal | null
-}): number {
+export function getVotoBonus(voto: Voti): number {
   let bonus = 0
 
   // Aggiungi gli altri valori al bonus, gestendo i Decimal e i valori null
-  bonus += voto.voto?.toNumber() ?? 0
-  bonus += voto.ammonizione?.toNumber() ?? 0
-  bonus += voto.espulsione?.toNumber() ?? 0
-  bonus += voto.gol?.toNumber() ?? 0
-  bonus += voto.assist?.toNumber() ?? 0
-  bonus += voto.autogol?.toNumber() ?? 0
-  bonus += voto.altriBonus?.toNumber() ?? 0
-
-  //Logger.info(`bonus: ${bonus}`);
+  bonus += voto.voto ?? 0
+  bonus += voto.ammonizione ?? 0
+  bonus += voto.espulsione ?? 0
+  bonus += voto.gol ?? 0
+  bonus += voto.assist ?? 0
+  bonus += voto.autogol ?? 0
+  bonus += voto.altriBonus ?? 0
   return bonus
 }
 
-async function getCalendario(filter: CalendarioFilter) {
-  return await prisma.calendario.findMany({
+export async function getCalendario<T>(
+  filter: FindOptionsWhere<T> | FindOptionsWhere<T>[],
+) {
+  return await Calendario.find({
     select: {
       idCalendario: true,
       giornata: true,
@@ -758,29 +722,28 @@ async function getCalendario(filter: CalendarioFilter) {
       girone: true,
       hasGiocata: true,
       hasDaRecuperare: true,
-      Tornei: {
-        select: { idTorneo: true, nome: true, gruppoFase: true },
-      },
+      Torneo: { idTorneo: true, nome: true, gruppoFase: true },
       Partite: {
-        select: {
-          idPartita: true,
-          idSquadraH: true,
-          idSquadraA: true,
-          hasMultaH: true,
-          hasMultaA: true,
-          golH: true,
-          golA: true,
-          fattoreCasalingo: true,
-          Utenti_Partite_idSquadraHToUtenti: {
-            select: { nomeSquadra: true, foto: true, maglia: true },
-          },
-          Utenti_Partite_idSquadraAToUtenti: {
-            select: { nomeSquadra: true, foto: true, maglia: true },
-          },
-        },
+        idPartita: true,
+        idSquadraH: true,
+        idSquadraA: true,
+        hasMultaH: true,
+        hasMultaA: true,
+        golH: true,
+        golA: true,
+        fattoreCasalingo: true,
+        SquadraHome: { nomeSquadra: true, foto: true, maglia: true },
+        SquadraAway: { nomeSquadra: true, foto: true, maglia: true },
+      },
+    },
+    relations: {
+      Torneo: true,
+      Partite: {
+        SquadraHome: true,
+        SquadraAway: true,
       },
     },
     where: filter,
-    orderBy: [{ ordine: 'asc' }, { idTorneo: 'asc' }],
+    order: { ordine: 'asc', idTorneo: 'asc' },
   })
 }

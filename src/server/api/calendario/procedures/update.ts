@@ -1,7 +1,6 @@
 import { adminProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
-import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
+import { Calendario } from '~/server/db/entities'
 
 export const updateCalendarioProcedure = adminProcedure
   .input(
@@ -19,9 +18,9 @@ export const updateCalendarioProcedure = adminProcedure
   )
   .mutation(async (opts) => {
     try {
-      const calendario = await prisma.calendario.update({
-        where: { idCalendario: opts.input.id },
-        data: {
+      await Calendario.update(
+        { idCalendario: opts.input.id },
+        {
           idTorneo: opts.input.idTorneo,
           giornata: opts.input.giornata,
           giornataSerieA: opts.input.giornataSerieA,
@@ -31,10 +30,10 @@ export const updateCalendarioProcedure = adminProcedure
           data: opts.input.data,
           dataFine: opts.input.dataFine,
         },
-      })
-      return calendario.idCalendario
+      )
+      return opts.input.id
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

@@ -1,9 +1,9 @@
 import { z } from 'zod'
-import Logger from '~/lib/logger.server'
 import { publicProcedure } from '../../trpc'
-import prisma from '~/utils/db'
 import { Configurazione } from '~/config'
 import { getRuoloEsteso, normalizeCampioncinoUrl } from '~/utils/helper'
+import { Giocatori, Trasferimenti, Voti } from '~/server/db/entities'
+import { IsNull } from 'typeorm'
 
 export const showStatistica = publicProcedure
   .input(
@@ -14,47 +14,51 @@ export const showStatistica = publicProcedure
   .query(async (opts) => {
     const idGiocatore = +opts.input.idGiocatore
     try {
-      const giocatore = await prisma.giocatori.findUnique({
+      const giocatore = await Giocatori.findOne({
         select: { ruolo: true, nome: true, nomeFantaGazzetta: true },
         where: { idGiocatore: idGiocatore },
       })
 
-      const trasferimento = await prisma.trasferimenti.findFirst({
+      const trasferimento = await Trasferimenti.findOne({
         select: {
+          idTrasferimento: true,
           costo: true,
           dataAcquisto: true,
-          SquadreSerieA: { select: { nome: true, maglia: true } },
-          Utenti: { select: { nomeSquadra: true } },
+          SquadraSerieA: { nome: true, maglia: true },
+          Utente: { nomeSquadra: true },
         },
-        where: {
-          AND: [{ idGiocatore: idGiocatore }, { dataCessione: null }],
-        },
-        orderBy: { idTrasferimento: 'desc' },
+        relations: { SquadraSerieA: true, Utente: true },
+        where: { idGiocatore: idGiocatore , dataCessione: IsNull() },
+        order: { idTrasferimento: 'desc' },
       })
 
       if (giocatore) {
-        const result = await prisma.voti.aggregate({
-          _avg: { voto: true },
+        const raw = await Voti.createQueryBuilder('voto')
+          .select('AVG(voto.voto)', 'avgVoto')
+          .addSelect('SUM(voto.ammonizione)', 'sumAmmonizione')
+          .addSelect('SUM(voto.espulsione)', 'sumEspulsione')
+          .addSelect('SUM(voto.gol)', 'sumGol')
+          .addSelect('SUM(voto.assist)', 'sumAssist')
+          .addSelect('COUNT(voto.id_calendario)', 'countCalendario')
+          .leftJoin('calendario', 'calendario', 'voto.id_calendario = calendario.id_calendario')
+          .where('voto.id_giocatore = :idGiocatore', { idGiocatore })
+          .andWhere('voto.voto > 0')
+          .andWhere(
+            '(calendario.has_sovrapposta = false OR (calendario.has_sovrapposta = true AND calendario.id_torneo = :idTorneo))',
+            { idTorneo: 1 },
+          )
+          .getRawOne()
+
+        const result = {
+          _avg: { voto: raw?.avgVoto != null ? Number(raw.avgVoto) : null },
           _sum: {
-            ammonizione: true,
-            espulsione: true,
-            gol: true,
-            assist: true,
+            ammonizione: Number(raw?.sumAmmonizione ?? 0),
+            espulsione: Number(raw?.sumEspulsione ?? 0),
+            gol: Number(raw?.sumGol ?? 0),
+            assist: Number(raw?.sumAssist ?? 0),
           },
-          _count: { idCalendario: true },
-          where: {
-            idGiocatore: idGiocatore,
-            voto: { gt: 0 },
-            Calendario: {
-              OR: [
-                { hasSovrapposta: false },
-                {
-                  AND: [{ hasSovrapposta: true }, { idTorneo: 1 }],
-                },
-              ],
-            },
-          },
-        })
+          _count: { idCalendario: Number(raw?.countCalendario ?? 0) },
+        }
 
         return {
           ruolo: giocatore.ruolo,
@@ -75,9 +79,9 @@ export const showStatistica = publicProcedure
           giocate: Number(result._count.idCalendario),
           costo: trasferimento?.costo,
           dataAcquisto: trasferimento?.dataAcquisto,
-          squadraSerieA: trasferimento?.SquadreSerieA?.nome,
-          magliaSerieA: trasferimento?.SquadreSerieA?.maglia,
-          squadra: trasferimento?.Utenti?.nomeSquadra,
+          squadraSerieA: trasferimento?.SquadraSerieA?.nome,
+          magliaSerieA: trasferimento?.SquadraSerieA?.maglia,
+          squadra: trasferimento?.Utente?.nomeSquadra,
           ruoloEsteso: getRuoloEsteso(giocatore.ruolo),
           isVenduto: false,
           urlCampioncino: normalizeCampioncinoUrl(
@@ -93,7 +97,7 @@ export const showStatistica = publicProcedure
         }
       }
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

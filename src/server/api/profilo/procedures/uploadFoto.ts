@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { z } from 'zod'
 import fs from 'fs'
 import path from 'path'
@@ -18,10 +17,10 @@ export const uploadFotoProcedure = protectedProcedure
         fs.appendFileSync(filePath, Buffer.from(blockDataBase64, 'base64'))
       }
 
-      if (fs.statSync(filePath).size >= fileSize) Logger.info(`Il file ${fileName} è stato completamente salvato.`)
+      if (fs.statSync(filePath).size >= fileSize) console.info(`Il file ${fileName} è stato completamente salvato.`)
       return `/images/fotoprofili/${fileName}`
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

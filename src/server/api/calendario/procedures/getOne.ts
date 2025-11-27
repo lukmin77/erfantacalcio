@@ -1,22 +1,21 @@
 import { adminProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
-import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { calendarioSchema } from '~/schemas/calendario'
+import { Calendario } from '~/server/db/entities'
 
-function mapCalendarioResult(result: any): z.infer<typeof calendarioSchema> {
+function mapCalendarioResult(result: Calendario): z.infer<typeof calendarioSchema> {
   return {
     id: result.idCalendario,
-    idTorneo: result.Tornei.idTorneo,
-    nome: result.Tornei.nome,
-    gruppoFase: result.Tornei.gruppoFase,
+    idTorneo: result.Torneo.idTorneo,
+    nome: result.Torneo.nome,
+    gruppoFase: result.Torneo.gruppoFase,
     giornata: result.giornata,
     giornataSerieA: result.giornataSerieA,
     isGiocata: result.hasGiocata,
     isSovrapposta: result.hasSovrapposta,
     isRecupero: result.hasDaRecuperare,
-    data: result.data?.toISOString(),
-    dataFine: result.dataFine?.toISOString(),
+    data: (result.data ?? new Date())?.toISOString(),
+    dataFine: (result.dataFine ?? new Date())?.toISOString(),
     girone: result.girone,
     isSelected: false,
   }
@@ -26,7 +25,7 @@ export const getOneCalendarioProcedure = adminProcedure
   .input(z.object({ idCalendario: z.number() }))
   .query(async (opts) => {
     try {
-      const result = await prisma.calendario.findUnique({
+      const result = await Calendario.findOne({
         select: {
           idCalendario: true,
           giornata: true,
@@ -38,8 +37,10 @@ export const getOneCalendarioProcedure = adminProcedure
           girone: true,
           hasGiocata: true,
           hasDaRecuperare: true,
-          Tornei: { select: { idTorneo: true, nome: true, gruppoFase: true } },
+          idTorneo: true,
+          Torneo: { idTorneo: true, nome: true, gruppoFase: true },
         },
+        relations: { Torneo: true },
         where: { idCalendario: opts.input.idCalendario },
       })
       if (result) {
@@ -47,7 +48,7 @@ export const getOneCalendarioProcedure = adminProcedure
       }
       return null
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

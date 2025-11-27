@@ -554,7 +554,7 @@ function ViewTabellini() {
                         value={p.idPartita}
                         key={`giornata_${p.idPartita}`}
                         selected={index === 0}
-                      >{`${p.Utenti_Partite_idSquadraHToUtenti?.nomeSquadra} - ${p.Utenti_Partite_idSquadraAToUtenti?.nomeSquadra}`}</MenuItem>
+                      >{`${p.SquadraHome?.nomeSquadra} - ${p.SquadraAway?.nomeSquadra}`}</MenuItem>
                     ))}
                   </Select>
                 </Typography>

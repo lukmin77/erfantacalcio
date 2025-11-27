@@ -1,6 +1,4 @@
-import Logger from '~/lib/logger.server'
 import { z } from 'zod'
-import prisma from '~/utils/db'
 import { adminProcedure } from '~/server/api/trpc'
 import {
   getTabellino,
@@ -10,13 +8,8 @@ import {
   getGolSegnati,
 } from '../../../utils/common'
 import { Configurazione } from '~/config'
+import { getFormazione } from '../services/partiteMapping'
 
-async function getFormazione(idPartita: number, idSquadra: number) {
-  return await prisma.formazioni.findFirst({
-    select: { idFormazione: true, modulo: true },
-    where: { idPartita, idSquadra },
-  })
-}
 
 export const getTabellinoProcedure = adminProcedure
   .input(z.object({ idPartita: z.number(), idSquadra: z.number().nullable() }))
@@ -51,16 +44,16 @@ export const getTabellinoProcedure = adminProcedure
           }
         } else {
           const msg = `Nessuna formazione per la partita: ${opts.input.idPartita} e l'idsquadra: ${opts.input.idSquadra}`
-          Logger.info(msg)
+          console.info(msg)
           return msg
         }
       } else {
         const msg = `Nessuna squadra assegnata alla partita: ${opts.input.idPartita}`
-        Logger.warn(msg)
+        console.warn(msg)
         return msg
       }
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

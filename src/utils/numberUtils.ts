@@ -1,11 +1,4 @@
-import { type Decimal } from '@prisma/client/runtime/library'
 
-export function toNumberWithPrecision(
-  decimalValue: Decimal | null,
-  decimalNumber: number | undefined,
-): number {
-  return decimalValue ? parseFloat(decimalValue.toFixed(decimalNumber ?? 0)) : 0
-}
 
 export function generateUniqueRandomNumbers(
   min: number,

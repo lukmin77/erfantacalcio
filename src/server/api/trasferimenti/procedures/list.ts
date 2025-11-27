@@ -1,15 +1,13 @@
-import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { publicProcedure } from '~/server/api/trpc'
 import { number, z } from 'zod'
 import { Configurazione } from '~/config'
+import { Trasferimenti } from '~/server/db/entities'
 
 export const listTrasferimentiProcedure = publicProcedure
   .input(z.object({ idGiocatore: number() }))
   .query(async (opts) => {
-    const idGiocatore = +opts.input.idGiocatore
     try {
-      const query = await prisma.trasferimenti.findMany({
+      const query = await Trasferimenti.find({
         select: {
           idTrasferimento: true,
           idGiocatore: false,
@@ -23,38 +21,38 @@ export const listTrasferimentiProcedure = publicProcedure
           stagione: true,
           nomeSquadra: true,
           nomeSquadraSerieA: true,
-          Utenti: { select: { nomeSquadra: true } },
-          Giocatori: { select: { nome: true, ruolo: true, id_pf: true } },
-          SquadreSerieA: { select: { nome: true, maglia: true } },
+          Utente: { nomeSquadra: true },
+          Giocatore: { nome: true, ruolo: true, id_pf: true },
+          SquadraSerieA: { nome: true, maglia: true },
         },
-        where: {
-          AND: [
-            { idGiocatore: idGiocatore },
-            { hasRitirato: false },
-          ],
+        relations: {
+          Utente: true,
+          Giocatore: true,
+          SquadraSerieA: true,
         },
-        orderBy: [{ stagione: 'desc' }, { dataAcquisto: 'desc' }],
+        where: { idGiocatore: opts.input.idGiocatore, hasRitirato: false },
+        order: { stagione: 'desc', dataAcquisto: 'desc' },
       })
 
       return query.map((t) => ({
         id: t.idTrasferimento,
-        id_pf: t.Giocatori.id_pf,
+        id_pf: t.Giocatore.id_pf,
         idTrasferimento: t.idTrasferimento,
-        nome: t.Giocatori.nome,
-        ruolo: t.Giocatori.ruolo,
+        nome: t.Giocatore.nome,
+        ruolo: t.Giocatore.ruolo,
         squadra:
-          t.Utenti?.nomeSquadra === undefined
+          t.Utente?.nomeSquadra === undefined
             ? t.nomeSquadra
-            : t.Utenti.nomeSquadra,
-        maglia: t.SquadreSerieA?.maglia
-          ? `/images/maglie/${t.SquadreSerieA.maglia}`
+            : t.Utente.nomeSquadra,
+        maglia: t.SquadraSerieA?.maglia
+          ? `/images/maglie/${t.SquadraSerieA.maglia}`
           : `/images/maglie/${t.nomeSquadraSerieA?.toLowerCase()}.gif`,
         squadraSerieA:
-          t.SquadreSerieA?.nome === undefined
+          t.SquadraSerieA?.nome === undefined
             ? t.nomeSquadraSerieA
-            : t.SquadreSerieA.nome,
+            : t.SquadraSerieA.nome,
         costo: t.costo,
-        media: t.media ? parseFloat(t.media.toFixed(2)) : 0,
+        media: t.media ?? 0,
         gol: t.gol,
         assist: t.assist,
         giocate: t.giocate,
@@ -64,7 +62,7 @@ export const listTrasferimentiProcedure = publicProcedure
         isEditVisible: t.stagione === Configurazione.stagione,
       }))
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

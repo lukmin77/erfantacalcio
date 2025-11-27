@@ -16,24 +16,6 @@ export const calendarioSchema = z.object({
   isSelected: z.boolean().default(false),
 })
 
-const utentePartitaSchema = z.object({
-  nomeSquadra: z.string().nullable(),
-  foto: z.string().nullable(),
-  maglia: z.string().nullable(),
-})
-
-export const partitaSchema = z.object({
-  idPartita: z.number(),
-  idSquadraH: z.number().nullable(),
-  idSquadraA: z.number().nullable(),
-  hasMultaH: z.boolean(),
-  hasMultaA: z.boolean(),
-  golH: z.number().nullable(),
-  golA: z.number().nullable(),
-  fattoreCasalingo: z.boolean(),
-  Utenti_Partite_idSquadraHToUtenti: utentePartitaSchema.nullable(),
-  Utenti_Partite_idSquadraAToUtenti: utentePartitaSchema.nullable(),
-})
 
 export const tabellinoSchema = z.object({
   idPartita: z.number(),
@@ -46,23 +28,6 @@ export const tabellinoSchema = z.object({
   multaAway: z.boolean(),
 })
 
-export const calendarioPartiteSchema = z.object({
-  idCalendario: z.number(),
-  giornata: z.number(),
-  giornataSerieA: z.number(),
-  hasGiocata: z.boolean(),
-  hasSovrapposta: z.boolean(),
-  hasDaRecuperare: z.boolean(),
-  data: z.date().nullable(),
-  dataFine: z.date().nullable(),
-  girone: z.union([z.string(), z.number()]).nullable(),
-  Tornei: z.object({
-    idTorneo: z.number(),
-    nome: z.string(),
-    gruppoFase: z.string().nullable(),
-  }),
-  Partite: z.array(partitaSchema),
-})
 
 export const serieASchema = z.object({
       giornata: z.number(),

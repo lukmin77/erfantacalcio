@@ -1,125 +1,178 @@
-import Logger from '~/lib/logger.server'
 import { z } from 'zod'
 import { adminProcedure } from '../../trpc'
 import { normalizeNomeGiocatore } from '~/utils/helper'
-import prisma from '~/utils/db'
 import { Configurazione } from '~/config'
 import _ from 'lodash'
 import { uploadVotoGiocatoreSchema } from '~/schemas/giocatore'
+import { EntityManager, In } from 'typeorm'
+import {
+  Calendario,
+  Giocatori,
+  SquadreSerieA,
+  Trasferimenti,
+  Voti,
+} from '~/server/db/entities'
+import { AppDataSource } from '~/data-source'
 
 export const processVotiProcedure = adminProcedure
   .input(
     z.object({
       idCalendario: z.number(),
-      voti: z.array(uploadVotoGiocatoreSchema),
+      votiGiocatori: z.array(uploadVotoGiocatoreSchema),
     }),
   )
   .mutation(async (opts) => {
     try {
-      Logger.info(`Processing ${opts.input.voti.length} voti`)
-      const giocatori = await findAndCreateGiocatori(
-        opts.input.voti.map((v) => ({
-          id_pf: v.id_pf,
-          nome: normalizeNomeGiocatore(v.Nome),
-          ruolo: v.Ruolo,
-        })),
-      )
+      console.log(`Processing ${opts.input.votiGiocatori.length} giocatori`)
 
-      for (const voto of opts.input.voti) {
-        console.log(`Processing voto for player: ${voto.Nome} ${voto.Squadra}`)
-        const idGiocatore =
-          giocatori.find(
-            (g) =>
-              g !== null &&
-              (g.id_pf === voto.id_pf ||
-                g.nome.toLowerCase() === voto.Nome.toLowerCase()),
-          )?.idGiocatore ?? 0
-
-        if ((await findLastTrasferimento(idGiocatore)) === null) {
-          const squadraSerieA = await findSquadraSerieA(voto.Squadra)
-          if (squadraSerieA !== null) {
-            Logger.info(
-              `processing idgiocatore: ${idGiocatore}, nome: ${voto.Nome}, squadra: ${squadraSerieA.idSquadraSerieA} ${squadraSerieA.nome}`,
-            )
-            await createTrasferimento(
-              idGiocatore,
-              squadraSerieA.idSquadraSerieA,
-              squadraSerieA.nome,
-            )
-          }
-        }
-
-        // Calcola i valori del voto in un oggetto separato
-        const votoData = {
-          voto: voto.Voto,
-          ammonizione:
-            voto.Ammonizione === 1 ? Configurazione.bonusAmmonizione : 0,
-          espulsione:
-            voto.Espulsione === 1 ? Configurazione.bonusEspulsione : 0,
-          gol:
-            voto.Ruolo === 'P'
-              ? voto.GolSubiti * Configurazione.bonusGolSubito
-              : voto.GolSegnati * Configurazione.bonusGol,
-          assist: voto.Assist * Configurazione.bonusAssist,
-          autogol: voto.Autogol * Configurazione.bonusAutogol,
-          altriBonus:
-            (voto.RigoriParati ?? 0) * Configurazione.bonusRigoreParato +
-            (voto.RigoriErrati ?? 0) * Configurazione.bonusRigoreSbagliato,
-        }
-
-        // Upsert con update e create uguali
-        await prisma.voti.upsert({
-          where: {
-            UQ_Voti_Calendario_Giocatore: {
-              idCalendario: opts.input.idCalendario,
-              idGiocatore: idGiocatore,
+      const calendario = await Calendario.findOneOrFail(
+        { select: {
+          idCalendario: true,
+          Partite: {
+            idPartita: true,
+            Formazioni: {
+              idFormazione: true,
             },
+          }
+        },
+        relations: {
+          Partite: {
+            Formazioni: true,
           },
-          update: votoData,
-          create: {
-            idCalendario: opts.input.idCalendario,
-            idGiocatore: idGiocatore,
-            ...votoData,
-          },
-        })
+        },
+        where: { idCalendario: opts.input.idCalendario },
+      })
+      if (calendario.Partite.length !== calendario.Partite.filter(p => p.Formazioni.length > 0).length){
+        console.warn(`Attenzione: non tutte le partite della giornata ${opts.input.idCalendario} hanno formazioni inserite.`)
+        throw new Error('Non tutte le partite della giornata hanno formazioni inserite.')
       }
+      
+      await AppDataSource.transaction(async (trx) => {
+        const giocatori = await findAndCreateGiocatori(
+          trx,
+          opts.input.votiGiocatori.map((v) => ({
+            id_pf: v.id_pf,
+            nome: normalizeNomeGiocatore(v.Nome),
+            ruolo: v.Ruolo,
+          })),
+        )
 
-      Logger.info(`Process voti successfull completed`)
+        await Promise.all(
+          opts.input.votiGiocatori.map(async (votoGiocatore) => {
+            console.log(
+              `Processing voto for player: ${votoGiocatore.Nome} ${votoGiocatore.Squadra}`,
+            )
+            const idGiocatore =
+              giocatori.find(
+                (g) =>
+                  g !== null &&
+                  (g.id_pf === votoGiocatore.id_pf ||
+                    g.nome.toLowerCase() === votoGiocatore.Nome.toLowerCase()),
+              )?.idGiocatore ?? 0
+
+            if ((await findLastTrasferimento(trx, idGiocatore)) === null) {
+              console.log(
+                `No trasferimento found for player id: ${idGiocatore}, creating one...`,
+              )
+              const squadraSerieA = await findSquadraSerieA(
+                trx,
+                votoGiocatore.Squadra,
+              )
+              if (squadraSerieA !== null) {
+                await createTrasferimento(
+                  trx,
+                  idGiocatore,
+                  squadraSerieA.idSquadraSerieA,
+                  squadraSerieA.nome,
+                )
+              }
+            }
+
+            // Upsert con update e create uguali
+            const votoSave = trx.create(Voti, {
+              voto: votoGiocatore.Voto ?? 0,
+              ammonizione:
+                votoGiocatore.Ammonizione === 1
+                  ? Configurazione.bonusAmmonizione
+                  : 0,
+              espulsione:
+                votoGiocatore.Espulsione === 1
+                  ? Configurazione.bonusEspulsione
+                  : 0,
+              gol:
+                votoGiocatore.Ruolo === 'P'
+                  ? votoGiocatore.GolSubiti * Configurazione.bonusGolSubito
+                  : votoGiocatore.GolSegnati * Configurazione.bonusGol,
+              assist: votoGiocatore.Assist * Configurazione.bonusAssist,
+              autogol: votoGiocatore.Autogol * Configurazione.bonusAutogol,
+              altriBonus:
+                (votoGiocatore.RigoriParati ?? 0) *
+                  Configurazione.bonusRigoreParato +
+                (votoGiocatore.RigoriErrati ?? 0) *
+                  Configurazione.bonusRigoreSbagliato,
+            })
+
+            const criteria = {
+              idGiocatore: idGiocatore,
+              idCalendario: opts.input.idCalendario,
+            }
+            const isExists = await trx.exists(Voti, {
+              where: criteria,
+            })
+
+            // remove id fields from the data to avoid specifying them twice when spreading
+            const votoData = _.omit(votoSave, ['idCalendario', 'idGiocatore'])
+
+            if (isExists) {
+              await trx.update(Voti, criteria, votoData)
+            } else {
+              await trx.insert(Voti, {
+                idCalendario: opts.input.idCalendario,
+                idGiocatore: idGiocatore,
+                ...votoData,
+              })
+            }
+
+            console.log(`Processed voto for player: ${votoGiocatore.Nome}`)
+          }),
+        )
+
+        console.log(`Process voti successfull completed`)
+      })
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })
 
 async function findAndCreateGiocatori(
+  trx: EntityManager,
   players: { id_pf: number | null; nome: string; ruolo: string }[],
 ) {
   try {
     // 1️⃣ Trova giocatori esistenti per id_pf
-    const giocatoriWithId = await prisma.giocatori.findMany({
+    const giocatoriWithId = await trx.find(Giocatori, {
       select: {
         idGiocatore: true,
         id_pf: true,
         nome: true,
       },
       where: {
-        id_pf: {
-          in: players
-            .map((p) => p.id_pf)
-            .filter((id): id is number => id !== null),
-        },
+        id_pf: In(
+          players.map((p) => p.id_pf).filter((id): id is number => id !== null),
+        ),
       },
     })
 
     // 2️⃣ Trova giocatori esistenti per nome
-    const giocatoriWithNome = await prisma.giocatori.findMany({
+    const giocatoriWithNome = await trx.find(Giocatori, {
       select: {
         idGiocatore: true,
         id_pf: true,
         nome: true,
       },
       where: {
-        nome: { in: players.map((p) => p.nome) },
+        nome: In(players.map((p) => p.nome)),
       },
     })
 
@@ -129,21 +182,22 @@ async function findAndCreateGiocatori(
       (g) => `${g.id_pf ?? ''}_${g.nome}`,
     )
 
-    Logger.info(
-      'Giocatori trovati in DB:',
+    console.log(
+      'Giocatori trovati:',
       giocatori.map((g) => ({ nome: g.nome, id_pf: g.id_pf })),
     )
 
     // 4️⃣ Aggiorna eventuali id_pf mancanti
     await Promise.all(
-      giocatori.map(async (g) => {
-        if (g && g.id_pf) {
-          await prisma.giocatori.update({
-            where: { idGiocatore: g.idGiocatore },
-            data: { id_pf: g.id_pf },
-          })
-        }
-      }),
+      giocatori
+        .filter((g) => g && g.id_pf)
+        .map(async (g) => {
+          await trx.update(
+            Giocatori,
+            { idGiocatore: g.idGiocatore },
+            { id_pf: g.id_pf },
+          )
+        }),
     )
 
     // 5️⃣ Filtra solo i giocatori non ancora in DB
@@ -154,115 +208,105 @@ async function findAndCreateGiocatori(
       return !match
     })
 
-    Logger.info('Nuovi giocatori da creare:', newPlayers)
+    console.log('Nuovi giocatori da creare:', newPlayers)
 
     // 6️⃣ Crea i nuovi giocatori
     if (newPlayers.length > 0) {
-      await Promise.all(
-        newPlayers.map(async (p) => {
-          const created = await createGiocatori([
-            { nome: p.nome, ruolo: p.ruolo, id_pf: p.id_pf },
-          ])
-          giocatori.concat(created)
-        }),
-      )
+      const created = await createGiocatori(trx, newPlayers)
+      giocatori.concat(created)
     }
 
     return giocatori
   } catch (error) {
-    Logger.error('Si è verificato un errore', error)
+    console.error('Si è verificato un errore', error)
     throw error
   }
 }
 
 async function createGiocatori(
-  giocatori: { nome: string; ruolo: string; id_pf: number | null }[],
+  trx: EntityManager,
+  giocatori: { id_pf: number | null; nome: string; ruolo: string }[],
 ) {
   try {
-    const result = await prisma.giocatori.createMany({
-      data: giocatori.map((g) => ({
+    const result = await trx.insert(
+      Giocatori,
+      giocatori.map((g) => ({
         id_pf: g.id_pf,
-        nome: normalizeNomeGiocatore(g.nome),
+        nome: g.nome,
         nomeFantaGazzetta: null,
         ruolo: g.ruolo,
       })),
-      skipDuplicates: true,
-    })
-    console.log(`${result.count} giocatori inseriti`)
+    )
 
-    const names = giocatori.map((g) => normalizeNomeGiocatore(g.nome))
-    const createdGiocatori = await prisma.giocatori.findMany({
+    console.log(`${result.identifiers.length} nuovi giocatori inseriti`)
+
+    const createdGiocatori = await trx.find(Giocatori, {
       select: {
         idGiocatore: true,
         id_pf: true,
         nome: true,
       },
       where: {
-        nome: { in: names },
+        nome: In(giocatori.map((g) => g.nome)),
       },
     })
 
     return createdGiocatori
   } catch (error) {
-    Logger.error('Si è verificato un errore', error)
+    console.error('Si è verificato un errore', error)
     throw error
   }
 }
 
-async function findLastTrasferimento(idGiocatore: number) {
+async function findLastTrasferimento(trx: EntityManager, idGiocatore: number) {
   try {
-    const trasferimento = await prisma.trasferimenti.findFirst({
+    const trasferimento = await trx.findOne(Trasferimenti, {
       where: {
         idGiocatore: idGiocatore,
         stagione: Configurazione.stagione,
       },
-      orderBy: {
+      order: {
         dataAcquisto: 'desc',
       },
     })
     return trasferimento
   } catch (error) {
-    Logger.error('Si è verificato un errore:', idGiocatore, error)
+    console.error('Si è verificato un errore:', idGiocatore, error)
     throw error
   }
 }
 
-async function findSquadraSerieA(nome: string) {
+async function findSquadraSerieA(trx: EntityManager, nome: string) {
   try {
-    const squadra = await prisma.squadreSerieA.findFirst({
+    const squadra = await trx.findOne(SquadreSerieA, {
       where: {
-        nome: {
-          equals: nome,
-          mode: 'insensitive',
-        },
+        nome: _.capitalize(nome),
       },
     })
     return squadra
   } catch (error) {
-    Logger.error('Si è verificato un errore', error)
+    console.error('Si è verificato un errore', error)
     throw error
   }
 }
 
 async function createTrasferimento(
+  trx: EntityManager,
   idGiocatore: number,
   idSquadraSerieA: number,
   nomeSquadraSerieA: string,
 ) {
   try {
-    //Logger.info('Pre-inserimento in Trasferimenti:', { idGiocatore: idGiocatore, idsquadraSerieA: idSquadraSerieA, nomeSquadraSerieA: nomeSquadraSerieA });
-    await prisma.trasferimenti.create({
-      data: {
-        idGiocatore: idGiocatore,
-        costo: 0,
-        idSquadraSerieA: idSquadraSerieA,
-        stagione: Configurazione.stagione,
-        nomeSquadraSerieA: nomeSquadraSerieA,
-      },
+    const trasferimento = await trx.insert(Trasferimenti, {
+      idGiocatore: idGiocatore,
+      costo: 0,
+      idSquadraSerieA: idSquadraSerieA,
+      stagione: Configurazione.stagione,
+      nomeSquadraSerieA: nomeSquadraSerieA,
     })
-    //Logger.info('Inserito in Trasferimenti:', { trasferimento });
+    console.log('Inserito Trasferimento:', trasferimento.identifiers[0])
   } catch (error) {
-    Logger.error('Si è verificato un errore in createTrasferimento:', {
+    console.error('Si è verificato un errore in createTrasferimento:', {
       idGiocatore: idGiocatore,
       idsquadraSerieA: idSquadraSerieA,
       nomeSquadraSerieA: nomeSquadraSerieA,

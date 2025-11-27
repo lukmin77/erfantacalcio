@@ -1,15 +1,27 @@
-import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { publicProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
+import { Utenti } from '~/server/db/entities'
 
 export const getSquadraProcedure = publicProcedure
   .input(z.object({ idSquadra: z.number() }))
   .query(async (opts) => {
-    const idUtente = +opts.input.idSquadra
     try {
-      const utente = await prisma.utenti.findUnique({
-        where: { idUtente },
+      const utente = await Utenti.findOne({
+        select: {
+          idUtente: true,
+          adminLevel: true,
+          lockLevel: true,
+          presidente: true,
+          mail: true,
+          nomeSquadra: true,
+          maglia: true,
+          foto: true,
+          importoBase: true,
+          importoMulte: true,
+          importoMercato: true,
+          fantaMilioni: true,
+        },
+        where: { idUtente: opts.input.idSquadra },
       })
       if (utente) {
         return {
@@ -21,15 +33,15 @@ export const getSquadraProcedure = publicProcedure
           squadra: utente.nomeSquadra,
           maglia: utente.maglia,
           foto: utente.foto,
-          importoAnnuale: parseFloat(utente.importoBase.toFixed(2)),
-          importoMulte: parseFloat(utente.importoMulte.toFixed(2)),
-          importoMercato: parseFloat(utente.importoMercato.toFixed(2)),
-          fantamilioni: parseFloat(utente.fantaMilioni.toFixed(2)),
+          importoAnnuale: utente.importoBase,
+          importoMulte: utente.importoMulte,
+          importoMercato: utente.importoMercato,
+          fantamilioni: utente.fantaMilioni,
         }
       }
       return null
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

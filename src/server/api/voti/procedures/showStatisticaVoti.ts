@@ -1,9 +1,8 @@
-import Logger from '~/lib/logger.server'
 import { adminProcedure } from '../../trpc'
 import { z } from 'zod'
-import prisma from '~/utils/db'
 import { Configurazione } from '~/config'
-import { VotiDistinctItem } from '~/types/voti'
+import { Voti } from '~/server/db/entities'
+import { MoreThan } from 'typeorm'
 
 export const showStatisticaVotiProcedure = adminProcedure
   .input(
@@ -14,10 +13,10 @@ export const showStatisticaVotiProcedure = adminProcedure
   )
   .query(async (opts) => {
     try {
-      const result = await prisma.voti.findMany({
+      const result = await Voti.find({
         where: {
           idGiocatore: opts.input.idGiocatore,
-          voto: { gt: 0 },
+          voto: MoreThan(0),
         },
         select: {
           idVoto: true,
@@ -30,17 +29,19 @@ export const showStatisticaVotiProcedure = adminProcedure
           altriBonus: true,
           titolare: true,
           riserva: true,
-          Giocatori: {
-            select: { nome: true, ruolo: true },
-          },
+          Giocatore: { nome: true, ruolo: true },
           Calendario: {
-            select: {
-              giornataSerieA: true,
-              Tornei: { select: { nome: true, gruppoFase: true } },
-            },
+            giornataSerieA: true,
+            Torneo: { nome: true, gruppoFase: true },
           },
         },
-        orderBy: {
+        relations: {
+          Giocatore: true,
+          Calendario: {
+            Torneo: true,
+          },
+        },
+        order: {
           Calendario: {
             giornataSerieA: 'asc',
           },
@@ -53,28 +54,26 @@ export const showStatisticaVotiProcedure = adminProcedure
           const giornata = c.Calendario.giornataSerieA
           if (!acc.has(giornata)) {
             acc.set(giornata, {
-              voto: c.voto?.toNumber() ?? null,
-              ammonizione: c.ammonizione.toNumber() ?? null,
-              espulsione: c.espulsione.toNumber() ?? null,
+              voto: Number(c.voto),
+              ammonizione: Number(c.ammonizione),
+              espulsione: Number(c.espulsione),
               gol:
-                c.Giocatori.ruolo === 'P'
-                  ? (c.gol?.toNumber() ?? 0) / Configurazione.bonusGolSubito
-                  : (c.gol?.toNumber() ?? 0) / Configurazione.bonusGol,
-              assist: (c.assist?.toNumber() ?? 0) / Configurazione.bonusAssist,
-              giornataSerieA: giornata,
+                c.Giocatore.ruolo === 'P'
+                  ? (c.gol ?? 0) / Configurazione.bonusGolSubito
+                  : (c.gol ?? 0) / Configurazione.bonusGol,
+              assist: (c.assist ?? 0) / Configurazione.bonusAssist,
+              giornataSerieA: giornata.toString(),
             })
           }
           return acc
         }, new Map())
-
-        const votiDistinct: VotiDistinctItem[] = Array.from(
+        const votiDistinct = Array.from(
           voti.values(),
-        ) as VotiDistinctItem[]
-
+        ) 
         return votiDistinct
       } else return []
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

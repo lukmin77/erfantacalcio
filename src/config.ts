@@ -7,6 +7,7 @@ export const Configurazione = {
     10,
   ),
   importoMulta: parseInt(process.env.NEXT_PUBLIC_MULTA ?? '10', 10),
+  importoQuotaAnnuale: parseInt(process.env.NEXT_PUBLIC_QUOTA_ANNUALE ?? '120', 10),
   urlCampioncino: process.env.NEXT_PUBLIC_CAMPIONCINO ?? '',
   urlCampioncinoSmall: process.env.NEXT_PUBLIC_CAMPIONCINO_SMALL ?? '',
   locale: process.env.NEXT_PUBLIC_LOCALE ?? 'it-IT',

@@ -1,10 +1,12 @@
-import Logger from '~/lib/logger.server'
 import { protectedProcedure } from '../../trpc'
 import { z } from 'zod'
-import prisma from '~/utils/db'
 import { toLocaleDateTime } from '~/utils/dateUtils'
 import { ReSendMailAsync } from '~/service/mailSender'
 import { env } from 'process'
+import { Formazioni, Partite, Voti } from '~/server/db/entities'
+import { AppDataSource } from '~/data-source'
+import { In } from 'typeorm'
+import { getDescrizioneGiornata } from '~/utils/helper'
 
 export const create = protectedProcedure
   .input(
@@ -27,130 +29,144 @@ export const create = protectedProcedure
     const giocatori = opts.input.giocatori
 
     try {
-      const idFormazione = (
-        await prisma.formazioni.findFirst({
+      await AppDataSource.transaction(async (trx) => {
+        const formazioniIds = await trx.find(Formazioni, {
           select: { idFormazione: true },
-          where: {
-            AND: [{ idPartita: idPartita }, { idSquadra: idSquadra }],
-          },
+          where: { idPartita: idPartita, idSquadra: idSquadra },
         })
-      )?.idFormazione
-
-      if (idFormazione) {
-        await prisma.voti.deleteMany({
-          where: { idFormazione: idFormazione },
+        await trx.delete(Voti, {
+          idFormazione: In(formazioniIds.map((f) => f.idFormazione)),
         })
-      }
-      Logger.info(`Eliminazione voti per idFormazione: ${idFormazione}`)
-
-      const oldFormazione = await prisma.formazioni.findFirst({
-        select: { idFormazione: true },
-        where: {
-          AND: [{ idPartita: idPartita }, { idSquadra: idSquadra }],
-        },
-      })
-
-      if (oldFormazione) {
-        await prisma.formazioni.delete({
-          where: {
-            idFormazione: oldFormazione.idFormazione,
-          },
+        await trx.delete(Formazioni, {
+          idPartita: idPartita,
+          idSquadra: idSquadra,
         })
-      }
 
-      Logger.info(
-        `Eliminazione formazione per idSquadra: ${idSquadra} e idPartita:${idPartita}`,
-      )
+        console.log(
+          `Eliminazione voti e formazioni idPartita: ${idPartita} e idSquadra: ${idSquadra}`,
+        )
 
-      const calendario = await prisma.partite.findUnique({
-        select: {
-          idCalendario: true,
-          Utenti_Partite_idSquadraHToUtenti: {
-            select: {
+        const partita = await trx.findOne(Partite, {
+          select: {
+            idCalendario: true,
+            idPartita: true,
+            SquadraHome: {
               nomeSquadra: true,
               presidente: true,
               idUtente: true,
               mail: true,
             },
-          },
-          Utenti_Partite_idSquadraAToUtenti: {
-            select: {
+            SquadraAway: {
               nomeSquadra: true,
               presidente: true,
               idUtente: true,
               mail: true,
             },
+            Calendario: {
+              idCalendario: true,
+              giornata: true,
+              giornataSerieA: true,
+              data: true,
+              girone: true,
+              Torneo: {
+                idTorneo: true,
+                nome: true,
+                gruppoFase: true,
+              },
+            },
           },
-        },
-        where: { idPartita: idPartita },
-      })
-      Logger.info(
-        `recupero idCalendario per idPartita: ${idSquadra}:${calendario?.idCalendario}`,
-      )
+          relations: {
+            Calendario: { Torneo: true },
+            SquadraHome: true,
+            SquadraAway: true,
+          },
+          where: { idPartita: idPartita },
+        })
+        console.log(
+          `recupero idCalendario:${partita?.idCalendario} per idPartita: ${idPartita}`,
+        )
 
-      const formazione = await prisma.formazioni.create({
-        data: {
+        const dataInserimentoFormazione = toLocaleDateTime(new Date())
+        const formazione = await trx.insert(Formazioni, {
           idPartita: idPartita,
           idSquadra: idSquadra,
           modulo: modulo,
-          dataOra: toLocaleDateTime(new Date()),
+          dataOra: dataInserimentoFormazione,
           hasBloccata: false,
-        },
-      })
-      Logger.info(`Creazione nuova formazione`, formazione)
+        })
+        console.log(
+          `Creazione nuova formazione`,
+          formazione.identifiers[0].idFormazione,
+        )
+        const idFormazione = formazione.identifiers[0].idFormazione
 
-      if (calendario) {
-        await Promise.all(
-          giocatori.map(async (c) => {
-            await prisma.voti.createMany({
-              data: {
+        if (partita) {
+          await Promise.all(
+            giocatori.map(async (c) => {
+              await trx.insert(Voti, {
                 idGiocatore: c.idGiocatore,
-                idCalendario: calendario.idCalendario,
-                idFormazione: formazione.idFormazione,
+                idCalendario: partita.idCalendario,
+                idFormazione: idFormazione,
                 titolare: c.titolare,
                 riserva: c.riserva,
-              },
-            })
-          }),
-        )
-        Logger.info(
-          `Inseriti giocatori in tabella voti con idFormazione: ${formazione.idFormazione}`,
-        )
+                voto: 0,
+              })
+            }),
+          )
+          console.log(
+            `Inseriti giocatori in tabella voti con idFormazione: ${idFormazione}`,
+          )
 
-        //invio mail
-        if (env.MAIL_ENABLED) {
-          const subject = `ErFantacalcio: Formazione partita ${calendario.Utenti_Partite_idSquadraHToUtenti?.nomeSquadra} - ${calendario.Utenti_Partite_idSquadraAToUtenti?.nomeSquadra}`
-          const avversario =
-            idSquadra === calendario.Utenti_Partite_idSquadraHToUtenti?.idUtente
-              ? calendario.Utenti_Partite_idSquadraHToUtenti?.presidente
-              : calendario.Utenti_Partite_idSquadraAToUtenti?.presidente
-          const to =
-            idSquadra === calendario.Utenti_Partite_idSquadraHToUtenti?.idUtente
-              ? calendario.Utenti_Partite_idSquadraAToUtenti?.mail
-              : calendario.Utenti_Partite_idSquadraHToUtenti?.mail
-          const htmlMessage = `Notifica automatica da erFantacalcio.com<br><br>
-              Il tuo avversario ${avversario} ha inserito la formazione per la prossima partita<br>
-              https://www.erfantacalcio.com<br><br>
-              Saluti dal Vostro amato Presidente`
+          //invio mail
+          if (env.MAIL_ENABLED) {
+            const subject = `ErFantacalcio: Formazione partita ${partita.SquadraHome?.nomeSquadra} - ${partita.SquadraAway?.nomeSquadra}`
+            const avversario =
+              idSquadra === partita.SquadraHome?.idUtente
+                ? partita.SquadraHome?.presidente
+                : partita.SquadraAway?.presidente
+            const to =
+              idSquadra === partita.SquadraHome?.idUtente
+                ? partita.SquadraAway?.mail
+                : partita.SquadraHome?.mail
+            const cc =
+              idSquadra === partita.SquadraHome?.idUtente
+                ? partita.SquadraHome?.mail
+                : partita.SquadraAway?.mail
 
-          if (to) await ReSendMailAsync(to, subject, htmlMessage)
-          else {
-            const presidenteWithoutMail =
-              idSquadra ===
-              calendario.Utenti_Partite_idSquadraHToUtenti?.idUtente
-                ? calendario.Utenti_Partite_idSquadraAToUtenti?.presidente
-                : calendario.Utenti_Partite_idSquadraHToUtenti?.presidente
-            Logger.warn(
-              `Impossibile inviare notifica, mail non configurata per il presidente: ${presidenteWithoutMail}`,
+            const descrizioneGiornata = getDescrizioneGiornata(
+              partita.Calendario.giornataSerieA,
+              partita.Calendario.Torneo.nome,
+              partita.Calendario.giornata,
+              partita.Calendario.Torneo.gruppoFase,
             )
+            const htmlMessage = `Notifica automatica da erFantacalcio.com<br><br>
+              Il tuo avversario, l'infame ${avversario} ha inserito la formazione per la prossima partita</br></br>
+              <b>Dettagli partita:</b><br>
+              Giornata: ${descrizioneGiornata})<br>
+              Data inserimento formazione: ${dataInserimentoFormazione}</br>
+              Calcio d'inizio: ${toLocaleDateTime(partita.Calendario.data!)}</br></br>
+              https://www.erfantacalcio.com<br><br>
+              Saluti dal Vostro immenso Presidente`
+
+            if (to && cc) await ReSendMailAsync(to, cc, subject, htmlMessage)
+            else {
+              const presidenteWithoutMail =
+                idSquadra === partita.SquadraHome?.idUtente
+                  ? partita.SquadraAway?.presidente
+                  : partita.SquadraHome?.presidente
+              console.warn(
+                `Impossibile inviare notifica, mail non configurata per il presidente: ${presidenteWithoutMail}`,
+              )
+            }
           }
+        } else {
+          console.warn(
+            `Calendario non trovato, impossibile procedere con l'inserimento della formazione`,
+          )
         }
-      } else
-        Logger.warn(
-          `Calendario non trovato, impossibile procedere con l'inserimento della formazione`,
-        )
+      })
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

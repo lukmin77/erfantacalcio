@@ -21,11 +21,13 @@ import {
   Menu,
   Tooltip,
 } from '@mui/material'
+import { CardGiftcard, AutoAwesome } from '@mui/icons-material'
 import { RuoloUtente } from '~/utils/enums'
 import { Cottage, ExitToApp, WorkHistory } from '@mui/icons-material'
 import { adminListItems, guestListItems } from '../navigation/NavItems'
 import { Configurazione } from '~/config'
 import Link from 'next/link'
+import { useChristmas } from './christmasLogic'
 
 interface AppAppBarProps {
   isXs: boolean
@@ -34,6 +36,7 @@ interface AppAppBarProps {
 function AppAppBar({ isXs }: AppAppBarProps) {
   const { data: session } = useSession()
 
+  const { isChristmasMode, canvasRef } = useChristmas(isXs)
   const handleGoToHome = () => {
     window.location.href = '/'
   }
@@ -74,25 +77,61 @@ function AppAppBar({ isXs }: AppAppBarProps) {
         marginTop: '0px',
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" sx={{ position: 'relative' }}>
+        {/* Canvas-based snow (more performant for many particles) */}
+        {isChristmasMode && (
+          <canvas
+            ref={canvasRef}
+            aria-hidden
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              pointerEvents: 'none',
+              zIndex: 2,
+            }}
+          />
+        )}
         <Toolbar
           variant="regular"
-          sx={(theme) => ({
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexShrink: 0,
-            borderTopLeftRadius: '0px',
-            borderTopRightRadius: '0px',
-            borderBottomLeftRadius: '8px',
-            borderBottomRightRadius: '8px',
-            bgcolor: theme.palette.primary.dark,
-            backdropFilter: 'blur(24px)',
-            maxHeight: 40,
-            border: '1px solid',
-            borderColor: 'divider',
-            boxShadow: `1 0 1px rgba(85, 166, 246, 0.1), 1px 1.5px 2px -1px rgba(85, 166, 246, 0.15), 4px 4px 12px -2.5px rgba(85, 166, 246, 0.15)`,
-          })}
+          sx={(theme) =>
+            isChristmasMode
+              ? {
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexShrink: 0,
+                  borderTopLeftRadius: '0px',
+                  borderTopRightRadius: '0px',
+                  borderBottomLeftRadius: '8px',
+                  borderBottomRightRadius: '8px',
+                  background:
+                    'linear-gradient(135deg, #0b6623 0%, #b30000 100%)',
+                  color: '#fff',
+                  backdropFilter: 'blur(8px)',
+                  maxHeight: 48,
+                  border: '1px solid',
+                  borderColor: 'rgba(255,255,255,0.12)',
+                  boxShadow: `0 6px 18px rgba(179,0,0,0.12), 0 1px 4px rgba(11,102,35,0.08)`,
+                }
+              : {
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexShrink: 0,
+                  borderTopLeftRadius: '0px',
+                  borderTopRightRadius: '0px',
+                  borderBottomLeftRadius: '8px',
+                  borderBottomRightRadius: '8px',
+                  bgcolor: theme.palette.primary.dark,
+                  backdropFilter: 'blur(24px)',
+                  maxHeight: 40,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  boxShadow: `1 0 1px rgba(85, 166, 246, 0.1), 1px 1.5px 2px -1px rgba(85, 166, 246, 0.15), 4px 4px 12px -2.5px rgba(85, 166, 246, 0.15)`,
+                }
+          }
         >
           <Box
             sx={{
@@ -103,29 +142,60 @@ function AppAppBar({ isXs }: AppAppBarProps) {
               px: 0,
             }}
           >
-            <Typography
-              variant="h1"
+            {/* Festive title: small decorations left and right */}
+            <Box
               onClick={handleGoToHome}
               sx={{
                 mr: '30px',
                 cursor: 'pointer',
-                display: { xs: 'none', sm: 'block' },
+                display: { xs: 'none', sm: 'flex' },
+                alignItems: 'center',
+                gap: 1,
               }}
             >
-              erFantacalcio {Configurazione.stagione}
-            </Typography>
-            <Typography
-              variant="h1"
+              {isChristmasMode && (
+                <IconButton
+                  size="small"
+                  color="inherit"
+                  aria-label="festive-left"
+                  sx={{ color: '#fff' }}
+                >
+                  <AutoAwesome />
+                </IconButton>
+              )}
+              <Typography variant="h1" sx={{ color: isChristmasMode ? '#fff' : undefined }}>
+                erFantacalcio {Configurazione.stagione}
+              </Typography>
+              {isChristmasMode && (
+                <IconButton
+                  size="small"
+                  color="inherit"
+                  aria-label="festive-right"
+                  sx={{ color: '#fff' }}
+                >
+                  <CardGiftcard />
+                </IconButton>
+              )}
+            </Box>
+
+            <Box
               onClick={handleGoToHome}
               sx={{
                 mr: '10px',
                 fontSize: '20px',
                 cursor: 'pointer',
-                display: { xs: 'block', sm: 'none' },
+                display: { xs: 'flex', sm: 'none' },
+                alignItems: 'center',
+                gap: 0.5,
+                color: '#fff',
               }}
             >
-              erFantacalcio {Configurazione.stagione}
-            </Typography>
+              {isChristmasMode && (<AutoAwesome sx={{ fontSize: 20 }} />)}
+              <Typography variant="h1" sx={{ fontSize: '20px', color: isChristmasMode ? '#fff' : undefined }}>
+                erFantacalcio {Configurazione.stagione}
+              </Typography>
+              {isChristmasMode && (<CardGiftcard sx={{ fontSize: 20 }} />)}
+            </Box>
           </Box>
           <Box
             sx={{

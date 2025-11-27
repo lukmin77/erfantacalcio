@@ -1,4 +1,3 @@
-import Logger from '~/lib/logger.server'
 import { type GetServerSidePropsContext } from 'next'
 import {
   getServerSession,
@@ -10,7 +9,7 @@ import {
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { computeMD5Hash } from '~/utils/hashPassword'
 import { RuoloUtente } from '~/utils/enums'
-import prisma from '~/utils/db'
+import { Utenti } from './db/entities'
 
 declare module 'next-auth' {
   interface IUser extends DefaultUser {
@@ -103,7 +102,7 @@ export const authOptions: NextAuthOptions = {
             email: apiResponse.mail,
             image: apiResponse.foto,
           }
-          Logger.info(`autenticato:${apiResponse.presidente}`)
+          console.info(`autenticato:${apiResponse.presidente}`)
           return { ...user }
         } else {
           return null
@@ -129,19 +128,17 @@ export const getServerAuthSession = (ctx: {
 }
 
 async function authenticate(input: { username: string; password: string }) {
-  Logger.info('authenticate: ' + input.username)
+  console.info('authenticate: ' + input.username)
   try {
     const hashedPassword = computeMD5Hash(input.password)
-    return await prisma.utenti.findUnique({
+    return await Utenti.findOne({
       where: {
-        username_pwd: {
-          username: input.username.toLowerCase(),
-          pwd: hashedPassword,
-        },
+        username: input.username.toLowerCase(),
+        pwd: hashedPassword,
       },
     })
   } catch (error) {
-    Logger.error('Si è verificato un errore', error)
+    console.error('Si è verificato un errore', error)
     return null
   }
 }

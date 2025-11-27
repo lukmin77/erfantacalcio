@@ -116,14 +116,7 @@ function ViewFormazioni() {
                     titleTypographyProps={{ variant: 'h4' }}
                     subheader={
                       formazioneHome
-                        ? `${formatDateFromIso(
-                            formazioneHome?.dataOra.toISOString(),
-                            'DD/MM',
-                          )} alle
-                                        ${formatDateFromIso(
-                                          formazioneHome?.dataOra.toISOString(),
-                                          'HH:mm',
-                                        )}`
+                        ? formatDateFromIso(formazioneHome?.dataOra.toString(), 'DD-MM-YYYY HH:mm')
                         : `Formazione non rilasciata, multa di ${Configurazione.importoMulta} €`
                     }
                     avatar={
@@ -181,25 +174,25 @@ function ViewFormazioni() {
                                   <Grid item xs={2} sm={1}>
                                     <Tooltip
                                       title={
-                                        g.Giocatori.Trasferimenti[0]
-                                          ?.SquadreSerieA?.nome
+                                        g.Giocatore.Trasferimenti[0]
+                                          ?.SquadraSerieA?.nome
                                       }
                                     >
                                       <Image
                                         src={`/images/maglie/${
-                                          g.Giocatori.Trasferimenti[0]
-                                            ?.SquadreSerieA?.maglia ??
+                                          g.Giocatore.Trasferimenti[0]
+                                            ?.SquadraSerieA?.maglia ??
                                           'NoSerieA.gif'
                                         }`}
                                         width={26}
                                         height={22}
-                                        alt={g.Giocatori.nome}
+                                        alt={g.Giocatore.nome}
                                       />
                                     </Tooltip>
                                   </Grid>
                                   <Grid item xs={2} sm={1}>
                                     <Typography variant="body2">
-                                      {g.Giocatori.ruolo}
+                                      {g.Giocatore.ruolo}
                                     </Typography>
                                   </Grid>
                                   <Grid item xs={8} sm={10}>
@@ -208,11 +201,11 @@ function ViewFormazioni() {
                                       sx={{ cursor: 'pointer' }}
                                       onClick={() =>
                                         handleStatGiocatore(
-                                          g.Giocatori.idGiocatore,
+                                          g.Giocatore.idGiocatore,
                                         )
                                       }
                                     >
-                                      {g.Giocatori.nome}
+                                      {g.Giocatore.nome}
                                     </Typography>
                                   </Grid>
                                 </>
@@ -237,25 +230,25 @@ function ViewFormazioni() {
                                   <Grid item xs={2} sm={2}>
                                     <Tooltip
                                       title={
-                                        g.Giocatori.Trasferimenti[0]
-                                          ?.SquadreSerieA?.nome
+                                        g.Giocatore.Trasferimenti[0]
+                                          ?.SquadraSerieA?.nome
                                       }
                                     >
                                       <Image
                                         src={`/images/maglie/${
-                                          g.Giocatori.Trasferimenti[0]
-                                            ?.SquadreSerieA?.maglia ??
+                                          g.Giocatore.Trasferimenti[0]
+                                            ?.SquadraSerieA?.maglia ??
                                           'NoSerieA.gif'
                                         }`}
                                         width={26}
                                         height={22}
-                                        alt={g.Giocatori.nome}
+                                        alt={g.Giocatore.nome}
                                       />
                                     </Tooltip>
                                   </Grid>
                                   <Grid item xs={2} sm={2}>
                                     <Typography variant="body2">
-                                      {g.Giocatori.ruolo} ({g.riserva})
+                                      {g.Giocatore.ruolo} ({g.riserva})
                                     </Typography>
                                   </Grid>
                                   <Grid item xs={8} sm={8}>
@@ -264,11 +257,11 @@ function ViewFormazioni() {
                                       sx={{ cursor: 'pointer' }}
                                       onClick={() =>
                                         handleStatGiocatore(
-                                          g.Giocatori.idGiocatore,
+                                          g.Giocatore.idGiocatore,
                                         )
                                       }
                                     >
-                                      {g.Giocatori.nome}
+                                      {g.Giocatore.nome}
                                     </Typography>
                                   </Grid>
                                 </>
@@ -290,14 +283,7 @@ function ViewFormazioni() {
                     titleTypographyProps={{ variant: 'h4' }}
                     subheader={
                       formazioneAway
-                        ? `${formatDateFromIso(
-                            formazioneAway?.dataOra.toISOString(),
-                            'DD/MM',
-                          )} alle
-                                        ${formatDateFromIso(
-                                          formazioneAway?.dataOra.toISOString(),
-                                          'HH:mm',
-                                        )}`
+                        ? formatDateFromIso(formazioneAway?.dataOra.toString(), 'DD-MM-YYYY HH:mm')
                         : `Formazione non rilasciata, prevista multa di ${Configurazione.importoMulta} €`
                     }
                     avatar={
@@ -355,25 +341,25 @@ function ViewFormazioni() {
                                   <Grid item xs={2} sm={1}>
                                     <Tooltip
                                       title={
-                                        g.Giocatori.Trasferimenti[0]
-                                          ?.SquadreSerieA?.nome
+                                        g.Giocatore.Trasferimenti[0]
+                                          ?.SquadraSerieA?.nome
                                       }
                                     >
                                       <Image
                                         src={`/images/maglie/${
-                                          g.Giocatori.Trasferimenti[0]
-                                            ?.SquadreSerieA?.maglia ??
+                                          g.Giocatore.Trasferimenti[0]
+                                            ?.SquadraSerieA?.maglia ??
                                           'NoSerieA.gif'
                                         }`}
                                         width={26}
                                         height={22}
-                                        alt={g.Giocatori.nome}
+                                        alt={g.Giocatore.nome}
                                       />
                                     </Tooltip>
                                   </Grid>
                                   <Grid item xs={2} sm={1}>
                                     <Typography variant="body2">
-                                      {g.Giocatori.ruolo}
+                                      {g.Giocatore.ruolo}
                                     </Typography>
                                   </Grid>
                                   <Grid item xs={8} sm={10}>
@@ -382,11 +368,11 @@ function ViewFormazioni() {
                                       sx={{ cursor: 'pointer' }}
                                       onClick={() =>
                                         handleStatGiocatore(
-                                          g.Giocatori.idGiocatore,
+                                          g.Giocatore.idGiocatore,
                                         )
                                       }
                                     >
-                                      {g.Giocatori.nome}
+                                      {g.Giocatore.nome}
                                     </Typography>
                                   </Grid>
                                 </>
@@ -411,25 +397,25 @@ function ViewFormazioni() {
                                   <Grid item xs={2} sm={2}>
                                     <Tooltip
                                       title={
-                                        g.Giocatori.Trasferimenti[0]
-                                          ?.SquadreSerieA?.nome
+                                        g.Giocatore.Trasferimenti[0]
+                                          ?.SquadraSerieA?.nome
                                       }
                                     >
                                       <Image
                                         src={`/images/maglie/${
-                                          g.Giocatori.Trasferimenti[0]
-                                            ?.SquadreSerieA?.maglia ??
+                                          g.Giocatore.Trasferimenti[0]
+                                            ?.SquadraSerieA?.maglia ??
                                           'NoSerieA.gif'
                                         }`}
                                         width={26}
                                         height={22}
-                                        alt={g.Giocatori.nome}
+                                        alt={g.Giocatore.nome}
                                       />
                                     </Tooltip>
                                   </Grid>
                                   <Grid item xs={2} sm={2}>
                                     <Typography variant="body2">
-                                      {g.Giocatori.ruolo} ({g.riserva})
+                                      {g.Giocatore.ruolo} ({g.riserva})
                                     </Typography>
                                   </Grid>
                                   <Grid item xs={8} sm={8}>
@@ -438,11 +424,11 @@ function ViewFormazioni() {
                                       sx={{ cursor: 'pointer' }}
                                       onClick={() =>
                                         handleStatGiocatore(
-                                          g.Giocatori.idGiocatore,
+                                          g.Giocatore.idGiocatore,
                                         )
                                       }
                                     >
-                                      {g.Giocatori.nome}
+                                      {g.Giocatore.nome}
                                     </Typography>
                                   </Grid>
                                 </>
@@ -478,7 +464,7 @@ function ViewFormazioni() {
                     value={p.idPartita}
                     key={`giornata_${p.idPartita}`}
                     selected={index === 0}
-                  >{`${p.Utenti_Partite_idSquadraHToUtenti?.nomeSquadra} - ${p.Utenti_Partite_idSquadraAToUtenti?.nomeSquadra}`}</MenuItem>
+                  >{`${p.SquadraHome?.nomeSquadra} - ${p.SquadraAway?.nomeSquadra}`}</MenuItem>
                 ))}
               </Select>
             </Typography>

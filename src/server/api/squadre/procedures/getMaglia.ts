@@ -1,14 +1,13 @@
-import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { protectedProcedure } from '~/server/api/trpc'
 import { magliaType } from '~/components/selectColors'
+import { Utenti } from '~/server/db/entities'
 
 export const getMagliaProcedure = protectedProcedure.query(
   async (opts): Promise<magliaType | null> => {
-    const idUtente = +opts.ctx.session.user.idSquadra
     try {
-      const utente = await prisma.utenti.findUnique({
-        where: { idUtente },
+      const utente = await Utenti.findOne({
+        select: { maglia: true },
+        where: { idUtente: opts.ctx.session.user.idSquadra },
       })
 
       if (!utente || !utente.maglia) {
@@ -17,7 +16,7 @@ export const getMagliaProcedure = protectedProcedure.query(
 
       return JSON.parse(utente.maglia) as magliaType
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   },

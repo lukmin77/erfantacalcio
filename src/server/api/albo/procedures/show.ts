@@ -1,7 +1,6 @@
-import Logger from '~/lib/logger.server'
-import prisma from '~/utils/db'
 import { publicProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
+import { Utenti } from '~/server/db/entities'
 
 export const getAlboProcedure = publicProcedure
   .input(
@@ -11,7 +10,7 @@ export const getAlboProcedure = publicProcedure
   )
   .query(async (opts) => {
     try {
-      const utente = await prisma.utenti.findUnique({
+      const utente = await Utenti.findOne({
         where: { idUtente: opts.input.idSquadra },
       })
       if (utente) {
@@ -25,7 +24,7 @@ export const getAlboProcedure = publicProcedure
       }
       return null
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })

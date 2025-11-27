@@ -1,8 +1,6 @@
-import Logger from '~/lib/logger.server'
 import { publicProcedure } from '../../trpc'
 import { z } from 'zod'
-import prisma from '~/utils/db'
-import { iRosaStats } from '~/types/giocatori'
+import { StatsA, StatsC, StatsD, StatsP } from '~/server/db/entities'
 
 export const listStatisticheSquadra = publicProcedure
   .input(
@@ -28,25 +26,25 @@ export const listStatisticheSquadra = publicProcedure
       }
       const whereClause = { idSquadra: opts.input.id_squadra }
       const [statsP, statsD, statsC, statsA] = await Promise.all([
-        prisma.statsP.findMany({
+        StatsP.find({
           select: playerStatsSelect,
           where: whereClause,
         }),
-        prisma.statsD.findMany({
+        StatsD.find({
           select: playerStatsSelect,
           where: whereClause,
         }),
-        prisma.statsC.findMany({
+        StatsC.find({
           select: playerStatsSelect,
           where: whereClause,
         }),
-        prisma.statsA.findMany({
+        StatsA.find({
           select: playerStatsSelect,
           where: whereClause,
         }),
       ])
 
-      let stat: iRosaStats[] = [...statsP, ...statsD, ...statsC, ...statsA]
+      let stat = [...statsP, ...statsD, ...statsC, ...statsA]
 
       return stat
         ? stat.map((player) => ({
@@ -60,7 +58,7 @@ export const listStatisticheSquadra = publicProcedure
           }))
         : []
     } catch (error) {
-      Logger.error('Si è verificato un errore', error)
+      console.error('Si è verificato un errore', error)
       throw error
     }
   })
