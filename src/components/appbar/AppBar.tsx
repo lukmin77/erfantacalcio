@@ -36,13 +36,14 @@ function AppAppBar({ isXs }: AppAppBarProps) {
   const { data: session } = useSession()
 
   // Festive mode: enabled automatically in December or when forcing via env var
-  const [isFestive, setIsFestive] = React.useState(false)
+  const [isChristmasMode, setIsChristmasMode] = React.useState(false)
   React.useEffect(() => {
     try {
       const month = new Date().getMonth()
-      setIsFestive(month === 11 || month === 0)
+      //solo dicembre e gennaio
+      setIsChristmasMode(month === 11 || month === 0)
     } catch (e) {
-      setIsFestive(false)
+      setIsChristmasMode(false)
     }
   }, [])
 
@@ -52,7 +53,7 @@ function AppAppBar({ isXs }: AppAppBarProps) {
 
   // Canvas-based snow animation
   React.useEffect(() => {
-    if (!isFestive) {
+    if (!isChristmasMode) {
       // clear canvas if present
       const c = canvasRef.current
       if (c) {
@@ -178,7 +179,7 @@ function AppAppBar({ isXs }: AppAppBarProps) {
       if (ro) ro.disconnect()
       else window.removeEventListener('resize', resize)
     }
-  }, [isFestive, isXs])
+  }, [isChristmasMode, isXs])
   const handleGoToHome = () => {
     window.location.href = '/'
   }
@@ -221,7 +222,7 @@ function AppAppBar({ isXs }: AppAppBarProps) {
     >
       <Container maxWidth="lg" sx={{ position: 'relative' }}>
         {/* Canvas-based snow (more performant for many particles) */}
-        {isFestive && (
+        {isChristmasMode && (
           <canvas
             ref={canvasRef}
             aria-hidden
@@ -238,7 +239,7 @@ function AppAppBar({ isXs }: AppAppBarProps) {
         <Toolbar
           variant="regular"
           sx={(theme) =>
-            isFestive
+            isChristmasMode
               ? {
                   display: 'flex',
                   alignItems: 'center',
