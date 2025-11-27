@@ -1,6 +1,6 @@
 import { protectedProcedure } from '../../trpc'
 import { z } from 'zod'
-import { toLocaleDateTime, formatDateTime } from '~/utils/dateUtils'
+import { toLocaleDateTime, formatDateTime, nowInItalyIso } from '~/utils/dateUtils'
 import { ReSendMailAsync } from '~/service/mailSender'
 import { env } from 'process'
 import { Formazioni, Partite, Voti } from '~/server/db/entities'
@@ -86,7 +86,7 @@ export const create = protectedProcedure
           `recupero idCalendario:${partita?.idCalendario} per idPartita: ${idPartita}`,
         )
 
-        const dataInserimentoFormazione = new Date()
+        const dataInserimentoFormazione = nowInItalyIso()
         const formazione = await trx.insert(Formazioni, {
           idPartita: idPartita,
           idSquadra: idSquadra,
