@@ -143,9 +143,9 @@ export const create = protectedProcedure
             const htmlMessage = `Notifica automatica da erFantacalcio.com<br><br>
               Il tuo avversario, l'infame ${avversario}, ha inserito la formazione per la prossima partita <br> <br>
               <b>Dettagli partita:</b><br>
-              Giornata: ${descrizioneGiornata})<br>
-              Data inserimento formazione: ${dayjs(dataInserimentoFormazione).format('DD/MM/YYYY HH:mm')}<br>
-              Calcio d'inizio: ${dayjs(partita.Calendario.data ?? new Date()).format('DD/MM/YYYY HH:mm')}<br> <br>
+              Giornata: ${descrizioneGiornata}<br>
+              Data inserimento formazione: ${dataInserimentoFormazione.toLocaleString()}<br>
+              Calcio d'inizio: ${(partita.Calendario.data ?? new Date()).toLocaleString()}<br> <br>
               https://www.erfantacalcio.com <br> <br>
               Saluti dal Vostro immenso Presidente`
 
