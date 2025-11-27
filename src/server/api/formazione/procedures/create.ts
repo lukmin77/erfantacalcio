@@ -143,7 +143,7 @@ export const create = protectedProcedure
               Il tuo avversario, l'infame ${avversario}, ha inserito la formazione per la prossima partita <br> <br>
               <b>Dettagli partita:</b><br>
               Giornata: ${descrizioneGiornata}<br>
-              Data inserimento formazione: ${formatDateTime(now)}<br>
+              Data inserimento formazione: ${formatDateTime(dataInserimentoFormazione)}<br>
               Calcio d'inizio: ${formatDateTime(partita.Calendario.data ?? new Date())}<br> <br>
               https://www.erfantacalcio.com <br> <br>
               Saluti dal Vostro immenso Presidente`
