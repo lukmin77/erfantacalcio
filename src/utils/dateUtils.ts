@@ -1,4 +1,7 @@
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+
+dayjs.extend(utc)
 
 export function toLocaleDateTime(date: Date) {
   const day = date.getDate()
@@ -14,7 +17,9 @@ export function toLocaleDateTime(date: Date) {
 export function formatDateTime(date: Date | string | undefined | null): string {
   if (!date) return ''
   const d = typeof date === 'string' ? new Date(date) : date
-  return dayjs(d).format('YYYY-MM-DD HH:mm')
+  // Ensure that a UTC timestamp (e.g. saved as `2025-11-27 16:03:26+00`) is
+  // interpreted as UTC and then converted to local timezone for display.
+  return dayjs.utc(d).local().format('YYYY-MM-DD HH:mm')
 }
 
 export function getTimestamp(): string {

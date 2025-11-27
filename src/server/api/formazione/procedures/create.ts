@@ -86,7 +86,8 @@ export const create = protectedProcedure
           `recupero idCalendario:${partita?.idCalendario} per idPartita: ${idPartita}`,
         )
 
-        const dataInserimentoFormazione = toLocaleDateTime(new Date())
+        const now = new Date()
+        const dataInserimentoFormazione = toLocaleDateTime(now)
         const formazione = await trx.insert(Formazioni, {
           idPartita: idPartita,
           idSquadra: idSquadra,
@@ -143,7 +144,7 @@ export const create = protectedProcedure
               Il tuo avversario, l'infame ${avversario}, ha inserito la formazione per la prossima partita <br> <br>
               <b>Dettagli partita:</b><br>
               Giornata: ${descrizioneGiornata}<br>
-              Data inserimento formazione: ${formatDateTime(dataInserimentoFormazione)}<br>
+              Data inserimento formazione: ${formatDateTime(now)}<br>
               Calcio d'inizio: ${formatDateTime(partita.Calendario.data ?? new Date())}<br> <br>
               https://www.erfantacalcio.com <br> <br>
               Saluti dal Vostro immenso Presidente`
