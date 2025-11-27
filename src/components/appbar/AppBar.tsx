@@ -106,7 +106,8 @@ function AppAppBar({ isXs }: AppAppBarProps) {
                   borderTopRightRadius: '0px',
                   borderBottomLeftRadius: '8px',
                   borderBottomRightRadius: '8px',
-                  background: 'linear-gradient(135deg, #0b6623 0%, #b30000 100%)',
+                  background:
+                    'linear-gradient(135deg, #0b6623 0%, #b30000 100%)',
                   color: '#fff',
                   backdropFilter: 'blur(8px)',
                   maxHeight: 48,
@@ -152,15 +153,29 @@ function AppAppBar({ isXs }: AppAppBarProps) {
                 gap: 1,
               }}
             >
-              <IconButton size="small" color="inherit" aria-label="festive-left" sx={{ color: '#fff' }}>
-                <AutoAwesome />
-              </IconButton>
+              {isChristmasMode && (
+                <IconButton
+                  size="small"
+                  color="inherit"
+                  aria-label="festive-left"
+                  sx={{ color: '#fff' }}
+                >
+                  <AutoAwesome />
+                </IconButton>
+              )}
               <Typography variant="h1" sx={{ color: '#fff' }}>
                 erFantacalcio {Configurazione.stagione}
               </Typography>
-              <IconButton size="small" color="inherit" aria-label="festive-right" sx={{ color: '#fff' }}>
-                <CardGiftcard />
-              </IconButton>
+              {isChristmasMode && (
+                <IconButton
+                  size="small"
+                  color="inherit"
+                  aria-label="festive-right"
+                  sx={{ color: '#fff' }}
+                >
+                  <CardGiftcard />
+                </IconButton>
+              )}
             </Box>
 
             <Box
@@ -175,11 +190,11 @@ function AppAppBar({ isXs }: AppAppBarProps) {
                 color: '#fff',
               }}
             >
-              <AutoAwesome sx={{ fontSize: 20 }} />
+              {isChristmasMode && (<AutoAwesome sx={{ fontSize: 20 }} />)}
               <Typography variant="h1" sx={{ fontSize: '20px', color: '#fff' }}>
                 erFantacalcio {Configurazione.stagione}
               </Typography>
-              <CardGiftcard sx={{ fontSize: 20 }} />
+              {isChristmasMode && (<CardGiftcard sx={{ fontSize: 20 }} />)}
             </Box>
           </Box>
           <Box
