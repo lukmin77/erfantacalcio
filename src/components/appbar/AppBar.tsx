@@ -163,7 +163,7 @@ function AppAppBar({ isXs }: AppAppBarProps) {
                   <AutoAwesome />
                 </IconButton>
               )}
-              <Typography variant="h1" sx={{ color: '#fff' }}>
+              <Typography variant="h1" sx={{ color: isChristmasMode ? '#fff' : undefined }}>
                 erFantacalcio {Configurazione.stagione}
               </Typography>
               {isChristmasMode && (
@@ -191,7 +191,7 @@ function AppAppBar({ isXs }: AppAppBarProps) {
               }}
             >
               {isChristmasMode && (<AutoAwesome sx={{ fontSize: 20 }} />)}
-              <Typography variant="h1" sx={{ fontSize: '20px', color: '#fff' }}>
+              <Typography variant="h1" sx={{ fontSize: '20px', color: isChristmasMode ? '#fff' : undefined }}>
                 erFantacalcio {Configurazione.stagione}
               </Typography>
               {isChristmasMode && (<CardGiftcard sx={{ fontSize: 20 }} />)}
