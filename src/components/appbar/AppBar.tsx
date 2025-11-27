@@ -40,7 +40,7 @@ function AppAppBar({ isXs }: AppAppBarProps) {
   React.useEffect(() => {
     try {
       const month = new Date().getMonth()
-      setIsFestive(month === 10 || month === 11 || month === 0)
+      setIsFestive(month === 11 || month === 0)
     } catch (e) {
       setIsFestive(false)
     }
