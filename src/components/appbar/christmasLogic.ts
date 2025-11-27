@@ -8,7 +8,7 @@ export function useChristmas(isXs: boolean) {
   React.useEffect(() => {
     try {
       const month = new Date().getMonth()
-      setIsChristmasMode(month === 10 || month === 0)
+      setIsChristmasMode(month === 11 || month === 0)
     } catch (e) {
       setIsChristmasMode(false)
     }
