@@ -86,8 +86,7 @@ export const create = protectedProcedure
           `recupero idCalendario:${partita?.idCalendario} per idPartita: ${idPartita}`,
         )
 
-        const now = new Date()
-        const dataInserimentoFormazione = toLocaleDateTime(now)
+        const dataInserimentoFormazione = new Date()
         const formazione = await trx.insert(Formazioni, {
           idPartita: idPartita,
           idSquadra: idSquadra,
