@@ -4,22 +4,22 @@ export class RemoveIndexes1764001583214 implements MigrationInterface {
     name = 'RemoveIndexes1764001583214'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`DROP INDEX "public"."IX_Partite_idPartita"`);
-        await queryRunner.query(`DROP INDEX "public"."IX_SquadreSerieA_idSquadraSerieA"`);
-        await queryRunner.query(`DROP INDEX "public"."IX_Trasferimenti_idTrasferimento"`);
-        await queryRunner.query(`DROP INDEX "public"."IX_Giocatori_idGiocatore"`);
-        await queryRunner.query(`DROP INDEX "public"."UNIQUE_GIOCATORI_NOME"`);
-        await queryRunner.query(`DROP INDEX "public"."IX_Voti_idVoto"`);
-        await queryRunner.query(`DROP INDEX "public"."IX_Formazioni_idFormazione"`);
-        await queryRunner.query(`DROP INDEX "public"."IX_Utenti"`);
-        await queryRunner.query(`DROP INDEX "public"."IX_Utenti_idUtente"`);
-        await queryRunner.query(`DROP INDEX "public"."IX_Tornei_idTorneo"`);
-        await queryRunner.query(`DROP INDEX "public"."IX_Calendario_idCalendario"`);
-        await queryRunner.query(`DROP INDEX "public"."IX_FlowSeason_id"`);
-        await queryRunner.query(`DROP INDEX "public"."IX_StatsP_id"`);
-        await queryRunner.query(`DROP INDEX "public"."IX_StatsD_id"`);
-        await queryRunner.query(`DROP INDEX "public"."IX_StatsC_id"`);
-        await queryRunner.query(`DROP INDEX "public"."IX_StatsA_id"`);
+        await queryRunner.query(`DROP INDEX IF EXISTS "public"."IX_Partite_idPartita"`);
+        await queryRunner.query(`DROP INDEX IF EXISTS "public"."IX_SquadreSerieA_idSquadraSerieA"`);
+        await queryRunner.query(`DROP INDEX IF EXISTS "public"."IX_Trasferimenti_idTrasferimento"`);
+        await queryRunner.query(`DROP INDEX IF EXISTS "public"."IX_Giocatori_idGiocatore"`);
+        await queryRunner.query(`DROP INDEX IF EXISTS "public"."UNIQUE_GIOCATORI_NOME"`);
+        await queryRunner.query(`DROP INDEX IF EXISTS "public"."IX_Voti_idVoto"`);
+        await queryRunner.query(`DROP INDEX IF EXISTS "public"."IX_Formazioni_idFormazione"`);
+        await queryRunner.query(`DROP INDEX IF EXISTS "public"."IX_Utenti"`);
+        await queryRunner.query(`DROP INDEX IF EXISTS "public"."IX_Utenti_idUtente"`);
+        await queryRunner.query(`DROP INDEX IF EXISTS "public"."IX_Tornei_idTorneo"`);
+        await queryRunner.query(`DROP INDEX IF EXISTS "public"."IX_Calendario_idCalendario"`);
+        await queryRunner.query(`DROP INDEX IF EXISTS "public"."IX_FlowSeason_id"`);
+        await queryRunner.query(`DROP INDEX IF EXISTS "public"."IX_StatsP_id"`);
+        await queryRunner.query(`DROP INDEX IF EXISTS "public"."IX_StatsD_id"`);
+        await queryRunner.query(`DROP INDEX IF EXISTS "public"."IX_StatsC_id"`);
+        await queryRunner.query(`DROP INDEX IF EXISTS "public"."IX_StatsA_id"`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
