@@ -1,13 +1,12 @@
 import { protectedProcedure } from '../../trpc'
 import { z } from 'zod'
-import { toLocaleDateTime } from '~/utils/dateUtils'
+import { toLocaleDateTime, formatDateTime } from '~/utils/dateUtils'
 import { ReSendMailAsync } from '~/service/mailSender'
 import { env } from 'process'
 import { Formazioni, Partite, Voti } from '~/server/db/entities'
 import { AppDataSource } from '~/data-source'
 import { In } from 'typeorm'
 import { getDescrizioneGiornata } from '~/utils/helper'
-import dayjs from 'dayjs'
 
 export const create = protectedProcedure
   .input(
@@ -144,8 +143,8 @@ export const create = protectedProcedure
               Il tuo avversario, l'infame ${avversario}, ha inserito la formazione per la prossima partita <br> <br>
               <b>Dettagli partita:</b><br>
               Giornata: ${descrizioneGiornata}<br>
-              Data inserimento formazione: ${dataInserimentoFormazione.toLocaleString()}<br>
-              Calcio d'inizio: ${(partita.Calendario.data ?? new Date()).toLocaleString()}<br> <br>
+              Data inserimento formazione: ${formatDateTime(dataInserimentoFormazione)}<br>
+              Calcio d'inizio: ${formatDateTime(partita.Calendario.data ?? new Date())}<br> <br>
               https://www.erfantacalcio.com <br> <br>
               Saluti dal Vostro immenso Presidente`
 

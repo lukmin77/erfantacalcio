@@ -11,6 +11,12 @@ export function toLocaleDateTime(date: Date) {
   return new Date(Date.UTC(year, month, day, hours, minutes, seconds))
 }
 
+export function formatDateTime(date: Date | string | undefined | null): string {
+  if (!date) return ''
+  const d = typeof date === 'string' ? new Date(date) : date
+  return dayjs(d).format('YYYY-MM-DD HH:mm')
+}
+
 export function getTimestamp(): string {
   const now = toLocaleDateTime(new Date())
   return dayjs(now).format('YYYYMMDD_HHmmss')
