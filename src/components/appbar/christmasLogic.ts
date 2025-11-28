@@ -8,7 +8,7 @@ export function useChristmas(isXs: boolean) {
   React.useEffect(() => {
     try {
       const month = new Date().getMonth()
-      setIsChristmasMode(month === 10 || month === 0)
+      setIsChristmasMode(month === 11 || month === 0)
     } catch (e) {
       setIsChristmasMode(false)
     }
@@ -143,7 +143,7 @@ export function useChristmas(isXs: boolean) {
       ctx.globalAlpha = 0.85
 
       // Corpo (pallina inferiore)
-      ctx.fillStyle = 'rgba(255,255,255,0.95)'
+      ctx.fillStyle = 'rgba(255,255,255,1)'
       ctx.beginPath()
       ctx.arc(baseX, baseY, 8, 0, Math.PI * 2)
       ctx.fill()
