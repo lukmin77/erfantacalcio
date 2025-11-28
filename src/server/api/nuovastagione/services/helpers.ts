@@ -1,4 +1,4 @@
-import { toLocaleDateTime } from '~/utils/dateUtils'
+import { toUtcDate } from '~/utils/dateUtils'
 import { Configurazione } from '~/config'
 import { getCalendario } from '../../../utils/common'
 import { type Partita, RoundRobin4, RoundRobin8 } from '~/utils/bergerTables'
@@ -9,7 +9,7 @@ export async function updateFase(trx: EntityManager, idFase: number) {
   await trx.update(
     FlowNewSeason,
     { idFase },
-    { active: true, data: toLocaleDateTime(new Date()) },
+    { active: true, data: toUtcDate(new Date()) },
   )
 }
 

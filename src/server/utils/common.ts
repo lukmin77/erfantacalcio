@@ -1,6 +1,6 @@
 import { Configurazione } from '~/config'
 import { getRuoloEsteso, normalizeCampioncinoUrl } from '~/utils/helper'
-import { toLocaleDateTime } from '~/utils/dateUtils'
+import { toUtcDate } from '~/utils/dateUtils'
 import { type GiocatoreType } from '~/types/squadre'
 
 import {
@@ -70,7 +70,7 @@ export async function chiudiTrasferimentoGiocatore(
           idGiocatore: idGiocatore,
           Calendario: {
             data: Between(
-              toLocaleDateTime(new Date()),
+              toUtcDate(new Date()),
               oldTrasferimento.dataAcquisto,
             ),
           },
@@ -217,7 +217,7 @@ export async function getProssimaGiornata(
 }
 
 export async function getRosaDisponibile(idSquadra: number) {
-  const now = toLocaleDateTime(new Date())
+  const now = toUtcDate(new Date())
   const query = await Trasferimenti.find({
     select: {
       idGiocatore: true,

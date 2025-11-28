@@ -1,7 +1,6 @@
 import { publicProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
 import { getCalendario, mapCalendario } from '../../../utils/common'
-import { toLocaleDateTime } from '~/utils/dateUtils'
 import {
   getBonusModulo,
   getBonusSenzaVoto,

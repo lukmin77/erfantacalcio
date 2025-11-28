@@ -5,7 +5,7 @@ import timezone from 'dayjs/plugin/timezone'
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
-export function toLocaleDateTime(date: Date) {
+export function toUtcDate(date: Date) {
   const day = date.getDate()
   const month = date.getMonth()
   const year = date.getFullYear()
@@ -13,7 +13,7 @@ export function toLocaleDateTime(date: Date) {
   const minutes = date.getMinutes()
   const seconds = date.getSeconds()
 
-  return new Date(Date.UTC(year, month, day, hours, minutes, seconds))
+  return new Date(Date.UTC(year, month, day, hours, minutes, seconds, 0))
 }
 
 // Restituisce la data formattata in timezone Italia (Europe/Rome)
@@ -24,7 +24,7 @@ export function formatDateTime(date: Date | string | undefined | null): string {
 }
 
 export function getTimestamp(): string {
-  const now = toLocaleDateTime(new Date())
+  const now = toUtcDate(new Date())
   return dayjs(now).format('YYYYMMDD_HHmmss')
 }
 

@@ -2,7 +2,7 @@ import { adminProcedure } from '~/server/api/trpc'
 import { Configurazione } from '~/config'
 import { messageSchema } from '~/schemas/messageSchema'
 import { checkVotiUltimaGiornata, checkVerificaPartiteGiocate, updateFase } from '../services/helpers'
-import { toLocaleDateTime } from '~/utils/dateUtils'
+import { toUtcDate } from '~/utils/dateUtils'
 import { z } from 'zod'
 import { AppDataSource } from '~/data-source'
 import { Classifiche, Formazioni, Partite, Voti } from '~/server/db/entities'
@@ -26,8 +26,8 @@ export const preparaStagioneProcedure = adminProcedure.mutation<z.infer<typeof m
         trx.deleteAll(Partite)
         trx.update(Calendario, {}, {
           hasGiocata: false,
-          data: toLocaleDateTime(new Date()),
-          dataFine: toLocaleDateTime(new Date()),
+          data: toUtcDate(new Date()),
+          dataFine: toUtcDate(new Date()),
         })
 
         await updateFase(trx, 2)

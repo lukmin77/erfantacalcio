@@ -1,6 +1,6 @@
 import { protectedProcedure } from '../../trpc'
 import { z } from 'zod'
-import { toLocaleDateTime, formatDateTime, nowInItalyIso } from '~/utils/dateUtils'
+import { formatDateTime, nowInItalyIso } from '~/utils/dateUtils'
 import { ReSendMailAsync } from '~/service/mailSender'
 import { env } from 'process'
 import { Formazioni, Partite, Voti } from '~/server/db/entities'

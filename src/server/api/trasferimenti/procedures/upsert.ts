@@ -2,7 +2,7 @@ import { adminProcedure } from '~/server/api/trpc'
 import { z } from 'zod'
 import { chiudiTrasferimentoGiocatore } from '../../../utils/common'
 import { Configurazione } from '~/config'
-import { toLocaleDateTime } from '~/utils/dateUtils'
+import { toUtcDate } from '~/utils/dateUtils'
 import { AppDataSource } from '~/data-source'
 import { SquadreSerieA, Trasferimenti, Utenti } from '~/server/db/entities'
 
@@ -63,7 +63,7 @@ export const upsertTrasferimentoProcedure = adminProcedure
               idSquadraSerieA: opts.input.idSquadraSerieA ?? null,
               idSquadra: opts.input.idSquadra ?? null,
               costo: opts.input.costo,
-              dataAcquisto: toLocaleDateTime(new Date()),
+              dataAcquisto: toUtcDate(new Date()),
               dataCessione: null,
               stagione: Configurazione.stagione,
               hasRitirato: false,
