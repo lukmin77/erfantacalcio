@@ -8,7 +8,7 @@ export function useChristmas(isXs: boolean) {
   React.useEffect(() => {
     try {
       const month = new Date().getMonth()
-      setIsChristmasMode(month === 11 || month === 0)
+      setIsChristmasMode(month === 10 || month === 0)
     } catch (e) {
       setIsChristmasMode(false)
     }
@@ -135,10 +135,133 @@ export function useChristmas(isXs: boolean) {
       ctx.restore()
     }
 
+    const drawSnowman = (xPosition: number, yPosition: number) => {
+      const baseX = xPosition
+      const baseY = yPosition
+
+      ctx.save()
+      ctx.globalAlpha = 0.85
+
+      // Corpo (pallina inferiore)
+      ctx.fillStyle = 'rgba(255,255,255,0.95)'
+      ctx.beginPath()
+      ctx.arc(baseX, baseY, 8, 0, Math.PI * 2)
+      ctx.fill()
+
+      // Testa (pallina superiore)
+      ctx.beginPath()
+      ctx.arc(baseX, baseY - 13, 6, 0, Math.PI * 2)
+      ctx.fill()
+
+      // Occhi
+      ctx.fillStyle = 'rgba(0,0,0,0.8)'
+      ctx.beginPath()
+      ctx.arc(baseX - 2, baseY - 14, 1, 0, Math.PI * 2)
+      ctx.arc(baseX + 2, baseY - 14, 1, 0, Math.PI * 2)
+      ctx.fill()
+
+      // Naso (carota)
+      ctx.fillStyle = 'rgba(255,140,0,0.9)'
+      ctx.beginPath()
+      ctx.moveTo(baseX, baseY - 12)
+      ctx.lineTo(baseX + 4, baseY - 12)
+      ctx.lineTo(baseX, baseY - 11)
+      ctx.closePath()
+      ctx.fill()
+
+      // Bottoni
+      ctx.fillStyle = 'rgba(0,0,0,0.7)'
+      ctx.beginPath()
+      ctx.arc(baseX, baseY - 3, 0.8, 0, Math.PI * 2)
+      ctx.arc(baseX, baseY + 1, 0.8, 0, Math.PI * 2)
+      ctx.fill()
+
+      // Cappello
+      ctx.fillStyle = 'rgba(50,50,50,0.9)'
+      // Base cappello
+      ctx.fillRect(baseX - 5, baseY - 19, 10, 1.5)
+      // Cilindro
+      ctx.fillRect(baseX - 3.5, baseY - 25, 7, 6)
+
+      ctx.restore()
+    }
+
+    const drawChristmasTree = (xPosition: number, yPosition: number) => {
+      const baseX = xPosition
+      const baseY = yPosition
+
+      ctx.save()
+      ctx.globalAlpha = 0.9
+
+      // Tronco
+      ctx.fillStyle = 'rgba(101,67,33,0.9)'
+      ctx.fillRect(baseX - 2, baseY - 3, 4, 5)
+
+      // Albero - tre triangoli sovrapposti
+      ctx.fillStyle = 'rgba(34,139,34,0.95)' // Verde brillante
+
+      // Triangolo inferiore
+      ctx.beginPath()
+      ctx.moveTo(baseX, baseY - 8)
+      ctx.lineTo(baseX - 10, baseY - 3)
+      ctx.lineTo(baseX + 10, baseY - 3)
+      ctx.closePath()
+      ctx.fill()
+
+      // Triangolo medio
+      ctx.beginPath()
+      ctx.moveTo(baseX, baseY - 15)
+      ctx.lineTo(baseX - 8, baseY - 8)
+      ctx.lineTo(baseX + 8, baseY - 8)
+      ctx.closePath()
+      ctx.fill()
+
+      // Triangolo superiore
+      ctx.beginPath()
+      ctx.moveTo(baseX, baseY - 22)
+      ctx.lineTo(baseX - 6, baseY - 15)
+      ctx.lineTo(baseX + 6, baseY - 15)
+      ctx.closePath()
+      ctx.fill()
+
+      // Stella in cima
+      ctx.fillStyle = 'rgba(255,215,0,1)'
+      ctx.beginPath()
+      ctx.arc(baseX, baseY - 23, 2, 0, Math.PI * 2)
+      ctx.fill()
+
+      // Palline decorative
+      ctx.fillStyle = 'rgba(255,0,0,0.8)'
+      ctx.beginPath()
+      ctx.arc(baseX - 4, baseY - 12, 1.5, 0, Math.PI * 2)
+      ctx.arc(baseX + 3, baseY - 6, 1.5, 0, Math.PI * 2)
+      ctx.fill()
+
+      ctx.fillStyle = 'rgba(255,215,0,0.8)'
+      ctx.beginPath()
+      ctx.arc(baseX + 4, baseY - 16, 1.5, 0, Math.PI * 2)
+      ctx.arc(baseX - 2, baseY - 7, 1.5, 0, Math.PI * 2)
+      ctx.fill()
+
+      ctx.restore()
+    }
+
     const step = (now: number) => {
       const dt = Math.min(40, now - last)
       last = now
       ctx.clearRect(0, 0, width, height)
+
+      if (isXs) {
+        drawSnowman(30, height - 8)
+        drawChristmasTree(width / 2 + 110, height - 2)
+      } else {
+        drawSnowman(width / 2, height - 8)
+        drawChristmasTree(width / 2 + 110, height - 2)
+        drawChristmasTree(width / 2 + 150, height - 2)
+        drawChristmasTree(width / 2 + 170, height - 2)
+        drawChristmasTree(width / 2 + 290, height - 2)
+      }
+
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i]
         p.y += p.vy * (dt / 16)
