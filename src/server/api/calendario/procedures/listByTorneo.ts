@@ -8,7 +8,7 @@ export const listByTorneoProcedure = publicProcedure
 .query(async ({ input }) => {
   try {
     const result = await getCalendario({
-      Tornei: { id: In(input) },
+      Torneo: { id: In(input) },
     })
     return await mapCalendario(result)
   } catch (error) {
