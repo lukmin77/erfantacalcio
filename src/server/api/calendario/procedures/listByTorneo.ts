@@ -1,11 +1,14 @@
 import { publicProcedure } from '~/server/api/trpc'
 import { getCalendario, mapCalendario } from '../../../utils/common'
-import { IsNull, Not } from 'typeorm'
+import { In } from 'typeorm'
+import { z } from 'zod'
 
-export const listByTorneoProcedure = publicProcedure.query(async () => {
+export const listByTorneoProcedure = publicProcedure
+.input(z.number().array())
+.query(async ({ input }) => {
   try {
     const result = await getCalendario({
-      Tornei: { gruppoFase: Not(IsNull()) },
+      Tornei: { id: In(input) },
     })
     return await mapCalendario(result)
   } catch (error) {

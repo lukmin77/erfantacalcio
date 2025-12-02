@@ -62,8 +62,7 @@ export const processVotiProcedure = adminProcedure
             console.log(
               `Processing voto for player: ${votoGiocatore.Nome} ${votoGiocatore.Squadra}`,
             )
-            const idGiocatore =
-              giocatori.find(
+            const idGiocatore = giocatori.find(
                 (g) =>
                   g !== null &&
                   (g.id_pf === votoGiocatore.id_pf ||
@@ -151,7 +150,7 @@ async function findAndCreateGiocatori(
 ) {
   try {
     // 1️⃣ Trova giocatori esistenti per id_pf
-    const giocatoriWithId = await trx.find(Giocatori, {
+    const giocatoriWithPfId = await trx.find(Giocatori, {
       select: {
         idGiocatore: true,
         id_pf: true,
@@ -178,13 +177,13 @@ async function findAndCreateGiocatori(
 
     // 3️⃣ Unisci per nome o id_pf
     const giocatori = _.uniqBy(
-      [...giocatoriWithId, ...giocatoriWithNome],
+      [...giocatoriWithPfId, ...giocatoriWithNome],
       (g) => `${g.id_pf ?? ''}_${g.nome}`,
     )
 
     console.log(
       'Giocatori trovati:',
-      giocatori.map((g) => ({ nome: g.nome, id_pf: g.id_pf })),
+      giocatori.map((g) => ({ nome: g.nome, id_pf: g.id_pf, id_giocatore: g.idGiocatore })),
     )
 
     // 4️⃣ Aggiorna eventuali id_pf mancanti

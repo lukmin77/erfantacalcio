@@ -68,7 +68,7 @@ export default function HomePage() {
             refetchOnReconnect: false,
           })
         : isChampions
-          ? api.calendario.listByTorneo.useQuery(undefined, {
+          ? api.calendario.listByTorneo.useQuery([2,3,4,5,6], {
               enabled: isChampions,
               refetchOnWindowFocus: false,
               refetchOnReconnect: false,
