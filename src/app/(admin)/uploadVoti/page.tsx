@@ -58,22 +58,6 @@ export default function UploadVoti() {
     }
   }, [calendarioList.data, getGiornataSerieA])
 
-  useEffect(() => {
-    if (selectedIdCalendario && selectedGiornataSerieA > 0) {
-      const checkFormazioniResult = checkFormazioni.mutateAsync({ idCalendario: selectedIdCalendario! })
-      checkFormazioniResult.then((result) => {
-        if (!result) {
-          setAlert({
-            severity: 'warning',
-            message: `Attenzione: non tutte le partite della giornata di serie A (${selectedGiornataSerieA}) hanno formazioni inserite.`,
-            title: 'Avviso',
-          })
-          setUploading(true)
-        }
-      })
-    }
-  }, [selectedIdCalendario, selectedGiornataSerieA])
-
   const handleChangeCalendario = async (event: SelectChangeEvent) => {
     const idCalendario = event.target.value
     setSelectedIdCalendario(parseInt(idCalendario))
@@ -87,7 +71,6 @@ export default function UploadVoti() {
   const resetVoti = api.voti.resetVoti.useMutation()
   const readVoti = api.voti.readVoti.useMutation()
   const processVoti = api.voti.processVoti.useMutation()
-  const checkFormazioni = api.voti.checkFormazioni.useMutation()
   const refreshStats = api.voti.refreshStats.useMutation()
   const [infofile, setInfofile] = useState('')
   const [file, setFile] = useState<File | undefined>()

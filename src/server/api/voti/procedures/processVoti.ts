@@ -25,24 +25,13 @@ export const processVotiProcedure = adminProcedure
     try {
       console.log(`Processing ${opts.input.votiGiocatori.length} giocatori`)
 
-      const calendario = await Calendario.findOneOrFail(
-        { select: {
-          idCalendario: true,
-          Partite: {
-            idPartita: true,
-            Formazioni: {
-              idFormazione: true,
-            },
-          }
-        },
-        relations: {
-          Partite: {
-            Formazioni: true,
-          },
-        },
-        where: { idCalendario: opts.input.idCalendario },
-      })
-      
+      const checkFormazioniResult = await checkFormazioni(
+        opts.input.idCalendario,
+      )
+      if (checkFormazioniResult.success === false) {
+        throw new Error(checkFormazioniResult.message)
+      }
+
       await AppDataSource.transaction(async (trx) => {
         const giocatori = await findAndCreateGiocatori(
           trx,
@@ -58,7 +47,8 @@ export const processVotiProcedure = adminProcedure
             console.log(
               `Processing voto for player: ${votoGiocatore.Nome} ${votoGiocatore.Squadra}`,
             )
-            const idGiocatore = giocatori.find(
+            const idGiocatore =
+              giocatori.find(
                 (g) =>
                   g !== null &&
                   (g.id_pf === votoGiocatore.id_pf ||
@@ -179,7 +169,11 @@ async function findAndCreateGiocatori(
 
     console.log(
       'Giocatori trovati:',
-      giocatori.map((g) => ({ nome: g.nome, id_pf: g.id_pf, id_giocatore: g.idGiocatore })),
+      giocatori.map((g) => ({
+        nome: g.nome,
+        id_pf: g.id_pf,
+        id_giocatore: g.idGiocatore,
+      })),
     )
 
     // 4️⃣ Aggiorna eventuali id_pf mancanti
@@ -308,5 +302,42 @@ async function createTrasferimento(
       error: error,
     })
     throw error
+  }
+}
+
+async function checkFormazioni(idCalendario: number) {
+  const calendario = await Calendario.findOneOrFail({
+    select: {
+      idCalendario: true,
+      Partite: {
+        idPartita: true,
+        Formazioni: {
+          idFormazione: true,
+        },
+      },
+    },
+    relations: {
+      Partite: {
+        Formazioni: true,
+      },
+    },
+    where: { idCalendario: idCalendario },
+  })
+
+  if (
+    calendario.Partite.length !==
+    calendario.Partite.filter((p) => p.Formazioni.length > 0).length
+  ) {
+    console.warn(
+      `Attenzione: non tutte le partite dell'idCalendario ${idCalendario} (giornata: ${calendario.giornata}, serie A: ${calendario.giornataSerieA}) hanno formazioni inserite.`,
+    )
+    return {
+      success: false,
+      message: `Attenzione: non tutte le partite dell'idCalendario ${idCalendario} (giornata: ${calendario.giornata}, serie A: ${calendario.giornataSerieA}) hanno formazioni inserite.`,
+    }
+  }
+  return {
+    success: true,
+    message: 'Tutte le partite hanno formazioni inserite.',
   }
 }
