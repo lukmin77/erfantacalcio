@@ -32,8 +32,6 @@ export const processVotiProcedure = adminProcedure
         throw new Error(checkFormazioniResult.message)
       }
 
-      throw new Error('CONTROLLO CHECK FORMAZIONI NON SUPERATO')
-
       await AppDataSource.transaction(async (trx) => {
         const giocatori = await findAndCreateGiocatori(
           trx,
