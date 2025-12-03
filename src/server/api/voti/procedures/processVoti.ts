@@ -32,6 +32,8 @@ export const processVotiProcedure = adminProcedure
         throw new Error(checkFormazioniResult.message)
       }
 
+      throw new Error('CONTROLLO CHECK FORMAZIONI NON SUPERATO')
+
       await AppDataSource.transaction(async (trx) => {
         const giocatori = await findAndCreateGiocatori(
           trx,
@@ -309,10 +311,12 @@ async function checkFormazioni(idCalendario: number) {
   const calendario = await Calendario.findOneOrFail({
     select: {
       idCalendario: true,
+      giornata: true,
+      giornataSerieA: true,
       Partite: {
         idPartita: true,
         Formazioni: {
-          idFormazione: true,
+          idFormazione: true
         },
       },
     },
@@ -324,16 +328,20 @@ async function checkFormazioni(idCalendario: number) {
     where: { idCalendario: idCalendario },
   })
 
+  console.log('numero partite:', calendario.Partite.length)
+  console.log(
+    'numero partite con formazioni:',
+    calendario.Partite.filter((p) => p.Formazioni.length === 2).length,
+  )
   if (
     calendario.Partite.length !==
-    calendario.Partite.filter((p) => p.Formazioni.length > 0).length
+    calendario.Partite.filter((p) => p.Formazioni.length === 2).length
   ) {
-    console.warn(
-      `Attenzione: non tutte le partite dell'idCalendario ${idCalendario} (giornata: ${calendario.giornata}, serie A: ${calendario.giornataSerieA}) hanno formazioni inserite.`,
-    )
+    const message = `Non tutte le partite della giornata ${calendario.giornata} (serie A: ${calendario.giornataSerieA}) hanno formazioni inserite.`
+    console.warn(message)
     return {
       success: false,
-      message: `Attenzione: non tutte le partite dell'idCalendario ${idCalendario} (giornata: ${calendario.giornata}, serie A: ${calendario.giornataSerieA}) hanno formazioni inserite.`,
+      message: message,
     }
   }
   return {
