@@ -42,10 +42,6 @@ export const processVotiProcedure = adminProcedure
         },
         where: { idCalendario: opts.input.idCalendario },
       })
-      if (calendario.Partite.length !== calendario.Partite.filter(p => p.Formazioni.length > 0).length){
-        console.warn(`Attenzione: non tutte le partite della giornata ${opts.input.idCalendario} hanno formazioni inserite.`)
-        throw new Error('Non tutte le partite della giornata hanno formazioni inserite.')
-      }
       
       await AppDataSource.transaction(async (trx) => {
         const giocatori = await findAndCreateGiocatori(
