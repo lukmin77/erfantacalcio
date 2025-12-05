@@ -3,26 +3,7 @@ import { DataSource } from 'typeorm'
 import 'dotenv/config'
 import pg from 'pg'
 import { NamingStrategy } from './server/db/utils/namingStrategy'
-import {
-  AlboTrofei,
-  Calendario,
-  Classifiche,
-  Giocatori,
-  Formazioni,
-  FlowNewSeason,
-  Trasferimenti,
-  Tornei,
-  Utenti,
-  StatsP,
-  StatsD,
-  StatsC,
-  StatsA,
-  SquadreSerieA,
-  SerieA,
-  Partite,
-  Migrations,
-  Voti,
-} from './server/db/entities'
+import { join } from 'path'
 
 // Incremental migration: do NOT enable synchronize in production.
 export const AppDataSource = new DataSource({
@@ -32,32 +13,9 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
-  migrations: ((): string[] => {
-    const isDist = typeof import.meta !== 'undefined' && import.meta.url.includes('/dist/')
-    if (isDist) return ['dist/server/db/migrations/*.js']
-    return []
-  })(),
+  migrations: [join(__dirname, 'server/db/migrations/*.{js,ts}')],
+  entities: [join(__dirname, 'server/db/entities/**/*.{js,ts}')],
   namingStrategy: new NamingStrategy(),
-  entities: [
-    AlboTrofei,
-    Calendario,
-    Classifiche,
-    Giocatori,
-    Formazioni,
-    FlowNewSeason,
-    Trasferimenti,
-    Tornei,
-    Utenti,
-    StatsP,
-    StatsD,
-    StatsC,
-    StatsA,
-    SquadreSerieA,
-    SerieA,
-    Partite,
-    Migrations,
-    Voti,
-  ],
   ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
   synchronize: false,
   logging: ['migration', 'error', 'warn'],

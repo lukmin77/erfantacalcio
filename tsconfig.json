@@ -2,19 +2,24 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
-    "moduleResolution": "bundler",           // permette import con estensione .ts
-    "allowImportingTsExtensions": true,      // accetta import con .ts
+    "moduleResolution": "Node",
+    "allowImportingTsExtensions": false,
     "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true,
     "baseUrl": "./",
     "paths": {
-      "~/*": ["src/*"]
+      "~/*": [
+        "src/*"
+      ]
     },
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "noEmit": true,
     "incremental": true,
     "resolveJsonModule": true,
@@ -24,12 +29,13 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "allowJs": true
   },
   "include": [
     "src/**/*.ts",
-    ".next/types/**/*.ts",
-    "**/*.tsx"
+    "src/**/*.tsx",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

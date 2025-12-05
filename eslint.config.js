@@ -7,7 +7,7 @@ export default [
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
-  next,
+  ...next(),
   {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
