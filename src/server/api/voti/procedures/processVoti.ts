@@ -63,7 +63,7 @@ export const processVotiProcedure = adminProcedure
                 trx,
                 votoGiocatore.Squadra,
               )
-              if (squadraSerieA !== null) {
+              if (squadraSerieA !== null && idGiocatore !== 0) {
                 await createTrasferimento(
                   trx,
                   idGiocatore,
