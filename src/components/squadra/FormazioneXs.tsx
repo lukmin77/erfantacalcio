@@ -264,7 +264,7 @@ function FormazioneXs() {
                         paddingLeft: '0px',
                       }}
                     >
-                      <Image
+                      <img
                         src={player.urlCampioncinoSmall}
                         width={42}
                         height={42}
@@ -313,7 +313,7 @@ function FormazioneXs() {
                         paddingLeft: '0px',
                       }}
                     >
-                      <Image
+                      <img
                         src={player.urlCampioncinoSmall}
                         width={42}
                         height={42}
@@ -385,7 +385,7 @@ function FormazioneXs() {
                 justifyContent="space-between"
                 alignItems="center"
               >
-                <Image
+                <img
                   src={player.urlCampioncinoSmall}
                   key={player.idGiocatore}
                   width={48}

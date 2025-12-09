@@ -297,7 +297,7 @@ function FormazioneXsNew() {
                         paddingLeft: '0px',
                       }}
                     >
-                      <Image
+                      <img
                         src={player.urlCampioncinoSmall}
                         width={42}
                         height={42}

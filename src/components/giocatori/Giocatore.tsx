@@ -166,7 +166,7 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
           >
             <Grid container>
               <Grid item sm={3}>
-                <Image
+                <img
                   src={giocatoreProfilo.data.urlCampioncino}
                   width={115}
                   height={170}
