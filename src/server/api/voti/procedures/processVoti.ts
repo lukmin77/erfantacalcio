@@ -118,9 +118,10 @@ export const processVotiProcedure = adminProcedure
                   ...votoData,
                 })
               }
+              console.log(`Processed voto for player: ${votoGiocatore.Nome}`)
             }
 
-            console.log(`Processed voto for player: ${votoGiocatore.Nome}`)
+            
           }),
         )
 
@@ -204,6 +205,7 @@ async function findAndCreateGiocatori(
     // 6️⃣ Crea i nuovi giocatori
     if (newPlayers.length > 0) {
       const created = await createGiocatori(trx, newPlayers)
+      console.log('Giocatori creati:', created)
       giocatori.concat(created)
     }
 
@@ -229,7 +231,7 @@ async function createGiocatori(
       })),
     )
 
-    console.log(`${result.identifiers.length} nuovi giocatori inseriti`)
+    // console.log(`${result.identifiers.length} nuovi giocatori inseriti`)
 
     const createdGiocatori = await trx.find(Giocatori, {
       select: {
