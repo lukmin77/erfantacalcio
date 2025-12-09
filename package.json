@@ -2,23 +2,28 @@
   "name": "erfantacalcio.next-mui",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "build": "next build && npm run build:ts && node ./scripts/fix-dist-imports.mjs",
-    "build:ts": "tsc -p tsconfig.build.json",
     "dev": "next dev -p 8080",
-    "lint": "next lint",
+    "build": "next build --no-lint",
     "start": "next start -p 8080",
+    "lint": "next lint",
     "format": "prettier --write .",
-    "migration:create:local": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:create",
-    "migration:generate:local": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d dist/data-source.js",
-    "migration:run:local": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d dist/data-source.js",
-    "migration:revert:local": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d dist/data-source.js",
-    "migration:show:local": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:show -d dist/data-source.js",
-    "migration:generate:prod": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env.prod node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d dist/data-source.js",
-    "migration:run:prod": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env.prod node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d dist/data-source.js",
-    "migration:revert:prod": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env.prod node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d dist/data-source.js",
-    "migration:show:prod": "npm run build:ts && node ./scripts/fix-dist-imports.mjs && cross-env DOTENV_CONFIG_PATH=.env.prod node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:show -d dist/data-source.js"
+    "build:ts": "tsc -p tsconfig.typeorm.json",
+    "migration:create": "npm run build:ts && cross-env node ./node_modules/typeorm/cli.js -d dist/data-source.js migration:create",
+    "migration:generate": "npm run build:ts && cross-env node ./node_modules/typeorm/cli.js -d dist/data-source.js migration:generate",
+    "migration:run": "npm run build:ts && cross-env node ./node_modules/typeorm/cli.js -d dist/data-source.js migration:run",
+    "migration:revert": "npm run build:ts && cross-env node ./node_modules/typeorm/cli.js -d dist/data-source.js migration:revert",
+    "migration:show": "npm run build:ts && cross-env node ./node_modules/typeorm/cli.js -d dist/data-source.js migration:show",
+    "migration:create:local": "cross-env DOTENV_CONFIG_PATH=.env npm run migration:create",
+    "migration:generate:local": "cross-env DOTENV_CONFIG_PATH=.env npm run migration:generate",
+    "migration:run:local": "cross-env DOTENV_CONFIG_PATH=.env npm run migration:run",
+    "migration:revert:local": "cross-env DOTENV_CONFIG_PATH=.env npm run migration:revert",
+    "migration:show:local": "cross-env DOTENV_CONFIG_PATH=.env npm run migration:show",
+    "migration:create:prod": "cross-env DOTENV_CONFIG_PATH=.env.prod npm run migration:create",
+    "migration:generate:prod": "cross-env DOTENV_CONFIG_PATH=.env.prod npm run migration:generate",
+    "migration:run:prod": "cross-env DOTENV_CONFIG_PATH=.env.prod npm run migration:run",
+    "migration:revert:prod": "cross-env DOTENV_CONFIG_PATH=.env.prod npm run migration:revert",
+    "migration:show:prod": "cross-env DOTENV_CONFIG_PATH=.env.prod npm run migration:show"
   },
   "dependencies": {
     "@dotenvx/dotenvx": "1.31.0",
@@ -69,8 +74,7 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typeorm-model-generator": "^0.4.6",
-    "typescript": "^5.8.2",
-    "typescript-eslint": "^8.29.0"
+    "typescript": "^5.8.2"
   },
   "ct3aMetadata": {
     "initVersion": "7.26.0"

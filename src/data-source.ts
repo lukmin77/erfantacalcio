@@ -3,26 +3,8 @@ import { DataSource } from 'typeorm'
 import 'dotenv/config'
 import pg from 'pg'
 import { NamingStrategy } from './server/db/utils/namingStrategy'
-import {
-  AlboTrofei,
-  Calendario,
-  Classifiche,
-  Giocatori,
-  Formazioni,
-  FlowNewSeason,
-  Trasferimenti,
-  Tornei,
-  Utenti,
-  StatsP,
-  StatsD,
-  StatsC,
-  StatsA,
-  SquadreSerieA,
-  SerieA,
-  Partite,
-  Migrations,
-  Voti,
-} from './server/db/entities'
+import { join } from 'path'
+import * as Entities from './server/db/entities'
 
 // Incremental migration: do NOT enable synchronize in production.
 export const AppDataSource = new DataSource({
@@ -32,32 +14,28 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
-  migrations: ((): string[] => {
-    const isDist = typeof import.meta !== 'undefined' && import.meta.url.includes('/dist/')
-    if (isDist) return ['dist/server/db/migrations/*.js']
-    return []
-  })(),
-  namingStrategy: new NamingStrategy(),
+  migrations: [join(__dirname, 'server/db/migrations/*.{js,ts}')],
   entities: [
-    AlboTrofei,
-    Calendario,
-    Classifiche,
-    Giocatori,
-    Formazioni,
-    FlowNewSeason,
-    Trasferimenti,
-    Tornei,
-    Utenti,
-    StatsP,
-    StatsD,
-    StatsC,
-    StatsA,
-    SquadreSerieA,
-    SerieA,
-    Partite,
-    Migrations,
-    Voti,
+    Entities.AlboTrofei,
+    Entities.Calendario,
+    Entities.Classifiche,
+    Entities.Giocatori,
+    Entities.Formazioni,
+    Entities.FlowNewSeason,
+    Entities.Trasferimenti,
+    Entities.Tornei,
+    Entities.Utenti,
+    Entities.StatsP,
+    Entities.StatsD,
+    Entities.StatsC,
+    Entities.StatsA,
+    Entities.SquadreSerieA,
+    Entities.SerieA,
+    Entities.Partite,
+    Entities.Migrations,
+    Entities.Voti,
   ],
+  namingStrategy: new NamingStrategy(),
   ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
   synchronize: false,
   logging: ['migration', 'error', 'warn'],
