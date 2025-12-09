@@ -206,7 +206,7 @@ async function findAndCreateGiocatori(
     if (newPlayers.length > 0) {
       const created = await createGiocatori(trx, newPlayers)
       console.log('Giocatori creati:', created)
-      giocatori.concat(created)
+      giocatori.push(...created)
     }
 
     return giocatori
