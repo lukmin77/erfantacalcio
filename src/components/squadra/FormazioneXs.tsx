@@ -69,7 +69,7 @@ function FormazioneXs() {
   const [rosa, setRosa] = useState<GiocatoreFormazioneType[]>([])
   const [campo, setCampo] = useState<GiocatoreFormazioneType[]>([])
   const [panca, setPanca] = useState<GiocatoreFormazioneType[]>([])
-  const [idPartita, setIdPartita] = useState<number>()
+  const [idPartita, setIdPartita] = useState<number>(0)
   const [modulo, setModulo] = useState<Moduli>(moduloDefault)
   const [openAlert, setOpenAlert] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -84,7 +84,6 @@ function FormazioneXs() {
   )
   const saveFormazione = api.formazione.create.useMutation({
     onSuccess: async () => {
-      setAlertMessage('Salvataggio completato')
       setAlertSeverity('success')
     },
   })
@@ -349,6 +348,7 @@ function FormazioneXs() {
       setAlertMessage('Nessuna partita in programma, impossibile procedere')
       setAlertSeverity('error')
     } else {
+      console.log(`Salvataggio formazione per idSquadra: ${idSquadra} e idPartita: ${idPartita}`)
       setSaving(true)
       if (idPartita !== 0) {
         await saveFormazione.mutateAsync({
@@ -360,6 +360,7 @@ function FormazioneXs() {
             riserva: giocatore.riserva,
           })),
         })
+        setAlertMessage(`Salvataggio completato: ${giornate.filter(g => g.partite.some(p => p.idPartita === idPartita))[0]?.Title}`)
         setSaving(false)
       } else {
         await Promise.all(
@@ -376,6 +377,9 @@ function FormazioneXs() {
               })),
             })
           }),
+        )
+        setAlertMessage(
+          'Salvataggio completato per entrambe le giornate di campionato e champions',
         )
         setSaving(false)
       }

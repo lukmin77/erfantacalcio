@@ -72,7 +72,7 @@ function Formazione() {
   const [rosa, setRosa] = useState<GiocatoreFormazioneType[]>([])
   const [campo, setCampo] = useState<GiocatoreFormazioneType[]>([])
   const [panca, setPanca] = useState<GiocatoreFormazioneType[]>([])
-  const [idPartita, setIdPartita] = useState<number>()
+  const [idPartita, setIdPartita] = useState<number>(0)
   const [modulo, setModulo] = useState<Moduli>(moduloDefault)
   const [openAlert, setOpenAlert] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -104,7 +104,6 @@ function Formazione() {
   )
   const saveFormazione = api.formazione.create.useMutation({
     onSuccess: async () => {
-      setAlertMessage('Salvataggio completato')
       setAlertSeverity('success')
     },
   })
@@ -426,6 +425,7 @@ function Formazione() {
 
   const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    
     if (rosa.length > 0 || campo.length !== 11) {
       setAlertMessage('Completa la formazione')
       setAlertSeverity('error')
@@ -444,6 +444,7 @@ function Formazione() {
             riserva: giocatore.riserva,
           })),
         })
+        setAlertMessage(`Salvataggio completato: ${giornate.filter(g => g.partite.some(p => p.idPartita === idPartita))[0]?.Title}`)
         setSaving(false)
       } else {
         await Promise.all(
@@ -460,6 +461,9 @@ function Formazione() {
               })),
             })
           }),
+        )
+        setAlertMessage(
+          'Salvataggio completato per entrambe le giornate di campionato e champions',
         )
         setSaving(false)
       }
