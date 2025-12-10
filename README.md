@@ -399,9 +399,10 @@ RESEND_API_KEY="your-resend-api-key"
 
 ### Pattern e Principi
 
-- **App Router di Next.js 14** per routing file-based
+- **App Router di Next.js 16** per routing file-based con Turbopack
 - **Server Components** per ottimizzazione performance
-- **tRPC** per comunicazione type-safe client-server
+- **Client Components** per interattività e state management
+- **tRPC con React Query** per comunicazione type-safe client-server
 - **TypeORM Active Record** per interazione con database
 - **Zod schemas** per validazione runtime
 - **NextAuth** per gestione sessioni e autenticazione
@@ -502,10 +503,10 @@ export const updateGiocatore = adminProcedure
 ### Sviluppo
 
 ```bash
-npm run dev          # Avvia server sviluppo (porta 8080)
-npm run build        # Build per produzione
-npm start            # Avvia server produzione
-npm run lint         # Lint del codice
+npm run dev          # Avvia server sviluppo con Turbopack (porta 8080)
+npm run build        # Build ottimizzata per produzione
+npm start            # Avvia server produzione (porta 8080)
+npm run lint         # Lint del codice con ESLint
 npm run format       # Formattazione con Prettier
 ```
 
@@ -532,10 +533,30 @@ npm run migration:show:prod
 
 ---
 
+## 🚀 Note di Aggiornamento - Next.js 16 & React 19
+
+### Novità Principali
+
+- ⚡ **Turbopack**: Build più veloci in sviluppo e produzione
+- 🔄 **React 19**: Nuove API e miglioramenti di performance
+- 🎯 **App Router migliorato**: Separazione client/server components ottimizzata
+- 📦 **tRPC con React Query**: Migrato da `createTRPCNext` a `createTRPCReact`
+- 🔧 **Configurazione ESM**: `next.config.mjs` per moduli ES
+
+### Modifiche all'Architettura
+
+- **Layout Root**: Ora è un Server Component
+- **ClientLayout**: Nuovo componente per logica client-side
+- **TRPCReactProvider**: Provider dedicato per tRPC compatibile con App Router
+- **Variabili d'Ambiente**: Validazione migliorata con conversioni esplicite
+
+---
+
 ## 👨‍💻 Autore
 
 **Luciano Minni**
 - GitHub: [@lukmin77](https://github.com/lukmin77)
+- Email: lucianominni@gmail.com
 
 ---
 
