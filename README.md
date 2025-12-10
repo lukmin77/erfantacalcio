@@ -531,7 +531,7 @@ npm run migration:show:prod
 
 ## 👨‍💻 Autore
 
-**Luca Minetti**
+**Luciano Minni**
 - GitHub: [@lukmin77](https://github.com/lukmin77)
 
 ---
