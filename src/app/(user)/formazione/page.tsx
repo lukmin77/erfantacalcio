@@ -4,7 +4,7 @@ import { Grid } from '@mui/material'
 import { Suspense } from 'react'
 import Formazione from '~/components/squadra/Formazione'
 import { useSearchParams } from 'next/navigation'
-import FormazioneXsNew from '~/components/squadra/FormazioneXsNew'
+import FormazioneXs from '~/components/squadra/FormazioneXs'
 
 export default function SchieraFormazione() {
   return (
@@ -25,7 +25,7 @@ function InnerSchieraFormazione() {
     <Grid container justifyContent="center" spacing={0}>
       <Grid item xs={12}>
         <Suspense fallback={<div>Caricamento...</div>}>
-          {isXsBoolean ? <FormazioneXsNew /> : <Formazione />}
+          {isXsBoolean ? <FormazioneXs /> : <Formazione />}
         </Suspense>
       </Grid>
     </Grid>

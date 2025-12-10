@@ -53,9 +53,9 @@ export const processVotiProcedure = adminProcedure
                   g !== null &&
                   (g.id_pf === votoGiocatore.id_pf ||
                     g.nome.toLowerCase() === votoGiocatore.Nome.toLowerCase()),
-              )?.idGiocatore ?? 0
+              )?.idGiocatore
 
-            if ((await findLastTrasferimento(trx, idGiocatore)) === null) {
+            if (idGiocatore && (await findLastTrasferimento(trx, idGiocatore)) === null) {
               console.log(
                 `No trasferimento found for player id: ${idGiocatore}, creating one...`,
               )
@@ -63,7 +63,7 @@ export const processVotiProcedure = adminProcedure
                 trx,
                 votoGiocatore.Squadra,
               )
-              if (squadraSerieA !== null && idGiocatore !== 0) {
+              if (squadraSerieA !== null) {
                 await createTrasferimento(
                   trx,
                   idGiocatore,
@@ -74,53 +74,51 @@ export const processVotiProcedure = adminProcedure
             }
 
             // Upsert con update e create uguali
-            if (idGiocatore !== 0) {
-              const votoSave = trx.create(Voti, {
-                voto: votoGiocatore.Voto ?? 0,
-                ammonizione:
-                  votoGiocatore.Ammonizione === 1
-                    ? Configurazione.bonusAmmonizione
-                    : 0,
-                espulsione:
-                  votoGiocatore.Espulsione === 1
-                    ? Configurazione.bonusEspulsione
-                    : 0,
-                gol:
-                  votoGiocatore.Ruolo === 'P'
-                    ? votoGiocatore.GolSubiti * Configurazione.bonusGolSubito
-                    : votoGiocatore.GolSegnati * Configurazione.bonusGol,
-                assist: votoGiocatore.Assist * Configurazione.bonusAssist,
-                autogol: votoGiocatore.Autogol * Configurazione.bonusAutogol,
-                altriBonus:
-                  (votoGiocatore.RigoriParati ?? 0) *
-                    Configurazione.bonusRigoreParato +
-                  (votoGiocatore.RigoriErrati ?? 0) *
-                    Configurazione.bonusRigoreSbagliato,
-              })
+            const votoSave = trx.create(Voti, {
+              voto: votoGiocatore.Voto ?? 0,
+              ammonizione:
+                votoGiocatore.Ammonizione === 1
+                  ? Configurazione.bonusAmmonizione
+                  : 0,
+              espulsione:
+                votoGiocatore.Espulsione === 1
+                  ? Configurazione.bonusEspulsione
+                  : 0,
+              gol:
+                votoGiocatore.Ruolo === 'P'
+                  ? votoGiocatore.GolSubiti * Configurazione.bonusGolSubito
+                  : votoGiocatore.GolSegnati * Configurazione.bonusGol,
+              assist: votoGiocatore.Assist * Configurazione.bonusAssist,
+              autogol: votoGiocatore.Autogol * Configurazione.bonusAutogol,
+              altriBonus:
+                (votoGiocatore.RigoriParati ?? 0) *
+                  Configurazione.bonusRigoreParato +
+                (votoGiocatore.RigoriErrati ?? 0) *
+                  Configurazione.bonusRigoreSbagliato,
+            })
 
-              const criteria = {
-                idGiocatore: idGiocatore,
-                idCalendario: opts.input.idCalendario,
-              }
-              const isExists = await trx.exists(Voti, {
-                where: criteria,
-              })
-
-              // remove id fields from the data to avoid specifying them twice when spreading
-              const votoData = _.omit(votoSave, ['idCalendario', 'idGiocatore'])
-
-              if (isExists) {
-                await trx.update(Voti, criteria, votoData)
-              } else {
-                await trx.insert(Voti, {
-                  idCalendario: opts.input.idCalendario,
-                  idGiocatore: idGiocatore,
-                  ...votoData,
-                })
-              }
-              console.log(`Processed voto for player: ${votoGiocatore.Nome}`)
+            const criteria = {
+              idGiocatore: idGiocatore,
+              idCalendario: opts.input.idCalendario,
             }
+            const isExists = await trx.exists(Voti, {
+              where: criteria,
+            })
 
+            // remove id fields from the data to avoid specifying them twice when spreading
+            const votoData = _.omit(votoSave, ['idCalendario', 'idGiocatore'])
+
+            if (isExists) {
+              await trx.update(Voti, criteria, votoData)
+            } else {
+              await trx.insert(Voti, {
+                idCalendario: opts.input.idCalendario,
+                idGiocatore: idGiocatore,
+                ...votoData,
+              })
+            }
+            console.log(`Processed voto for player: ${votoGiocatore.Nome}`)
+          
             
           }),
         )
@@ -209,7 +207,7 @@ async function findAndCreateGiocatori(
       giocatori.push(...created)
     }
 
-    return giocatori
+    return giocatori.filter((g) => g.idGiocatore !== 0)
   } catch (error) {
     console.error('Si è verificato un errore', error)
     throw error

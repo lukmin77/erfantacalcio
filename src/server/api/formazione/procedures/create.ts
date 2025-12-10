@@ -118,7 +118,9 @@ export const create = protectedProcedure
           )
 
           //invio mail
-          if (env.MAIL_ENABLED) {
+          const mailEnabled = env.MAIL_ENABLED === "true"
+          if (mailEnabled) {
+            console.log(`Invio notifica mail inserimento formazione`)
             const subject = `ErFantacalcio: Formazione partita ${partita.SquadraHome?.nomeSquadra} - ${partita.SquadraAway?.nomeSquadra}`
             const avversario =
               idSquadra === partita.SquadraHome?.idUtente
