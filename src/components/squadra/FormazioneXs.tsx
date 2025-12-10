@@ -56,7 +56,7 @@ import { z } from 'zod'
 import Statistica from './Statistica'
 import { giornataSchema } from '~/schemas/calendario'
 
-function FormazioneXsNew() {
+function FormazioneXs() {
   const session = useSession()
   const idSquadra = parseInt(session.data?.user?.id ?? '0')
   const [idGiocatoreStat, setIdGiocatoreStat] = useState<number>()
@@ -577,4 +577,4 @@ function FormazioneXsNew() {
   )
 }
 
-export default FormazioneXsNew
+export default FormazioneXs
