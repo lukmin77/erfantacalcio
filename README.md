@@ -35,9 +35,9 @@
 ## 🛠️ Stack Tecnologico
 
 ### Frontend
-- **[Next.js 14](https://nextjs.org)** - Framework React con App Router
-- **[React 18](https://react.dev)** - Libreria per interfacce utente
-- **[TypeScript](https://www.typescriptlang.org/)** - Linguaggio tipizzato
+- **[Next.js 16](https://nextjs.org)** - Framework React con App Router e Turbopack
+- **[React 19](https://react.dev)** - Libreria per interfacce utente
+- **[TypeScript 5.8](https://www.typescriptlang.org/)** - Linguaggio tipizzato
 - **[Material-UI v5](https://mui.com/)** - Libreria di componenti UI
 - **[MUI X Data Grid](https://mui.com/x/react-data-grid/)** - Tabelle avanzate
 - **[MUI X Charts](https://mui.com/x/react-charts/)** - Grafici e visualizzazioni
@@ -149,8 +149,11 @@ erfantacalcio/
 │   ├── theme/                   # Tema Material-UI
 │   ├── config.ts                # Configurazione applicazione
 │   ├── data-source.ts           # Configurazione TypeORM
-│   ├── env.js/mjs               # Validazione env vars
-│   └── ProvidersWrapper.tsx     # Provider React
+│   ├── env.mjs                  # Validazione env vars
+│   ├── ProvidersWrapper.tsx     # Provider React
+│   └── components/
+│       ├── ClientLayout.tsx     # Layout client-side
+│       └── TRPCReactProvider.tsx # Provider tRPC
 ├── public/                      # File statici
 │   ├── docs/                    # Documenti pubblici
 │   ├── images/                  # Immagini
@@ -159,7 +162,7 @@ erfantacalcio/
 │   └── voti/                    # File voti CSV
 ├── backup_db/                   # Backup database e migrations
 ├── logs/                        # File di log
-├── next.config.cjs              # Configurazione Next.js
+├── next.config.mjs              # Configurazione Next.js (ESM)
 ├── tsconfig.json                # Configurazione TypeScript
 ├── tsconfig.typeorm.json        # TypeScript per TypeORM
 ├── eslint.config.js             # Configurazione ESLint
