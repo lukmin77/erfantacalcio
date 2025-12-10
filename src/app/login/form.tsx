@@ -3,7 +3,6 @@ import { signIn } from 'next-auth/react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { type ChangeEvent, useState } from 'react'
 
-
 //import material ui
 import { Button, TextField, Box, Typography } from '@mui/material'
 import { loginFormSchema } from '~/schemas/presidente'
@@ -22,13 +21,14 @@ export const LoginForm = () => {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError('')
+    console.log('submitting form', formValues)
     try {
       const validationResult = loginFormSchema.safeParse(formValues)
       if (!validationResult.success) {
-        throw new Error('Compilare i campi')
+        setError('compilare i campi')
       } else {
         setLoading(true)
-        setFormValues({ username: '', password: '' })
 
         const res = await signIn('erFantacalcio', {
           redirect: false,
@@ -38,10 +38,11 @@ export const LoginForm = () => {
         })
 
         setLoading(false)
-        if (!res?.error) {
-          router.push(callbackUrl)
-        } else {
+        if (res?.error) {
           setError('invalid username or password')
+        } else {
+          setFormValues({ username: '', password: '' })
+          router.push(callbackUrl)
         }
       }
     } catch (error) {
@@ -57,11 +58,6 @@ export const LoginForm = () => {
 
   return (
     <Box component="form" onSubmit={onSubmit} noValidate sx={{ mt: 1 }}>
-      {error && (
-        <Typography color="error.main" variant="h4">
-          {error}
-        </Typography>
-      )}
       <TextField
         margin="normal"
         required
@@ -84,7 +80,11 @@ export const LoginForm = () => {
         onChange={handleChange}
         autoComplete="current-password"
       />
-
+      {error && (
+        <Typography color="error" variant="h3">
+          {error}
+        </Typography>
+      )}
       <Button
         type="submit"
         fullWidth
