@@ -20,9 +20,16 @@ export const env = createEnv({
       process.env.VERCEL ? z.string().min(1) : z.string().url(),
     ),
     // Add `.min(1) on ID and SECRET if you want to make sure they're not empty
-    JWT_SECRET: z.string(),
-    NEXT_PUBLIC_STAGIONE: z.string(),
+    JWT_SECRET: z.string().optional(),
+  },
 
+  /**
+   * Specify your client-side environment variables schema here. This way you can ensure the app
+   * isn't built with invalid env vars. To expose them to the client, prefix them with
+   * `NEXT_PUBLIC_`.
+   */
+  client: {
+    NEXT_PUBLIC_STAGIONE: z.string(),
     NEXT_PUBLIC_LOCALE: z.string(),
     NEXT_PUBLIC_FATTORE_CASALINGO: z.number(),
     NEXT_PUBLIC_BONUS_GOL: z.number(),
@@ -35,25 +42,10 @@ export const env = createEnv({
     NEXT_PUBLIC_BONUS_AUTOGOL: z.number(),
     NEXT_PUBLIC_BONUS_SENZA_VOTO: z.number(),
     NEXT_PUBLIC_SOSTITUZIONI: z.number(),
-    NEXT_PUBLIC_MULTA: z.number(),
-    NEXT_PUBLIC_BONUS_MODULO: z.ZodBoolean(),
-    NEXT_PUBLIC_BONUS_MODULO_541: z.number(),
-    NEXT_PUBLIC_BONUS_MODULO_451: z.number(),
-    NEXT_PUBLIC_BONUS_MODULO_532: z.number(),
-    NEXT_PUBLIC_BONUS_MODULO_442: z.number(),
-    NEXT_PUBLIC_BONUS_MODULO_352: z.number(),
-    NEXT_PUBLIC_BONUS_MODULO_433: z.number(),
-    NEXT_PUBLIC_BONUS_MODULO_343: z.number(),
+    NEXT_PUBLIC_BONUS_MODULO: z.boolean(),
     NEXT_PUBLIC_RECORDCOUNT: z.number(),
     NEXT_PUBLIC_PERCENTUALE_MINIMA_GIOCATE: z.number(),
   },
-
-  /**
-   * Specify your client-side environment variables schema here. This way you can ensure the app
-   * isn't built with invalid env vars. To expose them to the client, prefix them with
-   * `NEXT_PUBLIC_`.
-   */
-  client: {},
 
   /**
    * You can't destruct `process.env` as a regular object in the Next.js edge runtimes (e.g.
@@ -65,33 +57,34 @@ export const env = createEnv({
     JWT_SECRET: process.env.JWT_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     NEXT_PUBLIC_STAGIONE: process.env.NEXT_PUBLIC_STAGIONE,
-    NEXT_PUBLIC_RECORDCOUNT: process.env.NEXT_PUBLIC_RECORDCOUNT,
+    NEXT_PUBLIC_RECORDCOUNT: Number(process.env.NEXT_PUBLIC_RECORDCOUNT),
     NEXT_PUBLIC_PERCENTUALE_MINIMA_GIOCATE:
-      process.env.NEXT_PUBLIC_PERCENTUALE_MINIMA_GIOCATE,
+      Number(process.env.NEXT_PUBLIC_PERCENTUALE_MINIMA_GIOCATE),
     NEXT_PUBLIC_LOCALE: process.env.NEXT_PUBLIC_LOCALE,
-    NEXT_PUBLIC_FATTORE_CASALINGO: process.env.NEXT_PUBLIC_FATTORE_CASALINGO,
-    NEXT_PUBLIC_MULTA: process.env.NEXT_PUBLIC_MULTA,
-    NEXT_PUBLIC_BONUS_GOL: process.env.NEXT_PUBLIC_BONUS_GOL,
-    NEXT_PUBLIC_BONUS_ASSIST: process.env.NEXT_PUBLIC_BONUS_ASSIST,
-    NEXT_PUBLIC_BONUS_GOLSUBITO: process.env.NEXT_PUBLIC_BONUS_GOLSUBITO,
-    NEXT_PUBLIC_BONUS_AMMONIZIONE: process.env.NEXT_PUBLIC_BONUS_AMMONIZIONE,
-    NEXT_PUBLIC_BONUS_ESPULSIONE: process.env.NEXT_PUBLIC_BONUS_ESPULSIONE,
-    NEXT_PUBLIC_BONUS_RIGOREPARATO: process.env.NEXT_PUBLIC_BONUS_RIGOREPARATO,
+    NEXT_PUBLIC_FATTORE_CASALINGO: Number(process.env.NEXT_PUBLIC_FATTORE_CASALINGO),
+    NEXT_PUBLIC_BONUS_GOL: Number(process.env.NEXT_PUBLIC_BONUS_GOL),
+    NEXT_PUBLIC_BONUS_ASSIST: Number(process.env.NEXT_PUBLIC_BONUS_ASSIST),
+    NEXT_PUBLIC_BONUS_GOLSUBITO: Number(process.env.NEXT_PUBLIC_BONUS_GOLSUBITO),
+    NEXT_PUBLIC_BONUS_AMMONIZIONE: Number(process.env.NEXT_PUBLIC_BONUS_AMMONIZIONE),
+    NEXT_PUBLIC_BONUS_ESPULSIONE: Number(process.env.NEXT_PUBLIC_BONUS_ESPULSIONE),
+    NEXT_PUBLIC_BONUS_RIGOREPARATO: Number(process.env.NEXT_PUBLIC_BONUS_RIGOREPARATO),
     NEXT_PUBLIC_BONUS_RIGORESBAGLIATO:
-      process.env.NEXT_PUBLIC_BONUS_RIGORESBAGLIATO,
-    NEXT_PUBLIC_BONUS_AUTOGOL: process.env.NEXT_PUBLIC_BONUS_AUTOGOL,
-    NEXT_PUBLIC_BONUS_SENZA_VOTO: process.env.NEXT_PUBLIC_BONUS_SENZA_VOTO,
-    NEXT_PUBLIC_SOSTITUZIONI: process.env.NEXT_PUBLIC_SOSTITUZIONI,
-    NEXT_PUBLIC_BONUS_MODULO: process.env.NEXT_PUBLIC_BONUS_MODULO,
-    NEXT_PUBLIC_BONUS_MODULO_343: process.env.NEXT_PUBLIC_BONUS_MODULO_343,
-    NEXT_PUBLIC_BONUS_MODULO_352: process.env.NEXT_PUBLIC_BONUS_MODULO_352,
-    NEXT_PUBLIC_BONUS_MODULO_433: process.env.NEXT_PUBLIC_BONUS_MODULO_433,
-    NEXT_PUBLIC_BONUS_MODULO_442: process.env.NEXT_PUBLIC_BONUS_MODULO_442,
-    NEXT_PUBLIC_BONUS_MODULO_451: process.env.NEXT_PUBLIC_BONUS_MODULO_451,
-    NEXT_PUBLIC_BONUS_MODULO_532: process.env.NEXT_PUBLIC_BONUS_MODULO_532,
-    NEXT_PUBLIC_BONUS_MODULO_541: process.env.NEXT_PUBLIC_BONUS_MODULO_541,
-    NEXT_PUBLIC_DATA_GIORNATA_1_SERIEA: process.env.NEXT_PUBLIC_DATA_GIORNATA_1_SERIEA,
-    NEXT_PUBLIC_DATA_MERCATO_SETTEMBRE: process.env.NEXT_PUBLIC_DATA_MERCATO_SETTEMBRE,
-    NEXT_PUBLIC_STAGIONEPRECEDENTE: process.env.NEXT_PUBLIC_STAGIONEPRECEDENTE,
+      Number(process.env.NEXT_PUBLIC_BONUS_RIGORESBAGLIATO),
+    NEXT_PUBLIC_BONUS_AUTOGOL: Number(process.env.NEXT_PUBLIC_BONUS_AUTOGOL),
+    NEXT_PUBLIC_BONUS_SENZA_VOTO: Number(process.env.NEXT_PUBLIC_BONUS_SENZA_VOTO),
+    NEXT_PUBLIC_SOSTITUZIONI: Number(process.env.NEXT_PUBLIC_SOSTITUZIONI),
+    NEXT_PUBLIC_BONUS_MODULO: process.env.NEXT_PUBLIC_BONUS_MODULO === 'true',
   },
 })
+
+// Export optional environment variables separately for backward compatibility
+export const optionalEnv = {
+  NEXT_PUBLIC_MULTA: Number(process.env.NEXT_PUBLIC_MULTA ?? '0'),
+  NEXT_PUBLIC_BONUS_MODULO_343: Number(process.env.NEXT_PUBLIC_BONUS_MODULO_343 ?? '0'),
+  NEXT_PUBLIC_BONUS_MODULO_352: Number(process.env.NEXT_PUBLIC_BONUS_MODULO_352 ?? '0'),
+  NEXT_PUBLIC_BONUS_MODULO_433: Number(process.env.NEXT_PUBLIC_BONUS_MODULO_433 ?? '0'),
+  NEXT_PUBLIC_BONUS_MODULO_442: Number(process.env.NEXT_PUBLIC_BONUS_MODULO_442 ?? '0'),
+  NEXT_PUBLIC_BONUS_MODULO_451: Number(process.env.NEXT_PUBLIC_BONUS_MODULO_451 ?? '0'),
+  NEXT_PUBLIC_BONUS_MODULO_532: Number(process.env.NEXT_PUBLIC_BONUS_MODULO_532 ?? '0'),
+  NEXT_PUBLIC_BONUS_MODULO_541: Number(process.env.NEXT_PUBLIC_BONUS_MODULO_541 ?? '0'),
+}
