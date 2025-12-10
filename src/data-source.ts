@@ -32,7 +32,6 @@ export const AppDataSource = new DataSource({
     Entities.SquadreSerieA,
     Entities.SerieA,
     Entities.Partite,
-    Entities.Migrations,
     Entities.Voti,
   ],
   namingStrategy: new NamingStrategy(),

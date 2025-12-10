@@ -85,7 +85,7 @@ export function guestListItems(isXs: boolean, isAuthenticated: boolean) {
       ? [
           listItem(
             'guest_profilo',
-            `/formazione?isXs=${isXs}&isXsNew=true`,
+            `/formazione?isXs=${isXs}`,
             'Inserisci formazione',
             <FiberNew color="success" />,
           ),

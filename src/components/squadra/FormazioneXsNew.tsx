@@ -424,7 +424,7 @@ function FormazioneXsNew() {
           <>
             <Grid item xs={12} textAlign={'center'}>
               <Typography variant={giornate.length > 0 ? 'h6' : 'h5'} sx={{ lineHeight: 2 }}>
-                <b>{giornate.length > 0 ? `${giornate[0]?.Title} / ${giornate[1]?.Title}` : giornate[0]?.Title}</b>
+                <b>{giornate.length > 1 ? `${giornate[0]?.Title} / ${giornate[1]?.Title}` : giornate[0]?.Title}</b>
               </Typography>
             </Grid>
             <Grid item xs={12}>
