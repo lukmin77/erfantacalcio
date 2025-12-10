@@ -10,6 +10,7 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { computeMD5Hash } from '~/utils/hashPassword'
 import { RuoloUtente } from '~/utils/enums'
 import { Utenti } from './db/entities'
+import { initializeDBConnection } from '~/data-source'
 
 declare module 'next-auth' {
   interface IUser extends DefaultUser {
@@ -130,13 +131,18 @@ export const getServerAuthSession = (ctx: {
 async function authenticate(input: { username: string; password: string }) {
   console.info('authenticate: ' + input.username)
   try {
+    // Ensure DataSource is initialized before querying
+    await initializeDBConnection()
+    
     const hashedPassword = computeMD5Hash(input.password)
-    return await Utenti.findOne({
+    const utente = await Utenti.findOne({
       where: {
         username: input.username.toLowerCase(),
         pwd: hashedPassword,
       },
     })
+    console.info('utente trovato: ' + (utente ? utente.presidente : 'null'))
+    return utente
   } catch (error) {
     console.error('Si è verificato un errore', error)
     return null
