@@ -1,15 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import {
-  Card,
-  CardHeader,
-  CardContent,
   Typography,
   Stack,
   TextField,
   Divider,
   Button,
-  Alert,
-  CardActions,
   Checkbox,
   FormControlLabel,
   Paper,
@@ -19,9 +14,9 @@ import {
   type GiornataAdminType,
 } from '~/types/risultati'
 import { api } from '~/utils/api'
-import CheckIcon from '@mui/icons-material/CheckCircle'
 import dayjs from 'dayjs'
 import { tabellinoSchema } from '~/schemas/calendario'
+import { CardWithActions } from '~/components/cards'
 
 interface GiornataCardProps {
   giornata: GiornataAdminType
@@ -133,71 +128,177 @@ function CardPartiteAdmin({ giornata }: GiornataCardProps) {
 
   return (
     <Paper elevation={3}>
-      <Card sx={{ maxWidth: 600, padding: 0 }}>
-        <CardHeader
-          title={giornata?.Title}
-          subheader={giornata?.SubTitle}
-          titleTypographyProps={{ variant: 'h5' }}
-          subheaderTypographyProps={{ variant: 'h6' }}
-        />
-        <Divider></Divider>
-        <CardContent
-          sx={{ paddingBottom: '3px', paddingTop: '10px' }}
-          key={`calendario_${giornata.idCalendario}`}
-        >
-          {risultati.length > 0 ? (
-            risultati.map((partita) => (
-              <span key={`span_${partita.idPartita}`}>
-                <Stack
-                  direction="row"
-                  spacing={0}
-                  justifyContent="space-between"
-                  key={`infopartita_${partita.idPartita}`}
+      <CardWithActions
+        title={giornata?.Title}
+        subtitle={giornata?.SubTitle}
+        titleTypographyProps={{ variant: 'h5' }}
+        subtitleTypographyProps={{ variant: 'h6' }}
+        showHeaderDivider
+        asForm
+        onSubmit={handleSubmit}
+        successMessage={message}
+        errorMessage={errorMessage}
+        withPaper={false}
+        contentSx={{ paddingBottom: '3px', paddingTop: '10px' }}
+        actions={
+          <Button
+            type="submit"
+            fullWidth
+            color="info"
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Aggiorna dati
+          </Button>
+        }
+        sx={{ maxWidth: 600, padding: 0 }}
+      >
+        {risultati.length > 0 ? (
+          risultati.map((partita) => (
+            <span key={`span_${partita.idPartita}`}>
+              <Stack
+                direction="row"
+                spacing={0}
+                justifyContent="space-between"
+                key={`infopartita_${partita.idPartita}`}
+              >
+                <Typography
+                  variant="h5"
+                  component="div"
+                  color="text.secondary"
                 >
-                  <Typography
-                    variant="h5"
-                    component="div"
-                    color="text.secondary"
-                  >
-                    {partita.squadraHome} - {partita.squadraAway}
-                  </Typography>
-                  <Typography
-                    variant="h5"
-                    component="div"
-                    color="text.secondary"
-                  >
-                    {partita.golHome} - {partita.golAway}
-                  </Typography>
-                </Stack>
-                <Stack
-                  direction="row"
-                  spacing={0}
-                  key={`multe_${partita.idPartita}`}
+                  {partita.squadraHome} - {partita.squadraAway}
+                </Typography>
+                <Typography
+                  variant="h5"
+                  component="div"
+                  color="text.secondary"
                 >
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        onChange={(event) =>
-                          handleCheckboxChange(event, partita.idPartita)
-                        }
-                        color="success"
-                        name="multaHome"
-                        checked={partita.multaHome}
-                        value={partita.multaHome}
-                      />
-                    }
-                    label="Multa home"
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        onChange={(event) =>
-                          handleCheckboxChange(event, partita.idPartita)
-                        }
-                        color="success"
-                        name="multaAway"
-                        checked={partita.multaAway}
-                        value={partita.multaAway}
+                  {partita.golHome} - {partita.golAway}
+                </Typography>
+              </Stack>
+              <Stack
+                direction="row"
+                spacing={0}
+                key={`multe_${partita.idPartita}`}
+              >
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      onChange={(event) =>
+                        handleCheckboxChange(event, partita.idPartita)
+                      }
+                      color="success"
+                      name="multaHome"
+                      checked={partita.multaHome}
+                      value={partita.multaHome}
+                    />
+                  }
+                  label="Multa home"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      onChange={(event) =>
+                        handleCheckboxChange(event, partita.idPartita)
+                      }
+                      color="success"
+                      name="multaAway"
+                      checked={partita.multaAway}
+                      value={partita.multaAway}
+                    />
+                  }
+                  label="Multa away"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      onChange={(event) =>
+                        handleCheckboxChange(event, partita.idPartita)
+                      }
+                      color="success"
+                      name="escludi"
+                      checked={partita.escludi}
+                      value={partita.escludi}
+                    />
+                  }
+                  label="Escludi partita"
+                />
+              </Stack>
+              <Stack
+                direction="row"
+                spacing={0}
+                justifyContent="space-between"
+                key={`inputpartita_${partita.idPartita}`}
+              >
+                <TextField
+                  margin="normal"
+                  size="small"
+                  variant="outlined"
+                  required
+                  type="number"
+                  sx={{ m: 2, width: '100px' }}
+                  label="Home"
+                  name="totaleFantapuntiHome"
+                  value={partita.totaleFantapuntiHome}
+                  onChange={(event) =>
+                    handleInputChange(event, partita.idPartita)
+                  }
+                />
+                <TextField
+                  margin="normal"
+                  size="small"
+                  variant="outlined"
+                  required
+                  type="number"
+                  sx={{ m: 2, width: '100px' }}
+                  label="Away"
+                  name="totaleFantapuntiAway"
+                  value={partita.totaleFantapuntiAway}
+                  onChange={(event) =>
+                    handleInputChange(event, partita.idPartita)
+                  }
+                />
+                <TextField
+                  margin="normal"
+                  size="small"
+                  variant="outlined"
+                  required
+                  type="number"
+                  sx={{ m: 2, width: '100px' }}
+                  label="Gol home"
+                  name="calcoloGolSegnatiHome"
+                  value={partita.calcoloGolSegnatiHome}
+                  onChange={(event) =>
+                    handleInputChange(event, partita.idPartita)
+                  }
+                />
+                <TextField
+                  margin="normal"
+                  size="small"
+                  variant="outlined"
+                  required
+                  type="number"
+                  sx={{ m: 2, width: '100px' }}
+                  label="Gol away"
+                  name="calcoloGolSegnatiAway"
+                  value={partita.calcoloGolSegnatiAway}
+                  onChange={(event) =>
+                    handleInputChange(event, partita.idPartita)
+                  }
+                />
+              </Stack>
+              <Divider key={`divider_${partita.idPartita}`}></Divider>
+            </span>
+          ))
+        ) : (
+          <Typography variant="body2" component="div" color="text.secondary">
+            Nessuna partita in programma
+          </Typography>
+        )}
+      </CardWithActions>
+    </Paper>
+  )
                       />
                     }
                     label="Multa away"

@@ -11,11 +11,7 @@ import {
   Zoom,
   useMediaQuery,
   useTheme,
-  Card,
-  CardHeader,
-  CardMedia,
   Slide,
-  CardActionArea,
 } from '@mui/material'
 import {
   AccessAlarm,
