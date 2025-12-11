@@ -22,9 +22,9 @@ import {
 } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { z } from 'zod'
-import AutocompleteTextbox, {
-  type iElements,
-} from '~/components/autocomplete/AutocompleteGiocatore'
+import GenericAutocomplete, {
+  type AutocompleteOption,
+} from '~/components/autocomplete/GenericAutocomplete'
 import { type GiocatoreType } from '~/types/giocatori'
 import {
   type trasferimentoType,
@@ -50,9 +50,9 @@ export default function Giocatori() {
     useState<number>()
   const [selectedTrasferimentoStagione, setSelectedTrasferimentoStagione] =
     useState<string>()
-  const [giocatori, setGiocatori] = useState<iElements[]>([])
-  const [squadre, setSquadre] = useState<iElements[]>([])
-  const [squadreSerieA, setSquadreSerieA] = useState<iElements[]>([])
+  const [giocatori, setGiocatori] = useState<AutocompleteOption[]>([])
+  const [squadre, setSquadre] = useState<AutocompleteOption[]>([])
+  const [squadreSerieA, setSquadreSerieA] = useState<AutocompleteOption[]>([])
   const [trasferimenti, setTrasferimenti] = useState<trasferimentoListType[]>(
     [],
   )
@@ -242,7 +242,7 @@ export default function Giocatori() {
 
   useEffect(() => {
     if (squadreList.data) {
-      const newData: iElements[] = [
+      const newData: AutocompleteOption[] = [
         { id: 0, label: '' },
         ...squadreList.data.map((item) => ({
           id: item.id,
@@ -255,7 +255,7 @@ export default function Giocatori() {
 
   useEffect(() => {
     if (squadreSerieAList.data) {
-      const newData: iElements[] = [
+      const newData: AutocompleteOption[] = [
         { id: 0, label: '' },
         ...squadreSerieAList.data.map((item) => ({
           id: item.idSquadraSerieA,
@@ -501,10 +501,13 @@ export default function Giocatori() {
       paddingBottom={2}
     >
       <Typography variant="h5">Gestione giocatori</Typography>
-      <AutocompleteTextbox
-        onItemSelected={handleGiocatoreSelected}
+      <GenericAutocomplete
+        onItemSelected={(id, text) => {
+          const numericId = typeof id === 'number' ? id : undefined
+          handleGiocatoreSelected(numericId, text)
+        }}
         items={giocatori ?? []}
-      ></AutocompleteTextbox>
+      />
       <Stack direction="row" spacing={1} justifyContent="flex-start">
         <Typography variant="h5">IdGiocatore: {selectedGiocatoreId}</Typography>
         <Typography variant="h5">

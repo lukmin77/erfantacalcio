@@ -14,9 +14,9 @@ import {
 import { useEffect, useState } from 'react'
 import { api } from '~/utils/api'
 import { useTheme } from '@mui/material/styles'
-import AutocompleteTextbox, {
-  type iElements,
-} from '~/components/autocomplete/AutocompleteGiocatore'
+import GenericAutocomplete, {
+  type AutocompleteOption,
+} from '~/components/autocomplete/GenericAutocomplete'
 import Image from 'next/image'
 import { type Ruoli } from '~/types/common'
 import { getRuoloEsteso } from '~/utils/helper'
@@ -44,7 +44,7 @@ function Giocatori() {
     { ruolo: ruolo },
     { refetchOnWindowFocus: false, refetchOnReconnect: false },
   )
-  const [giocatori, setGiocatori] = useState<iElements[]>([])
+  const [giocatori, setGiocatori] = useState<AutocompleteOption[]>([])
 
   useEffect(() => {
     if (giocatoriList.data) {
@@ -212,8 +212,11 @@ function Giocatori() {
           />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <AutocompleteTextbox
-            onItemSelected={handleGiocatoreSelected}
+          <GenericAutocomplete
+            onItemSelected={(id, text) => {
+              const numericId = typeof id === 'number' ? id : undefined
+              handleGiocatoreSelected(numericId)
+            }}
             items={giocatori ?? []}
           />
         </Grid>
