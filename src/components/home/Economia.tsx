@@ -4,9 +4,6 @@ import { api } from '~/utils/api'
 import {
   Avatar,
   Box,
-  Card,
-  CardContent,
-  CardHeader,
   Grid,
   Typography,
   useMediaQuery,
@@ -15,6 +12,7 @@ import {
 import { autosizeOptions } from '~/utils/datatable'
 import { DataGrid, type GridColDef } from '@mui/x-data-grid'
 import { formatCurrency } from '~/utils/numberUtils'
+import { GenericCard } from '~/components/cards'
 
 export default function Economia() {
   const theme = useTheme()
@@ -125,68 +123,62 @@ export default function Economia() {
   return (
     <Grid container spacing={0}>
       <Grid item xs={12} sm={6} lg={6} paddingInlineEnd={isXs ? 0 : 1}>
-        <Card>
-          <CardHeader
-            title="Riepilogo"
-            titleTypographyProps={{ variant: 'h5' }}
-          />
-          <CardContent>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              Importo annuale iscrizioni: {formatCurrency(importoAnnuale)}{' '}
-              <br></br>
-              Importo multe: {formatCurrency(importoMulte)} <br></br>
-              Importo mercato di riparazione: {formatCurrency(
-                importoMercato,
-              )}{' '}
-              <br></br>
-              Detrazione sito: {formatCurrency(detrazioneSito)} <br></br>
-            </Typography>
-          </CardContent>
-        </Card>
+        <GenericCard
+          title="Riepilogo"
+          titleVariant="h5"
+        >
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            Importo annuale iscrizioni: {formatCurrency(importoAnnuale)}{' '}
+            <br></br>
+            Importo multe: {formatCurrency(importoMulte)} <br></br>
+            Importo mercato di riparazione: {formatCurrency(
+              importoMercato,
+            )}{' '}
+            <br></br>
+            Detrazione sito: {formatCurrency(detrazioneSito)} <br></br>
+          </Typography>
+        </GenericCard>
       </Grid>
       <Grid item xs={12} sm={6} lg={6} paddingInlineStart={isXs ? 0 : 1}>
-        <Card>
-          <CardHeader
-            title="Premi stagionali"
-            titleTypographyProps={{ variant: 'h5' }}
-          />
-          <CardContent>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              1° Classificato:{' '}
-              {formatCurrency(
-                calcolaPercentuale(
-                  importoAnnuale + importoMercato + importoMulte - detrazioneSito,
-                  55,
-                ),
-              )}{' '}
-              <br></br>
-              2° Classificato:{' '}
-              {formatCurrency(
-                calcolaPercentuale(
-                  importoAnnuale + importoMercato + importoMulte - detrazioneSito,
-                  20,
-                ),
-              )}{' '}
-              <br></br>
-              3° Classificato:{' '}
-              {formatCurrency(
-                calcolaPercentuale(
-                  importoAnnuale + importoMercato + importoMulte - detrazioneSito,
-                  10,
-                ),
-              )}{' '}
-              <br></br>
-              Vincitore Champions:{' '}
-              {formatCurrency(
-                calcolaPercentuale(
-                  importoAnnuale + importoMercato + importoMulte - detrazioneSito,
-                  15,
-                ),
-              )}{' '}
-              <br></br>
-            </Typography>
-          </CardContent>
-        </Card>
+        <GenericCard
+          title="Premi stagionali"
+          titleVariant="h5"
+        >
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            1° Classificato:{' '}
+            {formatCurrency(
+              calcolaPercentuale(
+                importoAnnuale + importoMercato + importoMulte - detrazioneSito,
+                55,
+              ),
+            )}{' '}
+            <br></br>
+            2° Classificato:{' '}
+            {formatCurrency(
+              calcolaPercentuale(
+                importoAnnuale + importoMercato + importoMulte - detrazioneSito,
+                20,
+              ),
+            )}{' '}
+            <br></br>
+            3° Classificato:{' '}
+            {formatCurrency(
+              calcolaPercentuale(
+                importoAnnuale + importoMercato + importoMulte - detrazioneSito,
+                10,
+              ),
+            )}{' '}
+            <br></br>
+            Vincitore Champions:{' '}
+            {formatCurrency(
+              calcolaPercentuale(
+                importoAnnuale + importoMercato + importoMulte - detrazioneSito,
+                15,
+              ),
+            )}{' '}
+            <br></br>
+          </Typography>
+        </GenericCard>
       </Grid>
       <Grid item xs={12} xl={12} sm={12} lg={12}>
         <br></br>

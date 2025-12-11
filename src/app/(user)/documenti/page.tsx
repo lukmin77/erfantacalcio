@@ -1,13 +1,12 @@
 'use client'
 import {
-  Card,
-  CardHeader,
   CardMedia,
   Grid,
   useMediaQuery,
   useTheme,
 } from '@mui/material'
 import { Configurazione } from '~/config'
+import { GenericCard } from '~/components/cards'
 
 export default function DocumentiPage() {
   const theme = useTheme()
@@ -22,11 +21,10 @@ export default function DocumentiPage() {
           sm={3}
           sx={!isXs ? { pr: '25px', pl: '0px', pt: '15px' } : { pr: '5px' }}
         >
-          <Card>
-            <CardHeader
-              title={`Quotazioni Gazzetta (excel)`}
-              titleTypographyProps={{ variant: 'h5' }}
-            />
+          <GenericCard
+            title={`Quotazioni Gazzetta (excel)`}
+            titleVariant="h5"
+          >
             <CardMedia
               component="img"
               image={'/images/giocatori.jpg'}
@@ -38,7 +36,7 @@ export default function DocumentiPage() {
                 (window.location.href = `/docs/QuotazioniExcel.xlsx`)
               }
             />
-          </Card>
+          </GenericCard>
         </Grid>
         <Grid
           item
@@ -46,11 +44,10 @@ export default function DocumentiPage() {
           sm={3}
           sx={!isXs ? { pr: '25px', pl: '0px', pt: '15px' } : { pl: '5px' }}
         >
-          <Card>
-            <CardHeader
-              title={`Quotazioni Gazzetta (csv)`}
-              titleTypographyProps={{ variant: 'h5' }}
-            />
+          <GenericCard
+            title={`Quotazioni Gazzetta (csv)`}
+            titleVariant="h5"
+          >
             <CardMedia
               component="img"
               image={'/images/giocatori.jpg'}
@@ -62,7 +59,7 @@ export default function DocumentiPage() {
                 (window.location.href = `/docs/QuotazioniExcel.csv`)
               }
             />
-          </Card>
+          </GenericCard>
         </Grid>
         <Grid
           item
@@ -70,11 +67,10 @@ export default function DocumentiPage() {
           sm={3}
           sx={!isXs ? { pr: '25px', pl: '0px', pt: '15px' } : { pl: '5px' }}
         >
-          <Card>
-            <CardHeader
-              title={`Rose ${Configurazione.stagionePrecedente}`}
-              titleTypographyProps={{ variant: 'h5' }}
-            />
+          <GenericCard
+            title={`Rose ${Configurazione.stagionePrecedente}`}
+            titleVariant="h5"
+          >
             <CardMedia
               component="img"
               image={'/images/giocatori2.png'}
@@ -86,7 +82,7 @@ export default function DocumentiPage() {
                 (window.location.href = `/docs/rose_${Configurazione.stagionePrecedente}.csv`)
               }
             />
-          </Card>
+          </GenericCard>
         </Grid>
         <Grid
           item
@@ -94,11 +90,10 @@ export default function DocumentiPage() {
           sm={3}
           sx={!isXs ? { pr: '0px', pl: '0px', pt: '15px' } : { pl: '5px' }}
         >
-          <Card>
-            <CardHeader
-              title="Regolamento"
-              titleTypographyProps={{ variant: 'h5' }}
-            />
+          <GenericCard
+            title="Regolamento"
+            titleVariant="h5"
+          >
             <CardMedia
               component="img"
               image={'/images/regolamento.jpg'}
@@ -110,7 +105,7 @@ export default function DocumentiPage() {
                 (window.location.href = '/docs/Regolamento_erFantacalcio.pdf')
               }
             />
-          </Card>
+          </GenericCard>
         </Grid>
       </Grid>
     </Grid>

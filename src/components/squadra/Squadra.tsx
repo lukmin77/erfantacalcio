@@ -2,10 +2,6 @@
 import {
   Avatar,
   Box,
-  Card,
-  CardContent,
-  CardHeader,
-  CardMedia,
   CircularProgress,
   Divider,
   Grid,

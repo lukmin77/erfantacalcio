@@ -20,9 +20,9 @@ import {
 } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { z } from 'zod'
-import AutocompleteTextbox, {
-  type iElements,
-} from '~/components/autocomplete/AutocompleteGiocatore'
+import GenericAutocomplete, {
+  type AutocompleteOption,
+} from '~/components/autocomplete/GenericAutocomplete'
 import { api } from '~/utils/api'
 import CheckIcon from '@mui/icons-material/CheckCircle'
 import { type votoType, type votoListType } from '~/types/voti'
@@ -59,7 +59,7 @@ export default function Voti() {
       refetchOnReconnect: false,
     },
   )
-  const [giocatori, setGiocatori] = useState<iElements[]>([])
+  const [giocatori, setGiocatori] = useState<AutocompleteOption[]>([])
   const [voti, setVoti] = useState<votoListType[]>([])
   const votoUpdate = api.voti.update.useMutation({
     onSuccess: async () => {
@@ -229,10 +229,13 @@ export default function Voti() {
     <>
       <Stack direction="column" spacing={1} justifyContent="space-between">
         <Typography variant="h5">Gestione voti</Typography>
-        <AutocompleteTextbox
-          onItemSelected={handleGiocatoreSelected}
+        <GenericAutocomplete
+          onItemSelected={(id, text) => {
+            const numericId = typeof id === 'number' ? id : undefined
+            handleGiocatoreSelected(numericId)
+          }}
           items={giocatori ?? []}
-        ></AutocompleteTextbox>
+        />
         {votiList.isLoading &&
         !votiList.isSuccess &&
         selectedGiocatoreId !== undefined ? (
