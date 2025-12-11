@@ -7,10 +7,6 @@ import {
 import {
   Avatar,
   Box,
-  Card,
-  CardContent,
-  CardHeader,
-  CardMedia,
   Divider,
   Grid,
   MenuItem,
@@ -31,6 +27,7 @@ import { useSearchParams } from 'next/navigation'
 import Giocatore from '../giocatori/Giocatore'
 import { ShirtTemplate, magliaType } from '../selectColors'
 import { ShirtSVG } from '../selectColors/shirtSVG'
+import { GenericCard } from '~/components/cards'
 
 interface Tabellino {
   dataOra: Date
@@ -127,33 +124,31 @@ function ViewTabellini() {
 
     if (tabellino) {
       return (
-        <Card>
-          <CardHeader
-            title={
-              <Grid container spacing={0}>
-                <Grid item xs={11}>
-                  {squadra}
-                </Grid>
-                <Grid item xs={1} display={'flex'} justifyContent={'flex-end'}>
-                  <Typography variant={'h4'} sx={{ m: '1px' }}>
-                    <b>{tabellino.golSegnati}</b>
-                  </Typography>
-                </Grid>
+        <GenericCard
+          title={
+            <Grid container spacing={0}>
+              <Grid item xs={11}>
+                {squadra}
               </Grid>
-            }
-            titleTypographyProps={{ variant: 'h5' }}
-            subheader={`Modulo: ${tabellino.modulo} ${
-              multa ? `multa di ${Configurazione.importoMulta} €` : ''
-            }`}
-            avatar={
-              <Avatar
-                alt={squadra ?? ''}
-                src={foto ?? ''}
-                sx={{ display: { xs: 'none', sm: 'block' }, mr: '5px' }}
-              ></Avatar>
-            }
-          />
-          <CardContent>
+              <Grid item xs={1} display={'flex'} justifyContent={'flex-end'}>
+                <Typography variant={'h4'} sx={{ m: '1px' }}>
+                  <b>{tabellino.golSegnati}</b>
+                </Typography>
+              </Grid>
+            </Grid>
+          }
+          titleVariant='h5'
+          subtitle={`Modulo: ${tabellino.modulo} ${
+            multa ? `multa di ${Configurazione.importoMulta} €` : ''
+          }`}
+          avatar={
+            <Avatar
+              alt={squadra ?? ''}
+              src={foto ?? ''}
+              sx={{ display: { xs: 'none', sm: 'block' }, mr: '5px' }}
+            ></Avatar>
+          }
+        >
             <Grid container spacing={0}>
               {maglia && (
                   <Grid item xs={12}  justifyContent={'center'} display={'flex'}>
@@ -469,8 +464,7 @@ function ViewTabellini() {
                 </Typography>
               </Grid>
             </Grid>
-          </CardContent>
-        </Card>
+        </GenericCard>
       )
     }
 

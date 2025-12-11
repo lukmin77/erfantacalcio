@@ -3,9 +3,6 @@ import {
   Alert,
   Box,
   Button,
-  Card,
-  CardContent,
-  CardHeader,
   CircularProgress,
   Grid,
   MenuItem,
@@ -25,6 +22,7 @@ import { z } from 'zod'
 import GenericAutocomplete, {
   type AutocompleteOption,
 } from '~/components/autocomplete/GenericAutocomplete'
+import { GenericCard } from '~/components/cards'
 import { type GiocatoreType } from '~/types/giocatori'
 import {
   type trasferimentoType,
@@ -514,13 +512,12 @@ export default function Giocatori() {
           IdTrasferimento: {selectedTrasferimentoId}
         </Typography>
       </Stack>
-      <Card sx={{ p: 0 }}>
-        <CardHeader
-          title="Anagrafica giocatore"
-          subheader="Inserisci/aggiorna giocatore"
-          titleTypographyProps={{ variant: 'h4' }}
-        />
-        <CardContent>
+      <GenericCard
+        title="Anagrafica giocatore"
+        subtitle="Inserisci/aggiorna giocatore"
+        titleVariant='h4'
+        sx={{ p: 0 }}
+      >
           <Box
             component="form"
             onSubmit={handleUpsertGiocatore}
@@ -647,17 +644,15 @@ export default function Giocatori() {
               </Grid>
             </Grid>
           </Box>
-        </CardContent>
-      </Card>
+        </GenericCard>
       {selectedGiocatoreId !== undefined && (
         <Paper elevation={3}>
-          <Card sx={{ p: 0 }}>
-            <CardHeader
-              title="Trasferimento giocatore"
-              subheader="Inserisci/aggiorna trasferimento"
-              titleTypographyProps={{ variant: 'h4' }}
-            />
-            <CardContent>
+          <GenericCard
+            title="Trasferimento giocatore"
+            subtitle="Inserisci/aggiorna trasferimento"
+            titleVariant='h4'
+            sx={{ p: 0 }}
+          >
               <Box
                 component="form"
                 onSubmit={handleUpsertTrasferimento}
@@ -860,8 +855,7 @@ export default function Giocatori() {
                   </Grid>
                 </Grid>
               </Box>
-            </CardContent>
-          </Card>
+            </GenericCard>
         </Paper>
       )}
       {trasferimentiList.isLoading &&

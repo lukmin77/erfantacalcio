@@ -2,9 +2,6 @@
 import {
   Avatar,
   Box,
-  Card,
-  CardContent,
-  CardHeader,
   Divider,
   Grid,
   MenuItem,
@@ -24,6 +21,7 @@ import { useSearchParams } from 'next/navigation'
 import Giocatore from '../giocatori/Giocatore'
 import { magliaType, ShirtTemplate } from '../selectColors'
 import { ShirtSVG } from '../selectColors/shirtSVG'
+import { GenericCard } from '~/components/cards'
 
 function ViewFormazioni() {
   const searchParams = useSearchParams()
@@ -110,24 +108,22 @@ function ViewFormazioni() {
             </Grid>
             <Grid item xs={6} sx={{ pr: '10px' }}>
               {calendario && (
-                <Card>
-                  <CardHeader
-                    title={infoPartita?.squadraHome}
-                    titleTypographyProps={{ variant: 'h4' }}
-                    subheader={
-                      formazioneHome
-                        ? formatDateFromIso(formazioneHome?.dataOra.toString(), 'DD-MM-YYYY HH:mm')
-                        : `Formazione non rilasciata, multa di ${Configurazione.importoMulta} €`
-                    }
-                    avatar={
-                      <Avatar
-                        alt={infoPartita?.squadraHome ?? ''}
-                        src={infoPartita?.fotoHome ?? ''}
-                        sx={{ display: { xs: 'none', sm: 'block' }, mr: '5px' }}
-                      ></Avatar>
-                    }
-                  ></CardHeader>
-                  <CardContent>
+                <GenericCard
+                  title={infoPartita?.squadraHome}
+                  titleVariant='h4'
+                  subtitle={
+                    formazioneHome
+                      ? formatDateFromIso(formazioneHome?.dataOra.toString(), 'DD-MM-YYYY HH:mm')
+                      : `Formazione non rilasciata, multa di ${Configurazione.importoMulta} €`
+                  }
+                  avatar={
+                    <Avatar
+                      alt={infoPartita?.squadraHome ?? ''}
+                      src={infoPartita?.fotoHome ?? ''}
+                      sx={{ display: { xs: 'none', sm: 'block' }, mr: '5px' }}
+                    ></Avatar>
+                  }
+                >
                     {formazioneHome && (
                       <>
                         <Grid container spacing={0}>
@@ -271,30 +267,27 @@ function ViewFormazioni() {
                         </Grid>
                       </>
                     )}
-                  </CardContent>
-                </Card>
+                </GenericCard>
               )}
             </Grid>
             <Grid item xs={6} sx={{ pl: '10px' }}>
               {calendario && (
-                <Card>
-                  <CardHeader
-                    title={infoPartita?.squadraAway}
-                    titleTypographyProps={{ variant: 'h4' }}
-                    subheader={
-                      formazioneAway
-                        ? formatDateFromIso(formazioneAway?.dataOra.toString(), 'DD-MM-YYYY HH:mm')
-                        : `Formazione non rilasciata, prevista multa di ${Configurazione.importoMulta} €`
-                    }
-                    avatar={
-                      <Avatar
-                        alt={infoPartita?.squadraAway ?? ''}
-                        src={infoPartita?.fotoAway ?? ''}
-                        sx={{ display: { xs: 'none', sm: 'block' }, mr: '5px' }}
-                      ></Avatar>
-                    }
-                  ></CardHeader>
-                  <CardContent>
+                <GenericCard
+                  title={infoPartita?.squadraAway}
+                  titleVariant='h4'
+                  subtitle={
+                    formazioneAway
+                      ? formatDateFromIso(formazioneAway?.dataOra.toString(), 'DD-MM-YYYY HH:mm')
+                      : `Formazione non rilasciata, prevista multa di ${Configurazione.importoMulta} €`
+                  }
+                  avatar={
+                    <Avatar
+                      alt={infoPartita?.squadraAway ?? ''}
+                      src={infoPartita?.fotoAway ?? ''}
+                      sx={{ display: { xs: 'none', sm: 'block' }, mr: '5px' }}
+                    ></Avatar>
+                  }
+                >
                     {formazioneAway && (
                       <>
                         <Grid container spacing={0}>
@@ -438,8 +431,7 @@ function ViewFormazioni() {
                         </Grid>
                       </>
                     )}
-                  </CardContent>
-                </Card>
+                </GenericCard>
               )}
             </Grid>
           </>
