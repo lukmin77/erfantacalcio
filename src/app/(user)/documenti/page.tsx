@@ -23,7 +23,7 @@ export default function DocumentiPage() {
         >
           <GenericCard
             title={`Quotazioni Gazzetta (excel)`}
-            titleTypographyProps={{ variant: 'h5' }}
+            titleVariant="h5"
           >
             <CardMedia
               component="img"
@@ -46,7 +46,7 @@ export default function DocumentiPage() {
         >
           <GenericCard
             title={`Quotazioni Gazzetta (csv)`}
-            titleTypographyProps={{ variant: 'h5' }}
+            titleVariant="h5"
           >
             <CardMedia
               component="img"
@@ -69,7 +69,7 @@ export default function DocumentiPage() {
         >
           <GenericCard
             title={`Rose ${Configurazione.stagionePrecedente}`}
-            titleTypographyProps={{ variant: 'h5' }}
+            titleVariant="h5"
           >
             <CardMedia
               component="img"
@@ -92,7 +92,7 @@ export default function DocumentiPage() {
         >
           <GenericCard
             title="Regolamento"
-            titleTypographyProps={{ variant: 'h5' }}
+            titleVariant="h5"
           >
             <CardMedia
               component="img"
