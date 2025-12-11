@@ -3,13 +3,14 @@ import { Suspense } from 'react'
 import Rosa from '~/components/squadra/Rosa'
 import StatisticaSquadra from '~/components/squadra/Squadra';
 
-export default function SquadraPage({
+export default async function SquadraPage({
   params,
 }: {
-  params: { idSquadra: string; squadra: string }
+  params: Promise<{ idSquadra: string; squadra: string }>
 }) {
-  const idSquadra = Number(params.idSquadra)
-
+  const { idSquadra: idSquadraStr, squadra } = await params
+  const idSquadra = Number(idSquadraStr)
+  
   if (isNaN(idSquadra)) {
     return <p>Errore: ID Squadra non valido</p>
   }
@@ -25,7 +26,7 @@ export default function SquadraPage({
         <Suspense fallback={<div>Caricamento...</div>}>
           <Rosa
             idSquadra={idSquadra}
-            squadra={params.squadra.replace('%20', ' ')}
+            squadra={squadra.replace('%20', ' ')}
           />
         </Suspense>
       </Grid>
