@@ -131,8 +131,8 @@ function CardPartiteAdmin({ giornata }: GiornataCardProps) {
       <CardWithActions
         title={giornata?.Title}
         subtitle={giornata?.SubTitle}
-        titleTypographyProps={{ variant: 'h5' }}
-        subtitleTypographyProps={{ variant: 'h6' }}
+        titleVariant="h5"
+        subtitleVariant="h6"
         showHeaderDivider
         asForm
         onSubmit={handleSubmit}
@@ -297,131 +297,6 @@ function CardPartiteAdmin({ giornata }: GiornataCardProps) {
           </Typography>
         )}
       </CardWithActions>
-    </Paper>
-  )
-                      />
-                    }
-                    label="Multa away"
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        onChange={(event) =>
-                          handleCheckboxChange(event, partita.idPartita)
-                        }
-                        color="success"
-                        name="escludi"
-                        checked={partita.escludi}
-                        value={partita.escludi}
-                      />
-                    }
-                    label="Escludi partita"
-                  />
-                </Stack>
-                <Stack
-                  direction="row"
-                  spacing={0}
-                  justifyContent="space-between"
-                  key={`inputpartita_${partita.idPartita}`}
-                >
-                  <TextField
-                    margin="normal"
-                    size="small"
-                    variant="outlined"
-                    required
-                    type="number"
-                    sx={{ m: 2, width: '100px' }}
-                    label="Home"
-                    name="totaleFantapuntiHome"
-                    value={partita.totaleFantapuntiHome}
-                    onChange={(event) =>
-                      handleInputChange(event, partita.idPartita)
-                    }
-                  />
-                  <TextField
-                    margin="normal"
-                    size="small"
-                    variant="outlined"
-                    required
-                    type="number"
-                    sx={{ m: 2, width: '100px' }}
-                    label="Away"
-                    name="totaleFantapuntiAway"
-                    value={partita.totaleFantapuntiAway}
-                    onChange={(event) =>
-                      handleInputChange(event, partita.idPartita)
-                    }
-                  />
-                  <TextField
-                    margin="normal"
-                    size="small"
-                    variant="outlined"
-                    required
-                    type="number"
-                    sx={{ m: 2, width: '100px' }}
-                    label="Gol home"
-                    name="calcoloGolSegnatiHome"
-                    value={partita.calcoloGolSegnatiHome}
-                    onChange={(event) =>
-                      handleInputChange(event, partita.idPartita)
-                    }
-                  />
-                  <TextField
-                    margin="normal"
-                    size="small"
-                    variant="outlined"
-                    required
-                    type="number"
-                    sx={{ m: 2, width: '100px' }}
-                    label="Gol away"
-                    name="calcoloGolSegnatiAway"
-                    value={partita.calcoloGolSegnatiAway}
-                    onChange={(event) =>
-                      handleInputChange(event, partita.idPartita)
-                    }
-                  />
-                </Stack>
-                <Divider key={`divider_${partita.idPartita}`}></Divider>
-              </span>
-            ))
-          ) : (
-            <Typography variant="body2" component="div" color="text.secondary">
-              Nessuna partita in programma
-            </Typography>
-          )}
-        </CardContent>
-        <CardActions>
-          <Stack
-            direction="column"
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            spacing={0}
-            justifyContent="space-between"
-            sx={{ width: '100%' }}
-          >
-            <Button
-              type="submit"
-              fullWidth
-              color="info"
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Aggiorna dati
-            </Button>
-            {message && (
-              <Alert icon={<CheckIcon fontSize="inherit" />} severity="success">
-                {message}
-              </Alert>
-            )}
-            {errorMessage && (
-              <Alert icon={<CheckIcon fontSize="inherit" />} severity="error">
-                {errorMessage}
-              </Alert>
-            )}
-          </Stack>
-        </CardActions>
-      </Card>
     </Paper>
   )
 }
