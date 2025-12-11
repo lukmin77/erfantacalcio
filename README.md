@@ -35,22 +35,22 @@
 ## 🛠️ Stack Tecnologico
 
 ### Frontend
-- **[Next.js 14](https://nextjs.org)** - Framework React con App Router
-- **[React 18](https://react.dev)** - Libreria per interfacce utente
-- **[TypeScript](https://www.typescriptlang.org/)** - Linguaggio tipizzato
+- **[Next.js 16.0.8](https://nextjs.org)** - Framework React con App Router e Turbopack
+- **[React 19.2.1](https://react.dev)** - Libreria per interfacce utente
+- **[TypeScript 5.8](https://www.typescriptlang.org/)** - Linguaggio tipizzato
 - **[Material-UI v5](https://mui.com/)** - Libreria di componenti UI
-- **[MUI X Data Grid](https://mui.com/x/react-data-grid/)** - Tabelle avanzate
-- **[MUI X Charts](https://mui.com/x/react-charts/)** - Grafici e visualizzazioni
+- **[MUI X Data Grid 8.21.0](https://mui.com/x/react-data-grid/)** - Tabelle avanzate
+- **[MUI X Charts 8.21.0](https://mui.com/x/react-charts/)** - Grafici e visualizzazioni
 
 ### Backend
-- **[tRPC](https://trpc.io)** - API type-safe end-to-end
-- **[NextAuth.js](https://next-auth.js.org)** - Sistema di autenticazione
+- **[tRPC 11.7.2](https://trpc.io)** - API type-safe end-to-end
+- **[NextAuth.js 5.0.0-beta.30](https://next-auth.js.org)** - Sistema di autenticazione
 - **[TypeORM](https://typeorm.io)** - ORM per PostgreSQL
 - **[PostgreSQL](https://www.postgresql.org/)** - Database relazionale
 - **[Zod](https://zod.dev/)** - Validazione e schema dei dati
 
 ### Utilità
-- **[TanStack Query](https://tanstack.com/query)** - Data fetching e caching
+- **[TanStack Query 5.90.12](https://tanstack.com/query)** - Data fetching e caching
 - **[Day.js](https://day.js.org/)** - Manipolazione date
 - **[Lodash](https://lodash.com/)** - Utility functions
 - **[SuperJSON](https://github.com/blitz-js/superjson)** - Serializzazione JSON avanzata
@@ -149,8 +149,11 @@ erfantacalcio/
 │   ├── theme/                   # Tema Material-UI
 │   ├── config.ts                # Configurazione applicazione
 │   ├── data-source.ts           # Configurazione TypeORM
-│   ├── env.js/mjs               # Validazione env vars
-│   └── ProvidersWrapper.tsx     # Provider React
+│   ├── env.mjs                  # Validazione env vars
+│   ├── ProvidersWrapper.tsx     # Provider React
+│   └── components/
+│       ├── ClientLayout.tsx     # Layout client-side
+│       └── TRPCReactProvider.tsx # Provider tRPC
 ├── public/                      # File statici
 │   ├── docs/                    # Documenti pubblici
 │   ├── images/                  # Immagini
@@ -159,7 +162,7 @@ erfantacalcio/
 │   └── voti/                    # File voti CSV
 ├── backup_db/                   # Backup database e migrations
 ├── logs/                        # File di log
-├── next.config.cjs              # Configurazione Next.js
+├── next.config.mjs              # Configurazione Next.js (ESM)
 ├── tsconfig.json                # Configurazione TypeScript
 ├── tsconfig.typeorm.json        # TypeScript per TypeORM
 ├── eslint.config.js             # Configurazione ESLint
@@ -396,9 +399,10 @@ RESEND_API_KEY="your-resend-api-key"
 
 ### Pattern e Principi
 
-- **App Router di Next.js 14** per routing file-based
+- **App Router di Next.js 16** per routing file-based con Turbopack
 - **Server Components** per ottimizzazione performance
-- **tRPC** per comunicazione type-safe client-server
+- **Client Components** per interattività e state management
+- **tRPC con React Query** per comunicazione type-safe client-server
 - **TypeORM Active Record** per interazione con database
 - **Zod schemas** per validazione runtime
 - **NextAuth** per gestione sessioni e autenticazione
@@ -499,10 +503,10 @@ export const updateGiocatore = adminProcedure
 ### Sviluppo
 
 ```bash
-npm run dev          # Avvia server sviluppo (porta 8080)
-npm run build        # Build per produzione
-npm start            # Avvia server produzione
-npm run lint         # Lint del codice
+npm run dev          # Avvia server sviluppo con Turbopack (porta 8080)
+npm run build        # Build ottimizzata per produzione
+npm start            # Avvia server produzione (porta 8080)
+npm run lint         # Lint del codice con ESLint
 npm run format       # Formattazione con Prettier
 ```
 
@@ -529,10 +533,30 @@ npm run migration:show:prod
 
 ---
 
+## 🚀 Note di Aggiornamento - Next.js 16 & React 19
+
+### Novità Principali
+
+- ⚡ **Turbopack**: Build più veloci in sviluppo e produzione
+- 🔄 **React 19**: Nuove API e miglioramenti di performance
+- 🎯 **App Router migliorato**: Separazione client/server components ottimizzata
+- 📦 **tRPC con React Query**: Migrato da `createTRPCNext` a `createTRPCReact`
+- 🔧 **Configurazione ESM**: `next.config.mjs` per moduli ES
+
+### Modifiche all'Architettura
+
+- **Layout Root**: Ora è un Server Component
+- **ClientLayout**: Nuovo componente per logica client-side
+- **TRPCReactProvider**: Provider dedicato per tRPC compatibile con App Router
+- **Variabili d'Ambiente**: Validazione migliorata con conversioni esplicite
+
+---
+
 ## 👨‍💻 Autore
 
 **Luciano Minni**
 - GitHub: [@lukmin77](https://github.com/lukmin77)
+- Email: lucianominni@gmail.com
 
 ---
 

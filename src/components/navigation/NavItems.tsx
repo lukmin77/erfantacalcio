@@ -84,19 +84,19 @@ export function guestListItems(isXs: boolean, isAuthenticated: boolean) {
     ...(isAuthenticated
       ? [
           listItem(
-            'guest_profilo',
+            'guest_profilo_1',
             `/formazione?isXs=${isXs}`,
             'Inserisci formazione',
             <FiberNew color="success" />,
           ),
           listItem(
-            'guest_profilo',
+            'guest_profilo_2',
             `/maglia`,
             'Cambia maglia',
             <AssignmentInd color="info" />,
           ),
           listItem(
-            'guest_profilo',
+            'guest_profilo_3',
             '/foto',
             'Foto profilo',
             <Badge color="success" />,
@@ -104,25 +104,25 @@ export function guestListItems(isXs: boolean, isAuthenticated: boolean) {
         ]
       : []),
     listItem(
-      'guest_profilo',
+      'guest_profilo_4',
       '/statistiche_giocatori',
       'Statistiche giocatori',
       <Portrait color="error" />,
     ),
     listItem(
-      'guest_profilo',
+      'guest_profilo_5',
       '/economia',
       'Economia e premi',
       <Euro color="error" />,
     ),
     listItem(
-      'guest_profilo',
+      'guest_profilo_6',
       '/albo',
       "Albo d'oro",
       <HistoryEdu color="error" />,
     ),
     listItem(
-      'guest_profilo',
+      'guest_profilo_7',
       `/documenti`,
       `Documenti`,
       <ListAlt color="error" />,

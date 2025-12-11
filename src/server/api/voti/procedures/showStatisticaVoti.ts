@@ -1,10 +1,10 @@
-import { adminProcedure } from '../../trpc'
+import { publicProcedure } from '../../trpc'
 import { z } from 'zod'
 import { Configurazione } from '~/config'
 import { Voti } from '~/server/db/entities'
 import { MoreThan } from 'typeorm'
 
-export const showStatisticaVotiProcedure = adminProcedure
+export const showStatisticaVotiProcedure = publicProcedure
   .input(
     z.object({
       idGiocatore: z.number(),
