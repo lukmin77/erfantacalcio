@@ -26,7 +26,9 @@ import { calendarioSchema } from '~/schemas/calendario'
 export default function Risultati() {
   //#region select calendario
   const [selectedIdCalendario, setSelectedIdCalendario] = useState<number>()
-  const [calendario, setCalendario] = useState<z.infer<typeof calendarioSchema>[]>([])
+  const [calendario, setCalendario] = useState<
+    z.infer<typeof calendarioSchema>[]
+  >([])
   const [selectedGiornata, setSelectedGiornata] = useState<GiornataAdminType>()
   const calendarioList = api.calendario.list.useQuery(undefined, {
     refetchOnWindowFocus: false,
@@ -63,7 +65,7 @@ export default function Risultati() {
   //#endregion
 
   return (
-    <Grid container justifyContent="center" spacing={0}>
+    <Grid container justifyContent="center" spacing={0} border={0}>
       <Grid item xs={12} md={6}>
         {calendarioList.isLoading ? (
           <Box
@@ -76,75 +78,73 @@ export default function Risultati() {
             <LinearProgress color="inherit" />
           </Box>
         ) : (
-          <Paper elevation={3}>
-            <Card sx={{ maxWidth: 600, p: 1 }}>
-              <CardHeader
-                title="Aggiornamento risultati"
-                subheader="aggiornamento risultati partite, seleziona la giornata da caricare"
-                titleTypographyProps={{ variant: 'h4' }}
-              />
-              <CardContent>
-                <Box sx={{ p: 1 }}>
-                  <Stack
-                    direction="row"
-                    spacing={1}
-                    justifyContent="space-between"
-                  >
-                    <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                      <InputLabel id="select-label-calendario">
-                        Calendario
-                      </InputLabel>
-                      <Select
-                        size="small"
-                        variant="outlined"
-                        labelId="select-label-calendario"
-                        label="Calendario"
-                        sx={{ m: 0 }}
-                        name="cbCalendario"
-                        value={selectedIdCalendario?.toLocaleString() ?? ''}
-                        onChange={handleChangeCalendario}
-                      >
-                        {calendario.map((item) => (
-                          <MenuItem
-                            key={item.id}
-                            value={item.id}
-                            sx={{ color: 'black' }}
-                          >
-                            {getDescrizioneGiornata(
-                              item.giornataSerieA,
-                              item.nome,
-                              item.giornata,
-                              item.gruppoFase,
-                            )}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Stack>
-                </Box>
-                {selectedIdCalendario !== selectedGiornata?.idCalendario ? (
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      height: '100vh',
-                    }}
-                  >
-                    <CircularProgress color="info" />
-                  </div>
-                ) : (
-                  <>
-                    {selectedGiornata && (
-                      <CardPartiteAdmin
-                        giornata={selectedGiornata}
-                      ></CardPartiteAdmin>
-                    )}
-                  </>
-                )}
-              </CardContent>
-            </Card>
-          </Paper>
+          <Card sx={{ maxWidth: 600, p: 0 }}>
+            <CardHeader
+              title="Aggiornamento risultati"
+              subheader="aggiornamento risultati partite, seleziona la giornata da caricare"
+              titleTypographyProps={{ variant: 'h4' }}
+            />
+            <CardContent>
+              <Box sx={{ p: 1 }}>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  justifyContent="space-between"
+                >
+                  <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                    <InputLabel id="select-label-calendario">
+                      Calendario
+                    </InputLabel>
+                    <Select
+                      size="small"
+                      variant="outlined"
+                      labelId="select-label-calendario"
+                      label="Calendario"
+                      sx={{ m: 0 }}
+                      name="cbCalendario"
+                      value={selectedIdCalendario?.toLocaleString() ?? ''}
+                      onChange={handleChangeCalendario}
+                    >
+                      {calendario.map((item) => (
+                        <MenuItem
+                          key={item.id}
+                          value={item.id}
+                          sx={{ color: 'black' }}
+                        >
+                          {getDescrizioneGiornata(
+                            item.giornataSerieA,
+                            item.nome,
+                            item.giornata,
+                            item.gruppoFase,
+                          )}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Stack>
+              </Box>
+              {selectedIdCalendario !== selectedGiornata?.idCalendario ? (
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100vh',
+                  }}
+                >
+                  <CircularProgress color="info" />
+                </div>
+              ) : (
+                <>
+                  {selectedGiornata && (
+                    <CardPartiteAdmin
+                      giornata={selectedGiornata}
+                    ></CardPartiteAdmin>
+                  )}
+                </>
+              )}
+            </CardContent>
+          </Card>
         )}
       </Grid>
     </Grid>
