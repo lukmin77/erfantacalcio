@@ -15,10 +15,19 @@ const getBaseUrl = () => {
 export const api = createTRPCReact<AppRouter>()
 
 export function TRPCReactProvider({ children }: { children: ReactNode }) {
-  const [queryClient] = useState(() => new QueryClient())
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 5 * 1000,
+          },
+        },
+      }),
+  )
+
   const [trpcClient] = useState(() =>
     api.createClient({
-      transformer: superjson,
       links: [
         loggerLink({
           enabled: (opts) =>
@@ -26,6 +35,7 @@ export function TRPCReactProvider({ children }: { children: ReactNode }) {
             (opts.direction === 'down' && opts.result instanceof Error),
         }),
         httpBatchLink({
+          transformer: superjson,
           url: `${getBaseUrl()}/api/trpc`,
         }),
       ],

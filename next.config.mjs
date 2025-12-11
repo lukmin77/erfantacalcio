@@ -11,15 +11,6 @@ const config = {
   compiler: {
     // removeConsole: process.env.NODE_ENV === 'production',
   },
-  /**
-   * If you are using `appDir` then you must comment the below `i18n` config out.
-   *
-   * @see https://github.com/vercel/next.js/issues/41980
-   */
-  i18n: {
-    locales: ['it'],
-    defaultLocale: 'it',
-  },
   images: {
     remotePatterns: [
       {

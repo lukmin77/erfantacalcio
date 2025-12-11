@@ -1,3 +1,4 @@
+'use client'
 import React, { useEffect, useState } from 'react'
 import { api } from '~/utils/api'
 import { Alert, Box, Skeleton, Stack, Typography } from '@mui/material'

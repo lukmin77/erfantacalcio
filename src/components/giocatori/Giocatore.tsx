@@ -262,7 +262,7 @@ function Giocatore({ idGiocatore }: GiocatoreProps) {
               xAxis={[
                 {
                   dataKey: 'giornataSerieA',
-                  valueFormatter: (value) => `Giornata ${value}`,
+                  valueFormatter: (value: number) => `Giornata ${value}`,
                   min: 1,
                   max: 38,
                 },

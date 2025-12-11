@@ -35,22 +35,22 @@
 ## 🛠️ Stack Tecnologico
 
 ### Frontend
-- **[Next.js 16](https://nextjs.org)** - Framework React con App Router e Turbopack
-- **[React 19](https://react.dev)** - Libreria per interfacce utente
+- **[Next.js 16.0.8](https://nextjs.org)** - Framework React con App Router e Turbopack
+- **[React 19.2.1](https://react.dev)** - Libreria per interfacce utente
 - **[TypeScript 5.8](https://www.typescriptlang.org/)** - Linguaggio tipizzato
 - **[Material-UI v5](https://mui.com/)** - Libreria di componenti UI
-- **[MUI X Data Grid](https://mui.com/x/react-data-grid/)** - Tabelle avanzate
-- **[MUI X Charts](https://mui.com/x/react-charts/)** - Grafici e visualizzazioni
+- **[MUI X Data Grid 8.21.0](https://mui.com/x/react-data-grid/)** - Tabelle avanzate
+- **[MUI X Charts 8.21.0](https://mui.com/x/react-charts/)** - Grafici e visualizzazioni
 
 ### Backend
-- **[tRPC](https://trpc.io)** - API type-safe end-to-end
-- **[NextAuth.js](https://next-auth.js.org)** - Sistema di autenticazione
+- **[tRPC 11.7.2](https://trpc.io)** - API type-safe end-to-end
+- **[NextAuth.js 5.0.0-beta.30](https://next-auth.js.org)** - Sistema di autenticazione
 - **[TypeORM](https://typeorm.io)** - ORM per PostgreSQL
 - **[PostgreSQL](https://www.postgresql.org/)** - Database relazionale
 - **[Zod](https://zod.dev/)** - Validazione e schema dei dati
 
 ### Utilità
-- **[TanStack Query](https://tanstack.com/query)** - Data fetching e caching
+- **[TanStack Query 5.90.12](https://tanstack.com/query)** - Data fetching e caching
 - **[Day.js](https://day.js.org/)** - Manipolazione date
 - **[Lodash](https://lodash.com/)** - Utility functions
 - **[SuperJSON](https://github.com/blitz-js/superjson)** - Serializzazione JSON avanzata

@@ -7,13 +7,13 @@
  * need to use are documented accordingly near the end.
  */
 import { initTRPC, TRPCError } from '@trpc/server'
-import { type CreateNextContextOptions } from '@trpc/server/adapters/next'
+import { type FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch'
 import { type Session } from 'next-auth'
 import superjson from 'superjson'
 import { ZodError } from 'zod'
 import { initializeDBConnection } from '~/data-source'
 
-import { getServerAuthSession } from '~/server/auth'
+import { auth } from '~/server/auth.config'
 import { RuoloUtente } from '~/utils/enums'
 
 /**
@@ -51,15 +51,10 @@ const createInnerTRPCContext = ({ session, dataSource }: CreateContextOptions & 
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = async ({
-  req,
-  res,
-}: CreateNextContextOptions) => {
-  // Get the session from the server using the getServerSession wrapper function
-  const session = await getServerAuthSession({ req, res })
+export const createTRPCContext = async (opts?: FetchCreateContextFnOptions) => {
+  const session = await auth()
   const datasource = await initializeDBConnection()
-  // Ensure DataSource is initialized once per server lifetime (reuses global promise)
-  // This avoids having to call `getDataSource()` in every procedure.
+  
   return createInnerTRPCContext({
     session,
     dataSource: datasource,
