@@ -46,8 +46,8 @@ export default function CardPartite({
               g.data,
               'DD/MM HH:mm',
             )}`}
-            titleTypographyProps={{ variant: 'h5' }}
-            subtitleTypographyProps={{ variant: 'h6' }}
+            titleVariant="h5"
+            subtitleVariant="h6"
             withPaper={false}
             sx={{ maxWidth: maxWidth }}
           >

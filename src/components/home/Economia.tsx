@@ -125,7 +125,7 @@ export default function Economia() {
       <Grid item xs={12} sm={6} lg={6} paddingInlineEnd={isXs ? 0 : 1}>
         <GenericCard
           title="Riepilogo"
-          titleTypographyProps={{ variant: 'h5' }}
+          titleVariant="h5"
         >
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             Importo annuale iscrizioni: {formatCurrency(importoAnnuale)}{' '}
@@ -142,7 +142,7 @@ export default function Economia() {
       <Grid item xs={12} sm={6} lg={6} paddingInlineStart={isXs ? 0 : 1}>
         <GenericCard
           title="Premi stagionali"
-          titleTypographyProps={{ variant: 'h5' }}
+          titleVariant="h5"
         >
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             1° Classificato:{' '}
