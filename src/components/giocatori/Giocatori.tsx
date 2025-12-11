@@ -67,15 +67,18 @@ function Giocatori() {
       field: 'maglia',
       type: 'string',
       align: 'left',
-      renderCell: (params) => (
-        <Image
-          src={params.row?.maglia as string}
-          width={30}
-          height={26}
-          alt={params.row?.squadraSerieA as string}
-          title={params.row?.squadraSerieA as string}
-        />
-      ),
+      renderCell: (params) => {
+        const magliaUrl = params.row?.maglia as string
+        return magliaUrl ? (
+          <Image
+            src={magliaUrl}
+            width={30}
+            height={26}
+            alt={params.row?.squadraSerieA as string}
+            title={params.row?.squadraSerieA as string}
+          />
+        ) : null
+      },
       renderHeader: () => '',
       width: 30,
     },
