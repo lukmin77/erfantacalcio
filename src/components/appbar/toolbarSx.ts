@@ -31,10 +31,10 @@ export function getToolbarSx(variant: SeasonalVariant) {
         borderTopRightRadius: '0px',
         borderBottomLeftRadius: '8px',
         borderBottomRightRadius: '8px',
-        background: 'linear-gradient(180deg, #dfeaf6 0%, #c9d9ea 100%)',
+        background: 'linear-gradient(180deg, #0960bdff 0%, #c9d9ea 100%)',
         color: '#333',
         maxHeight: 48,
-        border: '1px solid',
+        border: '0px solid',
         borderColor: 'rgba(0,0,0,0.06)',
         boxShadow: `0 6px 18px rgba(0,0,0,0.04)`,
       }

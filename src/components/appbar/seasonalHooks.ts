@@ -15,19 +15,19 @@ export function useSeasonal(isXs: boolean) {
   }, [])
 
   switch (month) {
-    case 11:
-      const christmas = useChristmas(isXs, true)
-      return {
-        active: christmas.isChristmasMode,
-        canvasRef: christmas.canvasRef,
-        variant: 'christmas' as SeasonalVariant,
-      }
     case 0:
       const january = useJanuary(isXs, true)
       return {
         active: january.isJanuaryMode,
         canvasRef: january.canvasRef,
         variant: 'january' as SeasonalVariant,
+      }
+    case 11:
+      const christmas = useChristmas(isXs, true)
+      return {
+        active: christmas.isChristmasMode,
+        canvasRef: christmas.canvasRef,
+        variant: 'christmas' as SeasonalVariant,
       }
     default:
       const ref = React.useRef<HTMLCanvasElement | null>(null)

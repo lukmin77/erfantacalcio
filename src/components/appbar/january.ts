@@ -163,6 +163,29 @@ export function useJanuary(isXs: boolean, active = false) {
       ctx.fill()
     }
 
+    const drawLightning = (startX: number, startY: number, length: number, intensity: number) => {
+      ctx.save()
+      ctx.globalAlpha = Math.min(1, intensity * 2)
+      ctx.strokeStyle = `rgba(255,255,200,${Math.min(1, intensity)})`
+      ctx.lineWidth = 2 + intensity * 2
+      ctx.lineCap = 'round'
+      ctx.lineJoin = 'round'
+
+      let x = startX
+      let y = startY
+      ctx.beginPath()
+      ctx.moveTo(x, y)
+
+      const segments = 5 + Math.floor(Math.random() * 5)
+      for (let i = 0; i < segments; i++) {
+        x += (Math.random() - 0.5) * 80
+        y += length / segments
+        ctx.lineTo(x, y)
+      }
+      ctx.stroke()
+      ctx.restore()
+    }
+
     const step = (now: number) => {
       const dt = Math.min(40, now - last)
       last = now
@@ -174,19 +197,25 @@ export function useJanuary(isXs: boolean, active = false) {
       const sunY = Math.max(18, height * 0.35 + Math.sin(sunPhase) * 6)
       drawPaleSun(sunX + 200, sunY, isXs ? 8 : 12)
 
+      // random lightning strikes
+      if (Math.random() < 0.005 * (dt / 16)) {
+        const lightningX = Math.random() * width
+        const lightningIntensity = Math.random() * 0.8 + 0.2
+        drawLightning(lightningX, 0, height * 0.5, lightningIntensity)
+      }
+
       // ground line (thin snowy ground)
       ctx.fillStyle = 'rgba(250,250,250,1)'
-      ctx.fillRect(0, height - 6, width, 6)
 
       // place bare trees
       if (isXs) {
-        drawBareTree(28, height - 6, 0.9)
-        drawBareTree(width - 140, height - 6, 0.8)
+        drawBareTree(28, height, 0.9)
+        drawBareTree(width - 140, height, 0.8)
       } else {
         const base = Math.floor(width / 2) - 120
-        drawBareTree(base, height - 6, 1)
-        drawBareTree(base + 90, height - 6, 0.9)
-        drawBareTree(base + 170, height - 6, 1.1)
+        drawBareTree(base, height, 1)
+        drawBareTree(base + 90, height, 0.9)
+        drawBareTree(base + 170, height, 1.1)
       }
 
       // particles
