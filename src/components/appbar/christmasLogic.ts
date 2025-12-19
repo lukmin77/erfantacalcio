@@ -1,18 +1,10 @@
 import * as React from 'react'
 
-export function useChristmas(isXs: boolean) {
-  const [isChristmasMode, setIsChristmasMode] = React.useState(false)
+export function useChristmas(isXs: boolean, active = false) {
+  const isChristmasMode = active
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null)
   const animRef = React.useRef<number | null>(null)
 
-  React.useEffect(() => {
-    try {
-      const month = new Date().getMonth()
-      setIsChristmasMode(month === 11 || month === 0)
-    } catch (e) {
-      setIsChristmasMode(false)
-    }
-  }, [])
 
   React.useEffect(() => {
     if (!isChristmasMode) {

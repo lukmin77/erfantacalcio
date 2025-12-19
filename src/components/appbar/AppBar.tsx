@@ -27,7 +27,9 @@ import { Cottage, ExitToApp, WorkHistory } from '@mui/icons-material'
 import { adminListItems, guestListItems } from '../navigation/NavItems'
 import { Configurazione } from '~/config'
 import Link from 'next/link'
-import { useChristmas } from './christmasLogic'
+import useSeasonal from './seasonalHooks'
+import getToolbarSx from './toolbarSx'
+import getToolbarPresentation from './toolbarPresentation'
 
 interface AppAppBarProps {
   isXs: boolean
@@ -36,7 +38,8 @@ interface AppAppBarProps {
 function AppAppBar({ isXs }: AppAppBarProps) {
   const { data: session } = useSession()
 
-  const { isChristmasMode, canvasRef } = useChristmas(isXs)
+  const { active: seasonalActive, canvasRef: seasonalCanvasRef, variant: seasonalVariant } = useSeasonal(isXs)
+  const { titleColor, iconColor, buttonSx } = getToolbarPresentation(seasonalVariant)
   const handleGoToHome = () => {
     window.location.href = '/'
   }
@@ -78,10 +81,10 @@ function AppAppBar({ isXs }: AppAppBarProps) {
       }}
     >
       <Container maxWidth="lg" sx={{ position: 'relative' }}>
-        {/* Canvas-based snow (more performant for many particles) */}
-        {isChristmasMode && (
+        {/* Canvas-based seasonal effects (snow/rain/etc) */}
+        {seasonalActive && (
           <canvas
-            ref={canvasRef}
+            ref={seasonalCanvasRef}
             aria-hidden
             style={{
               position: 'absolute',
@@ -93,46 +96,7 @@ function AppAppBar({ isXs }: AppAppBarProps) {
             }}
           />
         )}
-        <Toolbar
-          variant="regular"
-          sx={(theme) =>
-            isChristmasMode
-              ? {
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  flexShrink: 0,
-                  borderTopLeftRadius: '0px',
-                  borderTopRightRadius: '0px',
-                  borderBottomLeftRadius: '8px',
-                  borderBottomRightRadius: '8px',
-                  background:
-                    'linear-gradient(135deg, #0b6623 0%, #b30000 100%)',
-                  color: '#fff',
-                  backdropFilter: 'blur(8px)',
-                  maxHeight: 48,
-                  border: '1px solid',
-                  borderColor: 'rgba(255,255,255,0.12)',
-                  boxShadow: `0 6px 18px rgba(179,0,0,0.12), 0 1px 4px rgba(11,102,35,0.08)`,
-                }
-              : {
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  flexShrink: 0,
-                  borderTopLeftRadius: '0px',
-                  borderTopRightRadius: '0px',
-                  borderBottomLeftRadius: '8px',
-                  borderBottomRightRadius: '8px',
-                  bgcolor: theme.palette.primary.dark,
-                  backdropFilter: 'blur(24px)',
-                  maxHeight: 40,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  boxShadow: `1 0 1px rgba(85, 166, 246, 0.1), 1px 1.5px 2px -1px rgba(85, 166, 246, 0.15), 4px 4px 12px -2.5px rgba(85, 166, 246, 0.15)`,
-                }
-          }
-        >
+        <Toolbar variant="regular" sx={getToolbarSx(seasonalVariant)}>
           <Box
             sx={{
               flexGrow: 1,
@@ -153,25 +117,25 @@ function AppAppBar({ isXs }: AppAppBarProps) {
                 gap: 1,
               }}
             >
-              {isChristmasMode && (
+              {seasonalVariant === 'christmas' && (
                 <IconButton
                   size="small"
                   color="inherit"
                   aria-label="festive-left"
-                  sx={{ color: '#fff' }}
+                  sx={{ color: iconColor }}
                 >
                   <AutoAwesome />
                 </IconButton>
               )}
-              <Typography variant="h1" sx={{ color: isChristmasMode ? '#fff' : undefined }}>
+              <Typography variant="h1" sx={{ color: titleColor }}>
                 erFantacalcio {Configurazione.stagione}
               </Typography>
-              {isChristmasMode && (
+              {seasonalVariant === 'christmas' && (
                 <IconButton
                   size="small"
                   color="inherit"
                   aria-label="festive-right"
-                  sx={{ color: '#fff' }}
+                  sx={{ color: iconColor }}
                 >
                   <CardGiftcard />
                 </IconButton>
@@ -190,11 +154,11 @@ function AppAppBar({ isXs }: AppAppBarProps) {
                 color: '#fff',
               }}
             >
-              {isChristmasMode && (<AutoAwesome sx={{ fontSize: 20 }} />)}
-              <Typography variant="h1" sx={{ fontSize: '20px', color: isChristmasMode ? '#fff' : undefined }}>
+              {seasonalVariant === 'christmas' && (<AutoAwesome sx={{ fontSize: 20 }} />)}
+              <Typography variant="h1" sx={{ fontSize: '20px', color: titleColor }}>
                 erFantacalcio {Configurazione.stagione}
               </Typography>
-              {isChristmasMode && (<CardGiftcard sx={{ fontSize: 20 }} />)}
+              {seasonalVariant === 'christmas' && (<CardGiftcard sx={{ fontSize: 20 }} />)}
             </Box>
           </Box>
           <Box
@@ -211,6 +175,7 @@ function AppAppBar({ isXs }: AppAppBarProps) {
                 size="small"
                 component="a"
                 onClick={() => void signIn('erFantacalcio')}
+                sx={{ ...(buttonSx as any) }}
               >
                 Sign in
               </Button>
@@ -376,15 +341,15 @@ function AppAppBar({ isXs }: AppAppBarProps) {
                 {session?.user?.ruolo === RuoloUtente.admin && adminListItems()}
                 {!session ? (
                   <MenuItem>
-                    <Button
-                      color="success"
-                      variant="contained"
-                      component="a"
-                      onClick={() => void signIn('erFantacalcio')}
-                      sx={{ width: '100%' }}
-                    >
-                      Sign in
-                    </Button>
+                        <Button
+                          color="success"
+                          variant="contained"
+                          component="a"
+                          onClick={() => void signIn('erFantacalcio')}
+                          sx={{ width: '100%', ...(buttonSx as any) }}
+                        >
+                          Sign in
+                        </Button>
                   </MenuItem>
                 ) : (
                   <MenuItem>
