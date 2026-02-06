@@ -149,7 +149,7 @@ export default function Economia() {
             {formatCurrency(
               calcolaPercentuale(
                 importoAnnuale + importoMercato + importoMulte - detrazioneSito,
-                55,
+                52,
               ),
             )}{' '}
             <br></br>
@@ -165,7 +165,7 @@ export default function Economia() {
             {formatCurrency(
               calcolaPercentuale(
                 importoAnnuale + importoMercato + importoMulte - detrazioneSito,
-                10,
+                13,
               ),
             )}{' '}
             <br></br>
