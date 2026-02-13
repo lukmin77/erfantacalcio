@@ -37,10 +37,14 @@ export function normalizeCampioncinoUrl(
   nomeFantagazzetta?: string | null,
 ): string {
   // se `nomeFantagazzetta` è un URL assoluto, lo ritorniamo direttamente
+  // se `link` indica la versione small, sostituiamo '/card/' con '/small/' nell'URL
   if (nomeFantagazzetta) {
     try {
       // `new URL()` lancia se non è un URL valido/assoluto
       new URL(nomeFantagazzetta)
+      if (link && link.toLowerCase().includes('small')) {
+        return nomeFantagazzetta.replace('/card/', '/small/')
+      }
       return nomeFantagazzetta
     } catch {
       // non è un URL: prosegui con la logica normale
