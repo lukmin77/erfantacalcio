@@ -36,6 +36,17 @@ export function normalizeCampioncinoUrl(
   nome: string,
   nomeFantagazzetta?: string | null,
 ): string {
+  // se `nomeFantagazzetta` è un URL assoluto, lo ritorniamo direttamente
+  if (nomeFantagazzetta) {
+    try {
+      // `new URL()` lancia se non è un URL valido/assoluto
+      new URL(nomeFantagazzetta)
+      return nomeFantagazzetta
+    } catch {
+      // non è un URL: prosegui con la logica normale
+    }
+  }
+
   let url = ''
 
   if (!nomeFantagazzetta) {
